@@ -51,8 +51,8 @@ class GeminiWebSocket {
                         data = await data.text();
                     }
                     if (typeof data === 'string') {
+                        Logger.debug(TAG, `Raw Message: ${data.substring(0, 500)}`);
                         const response = JSON.parse(data) as GeminiServerResponse;
-                        Logger.debug(TAG, `Server Message Keys: ${Object.keys(response).join(', ')}`);
                         this.handleMessage(response);
                     }
                 } catch (error) {

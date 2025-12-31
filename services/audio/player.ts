@@ -59,7 +59,7 @@ class AudioPlayer {
                 // Wait for the chunk to finish
                 // PCM 24kHz 16-bit mono = 48000 bytes/sec
                 const pcmBuffer = decode(pcmBase64);
-                const durationMs = (pcmBuffer.byteLength / 48000) * 1000;
+                const durationMs = (pcmBuffer.byteLength / (this.sampleRate * 2)) * 1000;
                 
                 await new Promise(r => setTimeout(r, durationMs));
 
