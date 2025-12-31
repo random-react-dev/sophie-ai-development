@@ -9,9 +9,22 @@
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.tsx",
+    "app/**/*.ts",
+    "components/**/*.tsx",
+    "services/**/*.ts",
+    "stores/**/*.ts",
+    "constants/**/*.ts",
+    "hooks/**/*.ts",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "supabase/**/*"
   ]
 }
