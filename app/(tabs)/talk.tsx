@@ -9,11 +9,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
 import { Image } from 'expo-image';
-import { Bookmark, Globe, Mic, Wand2, CheckCircle2, RotateCcw } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { Bookmark, CheckCircle2, Globe, Mic, RotateCcw, Wand2 } from 'lucide-react-native';
 import React, { useEffect, useRef } from 'react';
 import { Alert, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 
 import { Logger } from '@/services/common/Logger';
 
@@ -25,7 +25,7 @@ export default function TalkScreen() {
         messages, showTranscript,
         setShowTranscript, clearMessages, setHasGreeted
     } = useConversationStore();
-    const { selectedScenario, selectScenario } = useScenarioStore();
+    const { selectedScenario, selectScenario, practicePhrase, setPracticePhrase } = useScenarioStore();
     const { session, user } = useAuthStore();
     const scrollViewRef = useRef<ScrollView>(null);
     const isInitialized = useRef(false);
@@ -51,8 +51,13 @@ export default function TalkScreen() {
                 if (!isMounted) return;
 
                 let instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary. Your goal is to help the user practice natural conversation.";
-                
-                if (selectedScenario) {
+
+                if (practicePhrase) {
+                    instruction = `You are Sophie, a friendly AI language tutor. The user wants to practice the phrase: "${practicePhrase}". 
+Your goal is to help them use this phrase in a natural conversation. 
+Start by greeting them and asking if they want to try using that phrase or if they need help understanding it.
+Keep responses concise. If the user makes a mistake, provide a 'Natural Correction'.`;
+                } else if (selectedScenario) {
                     instruction = `You are Sophie, a friendly AI language tutor. You are in a roleplay scenario.
 Scenario: ${selectedScenario.title}
 Your Role: ${selectedScenario.sophieRole}
@@ -65,7 +70,7 @@ Stay in character. Your target language level should be ${selectedScenario.level
 Keep responses concise. If the user makes a mistake, provide a 'Natural Correction'.`;
                 }
 
-                Logger.info(TAG, `Connecting WebSocket with scenario: ${selectedScenario?.title || 'None'}`);
+                Logger.info(TAG, `Connecting WebSocket with ${practicePhrase ? 'practice phrase' : selectedScenario ? 'scenario' : 'default'}: ${practicePhrase || selectedScenario?.title || 'None'}`);
                 geminiWebSocket.connect(token, instruction);
             } catch (err) {
                 if (isMounted) {
@@ -86,7 +91,7 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             audioPlayer.clearQueue();
             isInitialized.current = false;
         };
-    }, [session?.user?.id, session, selectedScenario]);
+    }, [session?.user?.id, session, selectedScenario, practicePhrase]);
 
     const getStatusText = (): string => {
         if (isListening) return 'Live';
@@ -131,11 +136,11 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             "Are you done with this practice session?",
             [
                 { text: "Cancel", style: "cancel" },
-                { 
-                    text: "Finish", 
+                {
+                    text: "Finish",
                     onPress: () => {
                         router.push('/report' as any);
-                    } 
+                    }
                 }
             ]
         );
@@ -147,25 +152,30 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             "This will clear the current conversation and reset Sophie. Continue?",
             [
                 { text: "Cancel", style: "cancel" },
-                { 
-                    text: "Reset", 
+                {
+                    text: "Reset",
                     style: "destructive",
                     onPress: () => {
                         clearMessages();
                         setHasGreeted(false);
                         selectScenario(null);
+                        setPracticePhrase(null);
                         // Force reconnect
                         geminiWebSocket.disconnect();
                         isInitialized.current = false;
-                    } 
+                    }
                 }
             ]
         );
     };
 
     const handleTranslate = async (text: string) => {
-        const translated = await translateText(text);
-        Alert.alert("Translation", translated);
+        try {
+            const translated = await translateText(text, 'English');
+            Alert.alert("Translation", translated);
+        } catch {
+            Alert.alert("Error", "Failed to translate. Please try again.");
+        }
     };
 
     const handleSaveVocabulary = async (text: string) => {
@@ -179,10 +189,10 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
         <SafeAreaView className="flex-1 bg-white" edges={['top']}>
             {/* Header */}
             <View className="px-6 py-4 flex-row justify-between items-center">
-                <View>
+                <View className="flex-1 mr-4">
                     <Text className="text-2xl font-bold text-gray-900 tracking-tight">Sophie AI</Text>
-                    <Text className="text-gray-400 text-xs font-medium uppercase tracking-widest">
-                        {selectedScenario ? `${selectedScenario.title} • ${selectedScenario.level}` : 'Daily Practice'}
+                    <Text className="text-gray-400 text-xs font-medium uppercase tracking-widest" numberOfLines={1}>
+                        {practicePhrase ? `Practicing: ${practicePhrase}` : selectedScenario ? `${selectedScenario.title} • ${selectedScenario.level}` : 'Daily Practice'}
                     </Text>
                 </View>
                 <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
@@ -203,12 +213,12 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                         <View className={`w-2 h-2 rounded-full ${getDotColor()} ${isListening ? 'animate-pulse' : ''}`} />
                         <Text className="text-gray-400 font-bold text-[10px] uppercase tracking-widest">{getStatusText()}</Text>
                     </View>
-                    
+
                     <View className="flex-row items-center gap-4">
                         <TouchableOpacity onPress={handleReset} className="p-2 bg-gray-50 rounded-full border border-gray-100">
                             <RotateCcw size={14} color="#94a3b8" />
                         </TouchableOpacity>
-                        
+
                         <View className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
                             <Text className="text-gray-500 text-[10px] font-black uppercase tracking-tighter mr-2">Transcript</Text>
                             <Switch
@@ -233,10 +243,10 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                 </View>
 
                 <View className="flex-1 mt-6">
-                    <ScrollView 
-                        ref={scrollViewRef} 
+                    <ScrollView
+                        ref={scrollViewRef}
                         className="flex-1"
-                        showsVerticalScrollIndicator={false} 
+                        showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingBottom: 20 }}
                     >
                         {messages.length === 0 ? (
@@ -280,7 +290,7 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             {/* Floating Action Button for Finish */}
             {messages.length > 0 && (
                 <View className="px-6 pb-10 items-center">
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={handleFinish}
                         className="px-8 py-4 bg-gray-900 rounded-3xl flex-row items-center gap-3 shadow-xl"
                     >
@@ -289,7 +299,7 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                     </TouchableOpacity>
                 </View>
             )}
-            
+
             {/* Pad for the Tab Bar Mic Button */}
             <View className="h-20" />
         </SafeAreaView>

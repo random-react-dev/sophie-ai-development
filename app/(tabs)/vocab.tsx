@@ -1,8 +1,9 @@
 import { getVocabulary, VocabularyItem } from '@/services/supabase/vocabulary';
 import { useAuthStore } from '@/stores/authStore';
+import { useScenarioStore } from '@/stores/scenarioStore';
 import { Image } from 'expo-image';
 import { 
-    BookOpen, Search, Play, MessageCircle
+    BookOpen, Search, Play, MessageCircle, MessageSquare
 } from 'lucide-react-native';
 import React, { useEffect, useState, useMemo } from 'react';
 import { 
@@ -11,9 +12,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 
 export default function VocabScreen() {
     const { user } = useAuthStore();
+    const { setPracticePhrase } = useScenarioStore();
+    const router = useRouter();
+    
     const [items, setItems] = useState<VocabularyItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -44,8 +49,13 @@ export default function VocabScreen() {
 
     const handlePlay = (text: string) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        // In a real app, trigger TTS here
         Alert.alert("Listen", `Playing audio for: "${text}"`);
+    };
+
+    const handlePractice = (item: VocabularyItem) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setPracticePhrase(item.translation || item.phrase);
+        router.push('/(tabs)/talk');
     };
 
     const onRefresh = () => {
@@ -108,9 +118,11 @@ export default function VocabScreen() {
                                     </View>
                                     <Text className="text-lg font-bold text-gray-900 leading-tight">{item.phrase}</Text>
                                 </View>
-                                <TouchableOpacity onPress={() => handlePlay(item.phrase)} className="w-10 h-10 bg-gray-50 rounded-full items-center justify-center border border-gray-100">
-                                    <Play size={16} color="#3b82f6" fill="#3b82f6" />
-                                </TouchableOpacity>
+                                <View className="flex-row gap-2">
+                                    <TouchableOpacity onPress={() => handlePlay(item.phrase)} className="w-10 h-10 bg-gray-50 rounded-full items-center justify-center border border-gray-100">
+                                        <Play size={16} color="#3b82f6" fill="#3b82f6" />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
 
                             {item.translation && (
@@ -120,13 +132,25 @@ export default function VocabScreen() {
                                 </View>
                             )}
 
-                            {item.context && (
-                                <View className="flex-row items-center gap-1.5 mt-3">
-                                    <View className="px-2 py-0.5 bg-gray-50 rounded-md">
-                                        <Text className="text-gray-400 text-[8px] font-black uppercase">{item.context}</Text>
-                                    </View>
+                            <View className="flex-row items-center justify-between mt-4">
+                                <View className="flex-row items-center gap-2">
+                                    {item.context && (
+                                        <View className="px-2 py-0.5 bg-gray-50 rounded-md">
+                                            <Text className="text-gray-400 text-[8px] font-black uppercase">{item.context}</Text>
+                                        </View>
+                                    )}
                                 </View>
-                            )}
+
+                                <View className="flex-row gap-3">
+                                    <TouchableOpacity 
+                                        onPress={() => handlePractice(item)}
+                                        className="flex-row items-center gap-2 bg-blue-500 px-4 py-2 rounded-xl shadow-sm"
+                                    >
+                                        <MessageSquare size={12} color="white" />
+                                        <Text className="text-white font-bold text-[10px]">Practice</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
                     )}
                     ListEmptyComponent={
@@ -142,3 +166,4 @@ export default function VocabScreen() {
         </SafeAreaView>
     );
 }
+
