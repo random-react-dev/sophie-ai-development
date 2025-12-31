@@ -1,8 +1,14 @@
-import { Tabs } from 'expo-router';
-import { Mic, Globe, BookOpen, User } from 'lucide-react-native';
+import { Tabs, useRouter, usePathname } from 'expo-router';
+import { Mic, Globe, BookOpen, Languages, VenetianMask } from 'lucide-react-native';
 import React from 'react';
+import { View, TouchableOpacity, Platform } from 'react-native';
+import { useConversationStore } from '@/stores/conversationStore';
 
 export default function TabLayout() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { startGlobalRecording, stopGlobalRecording } = useConversationStore();
+
   return (
     <Tabs screenOptions={{ 
       tabBarActiveTintColor: '#3b82f6', 
@@ -12,41 +18,75 @@ export default function TabLayout() {
         backgroundColor: '#ffffff',
         borderTopWidth: 1,
         borderTopColor: '#f1f5f9',
-        height: 60,
-        paddingBottom: 8,
-        paddingTop: 8,
+        height: Platform.OS === 'ios' ? 88 : 70,
+        paddingBottom: Platform.OS === 'ios' ? 30 : 12,
+        paddingTop: 12,
       },
       tabBarLabelStyle: {
-        fontSize: 12,
-        fontWeight: '500',
+        fontSize: 10,
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
       }
     }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Talk',
-          tabBarIcon: ({ color }) => <Mic size={24} color={color} />,
+          title: 'Roleplay',
+          tabBarIcon: ({ color }) => <VenetianMask size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="leaderboard"
+        name="translate"
         options={{
           title: 'Translate',
-          tabBarIcon: ({ color }) => <Globe size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Languages size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="talk"
+        options={{
+          title: '',
+          tabBarButton: (props) => {
+            const isFocused = pathname === '/talk';
+
+            return (
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPressIn={() => {
+                  if (isFocused) {
+                    startGlobalRecording();
+                  } else {
+                    router.push('/(tabs)/talk' as any);
+                  }
+                }}
+                onPressOut={() => {
+                  if (isFocused) {
+                    stopGlobalRecording();
+                  }
+                }}
+                className="items-center justify-center -top-5"
+              >
+                <View className={`w-16 h-16 rounded-3xl items-center justify-center shadow-2xl ${isFocused ? 'bg-red-500 shadow-red-200' : 'bg-gray-900 shadow-gray-400'} border-4 border-white`}>
+                  <Mic size={28} color="white" fill="white" />
+                </View>
+              </TouchableOpacity>
+            );
+          }
+        }}
+      />
+      <Tabs.Screen
+        name="vocab"
         options={{
           title: 'Vocab',
           tabBarIcon: ({ color }) => <BookOpen size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="language"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
+          title: 'Language',
+          tabBarIcon: ({ color }) => <Globe size={24} color={color} />,
         }}
       />
     </Tabs>

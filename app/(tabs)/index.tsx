@@ -1,178 +1,56 @@
-import { RainbowWave } from '@/components/lesson/RainbowWave';
-import { audioPlayer } from '@/services/audio/player';
-import { audioRecorder } from '@/services/audio/recorder';
-import { translateText } from '@/services/gemini/translate';
-import { geminiWebSocket } from '@/services/gemini/websocket';
-import { supabase } from '@/services/supabase/client';
-import { saveToVocabulary } from '@/services/supabase/vocabulary';
+import { CATEGORIES, Scenario, CEFRLevel, CEFR_LEVELS } from '@/constants/scenarios';
 import { useAuthStore } from '@/stores/authStore';
-import { useConversationStore } from '@/stores/conversationStore';
-import * as Haptics from 'expo-haptics';
+import { useScenarioStore } from '@/stores/scenarioStore';
+import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
-import { Bookmark, Globe, Mic, Wand2 } from 'lucide-react-native';
-import React, { useEffect, useRef } from 'react';
-import { Alert, Pressable, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { 
+    Search, Plus, Coffee, Briefcase, Compass, Bed, Mic, 
+    ChevronRight, Sparkles, X
+} from 'lucide-react-native';
+import React, { useState, useMemo } from 'react';
+import { 
+    FlatList, ScrollView, Text, TextInput, TouchableOpacity, 
+    View, Platform, KeyboardAvoidingView, Modal
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Logger } from '@/services/common/Logger';
+const IconMap: Record<string, any> = {
+    coffee: Coffee,
+    briefcase: Briefcase,
+    compass: Compass,
+    bed: Bed,
+    mic: Mic,
+};
 
-const TAG = 'HomeScreen';
+export default function RoleplayScreen() {
+    const { 
+        scenarios, searchQuery, setSearchQuery, 
+        selectedCategory, setSelectedCategory, selectScenario 
+    } = useScenarioStore();
+    const { user } = useAuthStore();
+    const router = useRouter();
+    const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
-export default function HomeScreen() {
-    const {
-        connectionState, error, isListening, isSpeaking, volumeLevel,
-        messages, showTranscript,
-        setListening, setVolumeLevel, setShowTranscript
-    } = useConversationStore();
-    const { session, user } = useAuthStore();
-    const scrollViewRef = useRef<ScrollView>(null);
-    const isInitialized = useRef(false);
-    const hasGreeted = useRef(false);
+    const filteredScenarios = useMemo(() => {
+        return scenarios.filter(s => {
+            const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                s.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesCategory = selectedCategory === 'All' || s.category === selectedCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [scenarios, searchQuery, selectedCategory]);
 
-    // Derive isConnected for backward compatibility
-    const isConnected = connectionState === 'connected';
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const initSession = async () => {
-            if (!session || isInitialized.current) return;
-            isInitialized.current = true;
-
-            try {
-                Logger.info(TAG, 'Initializing Gemini session...');
-
-
-                let token = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-
-                if (!token) {
-                    Logger.info(TAG, 'Fetching ephemeral token from Supabase...');
-                    const { data, error } = await supabase.functions.invoke('get-gemini-session');
-                    if (error || !data?.token) throw new Error(error?.message || "No token returned");
-                    token = data.token;
-                }
-
-                if (!isMounted) return;
-
-                const instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary.";
-                Logger.info(TAG, `Connecting WebSocket...`);
-                geminiWebSocket.connect(token, instruction);
-            } catch (err) {
-                if (isMounted) {
-                    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-                    Logger.error(TAG, 'Gemini session initialization error', err);
-                    Alert.alert("Error", errorMessage);
-                }
-            }
-        };
-
-        initSession();
-
-        return () => {
-            isMounted = false;
-            Logger.info(TAG, 'Cleaning up HomeScreen...');
-            geminiWebSocket.disconnect();
-            audioRecorder.stop();
-            audioPlayer.clearQueue();
-            isInitialized.current = false;
-        };
-    }, [session?.user?.id, session]);
-
-    // Get status text based on connection state
-    const getStatusText = (): string => {
-        if (isListening) return 'Live';
-        if (isSpeaking) return 'Speaking';
-        switch (connectionState) {
-            case 'idle': return 'Ready';
-            case 'connecting': return 'Connecting...';
-            case 'connected': return 'Connected';
-            case 'reconnecting': return 'Reconnecting...';
-            case 'error': return error || 'Error';
-        }
-    };
-
-    // Get dot color based on connection state
-    const getDotColor = (): string => {
-        if (isListening) return 'bg-blue-500';
-        switch (connectionState) {
-            case 'idle': return 'bg-gray-400';
-            case 'connecting':
-            case 'reconnecting': return 'bg-orange-500';
-            case 'connected': return 'bg-green-500';
-            case 'error': return 'bg-red-500';
-        }
-    };
-
-    useEffect(() => {
-        if (showTranscript) {
-            scrollViewRef.current?.scrollToEnd({ animated: true });
-        }
-    }, [messages, showTranscript]);
-
-    const toggleRecording = async () => {
-        Logger.info(TAG, `toggleRecording called: isListening=${isListening}, isConnected=${isConnected}`);
-
-        if (isListening) {
-            Logger.info(TAG, 'Stopping recording...');
-            await audioRecorder.stop();
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setListening(false);
-        } else {
-            if (!isConnected) {
-                Logger.warn(TAG, 'Mic interaction ignored: Sophie not connected');
-                Alert.alert("Wait a moment", "Sophie is still connecting...");
-                return;
-            }
-
-            // On first mic press, request Sophie's greeting
-            if (!hasGreeted.current) {
-                Logger.info(TAG, 'First mic press - requesting Sophie greeting');
-                hasGreeted.current = true;
-                geminiWebSocket.sendGreeting();
-                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                return; // Don't start recording yet - wait for Sophie to greet
-            }
-
-            try {
-                Logger.info(TAG, 'Starting recording...');
-                await audioRecorder.start({
-                    onAudioData: (base64) => {
-                        geminiWebSocket.sendAudioChunk(base64);
-                    },
-                    onVolumeChange: (rms) => {
-                        setVolumeLevel(rms);
-                    }
-                });
-                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                setListening(true);
-            } catch (error) {
-                Logger.error(TAG, 'Failed to start recording', error);
-                Alert.alert("Microphone Error", "Could not start recording.");
-            }
-        }
-    };
-
-    const handleTranslate = async (text: string) => {
-        Logger.info(TAG, 'Translating text...');
-        const translated = await translateText(text);
-        Alert.alert("Translation", translated);
-    };
-
-    const handleSaveVocabulary = async (text: string) => {
-        Logger.info(TAG, 'Saving vocabulary phrase...');
-        const success = await saveToVocabulary({ phrase: text });
-        if (success) {
-            Alert.alert("Success", "Added to your vocabulary!");
-        }
+    const handleStartScenario = (scenario: Scenario) => {
+        selectScenario(scenario);
+        router.push('/(tabs)/talk' as any);
     };
 
     return (
         <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-            {/* Header */}
             <View className="px-6 py-4 flex-row justify-between items-center">
                 <View>
-                    <Text className="text-2xl font-bold text-gray-900 tracking-tight">Sophie.ai</Text>
-                    <Text className="text-gray-400 text-sm font-medium">Native speaker in your pocket</Text>
+                    <Text className="text-gray-400 text-sm font-medium">Sophie AI</Text>
+                    <Text className="text-gray-400 text-xs font-medium">Native speaker in your pocket</Text>
                 </View>
                 <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
                     {user?.user_metadata?.avatar_url ? (
@@ -185,144 +63,213 @@ export default function HomeScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Main Content */}
-            <View className="flex-1 px-6">
-                {/* Status & Toggle Row */}
-                <View className="flex-row justify-between items-center mb-4 px-2">
-                    <View className="flex-row items-center gap-2">
-                        <View
-                            key={`status-dot-${connectionState}-${isListening}`}
-                            className={`w-2 h-2 rounded-full ${getDotColor()} ${isListening ? 'animate-pulse' : ''}`}
-                        />
-                        <Text className="text-gray-400 font-bold text-xs uppercase tracking-widest">
-                            {getStatusText()}
-                        </Text>
-                    </View>
-                    <View className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                        <Text className="text-gray-500 text-[10px] font-black uppercase tracking-tighter mr-2">Transcript</Text>
-                        <Switch
-                            value={showTranscript}
-                            onValueChange={(val) => {
-                                Logger.info(TAG, `Transcript Toggle: ${val}`);
-                                setShowTranscript(val);
-                            }}
-                            trackColor={{ false: '#E2E8F0', true: '#3B82F6' }}
-                            thumbColor="#fff"
-                            ios_backgroundColor="#E2E8F0"
-                            style={{ transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }] }}
-                        />
-                    </View>
-                </View>
+            <View className="px-6 mb-6">
+                <Text className="text-4xl font-bold text-gray-900 tracking-tight">Choose a Scenario</Text>
+                <Text className="text-gray-400 text-base font-medium mt-1">Practice real-life conversations</Text>
+            </View>
 
-                {/* The Main "Glass" Card */}
-                <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden h-[320px] justify-center items-center">
-                    <RainbowWave
-                        isListening={isListening}
-                        isSpeaking={isSpeaking}
-                        volumeLevel={volumeLevel}
+            {/* Search and Create Row */}
+            <View className="px-6 flex-row gap-3 mb-6">
+                <View className="flex-1 h-12 bg-gray-50 rounded-2xl flex-row items-center px-4 border border-gray-100">
+                    <Search size={18} color="#94a3b8" />
+                    <TextInput 
+                        placeholder="Search scenarios..."
+                        className="flex-1 ml-3 text-gray-900 font-medium"
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        placeholderTextColor="#94a3b8"
                     />
-
-                    {/* Overlay info */}
-                    <View className="absolute bottom-8 items-center">
-                        <Text className="text-gray-300 text-xs font-medium tracking-wide italic">
-                            {isListening ? "Sophie is listening..." : isSpeaking ? "Sophie is responding..." : "Tap the mic to talk"}
-                        </Text>
-                    </View>
                 </View>
+                <TouchableOpacity 
+                    onPress={() => setCreateModalVisible(true)}
+                    className="h-12 px-5 bg-blue-500 rounded-2xl flex-row items-center gap-2 shadow-lg shadow-blue-200"
+                >
+                    <Plus size={18} color="white" />
+                    <Text className="text-white font-bold">Create</Text>
+                </TouchableOpacity>
+            </View>
 
-                {/* Conversation View */}
-                <View className="flex-1 mt-6">
-                    <ScrollView
-                        ref={scrollViewRef}
-                        className="flex-1"
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingBottom: 20 }}
-                    >
-                        {messages.length === 0 ? (
-                            <View className="items-center mt-10">
-                                <View className="w-16 h-16 rounded-3xl bg-blue-50 items-center justify-center mb-4">
-                                    <Mic size={32} color="#3B82F6" opacity={0.3} />
-                                </View>
-                                <Text className="text-gray-300 font-medium text-center px-10 leading-5">
-                                    Conquer real conversation to speak like a native.
-                                </Text>
+            {/* Categories */}
+            <View className="mb-6">
+                <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 24, gap: 10 }}
+                >
+                    {CATEGORIES.map((cat) => (
+                        <TouchableOpacity
+                            key={cat}
+                            onPress={() => setSelectedCategory(cat)}
+                            className={`px-5 py-2.5 rounded-full border ${selectedCategory === cat ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-100'}`}
+                        >
+                            <Text className={`font-bold text-xs uppercase tracking-widest ${selectedCategory === cat ? 'text-white' : 'text-gray-400'}`}>
+                                {cat}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Scenarios List */}
+            <FlatList
+                data={filteredScenarios}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+                renderItem={({ item }) => {
+                    const Icon = IconMap[item.icon] || Sparkles;
+                    const isOrderingCoffee = item.id === 'ordering-coffee';
+                    
+                    return (
+                        <TouchableOpacity 
+                            onPress={() => handleStartScenario(item)}
+                            activeOpacity={0.7}
+                            className={`mb-4 p-5 rounded-[32px] flex-row items-center border ${isOrderingCoffee ? 'bg-amber-50 border-amber-100/50' : 'bg-white border-gray-100 shadow-sm shadow-gray-100'}`}
+                        >
+                            <View className={`w-12 h-12 rounded-2xl items-center justify-center ${isOrderingCoffee ? 'bg-amber-100' : 'bg-gray-50'}`}>
+                                <Icon size={24} color={isOrderingCoffee ? '#b45309' : '#64748b'} />
                             </View>
-                        ) : (
-                            messages.map((msg) => (
-                                <View key={msg.id} className="mb-8">
-                                    {msg.role === 'model' ? (
-                                        <View className="relative group">
-                                            <View className="absolute -inset-0.5 rounded-3xl opacity-10 blur-sm bg-blue-500" />
-                                            <View className="relative bg-white border border-gray-100 p-5 rounded-3xl shadow-sm">
-                                                <View className="flex-row items-center gap-2 mb-2">
-                                                    <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
-                                                        <Text className="text-[10px] font-black text-white">S</Text>
-                                                    </View>
-                                                    <View className="flex-row items-center gap-1.5">
-                                                        <Wand2 size={12} color="#3B82F6" />
-                                                        <Text className="text-blue-500 text-[10px] font-black uppercase tracking-widest">Natural Correction</Text>
-                                                    </View>
-                                                </View>
-                                                <Text className="text-gray-900 text-lg font-medium leading-relaxed">{msg.text}</Text>
-                                                <View className="flex-row mt-3 gap-4 border-t border-gray-50 pt-3">
-                                                    <TouchableOpacity className="flex-row items-center gap-1" onPress={() => handleTranslate(msg.text)}>
-                                                        <Globe size={12} color="#94a3b8" />
-                                                        <Text className="text-gray-400 text-xs font-bold">Translate</Text>
-                                                    </TouchableOpacity>
-                                                    <TouchableOpacity className="flex-row items-center gap-1" onPress={() => handleSaveVocabulary(msg.text)}>
-                                                        <Bookmark size={12} color="#94a3b8" />
-                                                        <Text className="text-gray-400 text-xs font-bold">Save</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    ) : (
-                                        <View className="flex-row justify-end mb-2">
-                                            <View className="bg-gray-100 px-5 py-3.5 rounded-3xl rounded-tr-sm max-w-[85%] border border-gray-200/50">
-                                                <Text className="text-gray-600 text-base font-medium">&quot;{msg.text}&quot;</Text>
-                                            </View>
-                                        </View>
-                                    )}
-                                </View>
-                            ))
-                        )}
-                    </ScrollView>
-                </View>
-            </View>
+                            <View className="flex-1 ml-4">
+                                <Text className="text-lg font-bold text-gray-900">{item.title}</Text>
+                                <Text className="text-gray-400 text-[10px] font-black uppercase tracking-tighter mb-1">
+                                    {item.category} • {item.level}
+                                </Text>
+                                <Text className="text-gray-500 text-xs leading-4" numberOfLines={2}>{item.description}</Text>
+                            </View>
+                            <ChevronRight size={20} color="#cbd5e1" />
+                        </TouchableOpacity>
+                    );
+                }}
+                ListEmptyComponent={
+                    <View className="items-center mt-10">
+                        <Text className="text-gray-400 font-medium italic">No scenarios found</Text>
+                    </View>
+                }
+            />
 
-            {/* Footer - Replicated Premium Mic Button */}
-            <View className="px-6 pb-12 pt-4 items-center">
-                <View className="relative">
-                    {/* Animated Outer Glow */}
-                    {isListening && (
-                        <View className="absolute -inset-4 rounded-full bg-red-500/20 opacity-50" />
-                    )}
-                    <Pressable
-                        onPressIn={() => {
-                            Logger.info(TAG, 'Mic Button Press In');
-                            if (!isListening) toggleRecording();
-                        }}
-                        onPressOut={() => {
-                            Logger.info(TAG, 'Mic Button Press Out');
-                            if (isListening) toggleRecording();
-                        }}
-                        className={`w-20 h-20 rounded-full items-center justify-center shadow-2xl ${isListening ? 'bg-red-500' : 'bg-red-600'}`}
-                        style={{
-                            shadowColor: '#ef4444',
-                            shadowOffset: { width: 0, height: 10 },
-                            shadowOpacity: 0.4,
-                            shadowRadius: 20,
-                            elevation: 10,
-                        }}
-                    >
-                        <Mic size={32} color="white" fill={isListening ? "white" : "none"} />
-                    </Pressable>
-                </View>
-                <Text className="mt-4 text-gray-400 font-bold text-[10px] uppercase tracking-[3px]">
-                    {isListening ? "Sophie is Listening" : connectionState === 'connected' ? "Hold to Speak" : connectionState === 'error' ? "Connection Error" : "Connecting..."}
-                </Text>
-            </View>
+            <CreateScenarioModal 
+                visible={isCreateModalVisible} 
+                onClose={() => setCreateModalVisible(false)} 
+            />
         </SafeAreaView>
     );
 }
 
+function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: () => void }) {
+    const { addCustomScenario, selectScenario } = useScenarioStore();
+    const router = useRouter();
+    const [sophieRole, setSophieRole] = useState('');
+    const [userRole, setUserRole] = useState('');
+    const [topic, setTopic] = useState('');
+    const [level, setLevel] = useState<CEFRLevel>('B1');
+    const [context, setContext] = useState('');
+
+    const handleCreate = () => {
+        if (!sophieRole || !topic) {
+            alert('Sophie\'s Role and Topic are required!');
+            return;
+        }
+
+        const newScenario: Scenario = {
+            id: Math.random().toString(36).substring(7),
+            title: topic,
+            category: 'Custom',
+            description: context || `Roleplay about ${topic}`,
+            sophieRole,
+            userRole: userRole || 'Learner',
+            topic,
+            level,
+            context: context || `A conversation about ${topic}`,
+            icon: 'mic'
+        };
+
+        addCustomScenario(newScenario);
+        onClose();
+        selectScenario(newScenario);
+        router.push('/(tabs)/talk' as any);
+    };
+
+    return (
+        <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1 bg-white"
+            >
+                <SafeAreaView className="flex-1">
+                    <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
+                        <Text className="text-xl font-bold text-gray-900">Create Scenario</Text>
+                        <TouchableOpacity onPress={onClose} className="w-10 h-10 items-center justify-center rounded-full bg-gray-50">
+                            <X size={20} color="#64748b" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
+                        <View className="mb-6">
+                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Sophie&apos;s Role *</Text>
+                            <TextInput 
+                                placeholder="e.g. A grumpy but helpful shopkeeper"
+                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                                value={sophieRole}
+                                onChangeText={setSophieRole}
+                            />
+                        </View>
+
+                        <View className="mb-6">
+                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Your Role</Text>
+                            <TextInput 
+                                placeholder="e.g. A customer in a hurry"
+                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                                value={userRole}
+                                onChangeText={setUserRole}
+                            />
+                        </View>
+
+                        <View className="mb-6">
+                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Topic *</Text>
+                            <TextInput 
+                                placeholder="e.g. Buying a vintage watch"
+                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                                value={topic}
+                                onChangeText={setTopic}
+                            />
+                        </View>
+
+                        <View className="mb-6">
+                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Level</Text>
+                            <View className="flex-row flex-wrap gap-2">
+                                {CEFR_LEVELS.map((l) => (
+                                    <TouchableOpacity 
+                                        key={l}
+                                        onPress={() => setLevel(l)}
+                                        className={`px-4 py-2 rounded-xl border ${level === l ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-100'}`}
+                                    >
+                                        <Text className={`font-bold text-xs ${level === l ? 'text-white' : 'text-gray-400'}`}>{l}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+
+                        <View className="mb-10">
+                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Context / Situation</Text>
+                            <TextInput 
+                                placeholder="Describe the setting..."
+                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium h-32 text-start align-top"
+                                multiline
+                                value={context}
+                                onChangeText={setContext}
+                            />
+                        </View>
+                    </ScrollView>
+
+                    <View className="px-6 py-8 border-t border-gray-50">
+                        <TouchableOpacity 
+                            onPress={handleCreate}
+                            className="w-full h-16 bg-gray-900 rounded-3xl items-center justify-center shadow-xl shadow-gray-200"
+                        >
+                            <Text className="text-white font-bold text-lg">Start Scenario</Text>
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+            </KeyboardAvoidingView>
+        </Modal>
+    );
+}
