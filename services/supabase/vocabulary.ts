@@ -7,6 +7,7 @@ export interface VocabularyItem {
     translation?: string;
     context?: string;
     created_at?: string;
+    language?: string;
 }
 
 export const saveToVocabulary = async (item: Omit<VocabularyItem, 'user_id'>) => {
@@ -25,6 +26,21 @@ export const saveToVocabulary = async (item: Omit<VocabularyItem, 'user_id'>) =>
         return true;
     } catch (error) {
         console.error('Error saving to vocabulary:', error);
+        return false;
+    }
+};
+
+export const deleteFromVocabulary = async (id: string) => {
+    try {
+        const { error } = await supabase
+            .from('vocabulary')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error deleting from vocabulary:', error);
         return false;
     }
 };
