@@ -1,4 +1,5 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { useConversationStore } from '../../stores/conversationStore';
 import { audioPlayer } from '../audio/player';
 import { GeminiRealtimeInput, GeminiServerResponse, GeminiSetupMessage } from './types';
 
@@ -20,9 +21,6 @@ class GeminiWebSocket {
     connect(apiKey: string, systemInstruction: string) {
         if (this.isConnected) return;
 
-        // Construct URL with API Key if simpler authentication is needed for prototype
-        // or use headers if supported by WebSocket client (standard WS API doesn't support custom headers easily in browser/RN without polyfills)
-        // With ReconnectingWebSocket, we pass the URL.
         const wsUrl = `${this.url}?key=${apiKey}`;
 
         this.ws = new ReconnectingWebSocket(wsUrl);
@@ -35,8 +33,6 @@ class GeminiWebSocket {
 
         this.ws.onmessage = (event: MessageEvent) => {
             try {
-                // event.data can be Blob or string. Need to handle based on type.
-                // Usually text JSON for Gemini Live API.
                 let data = event.data;
                 if (typeof data === 'string') {
                     const response = JSON.parse(data) as GeminiServerResponse;
@@ -62,11 +58,11 @@ class GeminiWebSocket {
             setup: {
                 model: "models/gemini-2.0-flash-exp",
                 generation_config: {
-                    response_modalities: ["AUDIO"],
+                    response_modalities: ["AUDIO"], // Some versions don't support TEXT+AUDIO yet, we might get text anyway or need to process audio
                     speech_config: {
                         voice_config: {
                             prebuilt_voice_config: {
-                                voice_name: "Aoede" // Example voice
+                                voice_name: "Aoede"
                             }
                         }
                     }
@@ -100,12 +96,18 @@ class GeminiWebSocket {
     }
 
     private handleMessage(response: GeminiServerResponse) {
+        const store = useConversationStore.getState();
+
         if (response.serverContent?.modelTurn) {
             const parts = response.serverContent.modelTurn.parts;
             for (const part of parts) {
                 if (part.inlineData && part.inlineData.mimeType.startsWith('audio/pcm')) {
-                    // Queue audio for playback
                     audioPlayer.queueAudio(part.inlineData.data);
+                }
+                if (part.text) {
+                    // Accumulate text or add as message
+                    // For prototype, we'll just add it
+                    store.addMessage('model', part.text);
                 }
             }
         }
