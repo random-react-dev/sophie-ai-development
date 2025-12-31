@@ -60,13 +60,11 @@ class AudioRecorder {
 
             // Backup Listener: ensuring we catch all data
             this.subscription = ExpoAudioStreamModule.addListener('onAudioStream', (event: AudioDataEvent) => {
-                // If direct callback didn't fire or we want to ensure arrival
                 if (!this.isRecording) return; 
                 
                 if (typeof event.data === 'string') {
-                    // Only use backup if direct callback seems to fail? 
-                    // Actually, most libraries call both if registered. 
-                    // We'll trust the direct one for now but keep listener for life cycle
+                    // Log only every 50th for extreme backup debug
+                    // if (this.chunkCount % 50 === 0) Logger.debug(TAG, 'Backup listener check OK');
                 }
             });
 

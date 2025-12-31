@@ -1,13 +1,13 @@
-import ReconnectingWebSocket from 'reconnecting-websocket';
 import { useConversationStore } from '../../stores/conversationStore';
 import { audioPlayer } from '../audio/player';
 import { GeminiRealtimeInput, GeminiServerResponse, GeminiSetupMessage, GeminiClientContent } from './types';
 import { Logger } from '../common/Logger';
 
 const TAG = 'GeminiWS';
+const MODEL = 'models/gemini-2.5-flash-native-audio-preview-09-2025';
 
 class GeminiWebSocket {
-    private ws: ReconnectingWebSocket | null = null;
+    private ws: WebSocket | null = null;
     private url = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent';
     private isConnected = false;
     private isSetupComplete = false;
@@ -29,66 +29,64 @@ class GeminiWebSocket {
         }
 
         const wsUrl = `${this.url}?key=${apiKey}`;
-        Logger.info(TAG, 'Connecting to Gemini Live API...');
+        Logger.info(TAG, `Connecting to Gemini Live API with model ${MODEL}...`);
 
-        this.ws = new ReconnectingWebSocket(wsUrl, [], {
-            maxRetries: 5,
-            connectionTimeout: 5000,
-            debug: false,
-        });
+        try {
+            this.ws = new WebSocket(wsUrl);
 
-        this.ws.onopen = () => {
-            Logger.info(TAG, 'WebSocket Connected successfully');
-            this.isConnected = true;
-            this.isSetupComplete = false;
-            this.sendSetupMessage(systemInstruction);
-        };
+            this.ws.onopen = () => {
+                Logger.info(TAG, 'WebSocket Connected successfully');
+                this.isConnected = true;
+                this.isSetupComplete = false;
+                this.sendSetupMessage(systemInstruction);
+            };
 
-        this.ws.onmessage = (event: MessageEvent) => {
-            try {
-                let data = event.data;
-                if (typeof data === 'string') {
-                    const response = JSON.parse(data) as GeminiServerResponse;
-                    Logger.debug(TAG, `Received message: ${Object.keys(response).join(', ')}`);
-                    this.handleMessage(response);
+            this.ws.onmessage = async (event: MessageEvent) => {
+                try {
+                    let data = event.data;
+                    if (data instanceof Blob) {
+                        data = await data.text();
+                    }
+                    if (typeof data === 'string') {
+                        const response = JSON.parse(data) as GeminiServerResponse;
+                        Logger.debug(TAG, `Server Message Keys: ${Object.keys(response).join(', ')}`);
+                        this.handleMessage(response);
+                    }
+                } catch (error) {
+                    Logger.error(TAG, 'Error parsing WebSocket message', error);
                 }
-            } catch (error) {
-                Logger.error(TAG, 'Error parsing WebSocket message', error);
-            }
-        };
+            };
 
-        this.ws.onclose = (event) => {
-            if (event.code !== 1000) {
-                Logger.warn(TAG, `WebSocket Closed Abnormally. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
-            } else {
-                Logger.info(TAG, 'WebSocket Closed Gracefully');
-            }
-            this.isConnected = false;
-            this.isSetupComplete = false;
-            const store = useConversationStore.getState();
-            store.setIsConnected(false);
-        };
+            this.ws.onclose = (event) => {
+                if (event.code === 1000) {
+                    Logger.info(TAG, 'WebSocket Closed Gracefully (1000)');
+                } else {
+                    Logger.warn(TAG, `WebSocket Closed Abnormally. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
+                }
+                this.isConnected = false;
+                this.isSetupComplete = false;
+                this.ws = null;
+                const store = useConversationStore.getState();
+                store.setIsConnected(false);
+            };
 
-        this.ws.onerror = (error: any) => {
-            Logger.error(TAG, 'WebSocket Error', error.message || error || 'Unknown WebSocket error');
-        };
+            this.ws.onerror = (error: any) => {
+                Logger.error(TAG, 'WebSocket Error', error.message || error || 'Unknown WebSocket error');
+            };
+        } catch (error) {
+            Logger.error(TAG, 'Failed to initialize WebSocket', error);
+        }
     }
 
     sendSetupMessage(instruction: string) {
         Logger.info(TAG, 'Sending setup message...');
         const defaultInstruction = "You are Sophie, a friendly AI language tutor. You help users master real-world conversation. When a user makes a mistake, provide a 'Natural Correction'—a more native way to say it—and explain the nuance briefly. Keep your spoken responses short and encouraging. Always respond in the target language unless an English explanation is needed for clarity.";
+        
         const setupMsg: GeminiSetupMessage = {
             setup: {
-                model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
+                model: MODEL,
                 generationConfig: {
-                    responseModalities: ["AUDIO"],
-                    speechConfig: {
-                        voiceConfig: {
-                            prebuiltVoiceConfig: {
-                                voiceName: "Aoede"
-                            }
-                        }
-                    }
+                    responseModalities: ["AUDIO"]
                 },
                 systemInstruction: {
                     parts: [{ text: instruction || defaultInstruction }]
@@ -101,7 +99,7 @@ class GeminiWebSocket {
     }
 
     sendAudioChunk(base64Data: string) {
-        if (!this.isConnected) {
+        if (!this.isConnected || !this.ws) {
             Logger.warn(TAG, 'Cannot send audio: WebSocket not connected');
             return;
         }
@@ -111,7 +109,6 @@ class GeminiWebSocket {
             return;
         }
 
-        Logger.debug(TAG, `Sending audio chunk of size ${base64Data.length}`);
         const msg: GeminiRealtimeInput = {
             realtimeInput: {
                 audio: {
@@ -135,11 +132,11 @@ class GeminiWebSocket {
         const store = useConversationStore.getState();
 
         if (response.setupComplete) {
-            Logger.info(TAG, 'Handshake complete: Sophie is ready to listen');
+            Logger.info(TAG, 'Handshake complete: setupComplete received');
             this.isSetupComplete = true;
             store.setIsConnected(true);
 
-            // GREETING FLOW: Trigger initial AI response
+            // Trigger AI response to greet the user
             const greetingMsg: GeminiClientContent = {
                 clientContent: {
                     turns: [{
@@ -172,17 +169,15 @@ class GeminiWebSocket {
             }
 
             if (inputTranscription?.text) {
-                Logger.info(TAG, `User transcription: ${inputTranscription.text}`);
-                // Optional: Update UI with real-time user transcription
+                Logger.info(TAG, `User transcribed: ${inputTranscription.text}`);
             }
 
             if (outputTranscription?.text) {
-                Logger.info(TAG, `AI transcription: ${outputTranscription.text}`);
-                // Already added via part.text usually, but good for real-time updates
+                Logger.info(TAG, `Model transcribed: ${outputTranscription.text}`);
             }
 
             if (response.serverContent.turnComplete) {
-                Logger.info(TAG, 'Turn complete received');
+                Logger.debug(TAG, 'Turn complete');
             }
 
             if (response.serverContent.interrupted) {
@@ -196,7 +191,11 @@ class GeminiWebSocket {
     disconnect() {
         if (this.ws) {
             Logger.info(TAG, 'Disconnecting WebSocket...');
-            this.ws.close();
+            try {
+                this.ws.close(1000, 'User disconnected');
+            } catch (e) {
+                Logger.error(TAG, 'Error closing WebSocket', e);
+            }
             this.ws = null;
             this.isConnected = false;
             this.isSetupComplete = false;

@@ -48,9 +48,9 @@ export default function HomeScreen() {
                 }
 
                 const instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary.";
-                Logger.info(TAG, `Connecting WebSocket with instruction: ${instruction.substring(0, 30)}...`);
+                Logger.info(TAG, `Connecting WebSocket...`);
                 geminiWebSocket.connect(token, instruction);
-                setStatus("Handshaking...");
+                setStatus("Connecting...");
             } catch (err: any) {
                 setStatus("Failed to connect");
                 Logger.error(TAG, 'Gemini session initialization error', err);
@@ -68,6 +68,12 @@ export default function HomeScreen() {
             isInitialized.current = false;
         };
     }, [session]);
+
+    useEffect(() => {
+        if (isConnected) {
+            setStatus("Connected");
+        }
+    }, [isConnected]);
 
     useEffect(() => {
         if (showTranscript) {
