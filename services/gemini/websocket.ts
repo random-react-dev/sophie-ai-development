@@ -7,7 +7,7 @@ import {
     GeminiError,
     GeminiErrorType,
     GeminiRealtimeInput,
-    GeminiServerResponse,
+    GeminiServerResponse
 } from './types';
 
 const TAG = 'GeminiWS';
@@ -114,13 +114,21 @@ class GeminiWebSocket {
 
             ws.onmessage = async (event: MessageEvent) => {
                 if (this.ws !== ws) return;
+
                 try {
                     let data = event.data;
+
+                    // Handle different data types React Native might send
                     if (data instanceof Blob) {
                         data = await data.text();
+                    } else if (data instanceof ArrayBuffer) {
+                        const decoder = new TextDecoder('utf-8');
+                        data = decoder.decode(data);
+                    } else if (typeof data === 'object' && data !== null) {
+                        data = JSON.stringify(data);
                     }
+
                     if (typeof data === 'string') {
-                        Logger.debug(TAG, `Raw Message: ${data.substring(0, 500)}`);
                         const response = JSON.parse(data) as GeminiServerResponse;
                         this.handleMessage(response);
                     }
@@ -190,26 +198,28 @@ class GeminiWebSocket {
         Logger.info(TAG, 'Sending setup message...');
         const defaultInstruction = "You are Sophie, a friendly AI language tutor. You help users master real-world conversation. When a user makes a mistake, provide a 'Natural Correction'—a more native way to say it—and explain the nuance briefly. Keep your spoken responses short and encouraging. Always respond in the target language unless an English explanation is needed for clarity.";
 
+        // IMPORTANT: Gemini API expects camelCase in setup message (not snake_case)
         const setupMsg = {
             setup: {
                 model: MODEL,
-                generation_config: {
-                    response_modalities: ["AUDIO"],
-                    speech_config: {
-                        voice_config: {
-                            prebuilt_voice_config: {
-                                voice_name: "Aoede"
+                generationConfig: {
+                    responseModalities: ['AUDIO'],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: 'Aoede'
                             }
                         }
                     }
                 },
-                system_instruction: {
+                systemInstruction: {
                     parts: [{ text: instruction || defaultInstruction }]
                 },
-                input_audio_transcription: {},
-                output_audio_transcription: {}
+                inputAudioTranscription: {},
+                outputAudioTranscription: {}
             }
         };
+        Logger.debug(TAG, `Setup message: ${JSON.stringify(setupMsg)}`);
         this.send(JSON.stringify(setupMsg));
     }
 
@@ -235,6 +245,30 @@ class GeminiWebSocket {
         this.send(JSON.stringify(msg));
     }
 
+    /**
+     * Send a greeting request to Sophie. Called from HomeScreen on first mic press.
+     */
+    sendGreeting() {
+        if (!this.isSetupComplete) {
+            Logger.warn(TAG, 'Cannot send greeting: Setup not complete');
+            return;
+        }
+
+        Logger.info(TAG, 'Requesting Sophie greeting...');
+        const greetingMsg: GeminiClientContent = {
+            clientContent: {
+                turns: [{
+                    role: 'user',
+                    parts: [{
+                        text: "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences."
+                    }]
+                }],
+                turnComplete: true
+            }
+        };
+        this.send(JSON.stringify(greetingMsg));
+    }
+
     private send(data: string) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(data);
@@ -246,44 +280,39 @@ class GeminiWebSocket {
     private handleMessage(response: GeminiServerResponse) {
         const store = useConversationStore.getState();
 
-        if (response.setup_complete) {
-            Logger.info(TAG, 'Handshake complete: setup_complete received');
+        // Support both camelCase and snake_case (API can return either)
+        const isSetupCompleteReceived = !!(response.setup_complete || response.setupComplete);
+
+        if (isSetupCompleteReceived) {
+            Logger.info(TAG, 'Setup complete - ready for conversation');
             this.isSetupComplete = true;
             this.setConnectionState('connected');
-
-            // Trigger AI response to greet the user
-            const greetingMsg: GeminiClientContent = {
-                clientContent: {
-                    turns: [{
-                        role: 'user',
-                        parts: [{
-                            text: "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences."
-                        }]
-                    }],
-                    turnComplete: true
-                }
-            };
-            Logger.info(TAG, 'Sending initial greeting trigger...');
-            this.send(JSON.stringify(greetingMsg));
+            // No auto-greeting - wait for user to press mic first
         }
 
-        const serverContent = response.server_content;
+        // Support both camelCase and snake_case
+        const serverContent = response.server_content || response.serverContent;
 
         if (serverContent) {
-            const { model_turn, input_transcription, output_transcription, turn_complete, interrupted } = serverContent;
+            const modelTurn = serverContent.model_turn || serverContent.modelTurn;
+            const inputTranscription = serverContent.input_transcription || serverContent.inputTranscription;
+            const outputTranscription = serverContent.output_transcription || serverContent.outputTranscription;
+            const isTurnComplete = serverContent.turn_complete || serverContent.turnComplete;
+            const interrupted = serverContent.interrupted;
 
             // Handle audio from model
-            if (model_turn?.parts) {
-                for (const part of model_turn.parts) {
-                    if (part.inline_data) {
-                        const mimeType = part.inline_data.mime_type;
+            if (modelTurn?.parts) {
+                for (const part of modelTurn.parts) {
+                    const inlineData = part.inline_data || part.inlineData;
+                    if (inlineData) {
+                        const mimeType = inlineData.mime_type || inlineData.mimeType;
                         if (mimeType?.startsWith('audio/pcm')) {
                             Logger.debug(TAG, 'Received audio chunk from model');
-                            audioPlayer.queueAudio(part.inline_data.data);
+                            audioPlayer.queueAudio(inlineData.data);
                         }
                     }
                     // Only add text if transcription is not enabled or not received
-                    if (part.text && !output_transcription) {
+                    if (part.text && !outputTranscription) {
                         Logger.info(TAG, `Received text from model: ${part.text.substring(0, 50)}...`);
                         store.addMessage('model', part.text);
                     }
@@ -291,8 +320,8 @@ class GeminiWebSocket {
             }
 
             // Handle user's speech transcription
-            if (input_transcription?.text) {
-                const text = input_transcription.text.trim();
+            if (inputTranscription?.text) {
+                const text = inputTranscription.text.trim();
                 if (text) {
                     Logger.info(TAG, `User transcribed: ${text}`);
                     store.addMessage('user', text);
@@ -300,16 +329,23 @@ class GeminiWebSocket {
             }
 
             // Handle model's speech transcription
-            if (output_transcription?.text) {
-                const text = output_transcription.text.trim();
+            if (outputTranscription?.text) {
+                const text = outputTranscription.text.trim();
                 if (text) {
                     Logger.info(TAG, `Model transcribed: ${text}`);
                     store.addMessage('model', text);
                 }
             }
 
-            if (turn_complete) {
+            if (isTurnComplete) {
                 Logger.debug(TAG, 'Turn complete');
+            }
+
+            // Handle generation complete - trigger audio playback
+            const isGenerationComplete = serverContent.generation_complete || serverContent.generationComplete;
+            if (isGenerationComplete) {
+                Logger.debug(TAG, 'Generation complete - triggering audio playback');
+                audioPlayer.onGenerationComplete();
             }
 
             // Handle interruption (user spoke while model was speaking)

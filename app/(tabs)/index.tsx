@@ -27,6 +27,7 @@ export default function HomeScreen() {
     const { session, user } = useAuthStore();
     const scrollViewRef = useRef<ScrollView>(null);
     const isInitialized = useRef(false);
+    const hasGreeted = useRef(false);
 
     // Derive isConnected for backward compatibility
     const isConnected = connectionState === 'connected';
@@ -112,7 +113,7 @@ export default function HomeScreen() {
         Logger.info(TAG, `toggleRecording called: isListening=${isListening}, isConnected=${isConnected}`);
 
         if (isListening) {
-            Logger.info(TAG, 'Stopping recording interaction...');
+            Logger.info(TAG, 'Stopping recording...');
             await audioRecorder.stop();
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setListening(false);
@@ -123,8 +124,17 @@ export default function HomeScreen() {
                 return;
             }
 
+            // On first mic press, request Sophie's greeting
+            if (!hasGreeted.current) {
+                Logger.info(TAG, 'First mic press - requesting Sophie greeting');
+                hasGreeted.current = true;
+                geminiWebSocket.sendGreeting();
+                await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                return; // Don't start recording yet - wait for Sophie to greet
+            }
+
             try {
-                Logger.info(TAG, 'Starting recording interaction...');
+                Logger.info(TAG, 'Starting recording...');
                 await audioRecorder.start({
                     onAudioData: (base64) => {
                         geminiWebSocket.sendAudioChunk(base64);
@@ -136,7 +146,7 @@ export default function HomeScreen() {
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setListening(true);
             } catch (error) {
-                Logger.error(TAG, 'Failed to start recording session', error);
+                Logger.error(TAG, 'Failed to start recording', error);
                 Alert.alert("Microphone Error", "Could not start recording.");
             }
         }
