@@ -23,6 +23,7 @@ interface ConversationState {
     setShowTranscript: (show: boolean) => void;
     addMessage: (role: 'user' | 'model', text: string) => void;
     clearMessages: () => void;
+    handleInterruption: () => void;
 }
 
 export const useConversationStore = create<ConversationState>((set) => ({
@@ -54,4 +55,5 @@ export const useConversationStore = create<ConversationState>((set) => ({
         }]
     })),
     clearMessages: () => set({ messages: [] }),
+    handleInterruption: () => set({ isSpeaking: false }),
 }));

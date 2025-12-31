@@ -1,21 +1,10 @@
-// Note: for raw PCM 24kHz playback, we need a specialized approach.
+// Note: for raw PCM 24kHz playback (Gemini 2.5), we need a specialized approach.
 // expo-audio/av usually plays files.
-// The plan mentions `expo-audio-studio` or custom native module might be needed,
-// OR `react-native-audio-api` for buffer playback.
-// For this MVP prototype, we will attempt to use a basic queue approach or
-// assume we are using a library that supports it.
-// Given strict "Native Rule" and "Low Latency", we might need to rely on 
-// `expo-audio-studio` if it supports playback, or `react-native-audio-api` if installed.
-// We installed `expo-audio` which is the new Expo module.
-
-// Let's implement a structure that manages a queue of base64 PCM chunks.
-
-// We will use a placeholder implementation that assumes we can feed chunks to a player.
-// In a real production app, this would likely use a dedicated PCM player native module.
-
+// Gemini 2.5 output is natively 24kHz, 16-bit PCM.
 class AudioPlayer {
     private isPlaying = false;
     private queue: string[] = []; // Queue of base64 chunks
+    private sampleRate = 24000; // Gemini 2.5 standard output rate
 
     private static instance: AudioPlayer;
     private constructor() { }

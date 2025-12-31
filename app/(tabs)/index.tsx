@@ -23,10 +23,12 @@ export default function HomeScreen() {
     const { session, user } = useAuthStore();
     const [status, setStatus] = useState("Initializing...");
     const scrollViewRef = useRef<ScrollView>(null);
+    const isInitialized = useRef(false);
 
     useEffect(() => {
         const initSession = async () => {
-            if (!session) return;
+            if (!session || isInitialized.current) return;
+            isInitialized.current = true;
 
             try {
                 setStatus("Connecting...");
@@ -56,6 +58,7 @@ export default function HomeScreen() {
             geminiWebSocket.disconnect();
             audioRecorder.stop();
             audioPlayer.clearQueue();
+            isInitialized.current = false;
         };
     }, [session, setIsConnected]);
 

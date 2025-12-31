@@ -5,7 +5,7 @@ import { GeminiRealtimeInput, GeminiServerResponse, GeminiSetupMessage } from '.
 
 class GeminiWebSocket {
     private ws: ReconnectingWebSocket | null = null;
-    private url = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
+    private url = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent';
     private isConnected = false;
 
     // Singleton
@@ -19,11 +19,14 @@ class GeminiWebSocket {
     }
 
     connect(apiKey: string, systemInstruction: string) {
-        if (this.isConnected) return;
+        if (this.ws || this.isConnected) return;
 
         const wsUrl = `${this.url}?key=${apiKey}`;
 
-        this.ws = new ReconnectingWebSocket(wsUrl);
+        this.ws = new ReconnectingWebSocket(wsUrl, [], {
+            maxRetries: 5,
+            connectionTimeout: 5000,
+        });
 
         this.ws.onopen = () => {
             console.log('Gemini WebSocket Connected');
@@ -43,22 +46,22 @@ class GeminiWebSocket {
             }
         };
 
-        this.ws.onclose = () => {
-            console.log('Gemini WebSocket Disconnected');
+        this.ws.onclose = (event) => {
+            console.log(`Gemini WebSocket Disconnected. Code: ${event.code}, Reason: ${event.reason}`);
             this.isConnected = false;
         };
 
         this.ws.onerror = (error: any) => {
-            console.error('Gemini WebSocket Error:', error);
+            console.error('Gemini WebSocket Error:', error.message || error);
         };
     }
 
     sendSetupMessage(instruction: string) {
         const setupMsg: GeminiSetupMessage = {
             setup: {
-                model: "models/gemini-2.0-flash-exp",
+                model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
                 generation_config: {
-                    response_modalities: ["AUDIO"], // Some versions don't support TEXT+AUDIO yet, we might get text anyway or need to process audio
+                    response_modalities: ["AUDIO"],
                     speech_config: {
                         voice_config: {
                             prebuilt_voice_config: {
@@ -102,6 +105,7 @@ class GeminiWebSocket {
             const parts = response.serverContent.modelTurn.parts;
             for (const part of parts) {
                 if (part.inlineData && part.inlineData.mimeType.startsWith('audio/pcm')) {
+                    store.setSpeaking(true);
                     audioPlayer.queueAudio(part.inlineData.data);
                 }
                 if (part.text) {
@@ -112,8 +116,13 @@ class GeminiWebSocket {
             }
         }
 
+        if (response.serverContent?.turnComplete) {
+            store.setSpeaking(false);
+        }
+
         if (response.serverContent?.interrupted) {
             audioPlayer.clearQueue();
+            store.handleInterruption();
             console.log("Model interrupted");
         }
     }
