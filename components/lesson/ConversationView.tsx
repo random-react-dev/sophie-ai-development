@@ -11,9 +11,12 @@ import { Alert, Text, View } from 'react-native';
 import { AudioVisualizer } from './AudioVisualizer';
 
 export function ConversationView() {
-    const { isConnected, isListening, isSpeaking, volumeLevel, disconnect, setListening, setVolumeLevel, setIsConnected } = useConversationStore();
+    const { connectionState, isListening, isSpeaking, volumeLevel, setListening, setVolumeLevel, reset } = useConversationStore();
     const { session } = useAuthStore();
     const [status, setStatus] = useState("Initializing...");
+
+    // Derive isConnected for backward compatibility
+    const isConnected = connectionState === 'connected';
 
     // Initialize Session and WebSocket
     useEffect(() => {
@@ -31,24 +34,24 @@ export function ConversationView() {
                 const instruction = "You are a helpful Spanish tutor. Use simple vocabulary. Correct my mistakes gently.";
 
                 geminiWebSocket.connect(data.token, instruction);
-                setIsConnected(true);
                 setStatus("Connected");
 
-            } catch (err: any) {
+            } catch (err) {
                 setStatus("Connection Failed");
-                Alert.alert("Error", err.message || "Unknown error");
+                const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+                Alert.alert("Error", errorMessage);
             }
         };
 
         initSession();
 
         return () => {
-            disconnect();
             geminiWebSocket.disconnect();
             audioRecorder.stop();
             audioPlayer.clearQueue();
+            reset();
         };
-    }, [session, disconnect, setIsConnected]);
+    }, [session, reset]);
 
     const toggleRecording = async () => {
         if (isListening) {
@@ -60,25 +63,25 @@ export function ConversationView() {
                 await audioRecorder.start({
                     onAudioData: (base64) => {
                         geminiWebSocket.sendAudioChunk(base64);
-                        // VAD Logic: If volume > threshold, interrupt playback
-                        // This is rudimentary; usually triggered by volume level data
                     },
                     onVolumeChange: (rms) => {
                         setVolumeLevel(rms);
-                        // Simple VAD Threshold (Placeholder values, tune in production)
-                        if (rms > 0.05 && isSpeaking) {
-                            // User interrupted!
-                            // audioPlayer.clearQueue(); // This might trigger too easily, need debounce
-                        }
                     }
                 });
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setListening(true);
-            } catch (err: any) {
+            } catch (err) {
                 console.error("Recording error:", err);
                 Alert.alert("Microphone Error", "Could not start recording.");
             }
         }
+    };
+
+    const handleEndLesson = () => {
+        geminiWebSocket.disconnect();
+        audioRecorder.stop();
+        audioPlayer.clearQueue();
+        reset();
     };
 
     return (
@@ -100,9 +103,10 @@ export function ConversationView() {
                 <Button
                     title="End Lesson"
                     variant="secondary"
-                    onPress={disconnect}
+                    onPress={handleEndLesson}
                 />
             </View>
         </View>
     );
 }
+

@@ -1,8 +1,8 @@
+import { decode } from 'base64-arraybuffer';
 import { createAudioPlayer, AudioPlayer as ExpoAudioPlayer } from 'expo-audio';
 import { useConversationStore } from "../../stores/conversationStore";
 import { Logger } from '../common/Logger';
 import { addWavHeader } from './wavHelper';
-import { decode } from 'base64-arraybuffer';
 
 const TAG = 'AudioPlayer';
 
@@ -53,19 +53,19 @@ class AudioPlayer {
                 // Create and play
                 const player = createAudioPlayer(dataUri);
                 this.currentPlayer = player;
-                
+
                 player.play();
 
                 // Wait for the chunk to finish
                 // PCM 24kHz 16-bit mono = 48000 bytes/sec
                 const pcmBuffer = decode(pcmBase64);
                 const durationMs = (pcmBuffer.byteLength / (this.sampleRate * 2)) * 1000;
-                
+
                 await new Promise(r => setTimeout(r, durationMs));
 
                 // Cleanup player
                 this.currentPlayer = null;
-                
+
                 this.playNext();
             } catch (error) {
                 Logger.error(TAG, 'Error playing audio chunk', error);
@@ -79,14 +79,13 @@ class AudioPlayer {
         this.queue = [];
         this.isPlaying = false;
         if (this.currentPlayer) {
-            // Attempt to stop current playback
+            // Attempt to stop current playback with type-safe check
             try {
-                // @ts-ignore - check if stop exists in this version
-                if (typeof this.currentPlayer.pause === 'function') {
-                    this.currentPlayer.pause();
+                if ('pause' in this.currentPlayer) {
+                    (this.currentPlayer as { pause: () => void }).pause();
                 }
             } catch (e) {
-                // Ignore
+                // Ignore pause errors
             }
             this.currentPlayer = null;
         }

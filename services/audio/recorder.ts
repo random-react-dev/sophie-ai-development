@@ -1,4 +1,4 @@
-import { ExpoAudioStreamModule, AudioDataEvent } from '@siteed/expo-audio-studio';
+import { AudioDataEvent, ExpoAudioStreamModule } from '@siteed/expo-audio-studio';
 import { Logger } from '../common/Logger';
 
 const TAG = 'AudioRecorder';
@@ -11,7 +11,7 @@ export interface RecorderOptions {
 class AudioRecorder {
     private isRecording = false;
     private options: RecorderOptions | null = null;
-    private subscription: any = null;
+    private subscription: { remove: () => void } | null = null;
     private chunkCount = 0;
 
     // Singleton pattern
@@ -44,7 +44,7 @@ class AudioRecorder {
 
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
-            
+
             // Start recording with base parameters and direct callback
             await ExpoAudioStreamModule.startRecording({
                 sampleRate: 16000,
@@ -60,8 +60,8 @@ class AudioRecorder {
 
             // Backup Listener: ensuring we catch all data
             this.subscription = ExpoAudioStreamModule.addListener('onAudioStream', (event: AudioDataEvent) => {
-                if (!this.isRecording) return; 
-                
+                if (!this.isRecording) return;
+
                 if (typeof event.data === 'string') {
                     // Log only every 50th for extreme backup debug
                     // if (this.chunkCount % 50 === 0) Logger.debug(TAG, 'Backup listener check OK');
@@ -85,7 +85,7 @@ class AudioRecorder {
 
         try {
             Logger.info(TAG, 'Stopping recording...');
-            
+
             if (this.subscription) {
                 this.subscription.remove();
                 this.subscription = null;

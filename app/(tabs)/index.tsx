@@ -1,17 +1,17 @@
 import { RainbowWave } from '@/components/lesson/RainbowWave';
 import { audioPlayer } from '@/services/audio/player';
 import { audioRecorder } from '@/services/audio/recorder';
-import { geminiWebSocket } from '@/services/gemini/websocket';
 import { translateText } from '@/services/gemini/translate';
-import { saveToVocabulary } from '@/services/supabase/vocabulary';
+import { geminiWebSocket } from '@/services/gemini/websocket';
 import { supabase } from '@/services/supabase/client';
+import { saveToVocabulary } from '@/services/supabase/vocabulary';
 import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
-import { Mic, Wand2, Globe, Bookmark } from 'lucide-react-native';
-import React, { useEffect, useState, useRef } from 'react';
-import { Alert, ScrollView, Switch, Text, TouchableOpacity, View, Pressable } from 'react-native';
+import { Bookmark, Globe, Mic, Wand2 } from 'lucide-react-native';
+import React, { useEffect, useRef } from 'react';
+import { Alert, Pressable, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Logger } from '@/services/common/Logger';
@@ -19,15 +19,17 @@ import { Logger } from '@/services/common/Logger';
 const TAG = 'HomeScreen';
 
 export default function HomeScreen() {
-    const { 
-        isConnected, isListening, isSpeaking, volumeLevel, 
-        messages, showTranscript, 
-        setListening, setVolumeLevel, setShowTranscript 
+    const {
+        connectionState, error, isListening, isSpeaking, volumeLevel,
+        messages, showTranscript,
+        setListening, setVolumeLevel, setShowTranscript
     } = useConversationStore();
     const { session, user } = useAuthStore();
-    const [status, setStatus] = useState("Initializing...");
     const scrollViewRef = useRef<ScrollView>(null);
     const isInitialized = useRef(false);
+
+    // Derive isConnected for backward compatibility
+    const isConnected = connectionState === 'connected';
 
     useEffect(() => {
         let isMounted = true;
@@ -38,10 +40,10 @@ export default function HomeScreen() {
 
             try {
                 Logger.info(TAG, 'Initializing Gemini session...');
-                if (isMounted) setStatus("Connecting...");
-                
+
+
                 let token = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-                
+
                 if (!token) {
                     Logger.info(TAG, 'Fetching ephemeral token from Supabase...');
                     const { data, error } = await supabase.functions.invoke('get-gemini-session');
@@ -54,11 +56,11 @@ export default function HomeScreen() {
                 const instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary.";
                 Logger.info(TAG, `Connecting WebSocket...`);
                 geminiWebSocket.connect(token, instruction);
-            } catch (err: any) {
+            } catch (err) {
                 if (isMounted) {
-                    setStatus("Failed to connect");
+                    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
                     Logger.error(TAG, 'Gemini session initialization error', err);
-                    Alert.alert("Error", err.message || "Unknown error");
+                    Alert.alert("Error", errorMessage);
                 }
             }
         };
@@ -75,11 +77,30 @@ export default function HomeScreen() {
         };
     }, [session?.user?.id, session]);
 
-    useEffect(() => {
-        if (isConnected) {
-            setStatus("Connected");
+    // Get status text based on connection state
+    const getStatusText = (): string => {
+        if (isListening) return 'Live';
+        if (isSpeaking) return 'Speaking';
+        switch (connectionState) {
+            case 'idle': return 'Ready';
+            case 'connecting': return 'Connecting...';
+            case 'connected': return 'Connected';
+            case 'reconnecting': return 'Reconnecting...';
+            case 'error': return error || 'Error';
         }
-    }, [isConnected]);
+    };
+
+    // Get dot color based on connection state
+    const getDotColor = (): string => {
+        if (isListening) return 'bg-blue-500';
+        switch (connectionState) {
+            case 'idle': return 'bg-gray-400';
+            case 'connecting':
+            case 'reconnecting': return 'bg-orange-500';
+            case 'connected': return 'bg-green-500';
+            case 'error': return 'bg-red-500';
+        }
+    };
 
     useEffect(() => {
         if (showTranscript) {
@@ -89,7 +110,7 @@ export default function HomeScreen() {
 
     const toggleRecording = async () => {
         Logger.info(TAG, `toggleRecording called: isListening=${isListening}, isConnected=${isConnected}`);
-        
+
         if (isListening) {
             Logger.info(TAG, 'Stopping recording interaction...');
             await audioRecorder.stop();
@@ -159,18 +180,18 @@ export default function HomeScreen() {
                 {/* Status & Toggle Row */}
                 <View className="flex-row justify-between items-center mb-4 px-2">
                     <View className="flex-row items-center gap-2">
-                        <View 
-                            key={`status-dot-${isConnected}-${isListening}`}
-                            className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-orange-500'} ${isListening ? 'animate-pulse' : ''}`} 
+                        <View
+                            key={`status-dot-${connectionState}-${isListening}`}
+                            className={`w-2 h-2 rounded-full ${getDotColor()} ${isListening ? 'animate-pulse' : ''}`}
                         />
                         <Text className="text-gray-400 font-bold text-xs uppercase tracking-widest">
-                            {isListening ? "Live" : isSpeaking ? "Speaking" : isConnected ? "Connected" : status}
+                            {getStatusText()}
                         </Text>
                     </View>
                     <View className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
                         <Text className="text-gray-500 text-[10px] font-black uppercase tracking-tighter mr-2">Transcript</Text>
-                        <Switch 
-                            value={showTranscript} 
+                        <Switch
+                            value={showTranscript}
                             onValueChange={(val) => {
                                 Logger.info(TAG, `Transcript Toggle: ${val}`);
                                 setShowTranscript(val);
@@ -185,12 +206,12 @@ export default function HomeScreen() {
 
                 {/* The Main "Glass" Card */}
                 <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden h-[320px] justify-center items-center">
-                    <RainbowWave 
-                        isListening={isListening} 
-                        isSpeaking={isSpeaking} 
-                        volumeLevel={volumeLevel} 
+                    <RainbowWave
+                        isListening={isListening}
+                        isSpeaking={isSpeaking}
+                        volumeLevel={volumeLevel}
                     />
-                    
+
                     {/* Overlay info */}
                     <View className="absolute bottom-8 items-center">
                         <Text className="text-gray-300 text-xs font-medium tracking-wide italic">
@@ -201,7 +222,7 @@ export default function HomeScreen() {
 
                 {/* Conversation View */}
                 <View className="flex-1 mt-6">
-                    <ScrollView 
+                    <ScrollView
                         ref={scrollViewRef}
                         className="flex-1"
                         showsVerticalScrollIndicator={false}
@@ -266,7 +287,7 @@ export default function HomeScreen() {
                     {isListening && (
                         <View className="absolute -inset-4 rounded-full bg-red-500/20 opacity-50" />
                     )}
-                    <Pressable 
+                    <Pressable
                         onPressIn={() => {
                             Logger.info(TAG, 'Mic Button Press In');
                             if (!isListening) toggleRecording();
@@ -288,7 +309,7 @@ export default function HomeScreen() {
                     </Pressable>
                 </View>
                 <Text className="mt-4 text-gray-400 font-bold text-[10px] uppercase tracking-[3px]">
-                    {isListening ? "Sophie is Listening" : isConnected ? "Hold to Speak" : "Connecting..."}
+                    {isListening ? "Sophie is Listening" : connectionState === 'connected' ? "Hold to Speak" : connectionState === 'error' ? "Connection Error" : "Connecting..."}
                 </Text>
             </View>
         </SafeAreaView>

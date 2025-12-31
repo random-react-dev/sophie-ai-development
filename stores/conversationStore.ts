@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { ConnectionState } from '../services/gemini/types';
 
 interface Message {
     id: string;
@@ -8,44 +9,57 @@ interface Message {
 }
 
 interface ConversationState {
-    isConnected: boolean;
+    // Connection state
+    connectionState: ConnectionState;
+    error: string | null;
+
+    // Recording/Speaking state
     isListening: boolean;
     isSpeaking: boolean;
     volumeLevel: number;
+
+    // UI state
     showTranscript: boolean;
     messages: Message[];
-    connect: (lessonId: string) => Promise<void>;
-    disconnect: () => void;
+
+    // Actions
+    setConnectionState: (state: ConnectionState) => void;
+    setError: (error: string | null) => void;
     setListening: (isListening: boolean) => void;
     setSpeaking: (isSpeaking: boolean) => void;
     setVolumeLevel: (level: number) => void;
-    setIsConnected: (connected: boolean) => void;
     setShowTranscript: (show: boolean) => void;
     addMessage: (role: 'user' | 'model', text: string) => void;
     clearMessages: () => void;
     handleInterruption: () => void;
+    reset: () => void;
 }
 
-export const useConversationStore = create<ConversationState>((set) => ({
-    isConnected: false,
+const initialState = {
+    connectionState: 'idle' as ConnectionState,
+    error: null,
     isListening: false,
     isSpeaking: false,
     volumeLevel: 0,
     showTranscript: false,
-    messages: [],
-    connect: async (lessonId: string) => {
-        // TODO: Implement actual WebSocket connection logic here or inside the component/hook using this store
-        set({ isConnected: true });
-    },
-    disconnect: () => {
-        // TODO: Cleanup
-        set({ isConnected: false, isListening: false, isSpeaking: false });
-    },
+    messages: [] as Message[],
+};
+
+export const useConversationStore = create<ConversationState>((set) => ({
+    ...initialState,
+
+    setConnectionState: (connectionState: ConnectionState) => set({ connectionState }),
+
+    setError: (error: string | null) => set({ error }),
+
     setListening: (isListening: boolean) => set({ isListening }),
+
     setSpeaking: (isSpeaking: boolean) => set({ isSpeaking }),
+
     setVolumeLevel: (volumeLevel: number) => set({ volumeLevel }),
-    setIsConnected: (isConnected: boolean) => set({ isConnected }),
+
     setShowTranscript: (showTranscript: boolean) => set({ showTranscript }),
+
     addMessage: (role: 'user' | 'model', text: string) => set((state) => {
         const lastMsg = state.messages[state.messages.length - 1];
         // If last message is from same role and within 5 seconds, append to it
@@ -67,6 +81,14 @@ export const useConversationStore = create<ConversationState>((set) => ({
             }]
         };
     }),
+
     clearMessages: () => set({ messages: [] }),
+
     handleInterruption: () => set({ isSpeaking: false }),
+
+    reset: () => set(initialState),
 }));
+
+// Selector for backward compatibility
+export const selectIsConnected = (state: ConversationState): boolean =>
+    state.connectionState === 'connected';
