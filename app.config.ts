@@ -45,14 +45,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 }
             }
         ],
-        "expo-secure-store",
-        [
-            "expo-audio",
-            {
-                microphonePermission: "Allow Fluent-AI to use the microphone for voice conversations."
-            }
-        ]
+        "expo-secure-store"
     ],
+
     experiments: {
         typedRoutes: true,
         reactCompiler: true
