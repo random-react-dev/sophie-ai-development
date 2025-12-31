@@ -1,24 +1,38 @@
 export interface GeminiSetupMessage {
     setup: {
         model: string;
-        generation_config: {
-            response_modalities: string[];
-            speech_config: { voice_config: { prebuilt_voice_config: { voice_name: string } } };
+        generationConfig: {
+            responseModalities: string[];
+            speechConfig?: { 
+                voiceConfig?: { 
+                    prebuiltVoiceConfig?: { 
+                        voiceName: string 
+                    } 
+                } 
+            };
         };
-        system_instruction: { parts: { text: string }[] };
+        systemInstruction?: { parts: { text: string }[] };
+        inputAudioTranscription?: {};
+        outputAudioTranscription?: {};
     };
 }
 
 export interface GeminiRealtimeInput {
-    realtime_input: {
-        media_chunks: Array<{ mime_type: string; data: string }>;
+    realtimeInput: {
+        audio: {
+            mimeType: string;
+            data: string;
+        };
     };
 }
 
 export interface GeminiClientContent {
-    client_content: {
-        turns: Array<{ parts: Array<{ text: string }> }>;
-        turn_complete: boolean;
+    clientContent: {
+        turns: Array<{
+            role: 'user' | 'model';
+            parts: Array<{ text: string }>;
+        }>;
+        turnComplete: boolean;
     }
 }
 
@@ -26,10 +40,24 @@ export interface GeminiServerResponse {
     setupComplete?: {};
     serverContent?: {
         modelTurn?: {
-            parts: Array<{ inlineData?: { mimeType: string; data: string }, text?: string }>;
+            parts: Array<{ 
+                inlineData?: { 
+                    mimeType: string; 
+                    data: string 
+                }, 
+                text?: string 
+            }>;
         };
         turnComplete?: boolean;
         interrupted?: boolean;
+        inputTranscription?: { text: string };
+        outputTranscription?: { text: string };
     };
-    toolCall?: any;
+    toolCall?: {
+        functionCalls: Array<{
+            id: string;
+            name: string;
+            args: Record<string, unknown>;
+        }>;
+    };
 }

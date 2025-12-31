@@ -76,15 +76,22 @@ export default function HomeScreen() {
     }, [messages, showTranscript]);
 
     const toggleRecording = async () => {
-        Logger.info(TAG, `Mic button interaction: isListening=${isListening}`);
+        Logger.info(TAG, `toggleRecording called: isListening=${isListening}, isConnected=${isConnected}`);
+        
         if (isListening) {
-            Logger.info(TAG, 'Stopping recording (button release)...');
+            Logger.info(TAG, 'Stopping recording interaction...');
             await audioRecorder.stop();
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setListening(false);
         } else {
+            if (!isConnected) {
+                Logger.warn(TAG, 'Mic interaction ignored: Sophie not connected');
+                Alert.alert("Wait a moment", "Sophie is still connecting...");
+                return;
+            }
+
             try {
-                Logger.info(TAG, 'Starting recording (button press)...');
+                Logger.info(TAG, 'Starting recording interaction...');
                 await audioRecorder.start({
                     onAudioData: (base64) => {
                         geminiWebSocket.sendAudioChunk(base64);
@@ -96,7 +103,7 @@ export default function HomeScreen() {
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setListening(true);
             } catch (error) {
-                Logger.error(TAG, 'Mic button interaction error', error);
+                Logger.error(TAG, 'Failed to start recording session', error);
                 Alert.alert("Microphone Error", "Could not start recording.");
             }
         }

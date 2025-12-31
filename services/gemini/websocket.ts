@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { useConversationStore } from '../../stores/conversationStore';
 import { audioPlayer } from '../audio/player';
-import { GeminiRealtimeInput, GeminiServerResponse, GeminiSetupMessage } from './types';
+import { GeminiRealtimeInput, GeminiServerResponse, GeminiSetupMessage, GeminiClientContent } from './types';
 import { Logger } from '../common/Logger';
 
 const TAG = 'GeminiWS';
@@ -80,19 +80,21 @@ class GeminiWebSocket {
         const setupMsg: GeminiSetupMessage = {
             setup: {
                 model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
-                generation_config: {
-                    response_modalities: ["AUDIO"],
-                    speech_config: {
-                        voice_config: {
-                            prebuilt_voice_config: {
-                                voice_name: "Aoede"
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: "Aoede"
                             }
                         }
                     }
                 },
-                system_instruction: {
+                systemInstruction: {
                     parts: [{ text: instruction || defaultInstruction }]
-                }
+                },
+                inputAudioTranscription: {},
+                outputAudioTranscription: {}
             }
         };
         this.send(JSON.stringify(setupMsg));
@@ -111,11 +113,11 @@ class GeminiWebSocket {
 
         Logger.debug(TAG, `Sending audio chunk of size ${base64Data.length}`);
         const msg: GeminiRealtimeInput = {
-            realtime_input: {
-                media_chunks: [{
-                    mime_type: "audio/pcm;rate=16000",
+            realtimeInput: {
+                audio: {
+                    mimeType: "audio/pcm;rate=16000",
                     data: base64Data
-                }]
+                }
             }
         };
         this.send(JSON.stringify(msg));
@@ -136,30 +138,58 @@ class GeminiWebSocket {
             Logger.info(TAG, 'Handshake complete: Sophie is ready to listen');
             this.isSetupComplete = true;
             store.setIsConnected(true);
+
+            // GREETING FLOW: Trigger initial AI response
+            const greetingMsg: GeminiClientContent = {
+                clientContent: {
+                    turns: [{
+                        role: 'user',
+                        parts: [{ 
+                            text: "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences."
+                        }]
+                    }],
+                    turnComplete: true
+                }
+            };
+            Logger.info(TAG, 'Sending initial greeting trigger...');
+            this.send(JSON.stringify(greetingMsg));
         }
 
-        if (response.serverContent?.modelTurn) {
-            const parts = response.serverContent.modelTurn.parts;
-            for (const part of parts) {
-                if (part.inlineData && part.inlineData.mimeType.startsWith('audio/pcm')) {
-                    Logger.debug(TAG, 'Received audio chunk from model');
-                    audioPlayer.queueAudio(part.inlineData.data);
-                }
-                if (part.text) {
-                    Logger.info(TAG, `Received text from model: ${part.text.substring(0, 50)}...`);
-                    store.addMessage('model', part.text);
+        if (response.serverContent) {
+            const { modelTurn, inputTranscription, outputTranscription } = response.serverContent;
+
+            if (modelTurn?.parts) {
+                for (const part of modelTurn.parts) {
+                    if (part.inlineData && part.inlineData.mimeType.startsWith('audio/pcm')) {
+                        Logger.debug(TAG, 'Received audio chunk from model');
+                        audioPlayer.queueAudio(part.inlineData.data);
+                    }
+                    if (part.text) {
+                        Logger.info(TAG, `Received text from model: ${part.text.substring(0, 50)}...`);
+                        store.addMessage('model', part.text);
+                    }
                 }
             }
-        }
 
-        if (response.serverContent?.turnComplete) {
-            Logger.info(TAG, 'Turn complete received');
-        }
+            if (inputTranscription?.text) {
+                Logger.info(TAG, `User transcription: ${inputTranscription.text}`);
+                // Optional: Update UI with real-time user transcription
+            }
 
-        if (response.serverContent?.interrupted) {
-            Logger.info(TAG, 'Model interrupted by user');
-            audioPlayer.clearQueue();
-            store.handleInterruption();
+            if (outputTranscription?.text) {
+                Logger.info(TAG, `AI transcription: ${outputTranscription.text}`);
+                // Already added via part.text usually, but good for real-time updates
+            }
+
+            if (response.serverContent.turnComplete) {
+                Logger.info(TAG, 'Turn complete received');
+            }
+
+            if (response.serverContent.interrupted) {
+                Logger.info(TAG, 'Model interrupted by user');
+                audioPlayer.clearQueue();
+                store.handleInterruption();
+            }
         }
     }
 

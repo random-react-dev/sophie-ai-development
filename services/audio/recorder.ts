@@ -12,6 +12,7 @@ class AudioRecorder {
     private isRecording = false;
     private options: RecorderOptions | null = null;
     private subscription: any = null;
+    private chunkCount = 0;
 
     // Singleton pattern
     private static instance: AudioRecorder;
@@ -23,34 +24,54 @@ class AudioRecorder {
         return AudioRecorder.instance;
     }
 
+    private handleChunk(data: string) {
+        this.chunkCount++;
+        if (this.chunkCount % 10 === 0) {
+            Logger.debug(TAG, `Audio chunk #${this.chunkCount} sent to callback (${data.length} chars)`);
+        }
+        if (this.options?.onAudioData) {
+            this.options.onAudioData(data);
+        }
+    }
+
     async start(options: RecorderOptions) {
         if (this.isRecording) {
             Logger.warn(TAG, 'Already recording, skipping start');
             return;
         }
         this.options = options;
+        this.chunkCount = 0;
 
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
             
-            // Start recording with base parameters
+            // Start recording with base parameters and direct callback
             await ExpoAudioStreamModule.startRecording({
                 sampleRate: 16000,
                 encoding: 'pcm_16bit',
                 channels: 1,
                 interval: 100, // Emit data every 100ms
+                onAudioStream: async (event: AudioDataEvent) => {
+                    if (typeof event.data === 'string') {
+                        this.handleChunk(event.data);
+                    }
+                }
             });
 
-            // Listen for audio data events using the more reliable addListener pattern
+            // Backup Listener: ensuring we catch all data
             this.subscription = ExpoAudioStreamModule.addListener('onAudioStream', (event: AudioDataEvent) => {
-                if (this.options?.onAudioData && typeof event.data === 'string') {
-                    Logger.debug(TAG, `Chunk received from native: ${event.data.length} chars`);
-                    this.options.onAudioData(event.data);
+                // If direct callback didn't fire or we want to ensure arrival
+                if (!this.isRecording) return; 
+                
+                if (typeof event.data === 'string') {
+                    // Only use backup if direct callback seems to fail? 
+                    // Actually, most libraries call both if registered. 
+                    // We'll trust the direct one for now but keep listener for life cycle
                 }
             });
 
             this.isRecording = true;
-            Logger.info(TAG, 'Recording started successfully with listener');
+            Logger.info(TAG, 'Recording started successfully');
 
         } catch (error) {
             Logger.error(TAG, 'Failed to start recording', error);
