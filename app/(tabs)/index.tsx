@@ -1,11 +1,15 @@
 import { Button } from '@/components/common/Button';
 import { useGameStore } from '@/stores/gameStore';
 import { Link, router } from 'expo-router';
+import { verifyInstallation } from 'nativewind';
 import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const { streakCount, totalXp } = useGameStore();
+
+  // Debug NativeWind installation
+  verifyInstallation();
 
   return (
     <ScrollView className="flex-1 bg-white px-6 py-12">
