@@ -26,10 +26,11 @@ class GeminiWebSocket {
         this.ws = new ReconnectingWebSocket(wsUrl, [], {
             maxRetries: 5,
             connectionTimeout: 5000,
+            debug: false,
         });
 
         this.ws.onopen = () => {
-            console.log('Gemini WebSocket Connected');
+            console.log('Gemini WebSocket Connected successfully');
             this.isConnected = true;
             this.sendSetupMessage(systemInstruction);
         };
@@ -47,16 +48,21 @@ class GeminiWebSocket {
         };
 
         this.ws.onclose = (event) => {
-            console.log(`Gemini WebSocket Disconnected. Code: ${event.code}, Reason: ${event.reason}`);
+            if (event.code !== 1000) {
+                console.warn(`Gemini WebSocket Closed Abnormally. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
+            } else {
+                console.log('Gemini WebSocket Closed Gracefully');
+            }
             this.isConnected = false;
         };
 
         this.ws.onerror = (error: any) => {
-            console.error('Gemini WebSocket Error:', error.message || error);
+            console.error('Gemini WebSocket Error:', error.message || error || 'Unknown WebSocket error');
         };
     }
 
     sendSetupMessage(instruction: string) {
+        const defaultInstruction = "You are Sophie, a friendly AI language tutor. You help users master real-world conversation. When a user makes a mistake, provide a 'Natural Correction'—a more native way to say it—and explain the nuance briefly. Keep your spoken responses short and encouraging. Always respond in the target language unless an English explanation is needed for clarity.";
         const setupMsg: GeminiSetupMessage = {
             setup: {
                 model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
@@ -71,7 +77,7 @@ class GeminiWebSocket {
                     }
                 },
                 system_instruction: {
-                    parts: [{ text: instruction }]
+                    parts: [{ text: instruction || defaultInstruction }]
                 }
             }
         };
@@ -105,7 +111,6 @@ class GeminiWebSocket {
             const parts = response.serverContent.modelTurn.parts;
             for (const part of parts) {
                 if (part.inlineData && part.inlineData.mimeType.startsWith('audio/pcm')) {
-                    store.setSpeaking(true);
                     audioPlayer.queueAudio(part.inlineData.data);
                 }
                 if (part.text) {
@@ -117,7 +122,8 @@ class GeminiWebSocket {
         }
 
         if (response.serverContent?.turnComplete) {
-            store.setSpeaking(false);
+            // AudioPlayer will handle setSpeaking(false) when queue is drained
+            console.log("Turn complete");
         }
 
         if (response.serverContent?.interrupted) {

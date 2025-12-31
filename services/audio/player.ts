@@ -1,3 +1,5 @@
+import { useConversationStore } from "../../stores/conversationStore";
+
 // Note: for raw PCM 24kHz playback (Gemini 2.5), we need a specialized approach.
 // expo-audio/av usually plays files.
 // Gemini 2.5 output is natively 24kHz, 16-bit PCM.
@@ -18,6 +20,8 @@ class AudioPlayer {
     queueAudio(base64Data: string) {
         this.queue.push(base64Data);
         if (!this.isPlaying) {
+            const store = useConversationStore.getState();
+            store.setSpeaking(true);
             this.playNext();
         }
     }
@@ -25,25 +29,26 @@ class AudioPlayer {
     async playNext() {
         if (this.queue.length === 0) {
             this.isPlaying = false;
+            // Notify store that speaking is finished
+            const store = useConversationStore.getState();
+            store.setSpeaking(false);
             return;
         }
 
         this.isPlaying = true;
-        const chunk = this.queue.shift();
+        const chunkBase64 = this.queue.shift();
 
-        if (chunk) {
+        if (chunkBase64) {
             try {
-                // Convert base64 to something playable or write to file and play (latency!)
-                // Optimally we stream this buffer directly to audio output.
-                // For MVP without custom native code, we might write to temp file and play.
-                // Or use `expo-audio-studio` playback features if available.
+                // Calculate approximate duration of the PCM chunk
+                // 24kHz, 16-bit mono = 48,000 bytes per second
+                const binaryString = atob(chunkBase64);
+                const bytes = binaryString.length;
+                const durationMs = (bytes / 48000) * 1000;
 
-                // Placeholder logic:
-                // await nativePlayer.playBuffer(chunk, { sampleRate: 24000 });
-
-                // Simulate playback duration for prototype flow
-                // console.log("Playing chunk...");
-                // await new Promise(r => setTimeout(r, 100)); 
+                // For prototype, we just wait for the duration to simulate playback
+                // This ensures isSpeaking stays true for the right amount of time
+                await new Promise(r => setTimeout(r, durationMs));
 
                 this.playNext();
             } catch (error) {

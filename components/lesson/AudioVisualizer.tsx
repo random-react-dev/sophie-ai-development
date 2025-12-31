@@ -27,7 +27,7 @@ export function AudioVisualizer({ isListening, isSpeaking, volumeLevel }: AudioV
         } else {
             scale.value = withTiming(1, { duration: 300 });
         }
-    }, [isSpeaking, isListening, volumeLevel]);
+    }, [isSpeaking, isListening, volumeLevel, scale]);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],

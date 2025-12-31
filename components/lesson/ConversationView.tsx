@@ -11,7 +11,7 @@ import { Alert, Text, View } from 'react-native';
 import { AudioVisualizer } from './AudioVisualizer';
 
 export function ConversationView() {
-    const { isConnected, isListening, isSpeaking, volumeLevel, connect, disconnect, setListening, setSpeaking, setVolumeLevel, setIsConnected } = useConversationStore();
+    const { isConnected, isListening, isSpeaking, volumeLevel, disconnect, setListening, setVolumeLevel, setIsConnected } = useConversationStore();
     const { session } = useAuthStore();
     const [status, setStatus] = useState("Initializing...");
 
@@ -48,7 +48,7 @@ export function ConversationView() {
             audioRecorder.stop();
             audioPlayer.clearQueue();
         };
-    }, [session]);
+    }, [session, disconnect, setIsConnected]);
 
     const toggleRecording = async () => {
         if (isListening) {
@@ -74,7 +74,8 @@ export function ConversationView() {
                 });
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setListening(true);
-            } catch (error) {
+            } catch (err: any) {
+                console.error("Recording error:", err);
                 Alert.alert("Microphone Error", "Could not start recording.");
             }
         }
