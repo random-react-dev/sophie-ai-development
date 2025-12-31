@@ -4,7 +4,8 @@ import { Button } from '@/components/common/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -54,7 +55,7 @@ export default function LoginScreen() {
                                 onChangeText={setPassword}
                                 secureTextEntry
                                 rightElement={
-                                    <Link href={"/(auth)/forgot-password" as any}>
+                                    <Link href="/forgot-password" asChild>
                                         <Text className="text-blue-500 font-semibold text-sm">Forgot password?</Text>
                                     </Link>
                                 }
@@ -80,7 +81,7 @@ export default function LoginScreen() {
 
                 <View className="items-center mb-8">
                     <Text className="text-gray-500 mb-1">Don&apos;t have an account?</Text>
-                    <Link href="/(auth)/signup" asChild>
+                    <Link href="/signup" asChild>
                         <TouchableOpacity>
                             <Text className="text-blue-600 font-bold text-lg">Sign up</Text>
                         </TouchableOpacity>

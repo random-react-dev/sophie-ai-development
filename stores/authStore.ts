@@ -1,5 +1,6 @@
 import { supabase } from '@/services/supabase/client';
 import { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
+import * as Linking from 'expo-linking';
 import { create } from 'zustand';
 
 interface AuthState {
@@ -78,9 +79,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     forgotPassword: async (email) => {
         set({ isLoading: true });
         try {
-            // For mobile, we would typically use a deep link scheme like 'sophie://reset-password'
-            // For now, we'll just redirect to a generic page or let Supabase handle it if configured
-            const { error } = await supabase.auth.resetPasswordForEmail(email);
+            const redirectTo = Linking.createURL('/forgot-password');
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo,
+            });
             if (error) throw error;
         } finally {
             set({ isLoading: false });
