@@ -45,7 +45,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 }
             }
         ],
-        "expo-secure-store"
+        "expo-secure-store",
+        "expo-localization"
     ],
 
     experiments: {

@@ -9,7 +9,9 @@ interface AuthState {
     initialized: boolean;
     setSession: (session: Session | null) => void;
     setUser: (user: User | null) => void;
-    signIn: (email: string) => Promise<void>;
+    signIn: (email: string, password: string) => Promise<void>;
+    signUp: (email: string, password: string, data: { full_name: string; country?: string; app_language?: string; learn_language?: string }) => Promise<void>;
+    forgotPassword: (email: string) => Promise<void>;
     signOut: () => Promise<void>;
     initialize: () => Promise<void>;
 }
@@ -21,11 +23,45 @@ export const useAuthStore = create<AuthState>((set) => ({
     initialized: false,
     setSession: (session: Session | null) => set({ session }),
     setUser: (user: User | null) => set({ user }),
-    signIn: async (email) => {
+    signIn: async (email, password) => {
         set({ isLoading: true });
-        const { error } = await supabase.auth.signInWithOtp({ email });
-        set({ isLoading: false });
-        if (error) throw error;
+        try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    signUp: async (email, password, data) => {
+        set({ isLoading: true });
+        try {
+            const { error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: data.full_name,
+                        country: data.country,
+                        app_language: data.app_language,
+                        learn_language: data.learn_language,
+                    }
+                }
+            });
+            if (error) throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    forgotPassword: async (email) => {
+        set({ isLoading: true });
+        try {
+            // For mobile, we would typically use a deep link scheme like 'sophie://reset-password'
+            // For now, we'll just redirect to a generic page or let Supabase handle it if configured
+            const { error } = await supabase.auth.resetPasswordForEmail(email);
+            if (error) throw error;
+        } finally {
+            set({ isLoading: false });
+        }
     },
     signOut: async () => {
         set({ isLoading: true });
