@@ -10,7 +10,9 @@ interface AuthState {
     setSession: (session: Session | null) => void;
     setUser: (user: User | null) => void;
     signIn: (email: string, password: string) => Promise<void>;
-    signUp: (email: string, password: string, data: { full_name: string; country?: string; app_language?: string; learn_language?: string }) => Promise<void>;
+    signUp: (email: string, password: string) => Promise<void>;
+    verifyOtp: (email: string, token: string) => Promise<void>;
+    updateProfile: (data: { full_name: string; country?: string; app_language?: string; learn_language?: string }) => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
     signOut: () => Promise<void>;
     initialize: () => Promise<void>;
@@ -32,19 +34,40 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ isLoading: false });
         }
     },
-    signUp: async (email, password, data) => {
+    signUp: async (email, password) => {
         set({ isLoading: true });
         try {
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
-                options: {
-                    data: {
-                        full_name: data.full_name,
-                        country: data.country,
-                        app_language: data.app_language,
-                        learn_language: data.learn_language,
-                    }
+            });
+            if (error) throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    verifyOtp: async (email, token) => {
+        set({ isLoading: true });
+        try {
+            const { error } = await supabase.auth.verifyOtp({
+                email,
+                token,
+                type: 'signup',
+            });
+            if (error) throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    updateProfile: async (data) => {
+        set({ isLoading: true });
+        try {
+            const { error } = await supabase.auth.updateUser({
+                data: {
+                    full_name: data.full_name,
+                    country: data.country,
+                    app_language: data.app_language,
+                    learn_language: data.learn_language,
                 }
             });
             if (error) throw error;

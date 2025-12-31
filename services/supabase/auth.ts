@@ -7,14 +7,22 @@ export const signInWithEmail = async (email: string) => {
     return { data, error };
 };
 
-export const signUpWithPassword = async (email: string, password: string, options?: any) => {
+export const signUpWithPassword = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options,
     });
     return { data, error };
 }
+
+export const verifyOTP = async (email: string, token: string, type: 'signup' | 'recovery' | 'email_change' | 'email') => {
+    const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type,
+    });
+    return { data, error };
+};
 
 export const signInWithPassword = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({

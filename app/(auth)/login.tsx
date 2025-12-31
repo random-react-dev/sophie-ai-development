@@ -33,13 +33,13 @@ export default function LoginScreen() {
                     <Text className="text-gray-500 text-lg">Native speaker in your pocket</Text>
                 </View>
 
-                <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8">
-                    <View className="items-center mb-6">
-                        <Text className="text-2xl font-bold text-gray-900">Welcome back</Text>
+                <View className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
+                    <View className="items-center mb-8">
+                        <Text className="text-3xl font-bold text-gray-900">Welcome back</Text>
                         <Text className="text-gray-500 mt-1">Log in to continue learning</Text>
                     </View>
 
-                    <View className="space-y-4">
+                    <View className="space-y-6">
                         <AuthInput
                             placeholder="Email address"
                             value={email}
@@ -47,24 +47,32 @@ export default function LoginScreen() {
                             keyboardType="email-address"
                             autoCapitalize="none"
                         />
-                        <AuthInput
-                            placeholder="Password"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                            rightElement={
-                                <Link href={"/(auth)/forgot-password" as any}>
-                                    <Text className="text-blue-500 font-semibold text-sm">Forgot password?</Text>
-                                </Link>
-                            }
-                        />
+                        <View className="mt-4">
+                            <AuthInput
+                                placeholder="Password"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry
+                                rightElement={
+                                    <Link href={"/(auth)/forgot-password" as any}>
+                                        <Text className="text-blue-500 font-semibold text-sm">Forgot password?</Text>
+                                    </Link>
+                                }
+                            />
+                        </View>
 
                         <Button
                             title={isLoading ? "Logging in..." : "Login"}
                             onPress={handleLogin}
                             disabled={isLoading}
-                            className="mt-2"
+                            className="mt-6 h-14"
                         />
+
+                        <View className="flex-row items-center my-6">
+                            <View className="flex-1 h-[1px] bg-gray-200" />
+                            <Text className="mx-4 text-gray-400 font-medium">OR</Text>
+                            <View className="flex-1 h-[1px] bg-gray-200" />
+                        </View>
 
                         <SocialLoginButtons />
                     </View>
