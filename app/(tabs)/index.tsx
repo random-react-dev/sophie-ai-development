@@ -30,13 +30,15 @@ export default function HomeScreen() {
     const isInitialized = useRef(false);
 
     useEffect(() => {
+        let isMounted = true;
+
         const initSession = async () => {
             if (!session || isInitialized.current) return;
             isInitialized.current = true;
 
             try {
                 Logger.info(TAG, 'Initializing Gemini session...');
-                setStatus("Connecting...");
+                if (isMounted) setStatus("Connecting...");
                 
                 let token = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
                 
@@ -47,27 +49,31 @@ export default function HomeScreen() {
                     token = data.token;
                 }
 
+                if (!isMounted) return;
+
                 const instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary.";
                 Logger.info(TAG, `Connecting WebSocket...`);
                 geminiWebSocket.connect(token, instruction);
-                setStatus("Connecting...");
             } catch (err: any) {
-                setStatus("Failed to connect");
-                Logger.error(TAG, 'Gemini session initialization error', err);
-                Alert.alert("Error", err.message || "Unknown error");
+                if (isMounted) {
+                    setStatus("Failed to connect");
+                    Logger.error(TAG, 'Gemini session initialization error', err);
+                    Alert.alert("Error", err.message || "Unknown error");
+                }
             }
         };
 
         initSession();
 
         return () => {
+            isMounted = false;
             Logger.info(TAG, 'Cleaning up HomeScreen...');
             geminiWebSocket.disconnect();
             audioRecorder.stop();
             audioPlayer.clearQueue();
             isInitialized.current = false;
         };
-    }, [session]);
+    }, [session?.user?.id, session]);
 
     useEffect(() => {
         if (isConnected) {

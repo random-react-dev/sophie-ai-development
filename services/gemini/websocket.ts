@@ -32,16 +32,19 @@ class GeminiWebSocket {
         Logger.info(TAG, `Connecting to Gemini Live API with model ${MODEL}...`);
 
         try {
-            this.ws = new WebSocket(wsUrl);
+            const ws = new WebSocket(wsUrl);
+            this.ws = ws;
 
-            this.ws.onopen = () => {
+            ws.onopen = () => {
+                if (this.ws !== ws) return;
                 Logger.info(TAG, 'WebSocket Connected successfully');
                 this.isConnected = true;
                 this.isSetupComplete = false;
                 this.sendSetupMessage(systemInstruction);
             };
 
-            this.ws.onmessage = async (event: MessageEvent) => {
+            ws.onmessage = async (event: MessageEvent) => {
+                if (this.ws !== ws) return;
                 try {
                     let data = event.data;
                     if (data instanceof Blob) {
@@ -57,20 +60,25 @@ class GeminiWebSocket {
                 }
             };
 
-            this.ws.onclose = (event) => {
-                if (event.code === 1000) {
-                    Logger.info(TAG, 'WebSocket Closed Gracefully (1000)');
+            ws.onclose = (event) => {
+                if (this.ws === ws) {
+                    if (event.code === 1000) {
+                        Logger.info(TAG, 'WebSocket Closed Gracefully (1000)');
+                    } else {
+                        Logger.warn(TAG, `WebSocket Closed Abnormally. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
+                    }
+                    this.isConnected = false;
+                    this.isSetupComplete = false;
+                    this.ws = null;
+                    const store = useConversationStore.getState();
+                    store.setIsConnected(false);
                 } else {
-                    Logger.warn(TAG, `WebSocket Closed Abnormally. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
+                    Logger.debug(TAG, 'Ignored onclose for old WebSocket instance');
                 }
-                this.isConnected = false;
-                this.isSetupComplete = false;
-                this.ws = null;
-                const store = useConversationStore.getState();
-                store.setIsConnected(false);
             };
 
-            this.ws.onerror = (error: any) => {
+            ws.onerror = (error: any) => {
+                if (this.ws !== ws) return;
                 Logger.error(TAG, 'WebSocket Error', error.message || error || 'Unknown WebSocket error');
             };
         } catch (error) {
@@ -86,7 +94,14 @@ class GeminiWebSocket {
             setup: {
                 model: MODEL,
                 generationConfig: {
-                    responseModalities: ["AUDIO"]
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: "Aoede"
+                            }
+                        }
+                    }
                 },
                 systemInstruction: {
                     parts: [{ text: instruction || defaultInstruction }]
@@ -161,7 +176,8 @@ class GeminiWebSocket {
                         Logger.debug(TAG, 'Received audio chunk from model');
                         audioPlayer.queueAudio(part.inlineData.data);
                     }
-                    if (part.text) {
+                    // Only add text if transcription is not enabled or not received
+                    if (part.text && !outputTranscription) {
                         Logger.info(TAG, `Received text from model: ${part.text.substring(0, 50)}...`);
                         store.addMessage('model', part.text);
                     }
@@ -169,11 +185,19 @@ class GeminiWebSocket {
             }
 
             if (inputTranscription?.text) {
-                Logger.info(TAG, `User transcribed: ${inputTranscription.text}`);
+                const text = inputTranscription.text.trim();
+                if (text) {
+                    Logger.info(TAG, `User transcribed: ${text}`);
+                    store.addMessage('user', text);
+                }
             }
 
             if (outputTranscription?.text) {
-                Logger.info(TAG, `Model transcribed: ${outputTranscription.text}`);
+                const text = outputTranscription.text.trim();
+                if (text) {
+                    Logger.info(TAG, `Model transcribed: ${text}`);
+                    store.addMessage('model', text);
+                }
             }
 
             if (response.serverContent.turnComplete) {
