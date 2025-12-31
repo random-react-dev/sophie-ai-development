@@ -39,9 +39,25 @@ export const resetPasswordForEmail = async (email: string, redirectTo: string) =
     return { data, error };
 }
 
-export const updateUserProfile = async (updates: any) => {
+export interface UserProfileUpdate {
+    full_name?: string;
+    country?: string;
+    app_language?: string;
+    learn_language?: string;
+    avatar_url?: string;
+    data?: any; // Allow flexibility but try to rely on typed fields
+}
+
+export const updateUserProfile = async (updates: UserProfileUpdate) => {
     const { data, error } = await supabase.auth.updateUser({
         data: updates
+    });
+    return { data, error };
+}
+
+export const changePassword = async (password: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+        password
     });
     return { data, error };
 }

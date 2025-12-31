@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
+import { Link, useRouter } from 'expo-router';
 import {
     ArrowRightLeft,
     CheckCircle2,
@@ -26,6 +27,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LanguageScreen() {
+    const router = useRouter();
     const { user, signOut } = useAuthStore();
     const {
         profiles, activeProfile, isLoading,
@@ -117,15 +119,20 @@ export default function LanguageScreen() {
                     <Text className="text-gray-400 text-sm font-medium">Sophie AI</Text>
                     <Text className="text-gray-900 text-2xl font-bold tracking-tight">Language Environment</Text>
                 </View>
-                <TouchableOpacity onPress={signOut} className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
-                    {user?.user_metadata?.avatar_url ? (
-                        <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
-                    ) : (
-                        <View className="w-full h-full items-center justify-center bg-blue-50">
-                            <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
+                <Link href="/profile" asChild>
+                    <TouchableOpacity
+                        onPress={() => console.log('Profile icon tapped!')}
+                        className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50"
+                    >
+                        {user?.user_metadata?.avatar_url ? (
+                            <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
+                        ) : (
+                            <View className="w-full h-full items-center justify-center bg-blue-50">
+                                <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </Link>
             </View>
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -222,8 +229,8 @@ export default function LanguageScreen() {
                                             key={rate}
                                             onPress={() => setSpeechRate(rate)}
                                             className={`px-3 py-2 rounded-xl border ${speechRate === rate
-                                                    ? 'bg-blue-500 border-blue-500'
-                                                    : 'bg-white border-gray-200'
+                                                ? 'bg-blue-500 border-blue-500'
+                                                : 'bg-white border-gray-200'
                                                 }`}
                                         >
                                             <Text className={`font-bold text-sm ${speechRate === rate ? 'text-white' : 'text-gray-600'

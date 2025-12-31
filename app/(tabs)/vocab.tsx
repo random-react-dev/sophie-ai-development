@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import {
     BookOpen,
     CheckCircle2,
@@ -222,15 +222,17 @@ export default function VocabScreen() {
                     <Text className="text-gray-900 text-2xl font-bold tracking-tight">Vocabulary</Text>
                     <Text className="text-gray-400 text-xs mt-1">Your saved words & phrases</Text>
                 </View>
-                <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
-                    {user?.user_metadata?.avatar_url ? (
-                        <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
-                    ) : (
-                        <View className="w-full h-full items-center justify-center bg-blue-50">
-                            <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
+                <Link href="/profile" asChild>
+                    <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
+                        {user?.user_metadata?.avatar_url ? (
+                            <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
+                        ) : (
+                            <View className="w-full h-full items-center justify-center bg-blue-50">
+                                <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </Link>
             </View>
 
             {/* Search and Add */}
@@ -266,8 +268,8 @@ export default function VocabScreen() {
                             key={lang}
                             onPress={() => setSelectedLanguage(lang)}
                             className={`px-4 py-2 rounded-full border ${selectedLanguage === lang
-                                    ? 'bg-gray-900 border-gray-900'
-                                    : 'bg-white border-gray-200'
+                                ? 'bg-gray-900 border-gray-900'
+                                : 'bg-white border-gray-200'
                                 }`}
                         >
                             <Text className={`font-bold text-xs ${selectedLanguage === lang ? 'text-white' : 'text-gray-600'
@@ -437,8 +439,8 @@ export default function VocabScreen() {
                                 <TouchableOpacity
                                     onPress={() => togglePracticeSelection(item.phrase)}
                                     className={`mb-3 p-4 rounded-2xl border flex-row items-center justify-between ${isSelected || isPrimary
-                                            ? 'bg-blue-50 border-blue-200'
-                                            : 'bg-white border-gray-100'
+                                        ? 'bg-blue-50 border-blue-200'
+                                        : 'bg-white border-gray-100'
                                         }`}
                                 >
                                     <View className="flex-1 mr-4">

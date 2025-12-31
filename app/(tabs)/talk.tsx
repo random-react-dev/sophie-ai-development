@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Bookmark, CheckCircle2, Globe, Mic, RotateCcw, Wand2 } from 'lucide-react-native';
 import React, { useEffect, useRef } from 'react';
 import { Alert, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
@@ -195,15 +195,17 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                         {practicePhrase ? `Practicing: ${practicePhrase}` : selectedScenario ? `${selectedScenario.title} • ${selectedScenario.level}` : 'Daily Practice'}
                     </Text>
                 </View>
-                <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
-                    {user?.user_metadata?.avatar_url ? (
-                        <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
-                    ) : (
-                        <View className="w-full h-full items-center justify-center bg-blue-50">
-                            <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
+                <Link href="/profile" asChild>
+                    <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
+                        {user?.user_metadata?.avatar_url ? (
+                            <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
+                        ) : (
+                            <View className="w-full h-full items-center justify-center bg-blue-50">
+                                <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </Link>
             </View>
 
             {/* Main Interaction Area */}

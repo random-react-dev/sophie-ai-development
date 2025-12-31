@@ -7,9 +7,9 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 
+import { TrialCountdownModal } from '@/components/auth/TrialCountdownModal';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/stores/authStore';
-import { TrialCountdownModal } from '@/components/auth/TrialCountdownModal';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -31,13 +31,13 @@ export default function RootLayout() {
     if (!initialized) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inProtectedRoute = segments[0] === '(tabs)' || segments[0] === 'profile' || segments[0] === 'lesson' || segments[0] === 'report';
 
     if (session && inAuthGroup) {
       // User is signed in but on auth screen, redirect to home
       router.replace('/(tabs)');
     } else if (!session && !inAuthGroup) {
       // User is not signed in and not on auth screen, redirect to login
-      // Note: We might want to allow some public screens, but for now strict auth
       router.replace('/(auth)/login');
     }
   }, [session, segments, initialized, router]);
@@ -49,6 +49,7 @@ export default function RootLayout() {
           <Stack>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="profile" options={{ headerShown: false, presentation: 'card' }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           </Stack>
           <TrialCountdownModal />

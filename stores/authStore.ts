@@ -1,3 +1,4 @@
+import { UserProfileUpdate, changePassword as authChangePassword, updateUserProfile } from '@/services/supabase/auth';
 import { supabase } from '@/services/supabase/client';
 import { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
@@ -15,7 +16,8 @@ interface AuthState {
     signIn: (email: string, password: string) => Promise<void>;
     signUp: (email: string, password: string) => Promise<void>;
     verifyOtp: (email: string, token: string) => Promise<void>;
-    updateProfile: (data: { full_name: string; country?: string; app_language?: string; learn_language?: string }) => Promise<void>;
+    updateProfile: (data: UserProfileUpdate) => Promise<void>;
+    changePassword: (password: string) => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
     signOut: () => Promise<void>;
     initialize: () => Promise<void>;
@@ -65,17 +67,22 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ isLoading: false });
         }
     },
-    updateProfile: async (data) => {
+    updateProfile: async (data: UserProfileUpdate) => {
         set({ isLoading: true });
         try {
-            const { error } = await supabase.auth.updateUser({
-                data: {
-                    full_name: data.full_name,
-                    country: data.country,
-                    app_language: data.app_language,
-                    learn_language: data.learn_language,
-                }
-            });
+            const { data: { user }, error } = await updateUserProfile(data);
+            if (error) throw error;
+            if (user) {
+                set({ user }); // Update local user state immediately
+            }
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    changePassword: async (password: string) => {
+        set({ isLoading: true });
+        try {
+            const { error } = await authChangePassword(password);
             if (error) throw error;
         } finally {
             set({ isLoading: false });
@@ -101,18 +108,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     initialize: async () => {
         set({ isLoading: true });
         const { data: { session } } = await supabase.auth.getSession();
-        set({ 
-            session, 
-            user: session?.user ?? null, 
-            initialized: true, 
+        set({
+            session,
+            user: session?.user ?? null,
+            initialized: true,
             isLoading: false,
-            showTrialPopup: !!session?.user 
+            showTrialPopup: !!session?.user
         });
 
         supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
             const newUser = session?.user ?? null;
-            set((state) => ({ 
-                session, 
+            set((state) => ({
+                session,
                 user: newUser,
                 showTrialPopup: _event === 'SIGNED_IN' ? true : state.showTrialPopup
             }));

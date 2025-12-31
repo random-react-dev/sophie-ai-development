@@ -7,7 +7,7 @@ import { useScenarioStore } from '@/stores/scenarioStore';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import {
     ArrowRightLeft,
     Bookmark,
@@ -118,15 +118,17 @@ export default function TranslateScreen() {
                     <Text className="text-gray-400 text-xs font-medium uppercase tracking-wider">Sophie AI</Text>
                     <Text className="text-gray-900 text-xl font-bold">Translate</Text>
                 </View>
-                <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
-                    {user?.user_metadata?.avatar_url ? (
-                        <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
-                    ) : (
-                        <View className="w-full h-full items-center justify-center bg-blue-50">
-                            <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
+                <Link href="/profile" asChild>
+                    <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
+                        {user?.user_metadata?.avatar_url ? (
+                            <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
+                        ) : (
+                            <View className="w-full h-full items-center justify-center bg-blue-50">
+                                <Text className="text-blue-500 font-bold">{user?.email?.charAt(0).toUpperCase()}</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </Link>
             </View>
 
             <KeyboardAvoidingView
@@ -207,8 +209,8 @@ export default function TranslateScreen() {
                                 onPress={handleTranslate}
                                 disabled={isTranslating || !inputText.trim()}
                                 className={`px-6 py-3 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
-                                        ? 'bg-gray-200'
-                                        : 'bg-blue-500'
+                                    ? 'bg-gray-200'
+                                    : 'bg-blue-500'
                                     }`}
                             >
                                 {isTranslating ? (
