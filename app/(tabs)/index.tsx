@@ -14,11 +14,15 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Alert, ScrollView, Switch, Text, TouchableOpacity, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Logger } from '@/services/common/Logger';
+
+const TAG = 'HomeScreen';
+
 export default function HomeScreen() {
     const { 
         isConnected, isListening, isSpeaking, volumeLevel, 
         messages, showTranscript, 
-        setListening, setVolumeLevel, setIsConnected, setShowTranscript 
+        setListening, setVolumeLevel, setShowTranscript 
     } = useConversationStore();
     const { session, user } = useAuthStore();
     const [status, setStatus] = useState("Initializing...");
@@ -31,11 +35,13 @@ export default function HomeScreen() {
             isInitialized.current = true;
 
             try {
+                Logger.info(TAG, 'Initializing Gemini session...');
                 setStatus("Connecting...");
                 
                 let token = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
                 
                 if (!token) {
+                    Logger.info(TAG, 'Fetching ephemeral token from Supabase...');
                     const { data, error } = await supabase.functions.invoke('get-gemini-session');
                     if (error || !data?.token) throw new Error(error?.message || "No token returned");
                     token = data.token;
@@ -43,11 +49,10 @@ export default function HomeScreen() {
 
                 const instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary.";
                 geminiWebSocket.connect(token, instruction);
-                setIsConnected(true);
                 setStatus("Connected");
             } catch (err: any) {
                 setStatus("Failed to connect");
-                console.error("Gemini session error:", err);
+                Logger.error(TAG, 'Gemini session initialization error', err);
                 Alert.alert("Error", err.message || "Unknown error");
             }
         };
@@ -55,12 +60,13 @@ export default function HomeScreen() {
         initSession();
 
         return () => {
+            Logger.info(TAG, 'Cleaning up HomeScreen...');
             geminiWebSocket.disconnect();
             audioRecorder.stop();
             audioPlayer.clearQueue();
             isInitialized.current = false;
         };
-    }, [session, setIsConnected]);
+    }, [session]);
 
     useEffect(() => {
         if (showTranscript) {
@@ -69,12 +75,15 @@ export default function HomeScreen() {
     }, [messages, showTranscript]);
 
     const toggleRecording = async () => {
+        Logger.info(TAG, `Mic button interaction: isListening=${isListening}`);
         if (isListening) {
+            Logger.info(TAG, 'Stopping recording (button release)...');
             await audioRecorder.stop();
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setListening(false);
         } else {
             try {
+                Logger.info(TAG, 'Starting recording (button press)...');
                 await audioRecorder.start({
                     onAudioData: (base64) => {
                         geminiWebSocket.sendAudioChunk(base64);
@@ -86,18 +95,20 @@ export default function HomeScreen() {
                 await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setListening(true);
             } catch (error) {
-                console.error("Recording error:", error);
+                Logger.error(TAG, 'Mic button interaction error', error);
                 Alert.alert("Microphone Error", "Could not start recording.");
             }
         }
     };
 
     const handleTranslate = async (text: string) => {
+        Logger.info(TAG, 'Translating text...');
         const translated = await translateText(text);
         Alert.alert("Translation", translated);
     };
 
     const handleSaveVocabulary = async (text: string) => {
+        Logger.info(TAG, 'Saving vocabulary phrase...');
         const success = await saveToVocabulary({ phrase: text });
         if (success) {
             Alert.alert("Success", "Added to your vocabulary!");

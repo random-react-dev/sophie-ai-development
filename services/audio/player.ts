@@ -1,12 +1,16 @@
+import { createAudioPlayer, AudioPlayer as ExpoAudioPlayer } from 'expo-audio';
 import { useConversationStore } from "../../stores/conversationStore";
+import { Logger } from '../common/Logger';
+import { addWavHeader } from './wavHelper';
+import { decode } from 'base64-arraybuffer';
 
-// Note: for raw PCM 24kHz playback (Gemini 2.5), we need a specialized approach.
-// expo-audio/av usually plays files.
-// Gemini 2.5 output is natively 24kHz, 16-bit PCM.
+const TAG = 'AudioPlayer';
+
 class AudioPlayer {
     private isPlaying = false;
     private queue: string[] = []; // Queue of base64 chunks
     private sampleRate = 24000; // Gemini 2.5 standard output rate
+    private currentPlayer: ExpoAudioPlayer | null = null;
 
     private static instance: AudioPlayer;
     private constructor() { }
@@ -28,40 +32,66 @@ class AudioPlayer {
 
     async playNext() {
         if (this.queue.length === 0) {
+            Logger.info(TAG, 'Queue empty, stopping playback');
             this.isPlaying = false;
-            // Notify store that speaking is finished
             const store = useConversationStore.getState();
             store.setSpeaking(false);
             return;
         }
 
         this.isPlaying = true;
-        const chunkBase64 = this.queue.shift();
+        const pcmBase64 = this.queue.shift();
 
-        if (chunkBase64) {
+        if (pcmBase64) {
             try {
-                // Calculate approximate duration of the PCM chunk
-                // 24kHz, 16-bit mono = 48,000 bytes per second
-                const binaryString = atob(chunkBase64);
-                const bytes = binaryString.length;
-                const durationMs = (bytes / 48000) * 1000;
+                // Convert PCM to playable WAV
+                const wavBase64 = addWavHeader(pcmBase64, this.sampleRate);
+                const dataUri = `data:audio/wav;base64,${wavBase64}`;
 
-                // For prototype, we just wait for the duration to simulate playback
-                // This ensures isSpeaking stays true for the right amount of time
+                Logger.debug(TAG, `Playing chunk of size ${pcmBase64.length}`);
+
+                // Create and play
+                const player = createAudioPlayer(dataUri);
+                this.currentPlayer = player;
+                
+                player.play();
+
+                // Wait for the chunk to finish
+                // PCM 24kHz 16-bit mono = 48000 bytes/sec
+                const pcmBuffer = decode(pcmBase64);
+                const durationMs = (pcmBuffer.byteLength / 48000) * 1000;
+                
                 await new Promise(r => setTimeout(r, durationMs));
 
+                // Cleanup player
+                this.currentPlayer = null;
+                
                 this.playNext();
             } catch (error) {
-                console.error("Error playing chunk:", error);
+                Logger.error(TAG, 'Error playing audio chunk', error);
                 this.playNext();
             }
         }
     }
 
     clearQueue() {
+        Logger.info(TAG, 'Clearing audio queue');
         this.queue = [];
         this.isPlaying = false;
-        // logic to stop current playback immediately
+        if (this.currentPlayer) {
+            // Attempt to stop current playback
+            try {
+                // @ts-ignore - check if stop exists in this version
+                if (typeof this.currentPlayer.pause === 'function') {
+                    this.currentPlayer.pause();
+                }
+            } catch (e) {
+                // Ignore
+            }
+            this.currentPlayer = null;
+        }
+        const store = useConversationStore.getState();
+        store.setSpeaking(false);
     }
 }
 

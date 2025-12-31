@@ -23,6 +23,7 @@ export interface GeminiClientContent {
 }
 
 export interface GeminiServerResponse {
+    setupComplete?: {};
     serverContent?: {
         modelTurn?: {
             parts: Array<{ inlineData?: { mimeType: string; data: string }, text?: string }>;
