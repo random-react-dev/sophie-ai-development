@@ -156,12 +156,6 @@ export default function SignupScreen() {
                     className="mt-6 h-14"
                 />
 
-                <View className="flex-row items-center my-6">
-                    <View className="flex-1 h-[1px] bg-gray-200" />
-                    <Text className="mx-4 text-gray-400 font-medium">Or continue with</Text>
-                    <View className="flex-1 h-[1px] bg-gray-200" />
-                </View>
-
                 <SocialLoginButtons />
             </View>
         </View>
@@ -285,7 +279,7 @@ export default function SignupScreen() {
                 {step === 2 && renderStep2()}
                 {step === 3 && renderStep3()}
 
-                <View className="items-center mb-10">
+                <View className="items-center mb-6">
                     <Text className="text-gray-500 mb-1">Already have an account?</Text>
                     <Link href="/login" asChild>
                         <TouchableOpacity>

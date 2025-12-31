@@ -69,17 +69,11 @@ export default function LoginScreen() {
                             className="mt-6 h-14"
                         />
 
-                        <View className="flex-row items-center my-6">
-                            <View className="flex-1 h-[1px] bg-gray-200" />
-                            <Text className="mx-4 text-gray-400 font-medium">OR</Text>
-                            <View className="flex-1 h-[1px] bg-gray-200" />
-                        </View>
-
                         <SocialLoginButtons />
                     </View>
                 </View>
 
-                <View className="items-center mb-8">
+                <View className="items-center mb-6">
                     <Text className="text-gray-500 mb-1">Don&apos;t have an account?</Text>
                     <Link href="/signup" asChild>
                         <TouchableOpacity>

@@ -22,21 +22,23 @@ export function AuthInput({ error, rightElement, secureTextEntry, className, ...
                     {...props}
                 />
 
-                {isPassword && (
-                    <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} className="p-2">
-                        {isPasswordVisible ? (
-                            <EyeOff size={20} color="#9CA3AF" />
-                        ) : (
-                            <Eye size={20} color="#9CA3AF" />
-                        )}
-                    </TouchableOpacity>
-                )}
+                <View className="flex-row items-center">
+                    {rightElement && (
+                        <View className={isPassword ? "mr-1" : ""}>
+                            {rightElement}
+                        </View>
+                    )}
 
-                {!isPassword && rightElement && (
-                    <View className="ml-2">
-                        {rightElement}
-                    </View>
-                )}
+                    {isPassword && (
+                        <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} className="p-2">
+                            {isPasswordVisible ? (
+                                <EyeOff size={20} color="#9CA3AF" />
+                            ) : (
+                                <Eye size={20} color="#9CA3AF" />
+                            )}
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
             {error && (
                 <Text className="text-red-500 text-sm mt-1 ml-1">{error}</Text>
