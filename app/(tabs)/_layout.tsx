@@ -1,17 +1,33 @@
-import { Tabs, useRouter, usePathname } from 'expo-router';
-import { Mic, Globe, BookOpen, Languages, VenetianMask } from 'lucide-react-native';
-import React from 'react';
-import { View, TouchableOpacity, Platform } from 'react-native';
+import { SUPPORTED_LANGUAGES } from '@/constants/languages';
+import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
+import { useProfileStore } from '@/stores/profileStore';
+import { Tabs, usePathname, useRouter } from 'expo-router';
+import { BookOpen, Globe, Languages, Mic, VenetianMask } from 'lucide-react-native';
+import React, { useEffect } from 'react';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
   const { startGlobalRecording, stopGlobalRecording } = useConversationStore();
+  const { activeProfile, fetchProfiles } = useProfileStore();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user) {
+      fetchProfiles();
+    }
+  }, [user]);
+
+  // Find flag for active profile target language
+  const activeFlag = activeProfile
+    ? SUPPORTED_LANGUAGES.find(l => l.name === activeProfile.target_language)?.flag
+    : null;
 
   return (
-    <Tabs screenOptions={{ 
-      tabBarActiveTintColor: '#3b82f6', 
+    <Tabs screenOptions={{
+      tabBarActiveTintColor: '#3b82f6',
       tabBarInactiveTintColor: '#94a3b8',
       headerShown: false,
       tabBarStyle: {
@@ -51,7 +67,7 @@ export default function TabLayout() {
             const isFocused = pathname === '/talk';
 
             return (
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.7}
                 onPressIn={() => {
                   if (isFocused) {
@@ -86,7 +102,16 @@ export default function TabLayout() {
         name="language"
         options={{
           title: 'Language',
-          tabBarIcon: ({ color }) => <Globe size={24} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <View>
+              <Globe size={24} color={color} />
+              {activeFlag && (
+                <View className="absolute -top-1 -right-2 bg-white rounded-full w-4 h-4 items-center justify-center shadow-sm">
+                  <Text style={{ fontSize: 8 }}>{activeFlag}</Text>
+                </View>
+              )}
+            </View>
+          ),
         }}
       />
     </Tabs>
