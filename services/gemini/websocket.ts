@@ -10,6 +10,7 @@ class GeminiWebSocket {
     private ws: ReconnectingWebSocket | null = null;
     private url = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent';
     private isConnected = false;
+    private isSetupComplete = false;
 
     // Singleton
     private static instance: GeminiWebSocket;
@@ -39,6 +40,7 @@ class GeminiWebSocket {
         this.ws.onopen = () => {
             Logger.info(TAG, 'WebSocket Connected successfully');
             this.isConnected = true;
+            this.isSetupComplete = false;
             this.sendSetupMessage(systemInstruction);
         };
 
@@ -47,6 +49,7 @@ class GeminiWebSocket {
                 let data = event.data;
                 if (typeof data === 'string') {
                     const response = JSON.parse(data) as GeminiServerResponse;
+                    Logger.debug(TAG, `Received message: ${Object.keys(response).join(', ')}`);
                     this.handleMessage(response);
                 }
             } catch (error) {
@@ -61,6 +64,7 @@ class GeminiWebSocket {
                 Logger.info(TAG, 'WebSocket Closed Gracefully');
             }
             this.isConnected = false;
+            this.isSetupComplete = false;
             const store = useConversationStore.getState();
             store.setIsConnected(false);
         };
@@ -100,6 +104,11 @@ class GeminiWebSocket {
             return;
         }
 
+        if (!this.isSetupComplete) {
+            Logger.warn(TAG, 'Cannot send audio: Setup not complete yet');
+            return;
+        }
+
         Logger.debug(TAG, `Sending audio chunk of size ${base64Data.length}`);
         const msg: GeminiRealtimeInput = {
             realtime_input: {
@@ -116,7 +125,7 @@ class GeminiWebSocket {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(data);
         } else {
-            Logger.warn(TAG, 'Attempted to send message but WebSocket is not OPEN');
+            Logger.warn(TAG, `Attempted to send message but WebSocket state is ${this.ws?.readyState}`);
         }
     }
 
@@ -124,7 +133,8 @@ class GeminiWebSocket {
         const store = useConversationStore.getState();
 
         if (response.setupComplete) {
-            Logger.info(TAG, 'Setup complete received from server');
+            Logger.info(TAG, 'Handshake complete: Sophie is ready to listen');
+            this.isSetupComplete = true;
             store.setIsConnected(true);
         }
 
@@ -159,6 +169,7 @@ class GeminiWebSocket {
             this.ws.close();
             this.ws = null;
             this.isConnected = false;
+            this.isSetupComplete = false;
         }
     }
 }

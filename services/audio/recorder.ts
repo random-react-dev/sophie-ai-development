@@ -11,6 +11,7 @@ export interface RecorderOptions {
 class AudioRecorder {
     private isRecording = false;
     private options: RecorderOptions | null = null;
+    private subscription: any = null;
 
     // Singleton pattern
     private static instance: AudioRecorder;
@@ -31,21 +32,25 @@ class AudioRecorder {
 
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
-            // Configure for 16kHz, 16-bit, Mono PCM (Gemini requirement)
+            
+            // Start recording with base parameters
             await ExpoAudioStreamModule.startRecording({
                 sampleRate: 16000,
                 encoding: 'pcm_16bit',
                 channels: 1,
                 interval: 100, // Emit data every 100ms
-                onAudioStream: async (event: AudioDataEvent) => {
-                    if (this.options?.onAudioData && typeof event.data === 'string') {
-                        this.options.onAudioData(event.data);
-                    }
+            });
+
+            // Listen for audio data events using the more reliable addListener pattern
+            this.subscription = ExpoAudioStreamModule.addListener('onAudioStream', (event: AudioDataEvent) => {
+                if (this.options?.onAudioData && typeof event.data === 'string') {
+                    Logger.debug(TAG, `Chunk received from native: ${event.data.length} chars`);
+                    this.options.onAudioData(event.data);
                 }
             });
 
             this.isRecording = true;
-            Logger.info(TAG, 'Recording started successfully');
+            Logger.info(TAG, 'Recording started successfully with listener');
 
         } catch (error) {
             Logger.error(TAG, 'Failed to start recording', error);
@@ -61,6 +66,12 @@ class AudioRecorder {
 
         try {
             Logger.info(TAG, 'Stopping recording...');
+            
+            if (this.subscription) {
+                this.subscription.remove();
+                this.subscription = null;
+            }
+
             await ExpoAudioStreamModule.stopRecording();
             this.isRecording = false;
             Logger.info(TAG, 'Recording stopped successfully');

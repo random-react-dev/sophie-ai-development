@@ -48,8 +48,9 @@ export default function HomeScreen() {
                 }
 
                 const instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary.";
+                Logger.info(TAG, `Connecting WebSocket with instruction: ${instruction.substring(0, 30)}...`);
                 geminiWebSocket.connect(token, instruction);
-                setStatus("Connected");
+                setStatus("Handshaking...");
             } catch (err: any) {
                 setStatus("Failed to connect");
                 Logger.error(TAG, 'Gemini session initialization error', err);
@@ -151,7 +152,10 @@ export default function HomeScreen() {
                         <Text className="text-gray-500 text-[10px] font-black uppercase tracking-tighter mr-2">Transcript</Text>
                         <Switch 
                             value={showTranscript} 
-                            onValueChange={setShowTranscript}
+                            onValueChange={(val) => {
+                                Logger.info(TAG, `Transcript Toggle: ${val}`);
+                                setShowTranscript(val);
+                            }}
                             trackColor={{ false: '#E2E8F0', true: '#3B82F6' }}
                             thumbColor="#fff"
                             ios_backgroundColor="#E2E8F0"
@@ -244,8 +248,14 @@ export default function HomeScreen() {
                         <View className="absolute -inset-4 rounded-full bg-red-500/20 opacity-50" />
                     )}
                     <Pressable 
-                        onPressIn={() => !isListening && toggleRecording()}
-                        onPressOut={() => isListening && toggleRecording()}
+                        onPressIn={() => {
+                            Logger.info(TAG, 'Mic Button Press In');
+                            if (!isListening) toggleRecording();
+                        }}
+                        onPressOut={() => {
+                            Logger.info(TAG, 'Mic Button Press Out');
+                            if (isListening) toggleRecording();
+                        }}
                         className={`w-20 h-20 rounded-full items-center justify-center shadow-2xl ${isListening ? 'bg-red-500' : 'bg-red-600'}`}
                         style={{
                             shadowColor: '#ef4444',
@@ -259,7 +269,7 @@ export default function HomeScreen() {
                     </Pressable>
                 </View>
                 <Text className="mt-4 text-gray-400 font-bold text-[10px] uppercase tracking-[3px]">
-                    {isListening ? "Sophie is Listening" : "Hold to Speak"}
+                    {isListening ? "Sophie is Listening" : isConnected ? "Hold to Speak" : "Connecting..."}
                 </Text>
             </View>
         </SafeAreaView>
