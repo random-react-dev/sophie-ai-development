@@ -8,8 +8,10 @@ interface AuthState {
     session: Session | null;
     isLoading: boolean;
     initialized: boolean;
+    showTrialPopup: boolean;
     setSession: (session: Session | null) => void;
     setUser: (user: User | null) => void;
+    setShowTrialPopup: (show: boolean) => void;
     signIn: (email: string, password: string) => Promise<void>;
     signUp: (email: string, password: string) => Promise<void>;
     verifyOtp: (email: string, token: string) => Promise<void>;
@@ -24,13 +26,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     session: null,
     isLoading: false,
     initialized: false,
+    showTrialPopup: false,
     setSession: (session: Session | null) => set({ session }),
     setUser: (user: User | null) => set({ user }),
+    setShowTrialPopup: (show: boolean) => set({ showTrialPopup: show }),
     signIn: async (email, password) => {
         set({ isLoading: true });
         try {
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
+            set({ showTrialPopup: true });
         } finally {
             set({ isLoading: false });
         }
@@ -96,10 +101,21 @@ export const useAuthStore = create<AuthState>((set) => ({
     initialize: async () => {
         set({ isLoading: true });
         const { data: { session } } = await supabase.auth.getSession();
-        set({ session, user: session?.user ?? null, initialized: true, isLoading: false });
+        set({ 
+            session, 
+            user: session?.user ?? null, 
+            initialized: true, 
+            isLoading: false,
+            showTrialPopup: !!session?.user 
+        });
 
         supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-            set({ session, user: session?.user ?? null });
+            const newUser = session?.user ?? null;
+            set((state) => ({ 
+                session, 
+                user: newUser,
+                showTrialPopup: _event === 'SIGNED_IN' ? true : state.showTrialPopup
+            }));
         });
     }
 }));

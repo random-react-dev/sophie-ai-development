@@ -9,6 +9,7 @@ import '../global.css';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuthStore } from '@/stores/authStore';
+import { TrialCountdownModal } from '@/components/auth/TrialCountdownModal';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -50,6 +51,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           </Stack>
+          <TrialCountdownModal />
           <StatusBar style="auto" />
         </ThemeProvider>
       </SafeAreaProvider>
