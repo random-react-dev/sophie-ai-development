@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# Sophie - AI Language Learning Platform 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Sophie is a next-generation language learning application powered by advanced AI. It goes beyond static lessons by offering real-time, voice-driven conversations with an intelligent AI tutor. Designed for serious learners, Sophie allows users to manage multiple learning profiles, practice vocabulary, and master new languages through natural interaction.
 
-## Get started
+## 🚀 Key Features
 
-1. Install dependencies
+*   **🎙️ Real-Time AI Conversation**: Engage in fluid, voice-based conversations with "Sophie" (powered by Google Gemini). The AI adapts to your proficiency level and corrects you in real-time.
+*   **👤 Multi-Profile System**: Learn multiple languages simultaneously. Create distinct profiles (e.g., "French for Travel", "Business Spanish") with isolated progress, settings, and vocabulary lists.
+*   **🛠️ Smart Learning Tools**:
+    *   **Instant Translator**: Translate text with context awareness.
+    *   **Vocabulary Manager**: Save words/phrases to your personal dictionary and practice them later.
+    *   **Audio Visualization**: Dynamic, reactive animations that make the AI feel alive.
+*   **🔐 Enterprise-Grade Security**: robust authentication via Supabase and a custom `LargeSecureStore` implementation using AES encryption for safe local data storage.
+*   **🎨 Premium One-Handed UI**: A sleek, modern interface built with NativeWind (Tailwind), optimized for one-handed usage on mobile devices.
 
-   ```bash
-   npm install
-   ```
+## 🛠️ Tech Stack
 
-2. Start the app
+*   **Framework**: [React Native](https://reactnative.dev/) (via [Expo SDK 52](https://expo.dev/))
+*   **Language**: TypeScript
+*   **Styling**: [NativeWind](https://www.nativewind.dev/) (TailwindCSS)
+*   **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+*   **Backend & Auth**: [Supabase](https://supabase.com/)
+*   **AI Engine**: [Google Gemini API](https://deepmind.google/technologies/gemini/) (WebSockets)
+*   **Storage**: `expo-secure-store`, `react-native-async-storage` + AES Encryption
 
-   ```bash
-   npx expo start
-   ```
+## 🏁 Getting Started
 
-In the output, you'll find options to open the app in a
+Follow these steps to set up the project locally.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Prerequisites
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+*   [Node.js](https://nodejs.org/) (v18+)
+*   [Expo CLI](https://docs.expo.dev/get-started/installation/)
+*   iOS Simulator (Mac) or Android Emulator
 
-## Get a fresh project
+### Installation
 
-When you're ready, run:
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/YOUR_USERNAME/sophie.git
+    cd sophie
+    ```
 
-```bash
-npm run reset-project
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup:**
+    Create a `.env` file in the root directory (copy from `.env.example`):
+    ```bash
+    cp .env.example .env
+    ```
+    Fill in your API keys:
+    ```env
+    EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
+    EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+    EXPO_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+    ```
+
+4.  **Run the app:**
+    ```bash
+    npx expo start
+    ```
+    *   Press `i` to open in iOS Simulator.
+    *   Press `a` to open in Android Emulator.
+
+## 📂 Project Structure
+
+```
+sophie/
+├── app/                 # Expo Router (File-based routing)
+├── components/          # Reusable UI components
+├── services/            # API integrations (Gemini, Supabase, i18n)
+├── stores/              # Global state (Zustand)
+├── hooks/               # Custom React hooks
+├── constants/           # App constants (Colors, config)
+└── assets/              # Images, fonts, and icons
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🔒 Security Note
 
-## Learn more
+This project uses a hybrid encryption storage solution (`LargeSecureStore`). Sensitive session data is encrypted with AES before being stored in standard async storage, with the encryption keys kept in the device's secure hardware store.
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📄 License
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+[MIT License](LICENSE)
