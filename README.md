@@ -38,7 +38,7 @@ Follow these steps to set up the project locally.
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/random-react-dev/sophie-ai-development.git
-    cd sophie
+    cd sophie-ai-development
     ```
 
 2.  **Install dependencies:**
@@ -68,7 +68,7 @@ Follow these steps to set up the project locally.
 ## 📂 Project Structure
 
 ```
-sophie/
+sophie-ai-development/
 ├── app/                 # Expo Router (File-based routing)
 ├── components/          # Reusable UI components
 ├── services/            # API integrations (Gemini, Supabase, i18n)
