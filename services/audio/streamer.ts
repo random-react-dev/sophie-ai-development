@@ -37,6 +37,11 @@ class AudioStreamer {
             return; // Already initialized
         }
 
+        // Configure audio session BEFORE creating AudioContext
+        // This enables hardware echo cancellation (AEC) for duplex audio
+        const { configureAudioSession } = await import('./audioManager');
+        configureAudioSession();
+
         Logger.info(TAG, 'Initializing audio context');
         this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
         this.setupQueueSource();
@@ -129,10 +134,8 @@ class AudioStreamer {
         const store = useConversationStore.getState();
         store.setSpeaking(true);
 
-        // Pause audio input while Sophie speaks
-        import('../gemini/websocket').then(({ geminiWebSocket }) => {
-            geminiWebSocket.pauseAudio();
-        });
+        // Audio continues streaming - hardware AEC handles echo cancellation
+        // Gemini's automatic VAD will detect user interruptions
     }
 
     /**
@@ -159,10 +162,8 @@ class AudioStreamer {
         const store = useConversationStore.getState();
         store.setSpeaking(false);
 
-        // Resume audio input
-        import('../gemini/websocket').then(({ geminiWebSocket }) => {
-            geminiWebSocket.resumeAudio();
-        });
+        // Audio streaming continues automatically - no pause/resume needed
+        // Gemini's automatic VAD continues to detect user speech
     }
 
     /**
@@ -190,10 +191,7 @@ class AudioStreamer {
         const store = useConversationStore.getState();
         store.setSpeaking(false);
 
-        // Resume audio input
-        import('../gemini/websocket').then(({ geminiWebSocket }) => {
-            geminiWebSocket.resumeAudio();
-        });
+        // Audio streaming continues automatically - VAD detects user speech
     }
 
     /**

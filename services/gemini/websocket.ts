@@ -25,7 +25,6 @@ class GeminiWebSocket {
     private lastApiKey: string = '';
     private lastInstruction: string = '';
     private audioChunksSent = 0;
-    private isAudioPaused = false;
 
     // Singleton
     private static instance: GeminiWebSocket;
@@ -254,10 +253,8 @@ class GeminiWebSocket {
             return;
         }
 
-        // Don't send audio while Sophie is speaking (prevents echo interference with VAD)
-        if (this.isAudioPaused) {
-            return;
-        }
+        // Audio is always sent - hardware AEC handles echo cancellation
+        // Gemini's automatic VAD handles turn detection and interruptions
 
         // Log first few chunks and then every 50th to verify audio is flowing
         this.audioChunksSent++;
@@ -406,42 +403,6 @@ class GeminiWebSocket {
             this.isSetupComplete = false;
             this.setConnectionState('idle');
         }
-    }
-
-    /**
-     * Pause sending audio to Gemini (while Sophie speaks).
-     * Prevents echo from speaker being picked up by microphone.
-     */
-    pauseAudio() {
-        this.isAudioPaused = true;
-        Logger.debug(TAG, 'Audio sending paused (Sophie speaking)');
-    }
-
-    /**
-     * Resume sending audio to Gemini (after Sophie finishes).
-     */
-    resumeAudio() {
-        this.isAudioPaused = false;
-        Logger.debug(TAG, 'Audio sending resumed');
-
-        // Send activityStart to reset VAD after Sophie speaks
-        this.sendActivityStart();
-    }
-
-    /**
-     * Send activityStart signal to reset Gemini's VAD.
-     * This is needed because VAD can fail to detect user speech after model responds.
-     */
-    private sendActivityStart(): void {
-        if (!this.isSetupComplete || !this.ws) return;
-
-        Logger.debug(TAG, 'Sending activityStart to reset VAD');
-        const msg = {
-            realtimeInput: {
-                activityStart: {}
-            }
-        };
-        this.send(JSON.stringify(msg));
     }
 }
 

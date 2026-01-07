@@ -72,9 +72,8 @@ class AudioPlayer {
         const store = useConversationStore.getState();
         store.setSpeaking(true);
 
-        // Pause audio input while Sophie speaks (prevents echo from confusing VAD)
-        const { geminiWebSocket } = await import('../gemini/websocket');
-        geminiWebSocket.pauseAudio();
+        // Audio continues streaming - hardware AEC handles echo cancellation
+        // Gemini's automatic VAD handles turn detection and interruptions
 
         Logger.info(TAG, 'Starting streaming playback loop');
 
@@ -98,8 +97,7 @@ class AudioPlayer {
                 store.setSpeaking(false);
             }
 
-            // Resume audio input after Sophie finishes speaking
-            geminiWebSocket.resumeAudio();
+            // Audio streaming continues automatically - no resume needed
 
             Logger.debug(TAG, 'Playback loop ended');
         }
@@ -188,10 +186,7 @@ class AudioPlayer {
         const store = useConversationStore.getState();
         store.setSpeaking(false);
 
-        // Resume audio input on interruption (user started speaking)
-        import('../gemini/websocket').then(({ geminiWebSocket }) => {
-            geminiWebSocket.resumeAudio();
-        });
+        // Audio streaming continues automatically - VAD detects user speech
     }
 
     /**
