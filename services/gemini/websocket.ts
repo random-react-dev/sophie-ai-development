@@ -423,6 +423,25 @@ class GeminiWebSocket {
     resumeAudio() {
         this.isAudioPaused = false;
         Logger.debug(TAG, 'Audio sending resumed');
+
+        // Send activityStart to reset VAD after Sophie speaks
+        this.sendActivityStart();
+    }
+
+    /**
+     * Send activityStart signal to reset Gemini's VAD.
+     * This is needed because VAD can fail to detect user speech after model responds.
+     */
+    private sendActivityStart(): void {
+        if (!this.isSetupComplete || !this.ws) return;
+
+        Logger.debug(TAG, 'Sending activityStart to reset VAD');
+        const msg = {
+            realtimeInput: {
+                activityStart: {}
+            }
+        };
+        this.send(JSON.stringify(msg));
     }
 }
 
