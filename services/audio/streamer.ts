@@ -6,11 +6,17 @@ import { Logger } from '../common/Logger';
 const TAG = 'AudioStreamer';
 const SAMPLE_RATE = 24000; // Gemini output rate
 
+interface OnEndedEvent {
+    bufferId: string | undefined;
+    isLast: boolean | undefined;
+}
+
 class AudioStreamer {
     private audioContext: AudioContext | null = null;
     private queueSource: AudioBufferQueueSourceNode | null = null;
     private isPlaying = false;
     private isInterrupted = false;
+    private isGenerationComplete = false;
     private chunkCount = 0;
 
     private static instance: AudioStreamer;
@@ -33,8 +39,28 @@ class AudioStreamer {
 
         Logger.info(TAG, 'Initializing audio context');
         this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
+        this.setupQueueSource();
+    }
+
+    /**
+     * Set up the queue source with onEnded callback.
+     */
+    private setupQueueSource(): void {
+        if (!this.audioContext) return;
+
         this.queueSource = this.audioContext.createBufferQueueSource();
         this.queueSource.connect(this.audioContext.destination);
+
+        // Set up onEnded callback for proper playback completion detection
+        this.queueSource.onEnded = (event: OnEndedEvent) => {
+            Logger.debug(TAG, `onEnded: bufferId=${event.bufferId}, isLast=${event.isLast}`);
+
+            // isLast=true means the last buffer finished playing
+            if (event.isLast && this.isGenerationComplete) {
+                this.finishSpeaking();
+            }
+        };
+
         this.queueSource.start();
         this.chunkCount = 0;
     }
@@ -96,6 +122,7 @@ class AudioStreamer {
 
         this.isPlaying = true;
         this.isInterrupted = false;
+        this.isGenerationComplete = false;
 
         Logger.info(TAG, 'Sophie started speaking');
 
@@ -110,19 +137,15 @@ class AudioStreamer {
 
     /**
      * Called when generation is complete.
-     * Schedule speaking state update after queue drains.
+     * Sets flag so onEnded callback knows to finish speaking.
      */
     onGenerationComplete(): void {
         if (!this.isPlaying || this.isInterrupted) return;
 
         Logger.debug(TAG, `Generation complete after ${this.chunkCount} chunks`);
+        this.isGenerationComplete = true;
 
-        // Estimate remaining playback time based on queued audio
-        // The library handles actual playback timing
-        // Set a reasonable timeout to mark speaking as complete
-        setTimeout(() => {
-            this.finishSpeaking();
-        }, 500); // Give some buffer time for queue to drain
+        // The onEnded callback will call finishSpeaking() when last buffer plays
     }
 
     private finishSpeaking(): void {
@@ -130,6 +153,7 @@ class AudioStreamer {
 
         Logger.info(TAG, 'Sophie finished speaking');
         this.isPlaying = false;
+        this.isGenerationComplete = false;
         this.chunkCount = 0;
 
         const store = useConversationStore.getState();
@@ -148,6 +172,7 @@ class AudioStreamer {
         Logger.info(TAG, 'Handling interruption');
         this.isInterrupted = true;
         this.isPlaying = false;
+        this.isGenerationComplete = false;
         this.chunkCount = 0;
 
         // Stop and recreate the queue source to clear pending audio
@@ -159,9 +184,7 @@ class AudioStreamer {
             }
 
             // Recreate queue source for next playback
-            this.queueSource = this.audioContext.createBufferQueueSource();
-            this.queueSource.connect(this.audioContext.destination);
-            this.queueSource.start();
+            this.setupQueueSource();
         }
 
         const store = useConversationStore.getState();
@@ -199,6 +222,7 @@ class AudioStreamer {
             this.audioContext = null;
         }
         this.isPlaying = false;
+        this.isGenerationComplete = false;
         this.chunkCount = 0;
     }
 }

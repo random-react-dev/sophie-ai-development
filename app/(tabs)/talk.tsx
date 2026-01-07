@@ -1,5 +1,5 @@
 import { RainbowWave } from '@/components/lesson/RainbowWave';
-import { audioPlayer } from '@/services/audio/player';
+import { audioStreamer } from '@/services/audio/streamer';
 import { audioRecorder } from '@/services/audio/recorder';
 import { translateText } from '@/services/gemini/translate';
 import { geminiWebSocket } from '@/services/gemini/websocket';
@@ -88,7 +88,7 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             Logger.info(TAG, 'Cleaning up Talk Hub...');
             geminiWebSocket.disconnect();
             audioRecorder.stop().catch(() => { /* ignore */ });
-            audioPlayer.clearQueue();
+            audioStreamer.clearQueue();
             isInitialized.current = false;
         };
     }, [session?.user?.id, session, selectedScenario, practicePhrase]);
