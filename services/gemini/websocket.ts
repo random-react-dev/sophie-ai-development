@@ -1,5 +1,5 @@
 import { useConversationStore } from '../../stores/conversationStore';
-import { audioPlayer } from '../audio/player';
+import { audioStreamer } from '../audio/streamer';
 import { Logger } from '../common/Logger';
 import {
     ConnectionState,
@@ -339,7 +339,7 @@ class GeminiWebSocket {
                         const mimeType = inlineData.mime_type || inlineData.mimeType;
                         if (mimeType?.startsWith('audio/pcm')) {
                             Logger.debug(TAG, 'Received audio chunk from model');
-                            audioPlayer.queueAudio(inlineData.data);
+                            audioStreamer.queueAudio(inlineData.data);
                         }
                     }
                     // Only add text if transcription is not enabled or not received
@@ -375,14 +375,14 @@ class GeminiWebSocket {
             // Handle generation complete - trigger audio playback
             const isGenerationComplete = serverContent.generation_complete || serverContent.generationComplete;
             if (isGenerationComplete) {
-                Logger.debug(TAG, 'Generation complete - triggering audio playback');
-                audioPlayer.onGenerationComplete();
+                Logger.debug(TAG, 'Generation complete');
+                audioStreamer.onGenerationComplete();
             }
 
             // Handle interruption (user spoke while model was speaking)
             if (interrupted) {
                 Logger.info(TAG, 'Model interrupted by user');
-                audioPlayer.handleInterruption();
+                audioStreamer.handleInterruption();
                 store.handleInterruption();
             }
         }

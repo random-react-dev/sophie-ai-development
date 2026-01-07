@@ -117,6 +117,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         if (state.isConversationActive) return;
 
         const { audioRecorder } = await import('../services/audio/recorder');
+        const { audioStreamer } = await import('../services/audio/streamer');
         const { geminiWebSocket } = await import('../services/gemini/websocket');
         const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
 
@@ -125,6 +126,9 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
             Logger.warn('ConversationStore', 'Cannot start conversation: WebSocket not ready');
             return;
         }
+
+        // Initialize audio streamer before starting
+        await audioStreamer.initialize();
 
         await impactAsync(ImpactFeedbackStyle.Medium);
 
@@ -178,13 +182,13 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         }
 
         const { audioRecorder } = await import('../services/audio/recorder');
-        const { audioPlayer } = await import('../services/audio/player');
+        const { audioStreamer } = await import('../services/audio/streamer');
         const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
 
         try {
             Logger.info('ConversationStore', 'Stopping conversation...');
             await audioRecorder.stop();
-            audioPlayer.clearQueue();
+            audioStreamer.clearQueue();
             await impactAsync(ImpactFeedbackStyle.Light);
             set({
                 isConversationActive: false,

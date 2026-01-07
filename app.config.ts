@@ -55,7 +55,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 microphonePermission: "Allow Sophie to access your microphone for voice conversations."
             }
         ],
-        "expo-stream-audio"
+        "expo-stream-audio",
+        "react-native-audio-api"
     ],
 
     experiments: {
