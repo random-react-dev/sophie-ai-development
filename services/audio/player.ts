@@ -1,20 +1,22 @@
 import { decode } from 'base64-arraybuffer';
 import { createAudioPlayer, AudioPlayer as ExpoAudioPlayer } from 'expo-audio';
+import { File, Paths } from 'expo-file-system';
 import { useConversationStore } from "../../stores/conversationStore";
 import { Logger } from '../common/Logger';
 import { addWavHeader } from './wavHelper';
 
 const TAG = 'AudioPlayer';
 
-// Buffer threshold before starting playback (~170ms at 24kHz 16-bit mono)
-const MIN_BUFFER_BYTES = 8000;
+// Number of chunks to buffer before starting playback (~120ms at 40ms/chunk)
+const MIN_CHUNKS_BEFORE_PLAY = 3;
+const SAMPLE_RATE = 24000; // Gemini 2.5 standard output rate
 
 class AudioPlayer {
+    private buffer: string[] = []; // Queue of PCM chunks
     private isPlaying = false;
-    private buffer: string[] = []; // Accumulated PCM chunks
-    private sampleRate = 24000; // Gemini 2.5 standard output rate
+    private isInterrupted = false;
     private currentPlayer: ExpoAudioPlayer | null = null;
-    private isGenerationComplete = false;
+    private playbackLoopRunning = false;
 
     private static instance: AudioPlayer;
     private constructor() { }
@@ -26,80 +28,151 @@ class AudioPlayer {
     }
 
     /**
-     * Queue a PCM audio chunk. Buffers chunks until generation is complete,
-     * then plays all at once for smooth audio.
+     * Queue a PCM audio chunk for streaming playback.
+     * Starts playback automatically once enough chunks are buffered.
      */
     queueAudio(base64Data: string) {
+        if (this.isInterrupted) {
+            // Don't queue if we've been interrupted
+            return;
+        }
+
         this.buffer.push(base64Data);
 
-        // If generation is complete and we're not playing, start playback
-        if (this.isGenerationComplete && !this.isPlaying) {
-            this.playBuffered();
+        // Start playback loop if we have enough chunks and not already playing
+        if (this.buffer.length >= MIN_CHUNKS_BEFORE_PLAY && !this.playbackLoopRunning) {
+            this.startPlaybackLoop();
         }
     }
 
     /**
      * Called when Gemini signals generation is complete.
-     * Triggers playback of all buffered audio.
+     * Ensures any remaining buffered audio gets played.
      */
     onGenerationComplete() {
-        Logger.info(TAG, 'Generation complete - playing buffered audio');
-        this.isGenerationComplete = true;
-        if (!this.isPlaying && this.buffer.length > 0) {
-            this.playBuffered();
+        Logger.debug(TAG, `Generation complete - ${this.buffer.length} chunks remaining`);
+        // If there are remaining chunks and playback isn't running, play them
+        if (this.buffer.length > 0 && !this.playbackLoopRunning && !this.isInterrupted) {
+            this.startPlaybackLoop();
         }
     }
 
     /**
-     * Play all buffered audio as a single WAV file.
+     * Streaming playback loop - plays chunks as they come in.
      */
-    private async playBuffered() {
-        if (this.buffer.length === 0) {
-            Logger.debug(TAG, 'Buffer empty, nothing to play');
+    private async startPlaybackLoop() {
+        if (this.playbackLoopRunning) {
             return;
         }
 
+        this.playbackLoopRunning = true;
         this.isPlaying = true;
+        this.isInterrupted = false;
+
         const store = useConversationStore.getState();
         store.setSpeaking(true);
 
+        // Pause audio input while Sophie speaks (prevents echo from confusing VAD)
+        const { geminiWebSocket } = await import('../gemini/websocket');
+        geminiWebSocket.pauseAudio();
+
+        Logger.info(TAG, 'Starting streaming playback loop');
+
         try {
-            // Combine all PCM chunks into one
-            const combinedPcm = this.buffer.join('');
-            this.buffer = [];
-            this.isGenerationComplete = false;
+            while (this.buffer.length > 0 && !this.isInterrupted) {
+                // Take the next chunk from the queue
+                const chunk = this.buffer.shift();
+                if (!chunk) break;
 
-            // Convert combined PCM to WAV
-            const wavBase64 = addWavHeader(combinedPcm, this.sampleRate);
-            const dataUri = `data:audio/wav;base64,${wavBase64}`;
-
-            Logger.info(TAG, `Playing ${combinedPcm.length} bytes of audio`);
-
-            // Create and play
-            const player = createAudioPlayer(dataUri);
-            this.currentPlayer = player;
-            player.play();
-
-            // Wait for audio to finish
-            const pcmBuffer = decode(combinedPcm);
-            const durationMs = (pcmBuffer.byteLength / (this.sampleRate * 2)) * 1000;
-
-            await new Promise(r => setTimeout(r, durationMs + 100)); // Add 100ms buffer
-
-            this.currentPlayer = null;
+                await this.playChunk(chunk);
+            }
         } catch (error) {
-            Logger.error(TAG, 'Error playing audio', error);
+            Logger.error(TAG, 'Error in playback loop', error);
         } finally {
+            this.playbackLoopRunning = false;
             this.isPlaying = false;
-            store.setSpeaking(false);
+            this.currentPlayer = null;
+
+            // Only set speaking to false if not interrupted (interruption handler sets it)
+            if (!this.isInterrupted) {
+                store.setSpeaking(false);
+            }
+
+            // Resume audio input after Sophie finishes speaking
+            geminiWebSocket.resumeAudio();
+
+            Logger.debug(TAG, 'Playback loop ended');
         }
     }
 
-    clearQueue() {
-        Logger.info(TAG, 'Clearing audio queue');
+    /**
+     * Play a single audio chunk.
+     */
+    private async playChunk(base64Pcm: string): Promise<void> {
+        if (this.isInterrupted) {
+            return;
+        }
+
+        let tempFile: File | null = null;
+
+        try {
+            // Convert PCM to WAV
+            const wavBase64 = addWavHeader(base64Pcm, SAMPLE_RATE);
+
+            // Write to temp file (iOS requires file path, not data URI)
+            const filename = `audio_${Date.now()}_${Math.random().toString(36).slice(2)}.wav`;
+            tempFile = new File(Paths.cache, filename);
+
+            // Decode base64 to bytes and write
+            const wavBytes = decode(wavBase64);
+            tempFile.write(new Uint8Array(wavBytes));
+
+            // Create player from file URI
+            const player = createAudioPlayer(tempFile.uri);
+            this.currentPlayer = player;
+            player.play();
+
+            // Calculate duration and wait
+            const pcmBuffer = decode(base64Pcm);
+            const durationMs = (pcmBuffer.byteLength / (SAMPLE_RATE * 2)) * 1000;
+
+            // Wait for playback to complete (with small buffer for timing)
+            await new Promise<void>((resolve) => {
+                const timeout = setTimeout(() => {
+                    resolve();
+                }, durationMs + 10);
+
+                // If interrupted, resolve immediately
+                if (this.isInterrupted) {
+                    clearTimeout(timeout);
+                    resolve();
+                }
+            });
+
+            this.currentPlayer = null;
+        } catch (error) {
+            Logger.error(TAG, 'Error playing chunk', error);
+        } finally {
+            // Clean up temp file
+            if (tempFile && tempFile.exists) {
+                try {
+                    tempFile.delete();
+                } catch {
+                    // Ignore cleanup errors
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle interruption - immediately stop playback and clear queue.
+     */
+    handleInterruption() {
+        Logger.info(TAG, 'Handling interruption - stopping playback');
+        this.isInterrupted = true;
         this.buffer = [];
-        this.isPlaying = false;
-        this.isGenerationComplete = false;
+
+        // Stop current player
         if (this.currentPlayer) {
             try {
                 if ('pause' in this.currentPlayer) {
@@ -110,8 +183,24 @@ class AudioPlayer {
             }
             this.currentPlayer = null;
         }
+
+        this.isPlaying = false;
         const store = useConversationStore.getState();
         store.setSpeaking(false);
+
+        // Resume audio input on interruption (user started speaking)
+        import('../gemini/websocket').then(({ geminiWebSocket }) => {
+            geminiWebSocket.resumeAudio();
+        });
+    }
+
+    /**
+     * Clear the audio queue (for reset/disconnect).
+     */
+    clearQueue() {
+        Logger.info(TAG, 'Clearing audio queue');
+        this.handleInterruption();
+        this.isInterrupted = false; // Reset for next session
     }
 }
 

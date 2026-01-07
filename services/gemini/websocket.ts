@@ -24,6 +24,8 @@ class GeminiWebSocket {
     private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
     private lastApiKey: string = '';
     private lastInstruction: string = '';
+    private audioChunksSent = 0;
+    private isAudioPaused = false;
 
     // Singleton
     private static instance: GeminiWebSocket;
@@ -37,6 +39,10 @@ class GeminiWebSocket {
 
     getConnectionState(): ConnectionState {
         return this.connectionState;
+    }
+
+    isReady(): boolean {
+        return this.connectionState === 'connected' && this.isSetupComplete;
     }
 
     private setConnectionState(state: ConnectionState, error?: GeminiError) {
@@ -108,6 +114,7 @@ class GeminiWebSocket {
                 if (this.ws !== ws) return;
                 Logger.info(TAG, 'WebSocket Connected successfully');
                 this.reconnectAttempts = 0;
+                this.audioChunksSent = 0;
                 this.isSetupComplete = false;
                 this.sendSetupMessage(systemInstruction);
             };
@@ -216,7 +223,14 @@ class GeminiWebSocket {
                     parts: [{ text: instruction || defaultInstruction }]
                 },
                 inputAudioTranscription: {},
-                outputAudioTranscription: {}
+                outputAudioTranscription: {},
+                // Configure VAD for reliable turn detection after model speaks
+                realtimeInputConfig: {
+                    automaticActivityDetection: {
+                        endOfSpeechSensitivity: 'END_SENSITIVITY_LOW',
+                        silenceDurationMs: 300
+                    }
+                }
             }
         };
         Logger.debug(TAG, `Setup message: ${JSON.stringify(setupMsg)}`);
@@ -224,14 +238,31 @@ class GeminiWebSocket {
     }
 
     sendAudioChunk(base64Data: string) {
+        // Validate input data
+        if (!base64Data || base64Data.length === 0) {
+            Logger.warn(TAG, 'sendAudioChunk called with empty data');
+            return;
+        }
+
         if (this.connectionState !== 'connected' || !this.ws) {
-            Logger.warn(TAG, 'Cannot send audio: WebSocket not connected');
+            Logger.warn(TAG, `Cannot send audio: state=${this.connectionState}`);
             return;
         }
 
         if (!this.isSetupComplete) {
             Logger.warn(TAG, 'Cannot send audio: Setup not complete yet');
             return;
+        }
+
+        // Don't send audio while Sophie is speaking (prevents echo interference with VAD)
+        if (this.isAudioPaused) {
+            return;
+        }
+
+        // Log first few chunks and then every 50th to verify audio is flowing
+        this.audioChunksSent++;
+        if (this.audioChunksSent <= 5 || this.audioChunksSent % 50 === 0) {
+            Logger.debug(TAG, `Sending audio chunk #${this.audioChunksSent} (${base64Data.length} chars)`);
         }
 
         const msg: GeminiRealtimeInput = {
@@ -351,7 +382,7 @@ class GeminiWebSocket {
             // Handle interruption (user spoke while model was speaking)
             if (interrupted) {
                 Logger.info(TAG, 'Model interrupted by user');
-                audioPlayer.clearQueue();
+                audioPlayer.handleInterruption();
                 store.handleInterruption();
             }
         }
@@ -375,6 +406,23 @@ class GeminiWebSocket {
             this.isSetupComplete = false;
             this.setConnectionState('idle');
         }
+    }
+
+    /**
+     * Pause sending audio to Gemini (while Sophie speaks).
+     * Prevents echo from speaker being picked up by microphone.
+     */
+    pauseAudio() {
+        this.isAudioPaused = true;
+        Logger.debug(TAG, 'Audio sending paused (Sophie speaking)');
+    }
+
+    /**
+     * Resume sending audio to Gemini (after Sophie finishes).
+     */
+    resumeAudio() {
+        this.isAudioPaused = false;
+        Logger.debug(TAG, 'Audio sending resumed');
     }
 }
 

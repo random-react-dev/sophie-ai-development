@@ -47,7 +47,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         ],
         "expo-secure-store",
         "expo-localization",
-        "expo-audio"
+        "expo-audio",
+        "expo-asset",
+        [
+            "expo-av",
+            {
+                microphonePermission: "Allow Sophie to access your microphone for voice conversations."
+            }
+        ],
+        "expo-stream-audio"
     ],
 
     experiments: {

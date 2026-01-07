@@ -3,14 +3,14 @@ import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useProfileStore } from '@/stores/profileStore';
 import { Tabs, usePathname, useRouter } from 'expo-router';
-import { BookOpen, Globe, Languages, Mic, VenetianMask } from 'lucide-react-native';
+import { BookOpen, Globe, Languages, Mic, MicOff, VenetianMask } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  const { startGlobalRecording, stopGlobalRecording } = useConversationStore();
+  const { toggleConversation, isConversationActive } = useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
 
@@ -63,28 +63,37 @@ export default function TabLayout() {
         name="talk"
         options={{
           title: '',
-          tabBarButton: (props) => {
+          tabBarButton: () => {
             const isFocused = pathname === '/talk';
+
+            const handlePress = () => {
+              if (isFocused) {
+                // Toggle conversation mode on/off
+                toggleConversation();
+              } else {
+                router.push('/(tabs)/talk');
+              }
+            };
+
+            // Button color based on state
+            const getButtonColor = () => {
+              if (isConversationActive) return 'bg-red-500 shadow-red-200';
+              if (isFocused) return 'bg-blue-500 shadow-blue-200';
+              return 'bg-gray-900 shadow-gray-400';
+            };
 
             return (
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPressIn={() => {
-                  if (isFocused) {
-                    startGlobalRecording();
-                  } else {
-                    router.push('/(tabs)/talk' as any);
-                  }
-                }}
-                onPressOut={() => {
-                  if (isFocused) {
-                    stopGlobalRecording();
-                  }
-                }}
+                onPress={handlePress}
                 className="items-center justify-center -top-5"
               >
-                <View className={`w-16 h-16 rounded-3xl items-center justify-center shadow-2xl ${isFocused ? 'bg-red-500 shadow-red-200' : 'bg-gray-900 shadow-gray-400'} border-4 border-white`}>
-                  <Mic size={28} color="white" fill="white" />
+                <View className={`w-16 h-16 rounded-3xl items-center justify-center shadow-2xl ${getButtonColor()} border-4 border-white`}>
+                  {isConversationActive ? (
+                    <MicOff size={28} color="white" />
+                  ) : (
+                    <Mic size={28} color="white" fill="white" />
+                  )}
                 </View>
               </TouchableOpacity>
             );
