@@ -60,7 +60,7 @@ Follow these steps to set up the project locally.
 
 4.  **Run the app:**
     ```bash
-    npx expo start
+    npx expo start -c
     ```
     *   Press `i` to open in iOS Simulator.
     *   Press `a` to open in Android Emulator.
