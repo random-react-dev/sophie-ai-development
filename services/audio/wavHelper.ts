@@ -1,4 +1,21 @@
 import { decode, encode } from 'base64-arraybuffer';
+import { File } from 'expo-file-system';
+
+/**
+ * Extracts raw PCM data from a WAV file by stripping the 44-byte header.
+ * Returns base64-encoded PCM data ready for WebSocket transmission.
+ */
+export async function extractPcmFromWav(uri: string): Promise<string> {
+    // Read file as bytes using new File API
+    const file = new File(uri);
+    const bytes = await file.bytes();
+
+    // Skip 44-byte WAV header, extract PCM data
+    const pcmData = bytes.slice(44);
+
+    // Encode as base64
+    return encode(pcmData.buffer);
+}
 
 /**
  * Adds a 44-byte WAV header to a base64 encoded PCM string.

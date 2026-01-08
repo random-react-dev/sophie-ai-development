@@ -1,5 +1,5 @@
 import { useConversationStore } from '../../stores/conversationStore';
-import { audioPlayer } from '../audio/player';
+import { audioStreamer } from '../audio/streamer';
 import { Logger } from '../common/Logger';
 import {
     ConnectionState,
@@ -24,6 +24,7 @@ class GeminiWebSocket {
     private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
     private lastApiKey: string = '';
     private lastInstruction: string = '';
+    private audioChunksSent = 0;
 
     // Singleton
     private static instance: GeminiWebSocket;
@@ -37,6 +38,10 @@ class GeminiWebSocket {
 
     getConnectionState(): ConnectionState {
         return this.connectionState;
+    }
+
+    isReady(): boolean {
+        return this.connectionState === 'connected' && this.isSetupComplete;
     }
 
     private setConnectionState(state: ConnectionState, error?: GeminiError) {
@@ -108,6 +113,7 @@ class GeminiWebSocket {
                 if (this.ws !== ws) return;
                 Logger.info(TAG, 'WebSocket Connected successfully');
                 this.reconnectAttempts = 0;
+                this.audioChunksSent = 0;
                 this.isSetupComplete = false;
                 this.sendSetupMessage(systemInstruction);
             };
@@ -216,7 +222,14 @@ class GeminiWebSocket {
                     parts: [{ text: instruction || defaultInstruction }]
                 },
                 inputAudioTranscription: {},
-                outputAudioTranscription: {}
+                outputAudioTranscription: {},
+                // Configure VAD for reliable turn detection after model speaks
+                realtimeInputConfig: {
+                    automaticActivityDetection: {
+                        endOfSpeechSensitivity: 'END_SENSITIVITY_LOW',
+                        silenceDurationMs: 300
+                    }
+                }
             }
         };
         Logger.debug(TAG, `Setup message: ${JSON.stringify(setupMsg)}`);
@@ -224,14 +237,29 @@ class GeminiWebSocket {
     }
 
     sendAudioChunk(base64Data: string) {
+        // Validate input data
+        if (!base64Data || base64Data.length === 0) {
+            Logger.warn(TAG, 'sendAudioChunk called with empty data');
+            return;
+        }
+
         if (this.connectionState !== 'connected' || !this.ws) {
-            Logger.warn(TAG, 'Cannot send audio: WebSocket not connected');
+            Logger.warn(TAG, `Cannot send audio: state=${this.connectionState}`);
             return;
         }
 
         if (!this.isSetupComplete) {
             Logger.warn(TAG, 'Cannot send audio: Setup not complete yet');
             return;
+        }
+
+        // Audio is always sent - hardware AEC handles echo cancellation
+        // Gemini's automatic VAD handles turn detection and interruptions
+
+        // Log first few chunks and then every 50th to verify audio is flowing
+        this.audioChunksSent++;
+        if (this.audioChunksSent <= 5 || this.audioChunksSent % 50 === 0) {
+            Logger.debug(TAG, `Sending audio chunk #${this.audioChunksSent} (${base64Data.length} chars)`);
         }
 
         const msg: GeminiRealtimeInput = {
@@ -308,7 +336,7 @@ class GeminiWebSocket {
                         const mimeType = inlineData.mime_type || inlineData.mimeType;
                         if (mimeType?.startsWith('audio/pcm')) {
                             Logger.debug(TAG, 'Received audio chunk from model');
-                            audioPlayer.queueAudio(inlineData.data);
+                            audioStreamer.queueAudio(inlineData.data);
                         }
                     }
                     // Only add text if transcription is not enabled or not received
@@ -344,14 +372,14 @@ class GeminiWebSocket {
             // Handle generation complete - trigger audio playback
             const isGenerationComplete = serverContent.generation_complete || serverContent.generationComplete;
             if (isGenerationComplete) {
-                Logger.debug(TAG, 'Generation complete - triggering audio playback');
-                audioPlayer.onGenerationComplete();
+                Logger.debug(TAG, 'Generation complete');
+                audioStreamer.onGenerationComplete();
             }
 
             // Handle interruption (user spoke while model was speaking)
             if (interrupted) {
                 Logger.info(TAG, 'Model interrupted by user');
-                audioPlayer.clearQueue();
+                audioStreamer.handleInterruption();
                 store.handleInterruption();
             }
         }

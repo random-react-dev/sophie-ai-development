@@ -45,12 +45,20 @@ class LargeSecureStore {
     }
 
     async getItem(key: string) {
-        const encrypted = await AsyncStorage.getItem(key);
-        if (!encrypted) {
-            return encrypted;
-        }
+        try {
+            const encrypted = await AsyncStorage.getItem(key);
+            if (!encrypted) {
+                return encrypted;
+            }
 
-        return await this._decrypt(key, encrypted);
+            return await this._decrypt(key, encrypted);
+        } catch (error) {
+            // Corrupted session data - clear it and return null
+            // This handles cases where encryption key is missing from SecureStore
+            console.warn('Session decryption failed, clearing corrupted data');
+            await this.removeItem(key);
+            return null;
+        }
     }
 
     async removeItem(key: string) {
