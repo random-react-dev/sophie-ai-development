@@ -12,7 +12,7 @@ import {
     Mic,
     Plus,
     Search,
-    Sparkles, X
+    Sparkles, Star, X
 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import {
@@ -56,14 +56,14 @@ export default function RoleplayScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-            <View className="px-6 py-4 flex-row justify-between items-center">
-                <View>
-                    <Text className="text-gray-400 text-sm font-medium">Sophie AI</Text>
-                    <Text className="text-gray-400 text-xs font-medium">Native speaker in your pocket</Text>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
+            <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+                <View className="items-center">
+                    <Text className="text-black text-2xl font-bold">Sophie AI</Text>
+                    <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
                 </View>
                 <Link href="/profile" asChild>
-                    <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
+                    <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
                         {user?.user_metadata?.avatar_url ? (
                             <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
                         ) : (
@@ -75,29 +75,29 @@ export default function RoleplayScreen() {
                 </Link>
             </View>
 
-            <View className="px-6 mb-6">
-                <Text className="text-4xl font-bold text-gray-900 tracking-tight">Choose a Scenario</Text>
-                <Text className="text-gray-400 text-base font-medium mt-1">Practice real-life conversations</Text>
+            <View className="px-6 mb-8">
+                <Text className="text-4xl font-bold text-black text-left">Choose a Scenario</Text>
+                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Practice real-life conversations</Text>
             </View>
 
             {/* Search and Create Row */}
-            <View className="px-6 flex-row gap-3 mb-6">
-                <View className="flex-1 h-12 bg-gray-50 rounded-2xl flex-row items-center px-4 border border-gray-100">
-                    <Search size={18} color="#94a3b8" />
+            <View className="px-6 flex-row gap-2 mb-6">
+                <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
+                    <Search size={20} color="gray" />
                     <TextInput
                         placeholder="Search scenarios..."
-                        className="flex-1 ml-3 text-gray-900 font-medium"
+                        className="flex-1 ml-3 text-gray-900 font-medium text-base"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        placeholderTextColor="#94a3b8"
+                        placeholderTextColor="gray"
                     />
                 </View>
                 <TouchableOpacity
                     onPress={() => setCreateModalVisible(true)}
-                    className="h-12 px-5 bg-blue-500 rounded-2xl flex-row items-center gap-2 shadow-lg shadow-blue-200"
+                    className="h-12 px-4 bg-blue-500 rounded-full flex-row items-center gap-2"
                 >
-                    <Plus size={18} color="white" />
-                    <Text className="text-white font-bold">Create</Text>
+                    <Plus size={20} color="white" />
+                    <Text className="text-white font-bold text-base">Create</Text>
                 </TouchableOpacity>
             </View>
 
@@ -106,15 +106,15 @@ export default function RoleplayScreen() {
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 24, gap: 10 }}
+                    contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
                 >
                     {CATEGORIES.map((cat) => (
                         <TouchableOpacity
                             key={cat}
                             onPress={() => setSelectedCategory(cat)}
-                            className={`px-5 py-2.5 rounded-full border ${selectedCategory === cat ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-100'}`}
+                            className={`px-5 py-2 rounded-full border ${selectedCategory === cat ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300'}`}
                         >
-                            <Text className={`font-bold text-xs uppercase tracking-widest ${selectedCategory === cat ? 'text-white' : 'text-gray-400'}`}>
+                            <Text className={`font-bold text-[13px] ${selectedCategory === cat ? 'text-blue-500' : 'text-gray-600'}`}>
                                 {cat}
                             </Text>
                         </TouchableOpacity>
@@ -126,33 +126,47 @@ export default function RoleplayScreen() {
             <FlatList
                 data={filteredScenarios}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+                contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
                 renderItem={({ item }) => {
                     const Icon = IconMap[item.icon] || Sparkles;
-                    const isOrderingCoffee = item.id === 'ordering-coffee';
+                    const bgColor = 'bg-white';
 
                     return (
                         <TouchableOpacity
                             onPress={() => handleStartScenario(item)}
                             activeOpacity={0.7}
-                            className={`mb-4 p-5 rounded-[32px] flex-row items-center border ${isOrderingCoffee ? 'bg-amber-50 border-amber-100/50' : 'bg-white border-gray-100 shadow-sm shadow-gray-100'}`}
+                            className={`mb-4 p-4 rounded-2xl shadow-lg flex-row items-center ${bgColor}`}
                         >
-                            <View className={`w-12 h-12 rounded-2xl items-center justify-center ${isOrderingCoffee ? 'bg-amber-100' : 'bg-gray-50'}`}>
-                                <Icon size={24} color={isOrderingCoffee ? '#b45309' : '#64748b'} />
+                            <View className="w-12 h-12 rounded-xl items-center justify-center transform scale-110">
+                                <Icon size={28} color="gray" />
                             </View>
-                            <View className="flex-1 ml-4">
-                                <Text className="text-lg font-bold text-gray-900">{item.title}</Text>
-                                <Text className="text-gray-400 text-[10px] font-black uppercase tracking-tighter mb-1">
-                                    {item.category} • {item.level}
+                            <View className="flex-1 ml-6">
+                                <Text className="text-xl font-bold text-black">{item.title}</Text>
+                                <Text className="text-gray-400 text-base font-medium">
+                                    {item.category}
                                 </Text>
-                                <Text className="text-gray-500 text-xs leading-4" numberOfLines={2}>{item.description}</Text>
+                                <Text className="text-gray-400 text-sm font-medium" numberOfLines={2}>{item.description}</Text>
                             </View>
-                            <ChevronRight size={20} color="#cbd5e1" />
+                            <ChevronRight size={24} color="gray" />
                         </TouchableOpacity>
                     );
                 }}
+                ListFooterComponent={() => (
+                    <TouchableOpacity
+                        onPress={() => setCreateModalVisible(true)}
+                        activeOpacity={0.7}
+                        className="mb-4 p-5 rounded-2xl flex-row items-center border-2 border-dashed border-gray-300 shadow-lg"
+                    >
+                        <View className="w-12 h-12 rounded-xl items-center justify-center">
+                            <Star size={24} color="gray" />
+                        </View>
+                        <View className="flex-1 ml-6">
+                            <Text className="text-xl font-bold text-black">Create Your Own</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
                 ListEmptyComponent={
-                    <View className="items-center mt-10">
+                    <View className="items-center my-10">
                         <Text className="text-gray-400 font-medium italic">No scenarios found</Text>
                     </View>
                 }
@@ -208,9 +222,9 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
             >
                 <SafeAreaView className="flex-1">
                     <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
-                        <Text className="text-xl font-bold text-gray-900">Create Scenario</Text>
-                        <TouchableOpacity onPress={onClose} className="w-10 h-10 items-center justify-center rounded-full bg-gray-50">
-                            <X size={20} color="#64748b" />
+                        <Text className="text-2xl font-bold text-black">Create Scenario</Text>
+                        <TouchableOpacity onPress={onClose} className="w-12 h-12 items-center justify-center rounded-full bg-gray-100">
+                            <X size={20} color="black" />
                         </TouchableOpacity>
                     </View>
 
