@@ -1,5 +1,5 @@
 import { RainbowWave } from '@/components/lesson/RainbowWave';
-import { audioPlayer } from '@/services/audio/player';
+import { audioStreamer } from '@/services/audio/streamer';
 import { audioRecorder } from '@/services/audio/recorder';
 import { translateText } from '@/services/gemini/translate';
 import { geminiWebSocket } from '@/services/gemini/websocket';
@@ -22,8 +22,8 @@ const TAG = 'TalkTab';
 export default function TalkScreen() {
     const {
         connectionState, error, isListening, isSpeaking, volumeLevel,
-        messages, showTranscript,
-        setShowTranscript, clearMessages, setHasGreeted
+        messages, showTranscript, isConversationActive,
+        setShowTranscript, clearMessages, setHasGreeted, stopConversation
     } = useConversationStore();
     const { selectedScenario, selectScenario, practicePhrase, setPracticePhrase } = useScenarioStore();
     const { session, user } = useAuthStore();
@@ -87,26 +87,29 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             isMounted = false;
             Logger.info(TAG, 'Cleaning up Talk Hub...');
             geminiWebSocket.disconnect();
-            audioRecorder.stop();
-            audioPlayer.clearQueue();
+            audioRecorder.stop().catch(() => { /* ignore */ });
+            audioStreamer.clearQueue();
             isInitialized.current = false;
         };
     }, [session?.user?.id, session, selectedScenario, practicePhrase]);
 
     const getStatusText = (): string => {
-        if (isListening) return 'Live';
-        if (isSpeaking) return 'Speaking';
+        if (isSpeaking) return 'Sophie Speaking';
+        if (isListening && isConversationActive) return 'Listening';
+        if (isConversationActive) return 'Conversation Active';
         switch (connectionState) {
             case 'idle': return 'Ready';
             case 'connecting': return 'Connecting...';
-            case 'connected': return 'Connected';
+            case 'connected': return 'Tap mic to start';
             case 'reconnecting': return 'Reconnecting...';
             case 'error': return error || 'Error';
         }
     };
 
     const getDotColor = (): string => {
+        if (isSpeaking) return 'bg-purple-500';
         if (isListening) return 'bg-blue-500';
+        if (isConversationActive) return 'bg-green-500';
         switch (connectionState) {
             case 'idle': return 'bg-gray-400';
             case 'connecting':
@@ -155,7 +158,8 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                 {
                     text: "Reset",
                     style: "destructive",
-                    onPress: () => {
+                    onPress: async () => {
+                        await stopConversation();
                         clearMessages();
                         setHasGreeted(false);
                         selectScenario(null);
@@ -239,7 +243,7 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                     <RainbowWave isListening={isListening} isSpeaking={isSpeaking} volumeLevel={volumeLevel} />
                     <View className="absolute bottom-8 items-center">
                         <Text className="text-gray-300 text-xs font-medium tracking-wide italic">
-                            {isListening ? "Sophie is listening..." : isSpeaking ? "Sophie is responding..." : "Tap the mic below to talk"}
+                            {isSpeaking ? "Sophie is responding..." : isConversationActive ? "Speak naturally - I'm listening..." : "Tap the mic below to start"}
                         </Text>
                     </View>
                 </View>

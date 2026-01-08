@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { ConnectionState } from '../services/gemini/types';
+import { Logger } from '../services/common/Logger';
 
 interface Message {
     id: string;
@@ -13,9 +14,10 @@ interface ConversationState {
     connectionState: ConnectionState;
     error: string | null;
 
-    // Recording/Speaking state
-    isListening: boolean;
-    isSpeaking: boolean;
+    // Conversation mode state
+    isConversationActive: boolean; // Whether conversation mode is on
+    isListening: boolean; // Whether currently recording audio
+    isSpeaking: boolean; // Whether AI is speaking
     volumeLevel: number;
 
     // UI state
@@ -35,6 +37,13 @@ interface ConversationState {
     clearMessages: () => void;
     handleInterruption: () => void;
     reset: () => void;
+
+    // Conversation mode actions
+    startConversation: () => Promise<void>;
+    stopConversation: () => Promise<void>;
+    toggleConversation: () => Promise<void>;
+
+    // Legacy actions (deprecated, kept for compatibility)
     startGlobalRecording: () => Promise<void>;
     stopGlobalRecording: () => Promise<void>;
     toggleGlobalRecording: () => Promise<void>;
@@ -43,6 +52,7 @@ interface ConversationState {
 const initialState = {
     connectionState: 'idle' as ConnectionState,
     error: null,
+    isConversationActive: false,
     isListening: false,
     isSpeaking: false,
     volumeLevel: 0,
@@ -96,33 +106,35 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 
     reset: () => set(initialState),
 
-    startGlobalRecording: async () => {
+    /**
+     * Start continuous conversation mode.
+     * Sends greeting on first activation, then starts continuous audio recording.
+     */
+    startConversation: async () => {
         const state = get();
-        if (state.isListening) return;
+
+        // Already in conversation mode
+        if (state.isConversationActive) return;
 
         const { audioRecorder } = await import('../services/audio/recorder');
+        const { audioStreamer } = await import('../services/audio/streamer');
         const { geminiWebSocket } = await import('../services/gemini/websocket');
         const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
 
-        // First press logic: send greeting
-        if (!state.hasGreeted) {
-            if (state.connectionState === 'connected') {
-                geminiWebSocket.sendGreeting();
-                set({ hasGreeted: true });
-                await impactAsync(ImpactFeedbackStyle.Medium);
-            } else {
-                console.warn('Cannot greet: WebSocket not connected');
-            }
+        // Check connection
+        if (!geminiWebSocket.isReady()) {
+            Logger.warn('ConversationStore', 'Cannot start conversation: WebSocket not ready');
             return;
         }
 
-        // Subsequent press: record
-        if (state.connectionState !== 'connected') {
-            console.warn('Cannot record: WebSocket not connected');
-            return;
-        }
+        // Initialize audio streamer before starting
+        await audioStreamer.initialize();
 
-        try {
+        await impactAsync(ImpactFeedbackStyle.Medium);
+
+        // Helper to start recording with logging
+        const startRecording = async () => {
+            Logger.info('ConversationStore', 'Starting audio recording...');
             await audioRecorder.start({
                 onAudioData: (base64) => {
                     geminiWebSocket.sendAudioChunk(base64);
@@ -131,39 +143,89 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
                     set({ volumeLevel: rms });
                 }
             });
-            await impactAsync(ImpactFeedbackStyle.Medium);
+            Logger.info('ConversationStore', 'Audio recording started');
             set({ isListening: true });
+        };
+
+        // Send greeting if not greeted yet
+        if (!state.hasGreeted) {
+            geminiWebSocket.sendGreeting();
+            set({ hasGreeted: true, isConversationActive: true });
+
+            // Start recording immediately - no delay needed
+            try {
+                await startRecording();
+            } catch (error) {
+                Logger.error('ConversationStore', 'Failed to start recording after greeting', error);
+            }
+            return;
+        }
+
+        // Already greeted, start recording immediately
+        try {
+            await startRecording();
+            set({ isConversationActive: true });
         } catch (error) {
-            console.error('Failed to start recording', error);
+            Logger.error('ConversationStore', 'Failed to start recording', error);
         }
     },
 
-    stopGlobalRecording: async () => {
+    /**
+     * Stop continuous conversation mode.
+     */
+    stopConversation: async () => {
         const state = get();
-        if (!state.hasGreeted || !state.isListening) {
+
+        if (!state.isConversationActive) {
             set({ volumeLevel: 0 });
             return;
         }
 
         const { audioRecorder } = await import('../services/audio/recorder');
+        const { audioStreamer } = await import('../services/audio/streamer');
         const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
 
         try {
+            Logger.info('ConversationStore', 'Stopping conversation...');
             await audioRecorder.stop();
+            audioStreamer.clearQueue();
             await impactAsync(ImpactFeedbackStyle.Light);
-            set({ isListening: false, volumeLevel: 0 });
+            set({
+                isConversationActive: false,
+                isListening: false,
+                isSpeaking: false,
+                volumeLevel: 0
+            });
+            Logger.info('ConversationStore', 'Conversation stopped');
         } catch (error) {
-            console.error('Failed to stop recording', error);
+            Logger.error('ConversationStore', 'Failed to stop conversation', error);
         }
     },
 
-    toggleGlobalRecording: async () => {
+    /**
+     * Toggle conversation mode on/off.
+     */
+    toggleConversation: async () => {
         const state = get();
-        if (state.isListening) {
-            await state.stopGlobalRecording();
+        if (state.isConversationActive) {
+            await state.stopConversation();
         } else {
-            await state.startGlobalRecording();
+            await state.startConversation();
         }
+    },
+
+    // Legacy methods - redirect to conversation mode
+    startGlobalRecording: async () => {
+        await get().startConversation();
+    },
+
+    stopGlobalRecording: async () => {
+        // In conversation mode, we don't stop on release
+        // This is now a no-op to prevent stopping when releasing mic button
+    },
+
+    toggleGlobalRecording: async () => {
+        await get().toggleConversation();
     },
 }));
 

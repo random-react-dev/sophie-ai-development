@@ -1,4 +1,13 @@
-import { AudioDataEvent, ExpoAudioStreamModule } from '@siteed/expo-audio-studio';
+import {
+    requestPermission,
+    start,
+    stop,
+    addFrameListener,
+    addErrorListener,
+    type Subscription,
+    type PermissionStatus,
+} from 'expo-stream-audio';
+import { Platform, PermissionsAndroid } from 'react-native';
 import { Logger } from '../common/Logger';
 
 const TAG = 'AudioRecorder';
@@ -11,27 +20,18 @@ export interface RecorderOptions {
 class AudioRecorder {
     private isRecording = false;
     private options: RecorderOptions | null = null;
-    private subscription: { remove: () => void } | null = null;
+    private frameSubscription: Subscription | null = null;
+    private errorSubscription: Subscription | null = null;
     private chunkCount = 0;
 
     // Singleton pattern
     private static instance: AudioRecorder;
-    private constructor() { }
+    private constructor() {}
     public static getInstance(): AudioRecorder {
         if (!AudioRecorder.instance) {
             AudioRecorder.instance = new AudioRecorder();
         }
         return AudioRecorder.instance;
-    }
-
-    private handleChunk(data: string) {
-        this.chunkCount++;
-        if (this.chunkCount % 10 === 0) {
-            Logger.debug(TAG, `Audio chunk #${this.chunkCount} sent to callback (${data.length} chars)`);
-        }
-        if (this.options?.onAudioData) {
-            this.options.onAudioData(data);
-        }
     }
 
     async start(options: RecorderOptions) {
@@ -45,27 +45,60 @@ class AudioRecorder {
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
 
-            // Start recording with base parameters and direct callback
-            await ExpoAudioStreamModule.startRecording({
-                sampleRate: 16000,
-                encoding: 'pcm_16bit',
-                channels: 1,
-                interval: 100, // Emit data every 100ms
-                onAudioStream: async (event: AudioDataEvent) => {
-                    if (typeof event.data === 'string') {
-                        this.handleChunk(event.data);
+            // Request permissions
+            let permission: PermissionStatus = await requestPermission();
+
+            if (Platform.OS === 'android' && permission !== 'granted') {
+                const result = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                );
+                if (result === PermissionsAndroid.RESULTS.GRANTED) {
+                    permission = 'granted';
+                }
+            }
+
+            if (permission !== 'granted') {
+                throw new Error('Microphone permission not granted');
+            }
+
+            // Set up event listeners before starting
+            this.frameSubscription = addFrameListener((frame) => {
+                this.chunkCount++;
+
+                // On first frame, log sample rate to verify it matches what Gemini expects
+                if (this.chunkCount === 1) {
+                    Logger.info(TAG, `First frame: sampleRate=${frame.sampleRate}, size=${frame.pcmBase64?.length || 0}`);
+                    if (frame.sampleRate !== 16000) {
+                        Logger.warn(TAG, `Sample rate mismatch! Got ${frame.sampleRate}, expected 16000`);
                     }
+                } else if (this.chunkCount % 50 === 0) {
+                    Logger.debug(TAG, `Audio frame #${this.chunkCount}`);
+                }
+
+                // Validate audio data before sending
+                if (!frame.pcmBase64 || frame.pcmBase64.length === 0) {
+                    Logger.warn(TAG, `Frame #${this.chunkCount}: empty pcmBase64`);
+                    return;
+                }
+
+                // Send PCM data to callback
+                this.options?.onAudioData(frame.pcmBase64);
+
+                // Send volume level
+                if (frame.level !== undefined && this.options?.onVolumeChange) {
+                    this.options.onVolumeChange(frame.level);
                 }
             });
 
-            // Backup Listener: ensuring we catch all data
-            this.subscription = ExpoAudioStreamModule.addListener('onAudioStream', (event: AudioDataEvent) => {
-                if (!this.isRecording) return;
+            this.errorSubscription = addErrorListener((event) => {
+                Logger.error(TAG, 'Microphone error', event.message);
+            });
 
-                if (typeof event.data === 'string') {
-                    // Log only every 50th for extreme backup debug
-                    // if (this.chunkCount % 50 === 0) Logger.debug(TAG, 'Backup listener check OK');
-                }
+            // Start streaming (16kHz, 20ms frames = ~50 frames/second)
+            await start({
+                sampleRate: 16000,
+                frameDurationMs: 20,
+                enableLevelMeter: true,
             });
 
             this.isRecording = true;
@@ -73,6 +106,7 @@ class AudioRecorder {
 
         } catch (error) {
             Logger.error(TAG, 'Failed to start recording', error);
+            this.cleanup();
             throw error;
         }
     }
@@ -85,19 +119,22 @@ class AudioRecorder {
 
         try {
             Logger.info(TAG, 'Stopping recording...');
-
-            if (this.subscription) {
-                this.subscription.remove();
-                this.subscription = null;
-            }
-
-            await ExpoAudioStreamModule.stopRecording();
-            this.isRecording = false;
+            await stop();
+            this.cleanup();
             Logger.info(TAG, 'Recording stopped successfully');
         } catch (error) {
             Logger.error(TAG, 'Failed to stop recording', error);
+            this.cleanup();
             throw error;
         }
+    }
+
+    private cleanup() {
+        this.frameSubscription?.remove();
+        this.errorSubscription?.remove();
+        this.frameSubscription = null;
+        this.errorSubscription = null;
+        this.isRecording = false;
     }
 }
 

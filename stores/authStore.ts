@@ -107,14 +107,45 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
     initialize: async () => {
         set({ isLoading: true });
-        const { data: { session } } = await supabase.auth.getSession();
-        set({
-            session,
-            user: session?.user ?? null,
-            initialized: true,
-            isLoading: false,
-            showTrialPopup: !!session?.user
-        });
+
+        try {
+            const { data: { session }, error } = await supabase.auth.getSession();
+
+            // If there's an auth error (e.g., invalid refresh token), clear and start fresh
+            if (error) {
+                console.warn('Session restore failed:', error.message);
+                try {
+                    await supabase.auth.signOut();
+                } catch {
+                    // Ignore signOut errors during cleanup
+                }
+                set({
+                    session: null,
+                    user: null,
+                    initialized: true,
+                    isLoading: false,
+                    showTrialPopup: false
+                });
+            } else {
+                set({
+                    session,
+                    user: session?.user ?? null,
+                    initialized: true,
+                    isLoading: false,
+                    showTrialPopup: !!session?.user
+                });
+            }
+        } catch (err) {
+            // Handle any unexpected errors during initialization
+            console.warn('Auth initialization error:', err);
+            set({
+                session: null,
+                user: null,
+                initialized: true,
+                isLoading: false,
+                showTrialPopup: false
+            });
+        }
 
         supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
             const newUser = session?.user ?? null;
