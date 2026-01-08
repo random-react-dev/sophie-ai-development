@@ -63,7 +63,7 @@ export default function RoleplayScreen() {
                     <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
                 </View>
                 <Link href="/profile" asChild>
-                    <TouchableOpacity className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden border border-gray-200 absolute right-6">
+                    <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
                         {user?.user_metadata?.avatar_url ? (
                             <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
                         ) : (
@@ -222,9 +222,9 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
             >
                 <SafeAreaView className="flex-1">
                     <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
-                        <Text className="text-xl font-bold text-gray-900">Create Scenario</Text>
-                        <TouchableOpacity onPress={onClose} className="w-10 h-10 items-center justify-center rounded-full bg-gray-50">
-                            <X size={20} color="#64748b" />
+                        <Text className="text-2xl font-bold text-black">Create Scenario</Text>
+                        <TouchableOpacity onPress={onClose} className="w-12 h-12 items-center justify-center rounded-full bg-gray-100">
+                            <X size={20} color="black" />
                         </TouchableOpacity>
                     </View>
 
