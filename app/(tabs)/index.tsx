@@ -86,7 +86,7 @@ export default function RoleplayScreen() {
                     <Search size={20} color="gray" />
                     <TextInput
                         placeholder="Search scenarios..."
-                        className="flex-1 ml-3 text-gray-900 font-medium text-base"
+                        className="ml-3 text-gray-900 font-medium text-base"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         placeholderTextColor="gray"
@@ -221,8 +221,8 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
                 className="flex-1 bg-white"
             >
                 <SafeAreaView className="flex-1">
-                    <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
-                        <Text className="text-2xl font-bold text-black">Create Scenario</Text>
+                    <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+                        <Text className="text-3xl font-bold text-black">Create Scenario</Text>
                         <TouchableOpacity onPress={onClose} className="w-12 h-12 items-center justify-center rounded-full bg-gray-100">
                             <X size={20} color="black" />
                         </TouchableOpacity>
@@ -230,54 +230,58 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
 
                     <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
                         <View className="mb-6">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Sophie&apos;s Role *</Text>
+                            <Text className="text-gray-500 text-base shadow-lg font-semibold capitalize mb-2 ml-1">Sophie&apos;s Role <Text className="text-red-500">*</Text></Text>
                             <TextInput
                                 placeholder="e.g. A grumpy but helpful shopkeeper"
-                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                                placeholderTextColor="gray"
+                                className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
                                 value={sophieRole}
                                 onChangeText={setSophieRole}
                             />
                         </View>
 
                         <View className="mb-6">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Your Role</Text>
+                            <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">Your Role</Text>
                             <TextInput
                                 placeholder="e.g. A customer in a hurry"
-                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                                placeholderTextColor="gray"
+                                className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
                                 value={userRole}
                                 onChangeText={setUserRole}
                             />
                         </View>
 
                         <View className="mb-6">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Topic *</Text>
+                            <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">Topic <Text className="text-red-500">*</Text></Text>
                             <TextInput
                                 placeholder="e.g. Buying a vintage watch"
-                                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                                placeholderTextColor="gray"
+                                className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
                                 value={topic}
                                 onChangeText={setTopic}
                             />
                         </View>
 
                         <View className="mb-6">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Level</Text>
+                            <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">Level</Text>
                             <View className="flex-row flex-wrap gap-2">
                                 {CEFR_LEVELS.map((l) => (
                                     <TouchableOpacity
                                         key={l}
                                         onPress={() => setLevel(l)}
-                                        className={`px-4 py-2 rounded-xl border ${level === l ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-100'}`}
+                                        className={`px-4 py-2 rounded-full border ${level === l ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300'}`}
                                     >
-                                        <Text className={`font-bold text-xs ${level === l ? 'text-white' : 'text-gray-400'}`}>{l}</Text>
+                                        <Text className={`font-bold text-xs ${level === l ? 'text-blue-500' : 'text-gray-600'}`}>{l}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
                         </View>
 
                         <View className="mb-10">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Context / Situation</Text>
+                            <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">Context / Situation</Text>
                             <TextInput
                                 placeholder="Describe the setting..."
+                                placeholderTextColor="gray"
                                 className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium h-32 text-start align-top"
                                 multiline
                                 value={context}
@@ -286,10 +290,10 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
                         </View>
                     </ScrollView>
 
-                    <View className="px-6 py-8 border-t border-gray-50">
+                    <View className="px-6 py-8 border-t border-gray-100">
                         <TouchableOpacity
                             onPress={handleCreate}
-                            className="w-full h-16 bg-gray-900 rounded-3xl items-center justify-center shadow-xl shadow-gray-200"
+                            className="w-full h-16 bg-blue-500 rounded-full items-center justify-center shadow-lg"
                         >
                             <Text className="text-white font-bold text-lg">Start Scenario</Text>
                         </TouchableOpacity>
