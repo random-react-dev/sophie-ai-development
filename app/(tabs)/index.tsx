@@ -82,7 +82,7 @@ export default function RoleplayScreen() {
 
             {/* Search and Create Row */}
             <View className="px-6 flex-row gap-2 mb-6">
-                <View className="flex-1 h-12 bg-white rounded-full flex-row items-center px-4">
+                <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
                     <Search size={20} color="gray" />
                     <TextInput
                         placeholder="Search scenarios..."
@@ -129,24 +129,13 @@ export default function RoleplayScreen() {
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
                 renderItem={({ item }) => {
                     const Icon = IconMap[item.icon] || Sparkles;
-                    const isFoodDrink = item.category === 'Food & Drink';
-                    const isBusiness = item.category === 'Business';
-
-                    let bgColor = 'bg-white';
-                    let borderColor = 'border-gray-100';
-                    if (isFoodDrink) {
-                        bgColor = 'bg-[#FEFBEB]';
-                        borderColor = 'border-amber-100/50';
-                    } else if (isBusiness) {
-                        bgColor = 'bg-[#F0F9FF]';
-                        borderColor = 'border-blue-100/50';
-                    }
+                    const bgColor = 'bg-white';
 
                     return (
                         <TouchableOpacity
                             onPress={() => handleStartScenario(item)}
                             activeOpacity={0.7}
-                            className={`mb-4 p-4 rounded-2xl flex-row items-center border ${bgColor} ${borderColor}`}
+                            className={`mb-4 p-4 rounded-2xl shadow-lg flex-row items-center ${bgColor}`}
                         >
                             <View className="w-12 h-12 rounded-xl items-center justify-center transform scale-110">
                                 <Icon size={28} color="gray" />
@@ -166,7 +155,7 @@ export default function RoleplayScreen() {
                     <TouchableOpacity
                         onPress={() => setCreateModalVisible(true)}
                         activeOpacity={0.7}
-                        className="mb-4 p-5 rounded-2xl flex-row items-center border-2 border-dashed border-gray-300"
+                        className="mb-4 p-5 rounded-2xl flex-row items-center border-2 border-dashed border-gray-300 shadow-lg"
                     >
                         <View className="w-12 h-12 rounded-xl items-center justify-center">
                             <Star size={24} color="gray" />
