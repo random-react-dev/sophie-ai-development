@@ -1,3 +1,4 @@
+import CircleFlag from '@/components/common/CircleFlag';
 import { Language, SUPPORTED_LANGUAGES } from '@/constants/languages';
 import { Search, X } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
@@ -103,7 +104,7 @@ export default function LanguagePickerModal({
                                     className={`flex-row items-center py-4 px-4 rounded-2xl mb-2 ${isSelected ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
                                         }`}
                                 >
-                                    <Text className="text-2xl mr-4">{item.flag}</Text>
+                                    <CircleFlag countryCode={item.countryCode} size={28} />
                                     <View className="flex-1">
                                         <Text className={`font-bold text-base ${isSelected ? 'text-blue-600' : 'text-gray-900'
                                             }`}>
