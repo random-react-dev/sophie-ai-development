@@ -1,6 +1,7 @@
 import { CATEGORIES, CEFRLevel, CEFR_LEVELS, Scenario } from '@/constants/scenarios';
 import { useAuthStore } from '@/stores/authStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
 import {
@@ -11,8 +12,7 @@ import {
     Compass,
     Mic,
     Plus,
-    Search,
-    Sparkles, Star, X
+    Sparkles, Star
 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import {
@@ -83,7 +83,7 @@ export default function RoleplayScreen() {
             {/* Search and Create Row */}
             <View className="px-6 flex-row gap-2 mb-6">
                 <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
-                    <Search size={20} color="gray" />
+                    <Feather name="search" size={20} color="gray" />
                     <TextInput
                         placeholder="Search scenarios..."
                         className="ml-3 text-gray-900 font-medium text-base"
@@ -223,8 +223,8 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
                 <SafeAreaView className="flex-1">
                     <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
                         <Text className="text-3xl font-bold text-black">Create Scenario</Text>
-                        <TouchableOpacity onPress={onClose} className="w-12 h-12 items-center justify-center rounded-full bg-gray-100">
-                            <X size={20} color="black" />
+                        <TouchableOpacity onPress={onClose} className="w-10 h-10 items-center justify-center rounded-full bg-gray-100">
+                            <Ionicons name="close" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
 

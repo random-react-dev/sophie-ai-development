@@ -5,6 +5,7 @@ import { translateText } from '@/services/gemini/translate';
 import { saveToVocabulary } from '@/services/supabase/vocabulary';
 import { useAuthStore } from '@/stores/authStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
+import { FontAwesome } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
@@ -15,8 +16,8 @@ import {
     ChevronDown,
     Copy,
     MessageSquare,
-    Mic,
-    Sparkles, Trash2,
+    Sparkles,
+    Trash2,
     Volume2
 } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
@@ -142,6 +143,7 @@ export default function TranslateScreen() {
             >
                 <ScrollView
                     className="flex-1"
+                    contentContainerStyle={{ flexGrow: 1 }}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="px-4">
@@ -193,6 +195,12 @@ export default function TranslateScreen() {
                     {/* Top Section - Input Area (Clean Split) */}
                     <View className="px-4">
                         <View className='min-h-[140px]'>
+                            <View className="flex-row items-center gap-2 mb-2">
+                                <View className="w-2 h-2 rounded-full bg-blue-500" />
+                                <Text className="text-blue-500 text-xs font-bold uppercase tracking-wider">
+                                    {sourceLang.name}
+                                </Text>
+                            </View>
                             <TextInput
                                 placeholder="Enter text to translate..."
                                 multiline
@@ -213,7 +221,7 @@ export default function TranslateScreen() {
                                 <TouchableOpacity
                                     activeOpacity={0.7}
                                     className="w-10 h-10 items-center justify-center rounded-full bg-white">
-                                    <Mic size={18} color="black" />
+                                    <FontAwesome name="microphone" size={18} color="black" />
                                 </TouchableOpacity>
                                 {inputText.length > 0 && (
                                     <TouchableOpacity
@@ -251,7 +259,7 @@ export default function TranslateScreen() {
 
                     {/* Bottom Section - Output Area (Clean Split) */}
                     <View
-                        className="flex-1 bg-white rounded-t-3xl mt-6 p-4"
+                        className="flex-1 bg-white rounded-t-[40px] mt-6 p-6 overflow-hidden"
                         style={{
                             shadowColor: '#000',
                             shadowOffset: { width: 0, height: -4 },
@@ -262,6 +270,12 @@ export default function TranslateScreen() {
                     >
                         {translatedText ? (
                             <>
+                                <View className="flex-row items-center gap-2 mb-3">
+                                    <View className="w-2 h-2 rounded-full bg-blue-500" />
+                                    <Text className="text-blue-500 text-xs font-bold uppercase tracking-wider">
+                                        {targetLang.name}
+                                    </Text>
+                                </View>
                                 <Text className="text-gray-900 text-xl leading-normal">
                                     {translatedText}
                                 </Text>
