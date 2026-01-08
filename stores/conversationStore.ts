@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { ConnectionState } from '../services/gemini/types';
 import { Logger } from '../services/common/Logger';
+import { ConnectionState } from '../services/gemini/types';
 
 interface Message {
     id: string;
