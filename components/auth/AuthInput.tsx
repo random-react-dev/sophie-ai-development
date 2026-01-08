@@ -26,7 +26,7 @@ export function AuthInput({
   return (
     <View className="w-full">
       <View
-        className={`flex-row items-center w-full bg-white rounded-2xl px-4 border ${
+        className={`flex-row items-center w-full bg-white rounded-full px-4 border ${
           error ? "border-red-500" : "border-gray-300"
         }`}
       >

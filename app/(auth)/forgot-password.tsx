@@ -107,7 +107,7 @@ export default function ForgotPasswordScreen() {
                   <Pressable
                     onPress={handleReset}
                     disabled={isLoading}
-                    className="bg-blue-500 py-4 rounded-2xl items-center mt-6 active:opacity-80"
+                    className="bg-blue-500 py-4 rounded-full items-center mt-6 active:opacity-80"
                   >
                     <Text className="text-white font-bold text-base">
                       {isLoading ? "Sending..." : "Send Reset Link"}

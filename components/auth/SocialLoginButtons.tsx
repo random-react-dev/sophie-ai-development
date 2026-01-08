@@ -1,5 +1,6 @@
-import React from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { AlertModal } from "@/components/common/AlertModal";
+import React, { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 // Google Logo Component
@@ -36,11 +37,15 @@ function AppleLogo() {
 }
 
 export function SocialLoginButtons() {
+  // Modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const handleSocialLogin = (provider: string) => {
-    Alert.alert(
-      "Coming Soon",
+    setModalMessage(
       `${provider} login is not yet implemented in this prototype.`
     );
+    setModalVisible(true);
   };
 
   return (
@@ -56,7 +61,7 @@ export function SocialLoginButtons() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => handleSocialLogin("Google")}
-        className="w-full flex-row items-center bg-white border border-gray-300 rounded-2xl py-4 px-5 mb-3 active:bg-gray-50"
+        className="w-full flex-row items-center bg-white border border-gray-300 rounded-full py-4 px-5 mb-3 active:bg-gray-50"
       >
         <GoogleLogo />
         <Text className="flex-1 text-center text-black font-bold text-base">
@@ -68,13 +73,22 @@ export function SocialLoginButtons() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => handleSocialLogin("Apple")}
-        className="w-full flex-row items-center bg-white border border-gray-300 rounded-2xl py-4 px-5 active:bg-gray-50"
+        className="w-full flex-row items-center bg-white border border-gray-300 rounded-full py-4 px-5 active:bg-gray-50"
       >
         <AppleLogo />
         <Text className="flex-1 text-center text-gray-700 font-bold text-base">
           Continue with Apple
         </Text>
       </TouchableOpacity>
+
+      {/* Alert Modal */}
+      <AlertModal
+        visible={modalVisible}
+        title="Coming Soon"
+        message={modalMessage}
+        onClose={() => setModalVisible(false)}
+        type="warning"
+      />
     </View>
   );
 }

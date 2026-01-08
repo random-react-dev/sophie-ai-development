@@ -8,7 +8,7 @@ interface AlertModalProps {
   title: string;
   message: string;
   onClose: () => void;
-  type?: "error" | "success";
+  type?: "error" | "success" | "warning";
 }
 
 export function AlertModal({
@@ -18,7 +18,20 @@ export function AlertModal({
   onClose,
   type = "error",
 }: AlertModalProps) {
-  const isSuccess = type === "success";
+  // Get icon and color based on type
+  const getIconConfig = () => {
+    switch (type) {
+      case "success":
+        return { name: "check", bgColor: "bg-green-500" };
+      case "warning":
+        return { name: "exclamation", bgColor: "bg-yellow-500" };
+      case "error":
+      default:
+        return { name: "exclamation", bgColor: "bg-red-500" };
+    }
+  };
+
+  const { name: iconName, bgColor } = getIconConfig();
 
   return (
     <Modal
@@ -36,18 +49,12 @@ export function AlertModal({
             <X size={22} color="gray" />
           </Pressable>
 
-          {/* Icon - Error or Success */}
+          {/* Icon - Error, Success, or Warning */}
           <View className="items-center mb-5 mt-2">
             <View
-              className={`w-14 h-14 rounded-full items-center justify-center ${
-                isSuccess ? "bg-green-600" : "bg-red-600"
-              }`}
+              className={`w-14 h-14 rounded-full items-center justify-center ${bgColor}`}
             >
-              <FontAwesome5
-                name={isSuccess ? "check" : "exclamation"}
-                size={22}
-                color="white"
-              />
+              <FontAwesome5 name={iconName} size={22} color="white" />
             </View>
           </View>
 
@@ -64,7 +71,7 @@ export function AlertModal({
           {/* Button */}
           <Pressable
             onPress={onClose}
-            className="bg-gray-900 py-4 rounded-xl items-center active:opacity-80"
+            className="bg-blue-500 py-4 rounded-full items-center active:opacity-80"
           >
             <Text className="text-white font-semibold text-base">OK</Text>
           </Pressable>

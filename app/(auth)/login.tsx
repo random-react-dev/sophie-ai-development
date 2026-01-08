@@ -105,7 +105,7 @@ export default function LoginScreen() {
                     <View className="items-end mt-2">
                       <Link href="/forgot-password" asChild>
                         <TouchableOpacity>
-                          <Text className="text-black text-sm font-bold">
+                          <Text className="text-blue-500 text-sm font-bold">
                             Forgot password?
                           </Text>
                         </TouchableOpacity>
@@ -117,7 +117,7 @@ export default function LoginScreen() {
                   <Pressable
                     onPress={handleLogin}
                     disabled={isLoading}
-                    className="bg-blue-500 py-4 rounded-2xl items-center mt-6 active:opacity-80"
+                    className="bg-blue-500 py-4 rounded-full items-center mt-6 active:opacity-80"
                   >
                     <Text className="text-white font-bold text-base">
                       {isLoading ? "Logging in..." : "Login"}
@@ -131,16 +131,14 @@ export default function LoginScreen() {
 
               {/* Bottom Section - Sign Up */}
               <View className="items-center py-4">
-                <Text className="text-gray-500 font-bold text-base">
-                  Don&apos;t have an account?
-                </Text>
-                <Link href="/signup" asChild>
-                  <TouchableOpacity className="mt-1" activeOpacity={0.7}>
-                    <Text className="text-black font-bold text-base underline">
+                <Text className="text-black font-bold text-base">
+                  Don&apos;t have an account?{" "}
+                  <Link href="/signup" asChild>
+                    <Text className="text-blue-500 font-bold text-base underline">
                       Sign up
                     </Text>
-                  </TouchableOpacity>
-                </Link>
+                  </Link>
+                </Text>
               </View>
 
               {/* Terms */}
