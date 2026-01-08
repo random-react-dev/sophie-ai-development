@@ -1,23 +1,76 @@
 import { RainbowWave } from '@/components/lesson/RainbowWave';
-import { audioStreamer } from '@/services/audio/streamer';
+import LanguageSelectorModal from '@/components/tutor/LanguageSelectorModal';
+import { Language } from '@/constants/languages';
 import { audioRecorder } from '@/services/audio/recorder';
+import { audioStreamer } from '@/services/audio/streamer';
 import { translateText } from '@/services/gemini/translate';
 import { geminiWebSocket } from '@/services/gemini/websocket';
 import { supabase } from '@/services/supabase/client';
 import { saveToVocabulary } from '@/services/supabase/vocabulary';
 import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
+import { useLearningStore } from '@/stores/learningStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
 import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
 import { Bookmark, CheckCircle2, Globe, Mic, RotateCcw, Wand2 } from 'lucide-react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Logger } from '@/services/common/Logger';
 
 const TAG = 'TalkTab';
+
+// Hello words for initial greeting
+const HELLO_WORDS: Record<string, string> = {
+    en: 'Hello',
+    es: 'Hola',
+    fr: 'Bonjour',
+    de: 'Hallo',
+    ja: 'Konnichiwa',
+    zh: 'Ni hao',
+    ko: 'Annyeong',
+    it: 'Ciao',
+    pt: 'Olá',
+    hi: 'Namaste',
+    ar: 'Marhaba',
+    ru: 'Privet',
+};
+
+const getHelloWord = (code: string): string => HELLO_WORDS[code] || 'Hello';
+
+// Build tutor prompt with language context
+const buildTutorPrompt = (targetLang: Language, nativeLang: Language): string => {
+    return `You are Sophie, a warm and encouraging AI language tutor.
+
+## Context
+- User wants to learn: ${targetLang.name}
+- User's native language: ${nativeLang.name}
+
+## Your Teaching Style
+- Be warm, patient, and non-judgmental
+- Celebrate small wins with genuine encouragement
+- When user makes mistakes, gently correct without making them feel bad
+- Use the sandwich method: positive → correction → positive
+
+## Greeting
+Start by greeting the user in their native language (${nativeLang.name}), then introduce the lesson:
+"Welcome to your ${targetLang.name} lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name} is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+
+## Lesson Flow
+1. Introduce a word/phrase in ${targetLang.name}
+2. Ask user to repeat it
+3. Listen and provide feedback
+4. If correct: "That's great! You're doing wonderfully." + next challenge
+5. If needs work: "Good try! Let me help you with that..." + gentle guidance
+
+## Key Rules
+- Keep responses short and conversational (2-3 sentences max)
+- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name} for the words being taught
+- Never make the user feel bad about mistakes
+- Be encouraging and celebrate progress`;
+};
 
 export default function TalkScreen() {
     const {
@@ -26,16 +79,31 @@ export default function TalkScreen() {
         setShowTranscript, clearMessages, setHasGreeted, stopConversation
     } = useConversationStore();
     const { selectedScenario, selectScenario, practicePhrase, setPracticePhrase } = useScenarioStore();
+    const { targetLanguage, nativeLanguage, setTargetLanguage, setNativeLanguage } = useLearningStore();
     const { session, user } = useAuthStore();
     const scrollViewRef = useRef<ScrollView>(null);
     const isInitialized = useRef(false);
     const router = useRouter();
+
+    // Language picker state
+    const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+    const [pickerMode, setPickerMode] = useState<'target' | 'native'>('target');
+
+    // Check if both languages are selected
+    const canStartConversation = targetLanguage !== null && nativeLanguage !== null;
 
     useEffect(() => {
         let isMounted = true;
 
         const initSession = async () => {
             if (!session || isInitialized.current) return;
+
+            // Don't initialize until both languages are selected
+            if (!targetLanguage || !nativeLanguage) {
+                Logger.info(TAG, 'Waiting for language selection before initializing...');
+                return;
+            }
+
             isInitialized.current = true;
 
             try {
@@ -50,15 +118,19 @@ export default function TalkScreen() {
 
                 if (!isMounted) return;
 
-                let instruction = "You are Sophie, a friendly AI language tutor. When the user makes a mistake, provide a 'Natural Correction' first, then explain why briefly. Keep responses very concise. Use simple vocabulary. Your goal is to help the user practice natural conversation.";
+                // Build instruction based on context
+                let instruction: string;
 
                 if (practicePhrase) {
-                    instruction = `You are Sophie, a friendly AI language tutor. The user wants to practice the phrase: "${practicePhrase}". 
-Your goal is to help them use this phrase in a natural conversation. 
-Start by greeting them and asking if they want to try using that phrase or if they need help understanding it.
-Keep responses concise. If the user makes a mistake, provide a 'Natural Correction'.`;
+                    instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
+
+## Special Focus
+The user wants to practice the phrase: "${practicePhrase}".
+Help them use this phrase naturally in conversation.`;
                 } else if (selectedScenario) {
-                    instruction = `You are Sophie, a friendly AI language tutor. You are in a roleplay scenario.
+                    instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
+
+## Roleplay Scenario
 Scenario: ${selectedScenario.title}
 Your Role: ${selectedScenario.sophieRole}
 User Role: ${selectedScenario.userRole}
@@ -66,11 +138,12 @@ Level: ${selectedScenario.level}
 Context: ${selectedScenario.context}
 Topic: ${selectedScenario.topic}
 
-Stay in character. Your target language level should be ${selectedScenario.level}. 
-Keep responses concise. If the user makes a mistake, provide a 'Natural Correction'.`;
+Stay in character while teaching.`;
+                } else {
+                    instruction = buildTutorPrompt(targetLanguage, nativeLanguage);
                 }
 
-                Logger.info(TAG, `Connecting WebSocket with ${practicePhrase ? 'practice phrase' : selectedScenario ? 'scenario' : 'default'}: ${practicePhrase || selectedScenario?.title || 'None'}`);
+                Logger.info(TAG, `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`);
                 geminiWebSocket.connect(token, instruction);
             } catch (err) {
                 if (isMounted) {
@@ -91,7 +164,7 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
             audioStreamer.clearQueue();
             isInitialized.current = false;
         };
-    }, [session?.user?.id, session, selectedScenario, practicePhrase]);
+    }, [session?.user?.id, session, selectedScenario, practicePhrase, targetLanguage, nativeLanguage]);
 
     const getStatusText = (): string => {
         if (isSpeaking) return 'Sophie Speaking';
@@ -191,14 +264,49 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
 
     return (
         <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-            {/* Header */}
+            {/* Header with Language Selectors */}
             <View className="px-6 py-4 flex-row justify-between items-center">
-                <View className="flex-1 mr-4">
-                    <Text className="text-2xl font-bold text-gray-900 tracking-tight">Sophie AI</Text>
-                    <Text className="text-gray-400 text-xs font-medium uppercase tracking-widest" numberOfLines={1}>
-                        {practicePhrase ? `Practicing: ${practicePhrase}` : selectedScenario ? `${selectedScenario.title} • ${selectedScenario.level}` : 'Daily Practice'}
-                    </Text>
+                {/* Language Selectors */}
+                <View className="flex-row items-center gap-3">
+                    {/* Target Language (what to learn) */}
+                    <TouchableOpacity
+                        onPress={() => { setPickerMode('target'); setShowLanguagePicker(true); }}
+                        className="items-center"
+                    >
+                        <View className="w-11 h-11 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
+                            {targetLanguage ? (
+                                <Text className="text-2xl">{targetLanguage.flag}</Text>
+                            ) : (
+                                <Globe size={20} color="#9ca3af" />
+                            )}
+                        </View>
+                        <Text className="text-[9px] text-gray-500 mt-1 font-medium">
+                            {targetLanguage ? 'Learning' : 'Select'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* Arrow */}
+                    <Text className="text-gray-300 text-lg mb-4">→</Text>
+
+                    {/* Native Language (explanations) */}
+                    <TouchableOpacity
+                        onPress={() => { setPickerMode('native'); setShowLanguagePicker(true); }}
+                        className="items-center"
+                    >
+                        <View className="w-11 h-11 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
+                            {nativeLanguage ? (
+                                <Text className="text-2xl">{nativeLanguage.flag}</Text>
+                            ) : (
+                                <Globe size={20} color="#9ca3af" />
+                            )}
+                        </View>
+                        <Text className="text-[9px] text-gray-500 mt-1 font-medium">
+                            {nativeLanguage ? 'Explain in' : 'Select'}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
+
+                {/* Profile Avatar */}
                 <Link href="/profile" asChild>
                     <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
                         {user?.user_metadata?.avatar_url ? (
@@ -260,9 +368,15 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
                                 <View className="w-16 h-16 rounded-3xl bg-blue-50 items-center justify-center mb-4">
                                     <Mic size={32} color="#3B82F6" opacity={0.3} />
                                 </View>
-                                <Text className="text-gray-300 font-medium text-center px-10 leading-5">
-                                    Tap the large mic below to start your {selectedScenario ? 'roleplay' : 'practice'}.
-                                </Text>
+                                {!canStartConversation ? (
+                                    <Text className="text-gray-400 font-medium text-center px-10 leading-5">
+                                        Select both languages above to start your lesson with Sophie.
+                                    </Text>
+                                ) : (
+                                    <Text className="text-gray-300 font-medium text-center px-10 leading-5">
+                                        Tap the large mic below to start your {selectedScenario ? 'roleplay' : targetLanguage?.name} lesson.
+                                    </Text>
+                                )}
                             </View>
                         ) : (
                             messages.map((msg) => (
@@ -308,6 +422,22 @@ Keep responses concise. If the user makes a mistake, provide a 'Natural Correcti
 
             {/* Pad for the Tab Bar Mic Button */}
             <View className="h-20" />
+
+            {/* Language Selector Modal */}
+            <LanguageSelectorModal
+                visible={showLanguagePicker}
+                onClose={() => setShowLanguagePicker(false)}
+                onSelect={(lang) => {
+                    if (pickerMode === 'target') {
+                        setTargetLanguage(lang);
+                    } else {
+                        setNativeLanguage(lang);
+                    }
+                    setShowLanguagePicker(false);
+                }}
+                selectedCode={pickerMode === 'target' ? targetLanguage?.code : nativeLanguage?.code}
+                title={pickerMode === 'target' ? 'What do you want to learn?' : "What's your native language?"}
+            />
         </SafeAreaView>
     );
 }
