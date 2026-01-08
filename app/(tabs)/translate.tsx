@@ -111,15 +111,14 @@ export default function TranslateScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-            {/* Header */}
-            <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-gray-100">
-                <View>
-                    <Text className="text-gray-400 text-xs font-medium uppercase tracking-wider">Sophie AI</Text>
-                    <Text className="text-gray-900 text-xl font-bold">Translate</Text>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
+            <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+                <View className="items-center">
+                    <Text className="text-black text-2xl font-bold">Sophie AI</Text>
+                    <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
                 </View>
                 <Link href="/profile" asChild>
-                    <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
+                    <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
                         {user?.user_metadata?.avatar_url ? (
                             <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
                         ) : (
@@ -131,23 +130,30 @@ export default function TranslateScreen() {
                 </Link>
             </View>
 
+            <View className="px-6 mb-8">
+                <Text className="text-4xl font-bold text-black text-left">Translate</Text>
+                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Translate text to another language</Text>
+            </View>
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                className="flex-1"
+                className="flex-1 px-4"
             >
                 <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
 
                     {/* Language Selector Bar */}
-                    <View className="bg-white mx-4 mt-4 rounded-2xl shadow-sm shadow-gray-200 border border-gray-100">
+                    <View className="bg-white rounded-full shadow-lg">
                         <View className="flex-row items-center justify-between p-4">
                             {/* Source Language */}
                             <TouchableOpacity
                                 onPress={() => setShowSourcePicker(true)}
-                                className="flex-1 flex-row items-center"
+                                className="flex-1 flex-row items-center gap-1"
                             >
-                                <Text className="text-2xl mr-2">{sourceLang.flag}</Text>
-                                <Text className="text-gray-900 font-semibold text-base">{sourceLang.name}</Text>
-                                <ChevronDown size={16} color="#9ca3af" className="ml-1" />
+                                <View className="flex-row items-center gap-2">
+                                    <Text className="text-2xl">{sourceLang.flag}</Text>
+                                    <Text className="text-gray-900 font-semibold text-base">{sourceLang.name}</Text>
+                                </View>
+                                <ChevronDown size={16} color="gray" />
                             </TouchableOpacity>
 
                             {/* Swap Button */}
@@ -155,36 +161,40 @@ export default function TranslateScreen() {
                                 onPress={handleSwap}
                                 className="w-10 h-10 bg-blue-50 rounded-full items-center justify-center mx-4"
                             >
-                                <ArrowRightLeft size={18} color="#3b82f6" />
+                                <ArrowRightLeft size={18} color="#3b82f6"  />
                             </TouchableOpacity>
 
                             {/* Target Language */}
                             <TouchableOpacity
                                 onPress={() => setShowTargetPicker(true)}
-                                className="flex-1 flex-row items-center justify-end"
+                                className="flex-1 flex-row items-center justify-end gap-1"
                             >
-                                <ChevronDown size={16} color="#9ca3af" className="mr-1" />
-                                <Text className="text-gray-900 font-semibold text-base">{targetLang.name}</Text>
-                                <Text className="text-2xl ml-2">{targetLang.flag}</Text>
+                                <ChevronDown size={16} color="gray" className="mr-1" />
+                                <View className="flex-row items-center gap-2">
+                                    <Text className="text-gray-900 font-semibold text-base">{targetLang.name}</Text>
+                                    <Text className="text-2xl">{targetLang.flag}</Text>
+                                </View>
                             </TouchableOpacity>
                         </View>
                     </View>
+                    <View className="mt-3">
+                        <Text className="text-gray-400 text-base font-medium text-center">Tap swap to reverse direction</Text>
+                    </View>
 
                     {/* Input Section - Clean, no visible border */}
-                    <View className="bg-white mx-4 mt-3 rounded-2xl shadow-sm shadow-gray-200 border border-gray-100">
-                        <View className="p-5 min-h-[160px]">
+                    <View className="bg-white rounded-2xl shadow-lg mt-6">
+                        <View className="p-4 min-h-[160px]">
                             <TextInput
                                 placeholder="Enter text to translate..."
                                 multiline
-                                className="text-lg text-gray-900 leading-relaxed"
+                                className="text-gray-900 text-lg"
                                 value={inputText}
                                 onChangeText={(text) => {
                                     setInputText(text);
                                     if (!text) setTranslatedText('');
                                 }}
-                                placeholderTextColor="#9ca3af"
+                                placeholderTextColor="gray"
                                 scrollEnabled={false}
-                                style={{ minHeight: 100 }}
                             />
                         </View>
 
@@ -230,7 +240,7 @@ export default function TranslateScreen() {
 
                     {/* Output Section */}
                     {translatedText ? (
-                        <View className="bg-white mx-4 mt-3 rounded-2xl shadow-sm shadow-gray-200 border border-blue-100">
+                        <View className="bg-white mt-3 rounded-2xl shadow-sm shadow-gray-200 border border-blue-100">
                             <View className="p-5">
                                 <View className="flex-row items-center gap-2 mb-3">
                                     <View className="w-2 h-2 rounded-full bg-blue-500" />
