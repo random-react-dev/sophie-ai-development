@@ -5,7 +5,7 @@ import Svg, { Path } from "react-native-svg";
 // Google Logo Component
 function GoogleLogo() {
   return (
-    <Svg width={20} height={20} viewBox="0 0 24 24">
+    <Svg width={26} height={26} viewBox="0 0 24 24">
       <Path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
         fill="#4285F4"
@@ -26,11 +26,11 @@ function GoogleLogo() {
   );
 }
 
-// Apple Logo Component
+// Apple Logo Component (Bootstrap Icons)
 function AppleLogo() {
   return (
-    <Svg width={26} height={26} viewBox="0 0 24 24" fill="#000000">
-      <Path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+    <Svg width={26} height={26} viewBox="0 0 16 16" fill="#000000">
+      <Path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516s1.52.087 2.475-1.258.762-2.391.728-2.43m3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422s1.675-2.789 1.698-2.854-.597-.79-1.254-1.157a3.7 3.7 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56s.625 1.924 1.273 2.796c.576.984 1.34 1.667 1.659 1.899s1.219.386 1.843.067c.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758q.52-1.185.473-1.282" />
     </Svg>
   );
 }
@@ -44,24 +44,22 @@ export function SocialLoginButtons() {
   };
 
   return (
-    <View className="w-full mt-4">
+    <View className="w-full">
       {/* Divider */}
-      <View className="flex-row items-center justify-center my-4">
-        <View className="h-[1px] flex-1 bg-gray-200" />
+      <View className="flex-row items-center justify-center my-5">
+        <View className="h-[1px] flex-1 bg-gray-300" />
         <Text className="mx-4 text-gray-400 text-sm">OR</Text>
-        <View className="h-[1px] flex-1 bg-gray-200" />
+        <View className="h-[1px] flex-1 bg-gray-300" />
       </View>
 
       {/* Google Button */}
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => handleSocialLogin("Google")}
-        className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-4 mb-3 active:bg-gray-50"
+        className="w-full flex-row items-center bg-white border border-gray-300 rounded-2xl py-4 px-5 mb-3 active:bg-gray-50"
       >
-        <View className="mr-3">
-          <GoogleLogo />
-        </View>
-        <Text className="text-gray-700 font-medium text-base">
+        <GoogleLogo />
+        <Text className="flex-1 text-center text-black font-bold text-base">
           Continue with Google
         </Text>
       </TouchableOpacity>
@@ -70,12 +68,10 @@ export function SocialLoginButtons() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => handleSocialLogin("Apple")}
-        className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-4 active:bg-gray-50"
+        className="w-full flex-row items-center bg-white border border-gray-300 rounded-2xl py-4 px-5 active:bg-gray-50"
       >
-        <View className="mr-3">
-          <AppleLogo />
-        </View>
-        <Text className="text-gray-700 font-medium text-base">
+        <AppleLogo />
+        <Text className="flex-1 text-center text-gray-700 font-bold text-base">
           Continue with Apple
         </Text>
       </TouchableOpacity>
