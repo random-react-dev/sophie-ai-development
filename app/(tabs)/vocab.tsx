@@ -1,3 +1,4 @@
+import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
@@ -9,27 +10,28 @@ import {
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
 import {
   BookOpen,
-  CheckCircle2,
+  Languages,
   MessageSquare,
   MoreVertical,
-  Play,
   Plus,
   Search,
-  X,
+  Trash2,
+  Volume2,
 } from "lucide-react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
   Platform,
+  Pressable,
   RefreshControl,
   ScrollView,
   Text,
@@ -37,12 +39,29 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  interpolate,
+  interpolateColor,
+  runOnJS,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Svg, { Path } from "react-native-svg";
 
 export default function VocabScreen() {
   const { user } = useAuthStore();
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
+  const { alertState, showAlert, hideAlert } = useAlertModal();
 
   // Data
   const [items, setItems] = useState<VocabularyItem[]>([]);
@@ -66,6 +85,11 @@ export default function VocabScreen() {
     new Set()
   );
   const [primaryPracticeItem, setPrimaryPracticeItem] =
+    useState<VocabularyItem | null>(null);
+
+  // Action Modal
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
+  const [selectedActionItem, setSelectedActionItem] =
     useState<VocabularyItem | null>(null);
 
   const fetchVocab = async () => {
@@ -103,11 +127,11 @@ export default function VocabScreen() {
 
   const handlePlay = (text: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Alert.alert("Listen", `Playing audio for: "${text}"`);
+    showAlert("Listen", `Playing audio for: "${text}"`, undefined, "info");
   };
 
   const handleDelete = async (id: string) => {
-    Alert.alert(
+    showAlert(
       "Delete Phrase",
       "Are you sure you want to delete this phrase?",
       [
@@ -123,17 +147,18 @@ export default function VocabScreen() {
                 Haptics.NotificationFeedbackType.Success
               );
             } else {
-              Alert.alert("Error", "Failed to delete item");
+              showAlert("Error", "Failed to delete item", undefined, "error");
             }
           },
         },
-      ]
+      ],
+      "warning"
     );
   };
 
   const handleTranslateItem = async (item: VocabularyItem) => {
     if (item.translation) {
-      Alert.alert("Translation", item.translation);
+      showAlert("Translation", item.translation, undefined, "info");
       return;
     }
 
@@ -142,17 +167,22 @@ export default function VocabScreen() {
       const translated = await translateText(item.phrase, "English");
 
       // Ask to save the translation
-      Alert.alert("Translation", translated, [
-        { text: "Close", style: "cancel" },
-        {
-          text: "Save Translation",
-          onPress: async () => {
-            // Ideally update the item, but for now just show it
+      showAlert(
+        "Translation",
+        translated,
+        [
+          { text: "Close", style: "cancel" },
+          {
+            text: "Save Translation",
+            onPress: async () => {
+              // Ideally update the item, but for now just show it
+            },
           },
-        },
-      ]);
+        ],
+        "success"
+      );
     } catch {
-      Alert.alert("Error", "Translation failed");
+      showAlert("Error", "Translation failed", undefined, "error");
     }
   };
 
@@ -172,22 +202,41 @@ export default function VocabScreen() {
   };
 
   const showActionMenu = (item: VocabularyItem) => {
-    Alert.alert("Options", `"${item.phrase}"`, [
-      { text: "Play Audio", onPress: () => handlePlay(item.phrase) },
-      { text: "Translate", onPress: () => handleTranslateItem(item) },
-      { text: "Start Conversation", onPress: () => initPractice(item) },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => item.id && handleDelete(item.id),
-      },
-      { text: "Cancel", style: "cancel" },
-    ]);
+    setSelectedActionItem(item);
+    setIsActionModalVisible(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const closeActionModal = () => {
+    setIsActionModalVisible(false);
+    setSelectedActionItem(null);
+  };
+
+  const handleActionPress = (
+    action: "play" | "translate" | "conversation" | "delete"
+  ) => {
+    if (!selectedActionItem) return;
+    closeActionModal();
+
+    switch (action) {
+      case "play":
+        handlePlay(selectedActionItem.phrase);
+        break;
+      case "translate":
+        handleTranslateItem(selectedActionItem);
+        break;
+      case "conversation":
+        initPractice(selectedActionItem);
+        break;
+      case "delete":
+        if (selectedActionItem.id) handleDelete(selectedActionItem.id);
+        break;
+    }
   };
 
   const handleAddItem = async () => {
     if (!newPhrase.trim()) {
-      Alert.alert("Required", "Please enter a phrase");
+      showAlert("Required", "Please enter a phrase", undefined, "error");
       return;
     }
 
@@ -205,7 +254,7 @@ export default function VocabScreen() {
       fetchVocab();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
-      Alert.alert("Error", "Failed to save phrase");
+      showAlert("Error", "Failed to save phrase", undefined, "error");
     }
   };
 
@@ -262,7 +311,7 @@ export default function VocabScreen() {
       {/* Search and Add */}
       <View className="px-6 flex-row gap-2 mb-6">
         <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
-          <Search size={18} color="gray" />
+          <Search size={20} color="gray" />
           <TextInput
             placeholder="Search saved words..."
             className="flex-1 ml-3 text-gray-900 font-medium"
@@ -291,15 +340,15 @@ export default function VocabScreen() {
             <TouchableOpacity
               key={lang}
               onPress={() => setSelectedLanguage(lang)}
-              className={`px-4 py-2 rounded-full border ${
+              className={`px-5 py-2 rounded-full border ${
                 selectedLanguage === lang
-                  ? "bg-gray-900 border-gray-900"
-                  : "bg-white border-gray-200"
+                  ? "bg-blue-100 border-blue-300"
+                  : "bg-white border-gray-300"
               }`}
             >
               <Text
-                className={`font-bold text-xs ${
-                  selectedLanguage === lang ? "text-white" : "text-gray-600"
+                className={`font-bold text-[13px] ${
+                  selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
                 }`}
               >
                 {lang}
@@ -327,7 +376,10 @@ export default function VocabScreen() {
             />
           }
           renderItem={({ item }) => (
-            <View className="mb-4 bg-white rounded-[24px] border border-gray-100 p-5 shadow-sm shadow-gray-50">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="mb-4 p-4 rounded-2xl shadow-lg flex-row items-center bg-white"
+            >
               <View className="flex-row justify-between items-start">
                 <View className="flex-1 mr-4">
                   <View className="flex-row items-center gap-2 mb-1">
@@ -347,22 +399,23 @@ export default function VocabScreen() {
                   )}
                 </View>
 
-                <View className="flex-row items-center gap-2">
+                <View className="flex-row items-center gap-3">
+                  {/* Mic Icon */}
                   <TouchableOpacity
                     onPress={() => handlePlay(item.phrase)}
-                    className="w-8 h-8 bg-blue-50 rounded-full items-center justify-center"
+                    className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center"
                   >
-                    <Play size={14} color="#3b82f6" fill="#3b82f6" />
+                    <FontAwesome name="microphone" size={14} color="white" />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => showActionMenu(item)}
-                    className="w-8 h-8 bg-gray-50 rounded-full items-center justify-center"
+                    className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
                   >
-                    <MoreVertical size={14} color="#64748b" />
+                    <MoreVertical size={14} color="black" />
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
           ListEmptyComponent={
             <View className="items-center mt-20 opacity-40">
@@ -387,27 +440,28 @@ export default function VocabScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1 bg-white"
         >
-          <View className="flex-1 px-6 pt-6">
-            <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-2xl font-bold text-gray-900">
-                Add Phrase
-              </Text>
+          <SafeAreaView className="flex-1">
+            <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+              <Text className="text-3xl font-bold text-black">Add Phrase</Text>
               <TouchableOpacity
                 onPress={() => setIsAddModalVisible(false)}
-                className="w-10 h-10 items-center justify-center bg-gray-50 rounded-full"
+                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
               >
-                <X size={20} color="#64748b" />
+                <Ionicons name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
 
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <ScrollView
+              className="flex-1 px-6 pt-6"
+              showsVerticalScrollIndicator={false}
+            >
               <View className="mb-6">
-                <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
                   Language
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowLangPicker(true)}
-                  className="flex-row items-center bg-gray-50 p-4 rounded-2xl border border-gray-100"
+                  className="flex-row items-center bg-gray-50 px-4 py-4 rounded-full border border-gray-100"
                 >
                   <Text className="text-2xl mr-3">{newLanguage.flag}</Text>
                   <Text className="text-lg font-semibold text-gray-900 flex-1">
@@ -420,34 +474,38 @@ export default function VocabScreen() {
               </View>
 
               <View className="mb-6">
-                <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
-                  Phrase *
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Phrase <Text className="text-red-500">*</Text>
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100"
+                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium"
                   placeholder="Enter word or phrase..."
+                  placeholderTextColor="gray"
                   value={newPhrase}
                   onChangeText={setNewPhrase}
                   multiline
                 />
               </View>
 
-              <View className="mb-8">
-                <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
+              <View className="mb-10">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
                   Translation (Optional)
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100"
+                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium h-32 text-start align-top"
                   placeholder="Enter meaning..."
+                  placeholderTextColor="gray"
                   value={newTranslation}
                   onChangeText={setNewTranslation}
                   multiline
                 />
               </View>
+            </ScrollView>
 
+            <View className="px-6 py-8 border-t border-gray-100">
               <TouchableOpacity
                 onPress={handleAddItem}
-                className={`w-full h-14 rounded-full items-center justify-center shadow-lg shadow-blue-200 ${
+                className={`w-full h-16 rounded-full items-center justify-center shadow-lg ${
                   !newPhrase.trim() ? "bg-gray-200" : "bg-blue-500"
                 }`}
                 disabled={!newPhrase.trim()}
@@ -456,8 +514,8 @@ export default function VocabScreen() {
                   Save Phrase
                 </Text>
               </TouchableOpacity>
-            </ScrollView>
-          </View>
+            </View>
+          </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
 
@@ -477,74 +535,398 @@ export default function VocabScreen() {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <View className="flex-1 bg-white">
-          <View className="px-6 py-4 border-b border-gray-100 bg-white z-10">
-            <View className="flex-row justify-between items-center mb-2">
-              <Text className="text-xl font-bold text-gray-900">
-                Practice Session
-              </Text>
-              <TouchableOpacity onPress={() => setIsMultiSelectVisible(false)}>
-                <Text className="text-blue-500 font-medium">Cancel</Text>
+        <SafeAreaView className="flex-1 bg-white">
+          {/* Header */}
+          <View className="px-6 py-6 bg-white border-b border-gray-100">
+            <View className="flex-row justify-between items-center">
+              <View className="flex-1 pr-4">
+                <Text className="text-2xl font-bold text-gray-900">
+                  Practice Session
+                </Text>
+                <Text className="text-gray-500 text-sm mt-1.5 leading-5">
+                  Select additional phrases to include in your conversation
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setIsMultiSelectVisible(false)}
+                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+              >
+                <Ionicons name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <Text className="text-gray-500 text-sm">
-              Select additional phrases to include in your conversation
-            </Text>
           </View>
 
+          {/* Phrase List */}
           <FlatList
-            data={filteredItems} // Show filtered list, or filteredItems to allow searching within selection? Using filteredItems is usually better UX
+            data={filteredItems}
+            extraData={selectedForPractice}
             keyExtractor={(item) => item.id || item.phrase}
-            contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
-            renderItem={({ item }) => {
-              const isSelected = selectedForPractice.has(item.phrase);
-              const isPrimary = item.id === primaryPracticeItem?.id;
-
-              return (
-                <TouchableOpacity
-                  onPress={() => togglePracticeSelection(item.phrase)}
-                  className={`mb-3 p-4 rounded-2xl border flex-row items-center justify-between ${
-                    isSelected || isPrimary
-                      ? "bg-blue-50 border-blue-200"
-                      : "bg-white border-gray-100"
-                  }`}
-                >
-                  <View className="flex-1 mr-4">
-                    <Text
-                      className={`font-bold text-base ${
-                        isSelected || isPrimary
-                          ? "text-gray-900"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      {item.phrase}
-                    </Text>
-                    <Text className="text-gray-400 text-xs">
-                      {item.translation}
-                    </Text>
-                  </View>
-
-                  {(isSelected || isPrimary) && (
-                    <CheckCircle2 size={20} color="#3b82f6" fill="#3b82f6" />
-                  )}
-                </TouchableOpacity>
-              );
-            }}
+            contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            renderItem={({ item }) => (
+              <SelectablePhraseItem
+                item={item}
+                isActive={selectedForPractice.has(item.phrase)}
+                isPrimary={item.id === primaryPracticeItem?.id}
+                onPress={() => togglePracticeSelection(item.phrase)}
+              />
+            )}
+            ListEmptyComponent={
+              <View className="items-center py-10">
+                <Text className="text-gray-400 font-medium text-base">
+                  No phrases available
+                </Text>
+              </View>
+            }
           />
 
-          <View className="absolute bottom-10 left-6 right-6">
+          {/* Bottom CTA */}
+          <View className="absolute bottom-0 left-0 right-0 px-6 pt-4 pb-10 bg-white border-t border-gray-100 shadow-2xl">
             <TouchableOpacity
               onPress={startPracticeSession}
-              className="bg-blue-500 h-14 rounded-full items-center justify-center flex-row gap-2 shadow-lg shadow-blue-200"
+              disabled={selectedForPractice.size === 0}
+              activeOpacity={0.8}
+              className={`h-16 rounded-full items-center justify-center flex-row gap-3 shadow-lg shadow-blue-200 ${
+                selectedForPractice.size > 0 ? "bg-blue-500" : "bg-gray-200"
+              }`}
             >
-              <MessageSquare size={20} color="white" />
-              <Text className="text-white font-bold text-lg">
-                Start with {selectedForPractice.size} Phrases
+              <MessageSquare
+                size={22}
+                color={selectedForPractice.size > 0 ? "white" : "#9ca3af"}
+              />
+              <Text
+                className={`font-bold text-lg ${
+                  selectedForPractice.size > 0 ? "text-white" : "text-gray-400"
+                }`}
+              >
+                Start with {selectedForPractice.size} Phrase
+                {selectedForPractice.size === 1 ? "" : "s"}
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
+
+      {/* Action Modal with Swipe to Dismiss */}
+      <Modal
+        visible={isActionModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={closeActionModal}
+        statusBarTranslucent
+      >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ActionModalContent
+            selectedItem={selectedActionItem}
+            onClose={closeActionModal}
+            onAction={handleActionPress}
+          />
+        </GestureHandlerRootView>
+      </Modal>
+
+      {/* Alert Modal */}
+      <AlertModal
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        type={alertState.type}
+        buttons={alertState.buttons}
+        onClose={hideAlert}
+      />
     </SafeAreaView>
+  );
+}
+
+// Separate component for the draggable modal content
+function ActionModalContent({
+  selectedItem,
+  onClose,
+  onAction,
+}: {
+  selectedItem: VocabularyItem | null;
+  onClose: () => void;
+  onAction: (action: "play" | "translate" | "conversation" | "delete") => void;
+}) {
+  const translateY = useSharedValue(0);
+  const context = useSharedValue(0);
+  const DISMISS_THRESHOLD = 80;
+
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      context.value = translateY.value;
+    })
+    .onUpdate((event) => {
+      // Only allow dragging down (positive Y)
+      const newValue = context.value + event.translationY;
+      translateY.value = Math.max(0, newValue);
+    })
+    .onEnd((event) => {
+      if (translateY.value > DISMISS_THRESHOLD || event.velocityY > 500) {
+        // Dismiss the modal with animation
+        translateY.value = withTiming(500, { duration: 200 }, (finished) => {
+          if (finished) {
+            runOnJS(handleClose)();
+          }
+        });
+      } else {
+        // Snap back to original position
+        translateY.value = withSpring(0, { damping: 25, stiffness: 400 });
+      }
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  const backdropAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: 1 - translateY.value / 400,
+  }));
+
+  // Reset position when modal opens
+  useEffect(() => {
+    translateY.value = withSpring(0, { damping: 20, stiffness: 300 });
+  }, [selectedItem, translateY]);
+
+  return (
+    <View className="flex-1 justify-end">
+      {/* Backdrop */}
+      <Pressable onPress={onClose} className="absolute inset-0">
+        <Animated.View
+          style={backdropAnimatedStyle}
+          className="flex-1 bg-black/50"
+        />
+      </Pressable>
+
+      {/* Bottom Sheet */}
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={animatedStyle} className="bg-white rounded-t-3xl">
+          {/* Drag Handle - This is the draggable area */}
+          <View className="items-center pt-3 pb-2">
+            <View className="w-12 h-1.5 bg-gray-300 rounded-full" />
+          </View>
+
+          {/* Content */}
+          <View className="px-6 pb-8">
+            {/* Header with Close Button */}
+            <View className="flex-row items-start justify-between mb-4">
+              <View className="flex-1 pr-4">
+                <Text
+                  className="text-lg font-bold text-gray-900"
+                  numberOfLines={2}
+                >
+                  {selectedItem?.phrase}
+                </Text>
+                {selectedItem?.translation && (
+                  <Text className="text-gray-500 text-sm mt-1">
+                    &quot;{selectedItem.translation}&quot;
+                  </Text>
+                )}
+              </View>
+              <Pressable onPress={onClose}>
+                <Ionicons name="close" size={24} color="black" />
+              </Pressable>
+            </View>
+
+            {/* Action Buttons */}
+            <View className="gap-2">
+              <Pressable
+                onPress={() => onAction("play")}
+                className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
+              >
+                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
+                  <Volume2 size={20} color="#3b82f6" />
+                </View>
+                <Text className="text-base font-semibold text-gray-900">
+                  Play Audio
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => onAction("translate")}
+                className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
+              >
+                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
+                  <Languages size={20} color="#3b82f6" />
+                </View>
+                <Text className="text-base font-semibold text-gray-900">
+                  Translate
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => onAction("conversation")}
+                className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
+              >
+                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
+                  <MessageSquare size={20} color="#3b82f6" />
+                </View>
+                <Text className="text-base font-semibold text-gray-900">
+                  Start Conversation
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => onAction("delete")}
+                className="flex-row items-center px-4 py-4 bg-red-50 rounded-2xl active:bg-red-100 mt-2"
+              >
+                <View className="w-10 h-10 bg-red-100 rounded-full items-center justify-center mr-4">
+                  <Trash2 size={20} color="#ef4444" />
+                </View>
+                <Text className="text-base font-semibold text-red-500">
+                  Delete
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </Animated.View>
+      </GestureDetector>
+    </View>
+  );
+}
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+// Animated Checkbox with smooth "drawing" animation
+function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
+  const progress = useSharedValue(isChecked ? 1 : 0);
+  const pathLength = 22;
+
+  // Sync prop to shared value for animation
+  useEffect(() => {
+    progress.value = withTiming(isChecked ? 1 : 0, {
+      duration: 300,
+    });
+  }, [isChecked]);
+
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
+    };
+  });
+
+  const bgAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        ["transparent", "#3b82f6"]
+      ),
+      borderColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        ["#d1d5db", "#3b82f6"]
+      ),
+      borderWidth: 2,
+    };
+  });
+
+  return (
+    <Animated.View
+      style={bgAnimatedStyle}
+      className="w-6 h-6 rounded-full items-center justify-center shadow-sm"
+    >
+      <Svg width="14" height="14" viewBox="0 0 24 24">
+        <AnimatedPath
+          d="M5 12l5 5L20 7"
+          fill="none"
+          stroke="white"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray={pathLength}
+          animatedProps={animatedProps}
+        />
+      </Svg>
+    </Animated.View>
+  );
+}
+
+// Premium Selectable Phrase Item
+function SelectablePhraseItem({
+  item,
+  isActive,
+  isPrimary,
+  onPress,
+}: {
+  item: VocabularyItem;
+  isActive: boolean;
+  isPrimary: boolean;
+  onPress: () => void;
+}) {
+  const progress = useSharedValue(isActive ? 1 : 0);
+
+  useEffect(() => {
+    progress.value = withSpring(isActive ? 1 : 0, {
+      damping: 20,
+      stiffness: 90,
+    });
+  }, [isActive]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
+      backgroundColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        ["#ffffff", "#f8fbff"]
+      ),
+      borderColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        ["#e5e7eb", "#3b82f6"]
+      ),
+      shadowColor: interpolateColor(
+        progress.value,
+        [0, 1],
+        ["#000000", "#3b82f6"]
+      ),
+      shadowOpacity: interpolate(progress.value, [0, 1], [0.05, 0.08]),
+      shadowRadius: interpolate(progress.value, [0, 1], [4, 8]),
+      elevation: interpolate(progress.value, [0, 1], [1, 2]),
+    };
+  });
+
+  return (
+    <Pressable onPress={onPress}>
+      <Animated.View
+        style={[
+          animatedStyle,
+          { borderWidth: 1.5, borderRadius: 24, padding: 20 },
+        ]}
+        className="flex-row items-center"
+      >
+        <View className="flex-1 pr-4">
+          <View className="flex-row items-center flex-wrap gap-2 mb-1">
+            <Text className="font-bold text-lg text-gray-900" numberOfLines={2}>
+              {item.phrase}
+            </Text>
+            {isPrimary && (
+              <View className="bg-white px-2 py-0.5 rounded-full border border-gray-300">
+                <Text className="text-blue-500 text-[10px] font-black uppercase tracking-widest">
+                  Primary
+                </Text>
+              </View>
+            )}
+          </View>
+          {item.translation && (
+            <Text
+              className={`text-sm ${
+                isActive ? "text-blue-600/70" : "text-gray-500"
+              }`}
+              numberOfLines={2}
+            >
+              {item.translation}
+            </Text>
+          )}
+        </View>
+
+        <AnimatedCheckbox isChecked={isActive} />
+      </Animated.View>
+    </Pressable>
   );
 }

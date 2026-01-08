@@ -1,14 +1,20 @@
-import { FontAwesome5 } from "@expo/vector-icons";
-import { X } from "lucide-react-native";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
+
+export interface AlertButton {
+  text: string;
+  onPress?: () => void;
+  style?: "default" | "cancel" | "destructive";
+}
 
 interface AlertModalProps {
   visible: boolean;
   title: string;
   message: string;
   onClose: () => void;
-  type?: "error" | "success" | "warning";
+  type?: "error" | "success" | "warning" | "info";
+  buttons?: AlertButton[];
 }
 
 export function AlertModal({
@@ -16,7 +22,8 @@ export function AlertModal({
   title,
   message,
   onClose,
-  type = "error",
+  type = "info",
+  buttons,
 }: AlertModalProps) {
   // Get icon and color based on type
   const getIconConfig = () => {
@@ -26,12 +33,24 @@ export function AlertModal({
       case "warning":
         return { name: "exclamation", bgColor: "bg-yellow-500" };
       case "error":
+        return { name: "times", bgColor: "bg-red-500" };
+      case "info":
       default:
-        return { name: "exclamation", bgColor: "bg-red-500" };
+        return { name: "info", bgColor: "bg-blue-500" };
     }
   };
 
   const { name: iconName, bgColor } = getIconConfig();
+
+  const handleButtonPress = (button: AlertButton) => {
+    button.onPress?.();
+    onClose();
+  };
+
+  // Default to single OK button if no buttons provided
+  const displayButtons: AlertButton[] = buttons || [
+    { text: "OK", style: "default" },
+  ];
 
   return (
     <Modal
@@ -46,10 +65,10 @@ export function AlertModal({
         <View className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-xl">
           {/* Close button - top right */}
           <Pressable onPress={onClose} className="absolute top-4 right-4 p-1">
-            <X size={22} color="gray" />
+            <Ionicons name="close" size={24} color="black" />
           </Pressable>
 
-          {/* Icon - Error, Success, or Warning */}
+          {/* Icon - Error, Success, Warning, or Info */}
           <View className="items-center mb-5 mt-2">
             <View
               className={`w-14 h-14 rounded-full items-center justify-center ${bgColor}`}
@@ -68,15 +87,80 @@ export function AlertModal({
             {message}
           </Text>
 
-          {/* Button */}
-          <Pressable
-            onPress={onClose}
-            className="bg-blue-500 py-4 rounded-full items-center active:opacity-80"
-          >
-            <Text className="text-white font-semibold text-base">OK</Text>
-          </Pressable>
+          {/* Buttons */}
+          {displayButtons.length === 1 ? (
+            <Pressable
+              onPress={() => handleButtonPress(displayButtons[0])}
+              className="bg-blue-500 py-4 rounded-full items-center active:opacity-80"
+            >
+              <Text className="text-white font-semibold text-base">
+                {displayButtons[0].text}
+              </Text>
+            </Pressable>
+          ) : (
+            <View className="flex-row gap-3">
+              {displayButtons.map((button, index) => (
+                <Pressable
+                  key={index}
+                  onPress={() => handleButtonPress(button)}
+                  className={`flex-1 py-4 rounded-full items-center active:opacity-80 ${
+                    button.style === "destructive"
+                      ? "bg-red-500"
+                      : button.style === "cancel"
+                      ? "bg-gray-200"
+                      : "bg-blue-500"
+                  }`}
+                >
+                  <Text
+                    className={`font-semibold text-base ${
+                      button.style === "cancel" ? "text-gray-700" : "text-white"
+                    }`}
+                  >
+                    {button.text}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
         </View>
       </View>
     </Modal>
   );
+}
+
+// Hook for easier usage
+export function useAlertModal() {
+  const [alertState, setAlertState] = React.useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: "error" | "success" | "warning" | "info";
+    buttons?: AlertButton[];
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
+
+  const showAlert = (
+    title: string,
+    message: string,
+    buttons?: AlertButton[],
+    type: "error" | "success" | "warning" | "info" = "info"
+  ) => {
+    setAlertState({
+      visible: true,
+      title,
+      message,
+      type,
+      buttons,
+    });
+  };
+
+  const hideAlert = () => {
+    setAlertState((prev) => ({ ...prev, visible: false }));
+  };
+
+  return { alertState, showAlert, hideAlert };
 }
