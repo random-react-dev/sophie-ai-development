@@ -2,10 +2,14 @@ import { SUPPORTED_LANGUAGES } from '@/constants/languages';
 import { useAuthStore } from '@/stores/authStore';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useProfileStore } from '@/stores/profileStore';
+import { isVoiceModeAvailable } from '@/utils/environment';
 import { Tabs, usePathname, useRouter } from 'expo-router';
 import { BookOpen, Globe, Languages, Mic, MicOff, VenetianMask } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
+
+// Check if voice mode is available (not available in Expo Go)
+const voiceAvailable = isVoiceModeAvailable();
 
 export default function TabLayout() {
   const pathname = usePathname();
@@ -63,7 +67,9 @@ export default function TabLayout() {
         name="talk"
         options={{
           title: '',
-          tabBarButton: () => {
+          // Hide the tab completely in Expo Go (native modules not available)
+          href: voiceAvailable ? undefined : null,
+          tabBarButton: voiceAvailable ? () => {
             const isFocused = pathname === '/talk';
 
             const handlePress = () => {
@@ -97,7 +103,7 @@ export default function TabLayout() {
                 </View>
               </TouchableOpacity>
             );
-          }
+          } : undefined
         }}
       />
       <Tabs.Screen
