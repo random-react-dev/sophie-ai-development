@@ -302,8 +302,8 @@ export default function VocabScreen() {
       </View>
 
       <View className="px-6 mb-8">
-        <Text className="text-4xl font-bold text-black text-left">Vocab</Text>
-        <Text className="text-gray-500 text-lg font-medium mt-1 text-left">
+        <Text className="text-3xl font-bold text-black text-left">Vocab</Text>
+        <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Your saved words & phrases
         </Text>
       </View>
@@ -444,7 +444,7 @@ export default function VocabScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-3xl font-bold text-black">Add Phrase</Text>
+              <Text className="text-2xl font-bold text-black">Add Phrase</Text>
               <TouchableOpacity
                 onPress={() => setIsAddModalVisible(false)}
                 className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -544,9 +544,6 @@ export default function VocabScreen() {
               <View className="flex-1 pr-4">
                 <Text className="text-2xl font-bold text-gray-900">
                   Practice Session
-                </Text>
-                <Text className="text-gray-500 text-sm mt-1.5 leading-5">
-                  Select additional phrases to include in your conversation
                 </Text>
               </View>
               <TouchableOpacity

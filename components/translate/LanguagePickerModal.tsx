@@ -65,7 +65,7 @@ export default function LanguagePickerModal({
                 <SafeAreaView className="flex-1">
                     {/* Header */}
                     <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-100">
-                        <Text className="text-3xl font-bold text-black">{title}</Text>
+                        <Text className="text-2xl font-bold text-black">{title}</Text>
                         <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={handleClose}
