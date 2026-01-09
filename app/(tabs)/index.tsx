@@ -230,7 +230,7 @@ function CreateScenarioModal({ visible, onClose }: { visible: boolean, onClose: 
 
                     <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
                         <View className="mb-6">
-                            <Text className="text-gray-500 text-base shadow-lg font-semibold capitalize mb-2 ml-1">Sophie&apos;s Role <Text className="text-red-500">*</Text></Text>
+                            <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">Sophie&apos;s Role <Text className="text-red-500">*</Text></Text>
                             <TextInput
                                 placeholder="e.g. A grumpy but helpful shopkeeper"
                                 placeholderTextColor="gray"

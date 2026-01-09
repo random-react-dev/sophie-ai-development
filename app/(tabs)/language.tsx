@@ -1,3 +1,4 @@
+import CircleFlag from '@/components/common/CircleFlag';
 import LanguagePickerModal from '@/components/translate/LanguagePickerModal';
 import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from '@/constants/languages';
 import { CreateProfileDTO } from '@/services/supabase/profiles';
@@ -7,12 +8,11 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
 import {
-    ArrowRightLeft,
     CheckCircle2,
+    ChevronDown,
     Folder,
     Globe,
-    Play, Plus, Trash2,
-    Volume2
+    Play, Plus, Trash2
 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -134,61 +134,111 @@ export default function LanguageScreen() {
                 <Text className="text-4xl font-bold text-black text-left">Language Environment</Text>
                 <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Choose your native & target languages and preferred accent to customize your learning experience.</Text>
             </View>
-           
 
             <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
                 <View className="px-4 pb-24">
-                    {/* Active Profile Card */}
+                    {/* Learning Preferences Card */}
                     {activeProfile ? (
-                        <View className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
-                            <View className="flex-row items-center gap-2 mb-4">
-                                <Globe size={20} color="#3b82f6" />
-                                <Text className="text-xs font-black text-blue-500 uppercase tracking-widest">Current Learning Profile</Text>
+                        <View className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
+                            {/* Section Header */}
+                            <View className="flex-row items-center gap-2 mb-2">
+                                <Globe size={18} color="#3b82f6" />
+                                <Text className="text-blue-500 text-base font-semibold capitalize">Learning Preferences</Text>
                             </View>
 
-                            {/* Preference Items */}
-                            <View className="space-y-4">
-                                {/* Native/Medium Language */}
-                                <View className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                    <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">
-                                        I speak (Instruction Language)
-                                    </Text>
-                                    <Text className="text-lg font-bold text-gray-900">
-                                        {activeProfile.medium_language || activeProfile.native_language}
-                                    </Text>
-                                </View>
+                            {/* Preference Rows */}
+                            <View>
+                                {/* Native Language Row */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setPickerType('native')}
+                                    className="flex-row items-center py-4"
+                                >
+                                    <CircleFlag
+                                        countryCode={newNativeLang.countryCode}
+                                        size={28}
+                                    />
+                                    <View className="flex-1 ml-3">
+                                        <Text className="text-gray-500 text-sm">I speak (Native language)</Text>
+                                        <Text className="text-gray-900 font-semibold text-base">
+                                            {newNativeLang.name}
+                                        </Text>
+                                    </View>
+                                    <ChevronDown size={20} color="#111827" />
+                                </TouchableOpacity>
+                                <View className="h-[1px] bg-gray-100" />
 
-                                {/* Target Language */}
-                                <View className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex-row justify-between items-center">
-                                    <View>
-                                        <Text className="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-1">
-                                            I want to learn
-                                        </Text>
-                                        <Text className="text-xl font-bold text-blue-900">
-                                            {activeProfile.target_language}
+                                {/* Target Language Row */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setPickerType('target')}
+                                    className="flex-row items-center py-4"
+                                >
+                                    <CircleFlag
+                                        countryCode={newTargetLang.countryCode}
+                                        size={28}
+                                    />
+                                    <View className="flex-1 ml-3">
+                                        <Text className="text-gray-500 text-sm">I want to learn (language)</Text>
+                                        <Text className="text-gray-900 font-semibold text-base">
+                                            {newTargetLang.name}
                                         </Text>
                                     </View>
-                                    <View className="w-8 h-8 rounded-full bg-blue-100 items-center justify-center">
-                                        <ArrowRightLeft size={14} color="#3b82f6" />
-                                    </View>
-                                </View>
+                                    <ChevronDown size={20} color="#111827" />
+                                </TouchableOpacity>
+                                <View className="h-[1px] bg-gray-100" />
 
-                                {/* Accent */}
-                                <View className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row justify-between items-center">
-                                    <View>
-                                        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">
-                                            Preferred Accent
-                                        </Text>
-                                        <Text className="text-lg font-bold text-gray-900">
-                                            {activeProfile.preferred_accent || 'Standard'}
+                                {/* Base Language Row (Instruction Language) */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setPickerType('medium')}
+                                    className="flex-row items-center py-4"
+                                >
+                                    <CircleFlag
+                                        countryCode={newMediumLang?.countryCode || 'in'}
+                                        size={28}
+                                    />
+                                    <View className="flex-1 ml-3">
+                                        <Text className="text-gray-500 text-sm">Base Language (Instruction)</Text>
+                                        <Text className="text-gray-900 font-semibold text-base">
+                                            {newMediumLang?.name || 'Same as Native'}
                                         </Text>
                                     </View>
-                                    <Volume2 size={18} color="#64748b" />
-                                </View>
+                                    <ChevronDown size={20} color="#111827" />
+                                </TouchableOpacity>
+                                <View className="h-[1px] bg-gray-100" />
+
+                                {/* Preferred Accent Row */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    className="flex-row items-center py-4"
+                                >
+                                    <CircleFlag
+                                        countryCode={
+                                            (() => {
+                                                if (newAccent === 'American') return 'us';
+                                                if (newAccent === 'British') return 'gb';
+                                                if (newAccent === 'Indian') return 'in';
+                                                if (newAccent === 'Australian') return 'au';
+                                                return 'us';
+                                            })()
+                                        }
+                                        size={28}
+                                    />
+                                    <View className="flex-1 ml-3">
+                                        <Text className="text-gray-500 text-sm">Preferred accent</Text>
+                                        <View className="flex-row items-center gap-1">
+                                            <Text className="text-gray-900 font-semibold text-base">
+                                                {newAccent}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <ChevronDown size={20} color="#111827" />
+                                </TouchableOpacity>
                             </View>
                         </View>
                     ) : (
-                        <View className="items-center justify-center p-8 bg-gray-50 rounded-[32px] mb-6 border border-dashed border-gray-200">
+                        <View className="items-center justify-center p-8 bg-gray-50 rounded-2xl mb-6 border border-dashed border-gray-200">
                             <Text className="text-gray-400 font-medium text-center">No active profile selected.</Text>
                             <TouchableOpacity onPress={() => setIsCreateModalVisible(true)}>
                                 <Text className="text-blue-500 font-bold mt-2">Create Profile</Text>
@@ -197,17 +247,19 @@ export default function LanguageScreen() {
                     )}
 
                     {/* Accent Playground */}
-                    <View className="bg-white rounded-[32px] p-6 border border-gray-100 shadow-sm shadow-gray-100 mb-8">
-                        <Text className="text-xs font-black text-gray-900 uppercase tracking-widest mb-4">Accent Playground</Text>
+                    <View className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm shadow-gray-100 mb-8">
+                        <Text className="text-blue-500 text-base font-semibold capitalize mb-4">Accent Playground</Text>
 
                         <TextInput
                             value={testPhrase}
                             onChangeText={setTestPhrase}
-                            className="bg-gray-50 p-4 rounded-2xl text-base text-gray-900 font-medium border border-gray-100 mb-4"
+                            className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-gray-100 mb-4"
+                            placeholder="Type your text here..."
+                            placeholderTextColor="gray"
                         />
 
                         {/* Waveform Placeholder */}
-                        <View className="h-8 flex-row items-center justify-center gap-1 mb-6 opacity-30">
+                        {/* <View className="h-8 flex-row items-center justify-center gap-1 mb-6 opacity-30">
                             {[...Array(20)].map((_, i) => (
                                 <View
                                     key={i}
@@ -215,8 +267,9 @@ export default function LanguageScreen() {
                                     style={{ height: Math.random() * 20 + 4 }}
                                 />
                             ))}
-                        </View>
+                        </View> */}
 
+                        {/* Speed Section */}
                         <View className="flex-row items-center justify-between">
                             <View className="flex-1">
                                 <Text className="text-xs font-bold text-gray-900 mb-3">Speed</Text>
@@ -389,25 +442,25 @@ export default function LanguageScreen() {
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
-
-                {/* Reusing Language Picker */}
-                <LanguagePickerModal
-                    visible={pickerType !== null}
-                    onClose={() => setPickerType(null)}
-                    onSelect={(lang) => {
-                        if (pickerType === 'native') setNewNativeLang(lang);
-                        if (pickerType === 'target') setNewTargetLang(lang);
-                        if (pickerType === 'medium') setNewMediumLang(lang);
-                        setPickerType(null);
-                    }}
-                    selectedCode={
-                        pickerType === 'native' ? newNativeLang.code :
-                            pickerType === 'target' ? newTargetLang.code :
-                                newMediumLang?.code
-                    }
-                    title={`Select ${pickerType === 'native' ? 'Your Native' : pickerType === 'target' ? 'Target' : 'Instruction'} Language`}
-                />
             </Modal>
+
+            {/* Language Picker Modal - Shared across main screen and create profile */}
+            <LanguagePickerModal
+                visible={pickerType !== null}
+                onClose={() => setPickerType(null)}
+                onSelect={(lang) => {
+                    if (pickerType === 'native') setNewNativeLang(lang);
+                    if (pickerType === 'target') setNewTargetLang(lang);
+                    if (pickerType === 'medium') setNewMediumLang(lang);
+                    setPickerType(null);
+                }}
+                selectedCode={
+                    pickerType === 'native' ? newNativeLang.code :
+                        pickerType === 'target' ? newTargetLang.code :
+                            newMediumLang?.code
+                }
+                title={`Select ${pickerType === 'native' ? 'Your Native' : pickerType === 'target' ? 'Target' : 'Instruction'} Language`}
+            />
 
         </SafeAreaView>
     );
