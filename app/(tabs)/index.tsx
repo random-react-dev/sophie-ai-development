@@ -86,7 +86,7 @@ export default function RoleplayScreen() {
                     <Feather name="search" size={20} color="gray" />
                     <TextInput
                         placeholder="Search scenarios..."
-                        className="ml-3 text-gray-900 font-medium text-base"
+                        className="flex-1 ml-3 text-gray-900 font-medium text-base"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         placeholderTextColor="gray"

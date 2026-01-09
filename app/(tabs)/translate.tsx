@@ -1,3 +1,4 @@
+import { AlertModal, useAlertModal } from '@/components/common/AlertModal';
 import CircleFlag from '@/components/common/CircleFlag';
 import LanguagePickerModal from '@/components/translate/LanguagePickerModal';
 import { DEFAULT_SOURCE_LANG, DEFAULT_TARGET_LANG, Language } from '@/constants/languages';
@@ -22,7 +23,7 @@ import {
 } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-    ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+    ActivityIndicator, KeyboardAvoidingView, Platform,
     ScrollView, Text, TextInput, TouchableOpacity,
     View
 } from 'react-native';
@@ -43,6 +44,9 @@ export default function TranslateScreen() {
     // Modal states
     const [showSourcePicker, setShowSourcePicker] = useState(false);
     const [showTargetPicker, setShowTargetPicker] = useState(false);
+
+    // Custom AlertModal hook
+    const { alertState, showAlert, hideAlert } = useAlertModal();
 
     const handleSwap = useCallback(() => {
         Haptics.selectionAsync();
@@ -68,7 +72,7 @@ export default function TranslateScreen() {
             setTranslatedText(result);
         } catch (error) {
             console.error('Translation error:', error);
-            Alert.alert("Error", "Failed to translate. Please try again.");
+            showAlert("Error", "Failed to translate. Please try again.", undefined, "error");
         } finally {
             setIsTranslating(false);
         }
@@ -86,10 +90,10 @@ export default function TranslateScreen() {
         });
 
         if (success) {
-            Alert.alert("Saved!", "Added to your vocabulary");
+            showAlert("Saved!", "Added to your vocabulary", undefined, "success");
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
-            Alert.alert("Error", "Failed to save. Please try again.");
+            showAlert("Error", "Failed to save. Please try again.", undefined, "error");
         }
     };
 
@@ -103,7 +107,7 @@ export default function TranslateScreen() {
     const copyToClipboard = async (text: string) => {
         await Clipboard.setStringAsync(text);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert("Copied", "Text copied to clipboard");
+        showAlert("Copied", "Text copied to clipboard", undefined, "success");
     };
 
     const clearAll = () => {
@@ -346,6 +350,16 @@ export default function TranslateScreen() {
                 onSelect={setTargetLang}
                 selectedCode={targetLang.code}
                 title="Translate to"
+            />
+
+            {/* Custom AlertModal for Copy/Save feedback */}
+            <AlertModal
+                visible={alertState.visible}
+                title={alertState.title}
+                message={alertState.message}
+                onClose={hideAlert}
+                type={alertState.type}
+                buttons={alertState.buttons}
             />
         </SafeAreaView>
     );
