@@ -2,11 +2,15 @@ import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
+import { isVoiceModeAvailable } from "@/utils/environment";
 import { Feather } from "@expo/vector-icons";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
 import React, { useEffect } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
+
+// Check if voice mode is available (not available in Expo Go)
+const voiceAvailable = isVoiceModeAvailable();
 
 export default function TabLayout() {
   const pathname = usePathname();
@@ -70,44 +74,48 @@ export default function TabLayout() {
         name="talk"
         options={{
           title: "",
-          tabBarButton: () => {
-            const isFocused = pathname === "/talk";
+          // Hide the tab completely in Expo Go (native modules not available)
+          href: voiceAvailable ? undefined : null,
+          tabBarButton: voiceAvailable
+            ? () => {
+                const isFocused = pathname === "/talk";
 
-            const handlePress = () => {
-              if (isFocused) {
-                // Toggle conversation mode on/off
-                toggleConversation();
-              } else {
-                router.push("/(tabs)/talk");
+                const handlePress = () => {
+                  if (isFocused) {
+                    // Toggle conversation mode on/off
+                    toggleConversation();
+                  } else {
+                    router.push("/(tabs)/talk");
+                  }
+                };
+
+                // Button color based on state
+                const getButtonColor = () => {
+                  if (isConversationActive) return "bg-red-500 shadow-red-200";
+                  if (isFocused) return "bg-blue-500 shadow-blue-200";
+                  return "bg-gray-900 shadow-gray-400";
+                };
+
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={handlePress}
+                    className="items-center justify-center -top-8"
+                  >
+                    {/* Button Microphone */}
+                    <View
+                      className={`size-20 rounded-3xl items-center justify-center shadow-2xl ${getButtonColor()} border-4 border-white`}
+                    >
+                      {isConversationActive ? (
+                        <Feather name="mic-off" size={26} color="white" />
+                      ) : (
+                        <Feather name="mic" size={26} color="white" />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
               }
-            };
-
-            // Button color based on state
-            const getButtonColor = () => {
-              if (isConversationActive) return "bg-red-500 shadow-red-200";
-              if (isFocused) return "bg-blue-500 shadow-blue-200";
-              return "bg-gray-900 shadow-gray-400";
-            };
-
-            return (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={handlePress}
-                className="items-center justify-center -top-8"
-              >
-                {/* Button Microphone */}
-                <View
-                  className={`size-20 rounded-3xl items-center justify-center shadow-2xl ${getButtonColor()} border-4 border-white`}
-                >
-                  {isConversationActive ? (
-                    <Feather name="mic-off" size={26} color="white" />
-                  ) : (
-                    <Feather name="mic" size={26} color="white" />
-                  )}
-                </View>
-              </TouchableOpacity>
-            );
-          },
+            : undefined,
         }}
       />
       <Tabs.Screen
