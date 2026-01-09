@@ -120,7 +120,7 @@ export default function LanguageScreen() {
                     <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
                 </View>
                 <Link href="/profile" asChild>
-                    <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
+                    <TouchableOpacity activeOpacity={0.7} className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
                         {user?.user_metadata?.avatar_url ? (
                             <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
                         ) : (
@@ -279,6 +279,7 @@ export default function LanguageScreen() {
                                         {speechRate.toFixed(2)}x
                                     </Text>
                                     <TouchableOpacity
+                                        activeOpacity={0.7}
                                         onPress={handlePlayAccent}
                                         disabled={isPlaying}
                                         className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center shadow-sm shadow-blue-200"
@@ -305,18 +306,18 @@ export default function LanguageScreen() {
                             />
 
                             <View className="flex-row justify-between px-1">
-                                <Text className="text-xs text-gray-400 font-bold">0.25x</Text>
-                                <Text className="text-xs text-gray-400 font-bold">1.0x</Text>
-                                <Text className="text-xs text-gray-400 font-bold">2.0x</Text>
+                                <Text className="text-sm text-gray-400 font-bold">0.25x</Text>
+                                <Text className="text-sm text-gray-400 font-bold">1.0x</Text>
+                                <Text className="text-sm text-gray-400 font-bold">2.0x</Text>
                             </View>
                         </View>
 
-                        <Text className="text-center text-gray-500 text-sm mt-6 px-4 leading-normal">
+                        <Text className="text-center text-gray-500 text-base mt-6 leading-normal">
                             Test selected accent and adjust speaking speed. Tap Play to preview.
                         </Text>
 
                         {activeProfile && (
-                            <TouchableOpacity className="mt-6 bg-blue-500 py-4 rounded-full items-center shadow-sm shadow-blue-200">
+                            <TouchableOpacity activeOpacity={0.7} className="mt-6 bg-blue-500 py-4 rounded-full items-center shadow-sm shadow-blue-200">
                                 <Text className="text-white font-bold text-base">Save Changes</Text>
                             </TouchableOpacity>
                         )}
@@ -325,7 +326,7 @@ export default function LanguageScreen() {
                     {/* Profiles List (Folders) */}
                     <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">My Profiles</Text>
                     {profiles.map((profile) => (
-                        <TouchableOpacity
+                        <TouchableOpacity activeOpacity={0.7}
                             key={profile.id}
                             onPress={() => handleSwitchProfile(profile.id)}
                             className={`mb-4 p-5 rounded-2xl border flex-row items-center justify-between ${profile.is_active
@@ -351,21 +352,23 @@ export default function LanguageScreen() {
                             </View>
 
                             {profile.is_active ? (
-                                <View className="w-8 h-8 rounded-full bg-green-500 items-center justify-center">
-                                    <CheckCircle2 size={16} color="white" />
+                                <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center">
+                                    <CheckCircle2 size={20} color="white" />
                                 </View>
                             ) : (
                                 <TouchableOpacity
+                                    activeOpacity={0.7}
                                     onPress={() => handleDeleteProfile(profile.id)}
-                                    className="w-8 h-8 rounded-full bg-red-50 items-center justify-center"
+                                    className="w-10 h-10 rounded-full bg-red-50 items-center justify-center"
                                 >
-                                    <Trash2 size={16} color="#ef4444" />
+                                    <Trash2 size={20} color="#ef4444" />
                                 </TouchableOpacity>
                             )}
                         </TouchableOpacity>
                     ))}
 
                     <TouchableOpacity
+                        activeOpacity={0.7}
                         onPress={() => setIsCreateModalVisible(true)}
                         className="p-5 rounded-2xl border-2 border-dashed border-gray-300 flex-row items-center justify-center gap-2 mt-2"
                     >
@@ -381,7 +384,7 @@ export default function LanguageScreen() {
                 <View className="flex-1 bg-white">
                     <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
                         <Text className="text-xl font-bold text-gray-900">New Learning Profile</Text>
-                        <TouchableOpacity onPress={() => setIsCreateModalVisible(false)}>
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => setIsCreateModalVisible(false)}>
                             <Text className="text-blue-500 font-medium">Cancel</Text>
                         </TouchableOpacity>
                     </View>
@@ -391,6 +394,7 @@ export default function LanguageScreen() {
                         <View className="mb-6">
                             <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Native Language</Text>
                             <TouchableOpacity
+                                activeOpacity={0.7}
                                 onPress={() => setPickerType('native')}
                                 className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
                             >
@@ -403,6 +407,7 @@ export default function LanguageScreen() {
                         <View className="mb-6">
                             <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Instruction Language (Optional)</Text>
                             <TouchableOpacity
+                                activeOpacity={0.7}
                                 onPress={() => setPickerType('medium')}
                                 className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
                             >
@@ -417,6 +422,7 @@ export default function LanguageScreen() {
                         <View className="mb-6">
                             <Text className="text-blue-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">I want to learn</Text>
                             <TouchableOpacity
+                                activeOpacity={0.7}
                                 onPress={() => setPickerType('target')}
                                 className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex-row items-center justify-between"
                             >
@@ -431,6 +437,7 @@ export default function LanguageScreen() {
                             <View className="flex-row gap-3 flex-wrap">
                                 {['American', 'British', 'Indian', 'Australian'].map(accent => (
                                     <TouchableOpacity
+                                        activeOpacity={0.7}
                                         key={accent}
                                         onPress={() => setNewAccent(accent)}
                                         className={`px-4 py-3 rounded-xl border ${newAccent === accent ? 'bg-gray-900 border-gray-900' : 'bg-white border-gray-200'}`}
@@ -442,6 +449,7 @@ export default function LanguageScreen() {
                         </View>
 
                         <TouchableOpacity
+                            activeOpacity={0.7}
                             onPress={handleCreateProfile}
                             className="w-full h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg shadow-blue-200"
                         >
