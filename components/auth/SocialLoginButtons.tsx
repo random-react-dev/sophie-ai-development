@@ -1,9 +1,10 @@
-import { AlertModal } from "@/components/common/AlertModal";
-import React, { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { supabase } from '@/services/supabase/client';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useState } from 'react';
+import { Alert, Platform, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from "react-native-svg";
 
-// Google Logo Component
 function GoogleLogo() {
   return (
     <Svg width={26} height={26} viewBox="0 0 24 24">
@@ -27,7 +28,6 @@ function GoogleLogo() {
   );
 }
 
-// Apple Logo Component (Bootstrap Icons)
 function AppleLogo() {
   return (
     <Svg width={26} height={26} viewBox="0 0 16 16" fill="#000000">
@@ -37,58 +37,89 @@ function AppleLogo() {
 }
 
 export function SocialLoginButtons() {
-  // Modal state
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSocialLogin = (provider: string) => {
-    setModalMessage(
-      `${provider} login is not yet implemented in this prototype.`
-    );
-    setModalVisible(true);
+  const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
+    try {
+      setIsLoading(true);
+
+      // Get the redirect URL for deep linking back to the app
+      const redirectUrl = Linking.createURL('auth/callback');
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: true,
+        },
+      });
+
+      if (error) throw error;
+      if (!data.url) throw new Error('No OAuth URL returned');
+
+      // Open the OAuth URL in a web browser
+      const result = await WebBrowser.openAuthSessionAsync(
+        data.url,
+        redirectUrl
+      );
+
+      if (result.type === 'success' && result.url) {
+        // Extract the tokens from the URL and set the session
+        const url = new URL(result.url);
+        const params = new URLSearchParams(url.hash.substring(1));
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Sign in failed';
+      Alert.alert('Sign In Failed', message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <View className="w-full">
-      {/* Divider */}
-      <View className="flex-row items-center justify-center my-5">
-        <View className="h-[1px] flex-1 bg-gray-300" />
-        <Text className="mx-4 text-gray-400 text-sm">OR</Text>
-        <View className="h-[1px] flex-1 bg-gray-300" />
+    <View className="space-y-4 w-full">
+      <View className="flex-row items-center justify-center my-2">
+        <View className="h-[1px] flex-1 bg-gray-200" />
+        <Text className="mx-4 text-gray-400 text-sm font-medium">OR</Text>
+        <View className="h-[1px] flex-1 bg-gray-200" />
       </View>
 
-      {/* Google Button */}
       <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => handleSocialLogin("Google")}
-        className="w-full flex-row items-center bg-white border border-gray-300 rounded-full py-4 px-5 mb-3 active:bg-gray-50"
+        onPress={() => handleOAuthSignIn('google')}
+        disabled={isLoading}
+        className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
       >
-        <GoogleLogo />
-        <Text className="flex-1 text-center text-black font-bold text-base">
-          Continue with Google
+        <View className="mr-3">
+          <GoogleLogo />
+        </View>
+        <Text className="text-gray-700 font-semibold text-base">
+          {isLoading ? 'Signing in...' : 'Continue with Google'}
         </Text>
       </TouchableOpacity>
 
-      {/* Apple Button */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => handleSocialLogin("Apple")}
-        className="w-full flex-row items-center bg-white border border-gray-300 rounded-full py-4 px-5 active:bg-gray-50"
-      >
-        <AppleLogo />
-        <Text className="flex-1 text-center text-gray-700 font-bold text-base">
-          Continue with Apple
-        </Text>
-      </TouchableOpacity>
-
-      {/* Alert Modal */}
-      <AlertModal
-        visible={modalVisible}
-        title="Coming Soon"
-        message={modalMessage}
-        onClose={() => setModalVisible(false)}
-        type="warning"
-      />
+      {Platform.OS === 'ios' && (
+        <TouchableOpacity
+          onPress={() => handleOAuthSignIn('apple')}
+          disabled={isLoading}
+          className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
+        >
+          <View className="mr-3">
+            <AppleLogo />
+          </View>
+          <Text className="text-gray-700 font-semibold text-base">
+            {isLoading ? 'Signing in...' : 'Continue with Apple'}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
