@@ -5,6 +5,7 @@ import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from '@/constants/
 import { CreateProfileDTO } from '@/services/supabase/profiles';
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
+import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
@@ -19,7 +20,9 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    KeyboardAvoidingView,
     Modal,
+    Platform,
     ScrollView, Text,
     TextInput,
     TouchableOpacity,
@@ -388,82 +391,93 @@ export default function LanguageScreen() {
 
             {/* Create Profile Modal */}
             <Modal visible={isCreateModalVisible} animationType="slide" presentationStyle="pageSheet">
-                <View className="flex-1 bg-white">
-                    <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
-                        <Text className="text-xl font-bold text-gray-900">New Learning Profile</Text>
-                        <TouchableOpacity activeOpacity={0.7} onPress={() => setIsCreateModalVisible(false)}>
-                            <Text className="text-blue-500 font-medium">Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <ScrollView className="flex-1 p-6">
-                        {/* Native Language */}
-                        <View className="mb-6">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Native Language</Text>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    className="flex-1 bg-white"
+                >
+                    <SafeAreaView className="flex-1">
+                        <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+                            <Text className="text-2xl font-bold text-black">New Learning Profile</Text>
                             <TouchableOpacity
                                 activeOpacity={0.7}
-                                onPress={() => setPickerType('native')}
-                                className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
+                                onPress={() => setIsCreateModalVisible(false)}
+                                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
                             >
-                                <Text className="text-lg font-bold text-gray-900">{newNativeLang.name}</Text>
-                                <Text className="text-2xl">{newNativeLang.flag}</Text>
+                                <Ionicons name="close" size={24} color="black" />
                             </TouchableOpacity>
                         </View>
 
-                        {/* Medium Language */}
-                        <View className="mb-6">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Instruction Language (Optional)</Text>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={() => setPickerType('medium')}
-                                className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
-                            >
-                                <Text className="text-lg font-bold text-gray-900">{newMediumLang?.name || 'Same as Native'}</Text>
-                                {newMediumLang && <Text className="text-2xl">{newMediumLang.flag}</Text>}
-                            </TouchableOpacity>
-                        </View>
-
-                        <View className="h-[1px] bg-gray-100 w-full mb-6" />
-
-                        {/* Target Language */}
-                        <View className="mb-6">
-                            <Text className="text-blue-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">I want to learn</Text>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={() => setPickerType('target')}
-                                className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex-row items-center justify-between"
-                            >
-                                <Text className="text-lg font-bold text-blue-900">{newTargetLang.name}</Text>
-                                <Text className="text-2xl">{newTargetLang.flag}</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Accent */}
-                        <View className="mb-8">
-                            <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">Preferred Accent</Text>
-                            <View className="flex-row gap-3 flex-wrap">
-                                {['American', 'British', 'Indian', 'Australian'].map(accent => (
-                                    <TouchableOpacity
-                                        activeOpacity={0.7}
-                                        key={accent}
-                                        onPress={() => setNewAccent(accent)}
-                                        className={`px-4 py-3 rounded-xl border ${newAccent === accent ? 'bg-gray-900 border-gray-900' : 'bg-white border-gray-200'}`}
-                                    >
-                                        <Text className={`font-bold ${newAccent === accent ? 'text-white' : 'text-gray-600'}`}>{accent}</Text>
-                                    </TouchableOpacity>
-                                ))}
+                        <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
+                            {/* Native Language */}
+                            <View className="mb-6">
+                                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">Native Language</Text>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setPickerType('native')}
+                                    className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
+                                >
+                                    <Text className="text-lg font-bold text-gray-900">{newNativeLang.name}</Text>
+                                    <Text className="text-2xl">{newNativeLang.flag}</Text>
+                                </TouchableOpacity>
                             </View>
-                        </View>
 
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={handleCreateProfile}
-                            className="w-full h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg shadow-blue-200"
-                        >
-                            <Text className="text-white font-bold text-lg">Create Profile</Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-                </View>
+                            {/* Medium Language */}
+                            <View className="mb-6">
+                                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">Instruction Language (Optional)</Text>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setPickerType('medium')}
+                                    className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
+                                >
+                                    <Text className="text-lg font-bold text-gray-900">{newMediumLang?.name || 'Same as Native'}</Text>
+                                    {newMediumLang && <Text className="text-2xl">{newMediumLang.flag}</Text>}
+                                </TouchableOpacity>
+                            </View>
+
+                            <View className="h-[1px] bg-gray-100 w-full mb-6" />
+
+                            {/* Target Language */}
+                            <View className="mb-6">
+                                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">I want to learn</Text>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setPickerType('target')}
+                                    className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex-row items-center justify-between"
+                                >
+                                    <Text className="text-lg font-bold text-blue-900">{newTargetLang.name}</Text>
+                                    <Text className="text-2xl">{newTargetLang.flag}</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Accent */}
+                            <View className="mb-10">
+                                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">Preferred Accent</Text>
+                                <View className="flex-row gap-2 flex-wrap">
+                                    {['American', 'British', 'Indian', 'Australian'].map(accent => (
+                                        <TouchableOpacity
+                                            activeOpacity={0.7}
+                                            key={accent}
+                                            onPress={() => setNewAccent(accent)}
+                                            className={`px-4 py-2 rounded-full border ${newAccent === accent ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300'}`}
+                                        >
+                                            <Text className={`font-bold text-xs ${newAccent === accent ? 'text-blue-500' : 'text-gray-600'}`}>{accent}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+                        </ScrollView>
+
+                        <View className="px-6 py-8 border-t border-gray-100">
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={handleCreateProfile}
+                                className="w-full h-16 bg-blue-500 rounded-full items-center justify-center shadow-lg"
+                            >
+                                <Text className="text-white font-bold text-lg">Create Profile</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
             </Modal>
 
             {/* Language Picker Modal - Shared across main screen and create profile */}
