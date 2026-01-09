@@ -137,8 +137,8 @@ export default function TranslateScreen() {
             </View>
 
             <View className="px-6 mb-8">
-                <Text className="text-4xl font-bold text-black text-left">Translate</Text>
-                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Translate text to another language</Text>
+                <Text className="text-3xl font-bold text-black text-left">Translate</Text>
+                <Text className="text-gray-500 text-base font-medium mt-1 text-left">Translate text to another language</Text>
             </View>
 
             <KeyboardAvoidingView

@@ -1,3 +1,4 @@
+import { AlertModal, useAlertModal } from '@/components/common/AlertModal';
 import CircleFlag from '@/components/common/CircleFlag';
 import LanguagePickerModal from '@/components/translate/LanguagePickerModal';
 import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from '@/constants/languages';
@@ -18,7 +19,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
     Modal,
     ScrollView, Text,
     TextInput,
@@ -28,6 +28,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LanguageScreen() {
+    const { alertState, showAlert, hideAlert } = useAlertModal();
     const router = useRouter();
     const { user, signOut } = useAuthStore();
     const {
@@ -63,7 +64,12 @@ export default function LanguageScreen() {
         // Placeholder for actual TTS
         setTimeout(() => setIsPlaying(false), 2000);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        Alert.alert("Play Sound", `Speaking "${testPhrase}" with ${activeProfile?.preferred_accent || 'American'} accent at ${speechRate.toFixed(1)}x speed`);
+        showAlert(
+            "Play Sound",
+            `Speaking "${testPhrase}" with ${activeProfile?.preferred_accent || 'American'} accent at ${speechRate.toFixed(1)}x speed`,
+            undefined,
+            "info"
+        );
     };
 
     const handleCreateProfile = async () => {
@@ -84,12 +90,12 @@ export default function LanguageScreen() {
             setIsCreateModalVisible(false);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
-            Alert.alert("Error", "Failed to create profile. Please try again.");
+            showAlert("Error", "Failed to create profile. Please try again.", undefined, "error");
         }
     };
 
     const handleDeleteProfile = (id: string) => {
-        Alert.alert(
+        showAlert(
             "Delete Profile",
             "Are you sure? This will delete your progress for this language.",
             [
@@ -102,7 +108,8 @@ export default function LanguageScreen() {
                         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                     }
                 }
-            ]
+            ],
+            "warning"
         );
     };
 
@@ -132,8 +139,8 @@ export default function LanguageScreen() {
                 </Link>
             </View>
             <View className="px-6 mb-6">
-                <Text className="text-4xl font-bold text-black text-left">Language Environment</Text>
-                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Choose your native & target languages and preferred accent to customize your learning experience.</Text>
+                <Text className="text-3xl font-bold text-black text-left">Language Environment</Text>
+                <Text className="text-gray-500 text-base font-medium mt-1 text-left">Choose your native & target languages and preferred accent.</Text>
             </View>
 
             <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
@@ -477,6 +484,15 @@ export default function LanguageScreen() {
                 title={`Select ${pickerType === 'native' ? 'Your Native' : pickerType === 'target' ? 'Target' : 'Instruction'} Language`}
             />
 
-        </SafeAreaView>
+            <AlertModal
+                visible={alertState.visible}
+                title={alertState.title}
+                message={alertState.message}
+                type={alertState.type}
+                buttons={alertState.buttons}
+                onClose={hideAlert}
+            />
+
+        </SafeAreaView >
     );
 }

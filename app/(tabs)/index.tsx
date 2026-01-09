@@ -100,10 +100,10 @@ export default function RoleplayScreen() {
       </View>
 
       <View className="px-6 mb-8">
-        <Text className="text-4xl font-bold text-black text-left">
+        <Text className="text-3xl font-bold text-black text-left">
           Choose a Scenario
         </Text>
-        <Text className="text-gray-500 text-lg font-medium mt-1 text-left">
+        <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Practice real-life conversations
         </Text>
       </View>
@@ -203,10 +203,10 @@ export default function RoleplayScreen() {
             className="mb-4 p-5 rounded-2xl flex-row items-center border-2 border-dashed border-gray-300 shadow-lg"
           >
             <View className="w-12 h-12 rounded-xl items-center justify-center">
-              <Star size={24} color="gray" />
+              <Star size={24} color="#6b7280" />
             </View>
             <View className="flex-1 ml-6">
-              <Text className="text-xl font-bold text-black">
+              <Text className="text-xl font-bold text-gray-500">
                 Create Your Own
               </Text>
             </View>
@@ -291,7 +291,7 @@ function CreateScenarioModal({
         >
           <SafeAreaView className="flex-1">
             <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-3xl font-bold text-black">
+              <Text className="text-2xl font-bold text-black">
                 Create Scenario
               </Text>
               <TouchableOpacity
