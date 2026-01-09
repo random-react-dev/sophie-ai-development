@@ -60,7 +60,7 @@ Follow these steps to set up the project locally.
 
 4.  **Run the app:**
     ```bash
-    npx expo start
+    npx expo start -c
     ```
     ```bash
     npx expo run:ios --device

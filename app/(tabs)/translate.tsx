@@ -224,8 +224,8 @@ export default function TranslateScreen() {
                             <View className="flex-row gap-2">
                                 <TouchableOpacity
                                     activeOpacity={0.7}
-                                    className="w-10 h-10 items-center justify-center rounded-full bg-white">
-                                    <FontAwesome name="microphone" size={18} color="black" />
+                                    className="w-10 h-10 items-center justify-center rounded-full bg-blue-500">
+                                    <FontAwesome name="microphone" size={18} color="white"/>
                                 </TouchableOpacity>
                                 {inputText.length > 0 && (
                                     <TouchableOpacity
