@@ -5,41 +5,26 @@ import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { Button } from '@/components/common/Button';
 import { useAuthStore } from '@/stores/authStore';
 import { Link, useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SignupScreen() {
     const router = useRouter();
-    const [step, setStep] = useState<1 | 2 | 3>(1);
-    const { signUp, verifyOtp, updateProfile, isLoading } = useAuthStore();
+    const [step, setStep] = useState<1 | 2>(1);
+    const { signUp, updateProfile, isLoading } = useAuthStore();
 
     // Step 1: Account
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    // Step 2: Verification
-    const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const otpInputs = useRef<(TextInput | null)[]>([]);
-    const [resendTimer, setResendTimer] = useState(45);
-
-    // Step 3: Profile
+    // Step 2: Profile
     const [fullName, setFullName] = useState('');
     const [country, setCountry] = useState('');
     const [appLanguage, setAppLanguage] = useState('');
     const [learnLanguage, setLearnLanguage] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (step === 2 && resendTimer > 0) {
-            interval = setInterval(() => {
-                setResendTimer((prev) => prev - 1);
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [step, resendTimer]);
 
     const handleSignup = async () => {
         if (!email || !password || !confirmPassword) {
@@ -52,23 +37,11 @@ export default function SignupScreen() {
         }
         try {
             await signUp(email, password);
+            // With email confirmation disabled, user is logged in immediately
             setStep(2);
-        } catch (error: any) {
-            Alert.alert("Signup Failed", error.message || "Something went wrong");
-        }
-    };
-
-    const handleVerifyOtp = async () => {
-        const token = otp.join('');
-        if (token.length !== 6) {
-            Alert.alert("Error", "Please enter the 6-digit code");
-            return;
-        }
-        try {
-            await verifyOtp(email, token);
-            setStep(3);
-        } catch (error: any) {
-            Alert.alert("Verification Failed", error.message || "Invalid or expired code");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Something went wrong";
+            Alert.alert("Signup Failed", message);
         }
     };
 
@@ -89,24 +62,9 @@ export default function SignupScreen() {
                 learn_language: learnLanguage
             });
             router.replace('/(tabs)');
-        } catch (error: any) {
-            Alert.alert("Error", error.message || "Failed to save profile");
-        }
-    };
-
-    const handleOtpChange = (value: string, index: number) => {
-        const newOtp = [...otp];
-        newOtp[index] = value;
-        setOtp(newOtp);
-
-        if (value && index < 5) {
-            otpInputs.current[index + 1]?.focus();
-        }
-    };
-
-    const handleOtpKeyPress = (e: any, index: number) => {
-        if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
-            otpInputs.current[index - 1]?.focus();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Failed to save profile";
+            Alert.alert("Error", message);
         }
     };
 
@@ -114,7 +72,7 @@ export default function SignupScreen() {
         <View className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
             <View className="items-center mb-8">
                 <Text className="text-3xl font-bold text-gray-900">Create your account</Text>
-                <Text className="text-gray-500 mt-2">Step 1 of 3 — Enter your details</Text>
+                <Text className="text-gray-500 mt-2">Step 1 of 2 — Enter your details</Text>
             </View>
 
             <View className="space-y-5">
@@ -150,7 +108,7 @@ export default function SignupScreen() {
                 </View>
 
                 <Button
-                    title={isLoading ? "Sending code..." : "Send verification code"}
+                    title={isLoading ? "Creating account..." : "Create Account"}
                     onPress={handleSignup}
                     disabled={isLoading}
                     className="mt-6 h-14"
@@ -164,52 +122,8 @@ export default function SignupScreen() {
     const renderStep2 = () => (
         <View className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
             <View className="items-center mb-8">
-                <Text className="text-3xl font-bold text-gray-900">Verify your email</Text>
-                <Text className="text-gray-500 mt-2 text-center">
-                    Step 2 of 3 — Enter the 6-digit verification code we sent to you{"\n"}
-                    <Text className="text-blue-500">{email}</Text>
-                </Text>
-            </View>
-
-            <View className="flex-row justify-between mb-8">
-                {otp.map((digit, index) => (
-                    <TextInput
-                        key={index}
-                        ref={(ref) => { otpInputs.current[index] = ref; }}
-                        className={`w-12 h-16 bg-gray-50 border ${digit ? 'border-blue-500' : 'border-gray-200'} rounded-xl text-center text-2xl font-bold text-gray-900`}
-                        keyboardType="number-pad"
-                        maxLength={1}
-                        value={digit}
-                        onChangeText={(value) => handleOtpChange(value, index)}
-                        onKeyPress={(e) => handleOtpKeyPress(e, index)}
-                    />
-                ))}
-            </View>
-
-            <View className="items-center mb-8">
-                <Text className="text-gray-400">
-                    Resend code in <Text className="text-gray-600 font-semibold">{`00:${resendTimer.toString().padStart(2, '0')}`}</Text>
-                </Text>
-            </View>
-
-            <Button
-                title={isLoading ? "Verifying..." : "Verify & Continue"}
-                onPress={handleVerifyOtp}
-                disabled={isLoading}
-                className="h-14"
-            />
-
-            <TouchableOpacity onPress={() => setStep(1)} className="items-center mt-6">
-                <Text className="text-blue-500 font-bold">Change email address</Text>
-            </TouchableOpacity>
-        </View>
-    );
-
-    const renderStep3 = () => (
-        <View className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
-            <View className="items-center mb-8">
                 <Text className="text-3xl font-bold text-gray-900">Profile Setup</Text>
-                <Text className="text-gray-500 mt-2">Step 3 of 3 — Finalize your account</Text>
+                <Text className="text-gray-500 mt-2">Step 2 of 2 — Finalize your account</Text>
             </View>
 
             <View className="space-y-5">
@@ -277,7 +191,6 @@ export default function SignupScreen() {
 
                 {step === 1 && renderStep1()}
                 {step === 2 && renderStep2()}
-                {step === 3 && renderStep3()}
 
                 <View className="items-center mb-6">
                     <Text className="text-gray-500 mb-1">Already have an account?</Text>

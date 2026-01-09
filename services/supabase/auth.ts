@@ -45,7 +45,6 @@ export interface UserProfileUpdate {
     app_language?: string;
     learn_language?: string;
     avatar_url?: string;
-    data?: any; // Allow flexibility but try to rely on typed fields
 }
 
 export const updateUserProfile = async (updates: UserProfileUpdate) => {
