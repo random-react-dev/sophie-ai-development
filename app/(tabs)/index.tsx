@@ -158,10 +158,10 @@ export default function RoleplayScreen() {
                         className="mb-4 p-5 rounded-2xl flex-row items-center border-2 border-dashed border-gray-300 shadow-lg"
                     >
                         <View className="w-12 h-12 rounded-xl items-center justify-center">
-                            <Star size={24} color="gray" />
+                            <Star size={24} color="#6b7280" />
                         </View>
                         <View className="flex-1 ml-6">
-                            <Text className="text-xl font-bold text-black">Create Your Own</Text>
+                            <Text className="text-xl font-bold text-gray-500">Create Your Own</Text>
                         </View>
                     </TouchableOpacity>
                 )}

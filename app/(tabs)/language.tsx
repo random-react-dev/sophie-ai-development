@@ -4,6 +4,7 @@ import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from '@/constants/
 import { CreateProfileDTO } from '@/services/supabase/profiles';
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
+import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
@@ -270,46 +271,52 @@ export default function LanguageScreen() {
                         </View> */}
 
                         {/* Speed Section */}
-                        <View className="flex-row items-center justify-between">
-                            <View className="flex-1">
-                                <Text className="text-xs font-bold text-gray-900 mb-3">Speed</Text>
-                                <View className="flex-row gap-2 flex-wrap">
-                                    {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
-                                        <TouchableOpacity
-                                            key={rate}
-                                            onPress={() => setSpeechRate(rate)}
-                                            className={`px-3 py-2 rounded-xl border ${speechRate === rate
-                                                ? 'bg-blue-500 border-blue-500'
-                                                : 'bg-white border-gray-200'
-                                                }`}
-                                        >
-                                            <Text className={`font-bold text-sm ${speechRate === rate ? 'text-white' : 'text-gray-600'
-                                                }`}>
-                                                {rate}x
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
+                        <View className="mt-2">
+                            <View className="flex-row items-center justify-between mb-2">
+                                <Text className="text-gray-900 text-base font-semibold capitalize">Speed</Text>
+                                <View className="flex-row items-center gap-2">
+                                    <Text className="text-blue-500 font-bold text-sm bg-blue-50 px-2 py-1 rounded-lg">
+                                        {speechRate.toFixed(2)}x
+                                    </Text>
+                                    <TouchableOpacity
+                                        onPress={handlePlayAccent}
+                                        disabled={isPlaying}
+                                        className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center shadow-sm shadow-blue-200"
+                                    >
+                                        {isPlaying ? (
+                                            <ActivityIndicator size="small" color="white" />
+                                        ) : (
+                                            <Play size={14} color="white" fill="white" />
+                                        )}
+                                    </TouchableOpacity>
                                 </View>
                             </View>
 
-                            <TouchableOpacity
-                                onPress={handlePlayAccent}
-                                className="ml-6 w-14 h-14 bg-blue-500 rounded-full items-center justify-center shadow-lg shadow-blue-200"
-                            >
-                                {isPlaying ? (
-                                    <ActivityIndicator color="white" />
-                                ) : (
-                                    <Play size={24} color="white" fill="white" />
-                                )}
-                            </TouchableOpacity>
+                            <Slider
+                                style={{ width: '100%', height: 40 }}
+                                minimumValue={0.25}
+                                maximumValue={2.0}
+                                step={0.05}
+                                value={speechRate}
+                                onValueChange={setSpeechRate}
+                                minimumTrackTintColor="#3b82f6"
+                                maximumTrackTintColor="#9ca3af"
+                                thumbTintColor="#3b82f6"
+                            />
+
+                            <View className="flex-row justify-between px-1">
+                                <Text className="text-xs text-gray-400 font-bold">0.25x</Text>
+                                <Text className="text-xs text-gray-400 font-bold">1.0x</Text>
+                                <Text className="text-xs text-gray-400 font-bold">2.0x</Text>
+                            </View>
                         </View>
 
-                        <Text className="text-center text-gray-400 text-xs mt-6 px-4 leading-relaxed">
+                        <Text className="text-center text-gray-500 text-sm mt-6 px-4 leading-normal">
                             Test selected accent and adjust speaking speed. Tap Play to preview.
                         </Text>
 
                         {activeProfile && (
-                            <TouchableOpacity className="mt-6 bg-blue-500 py-4 rounded-2xl items-center shadow-sm shadow-blue-200">
+                            <TouchableOpacity className="mt-6 bg-blue-500 py-4 rounded-full items-center shadow-sm shadow-blue-200">
                                 <Text className="text-white font-bold text-base">Save Changes</Text>
                             </TouchableOpacity>
                         )}
@@ -321,13 +328,13 @@ export default function LanguageScreen() {
                         <TouchableOpacity
                             key={profile.id}
                             onPress={() => handleSwitchProfile(profile.id)}
-                            className={`mb-4 p-5 rounded-3xl border flex-row items-center justify-between ${profile.is_active
+                            className={`mb-4 p-5 rounded-2xl border flex-row items-center justify-between ${profile.is_active
                                 ? 'bg-gray-900 border-gray-900'
-                                : 'bg-white border-gray-100 shadow-sm shadow-gray-50'
+                                : 'bg-white border-gray-100 shadow-lg'
                                 }`}
                         >
                             <View className="flex-row items-center gap-4">
-                                <View className={`w-12 h-12 rounded-2xl items-center justify-center ${profile.is_active ? 'bg-gray-800' : 'bg-blue-50'
+                                <View className={`w-12 h-12 rounded-full items-center justify-center ${profile.is_active ? 'bg-gray-800' : 'bg-blue-50'
                                     }`}>
                                     <Folder size={24} color={profile.is_active ? '#ffffff' : '#3b82f6'} strokeWidth={2} />
                                 </View>
@@ -336,7 +343,7 @@ export default function LanguageScreen() {
                                         }`}>
                                         {profile.name}
                                     </Text>
-                                    <Text className={`text-xs font-medium ${profile.is_active ? 'text-gray-400' : 'text-gray-500'
+                                    <Text className={`text-sm font-medium ${profile.is_active ? 'text-gray-400' : 'text-gray-500'
                                         }`}>
                                         {profile.native_language} → {profile.target_language}
                                     </Text>
@@ -360,10 +367,10 @@ export default function LanguageScreen() {
 
                     <TouchableOpacity
                         onPress={() => setIsCreateModalVisible(true)}
-                        className="p-5 rounded-3xl border border-dashed border-gray-300 flex-row items-center justify-center gap-2 mt-2 bg-gray-50"
+                        className="p-5 rounded-2xl border-2 border-dashed border-gray-300 flex-row items-center justify-center gap-2 mt-2"
                     >
-                        <Plus size={20} color="#94a3b8" />
-                        <Text className="text-gray-400 font-bold text-base">Create New Profile</Text>
+                        <Plus size={24} color="#6b7280" />
+                        <Text className="text-gray-500 font-bold text-base">Create New Profile</Text>
                     </TouchableOpacity>
 
                 </View>
