@@ -1,9 +1,12 @@
+import { AlertModal, useAlertModal } from '@/components/common/AlertModal';
+import CircleFlag from '@/components/common/CircleFlag';
 import LanguagePickerModal from '@/components/translate/LanguagePickerModal';
 import { DEFAULT_SOURCE_LANG, DEFAULT_TARGET_LANG, Language } from '@/constants/languages';
 import { translateText } from '@/services/gemini/translate';
 import { saveToVocabulary } from '@/services/supabase/vocabulary';
 import { useAuthStore } from '@/stores/authStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
+import { FontAwesome } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
@@ -14,13 +17,13 @@ import {
     ChevronDown,
     Copy,
     MessageSquare,
-    Mic,
-    Sparkles, Trash2,
+    Sparkles,
+    Trash2,
     Volume2
 } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import {
-    ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+    ActivityIndicator, KeyboardAvoidingView, Platform,
     ScrollView, Text, TextInput, TouchableOpacity,
     View
 } from 'react-native';
@@ -41,6 +44,9 @@ export default function TranslateScreen() {
     // Modal states
     const [showSourcePicker, setShowSourcePicker] = useState(false);
     const [showTargetPicker, setShowTargetPicker] = useState(false);
+
+    // Custom AlertModal hook
+    const { alertState, showAlert, hideAlert } = useAlertModal();
 
     const handleSwap = useCallback(() => {
         Haptics.selectionAsync();
@@ -66,7 +72,7 @@ export default function TranslateScreen() {
             setTranslatedText(result);
         } catch (error) {
             console.error('Translation error:', error);
-            Alert.alert("Error", "Failed to translate. Please try again.");
+            showAlert("Error", "Failed to translate. Please try again.", undefined, "error");
         } finally {
             setIsTranslating(false);
         }
@@ -84,10 +90,10 @@ export default function TranslateScreen() {
         });
 
         if (success) {
-            Alert.alert("Saved!", "Added to your vocabulary");
+            showAlert("Saved!", "Added to your vocabulary", undefined, "success");
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
-            Alert.alert("Error", "Failed to save. Please try again.");
+            showAlert("Error", "Failed to save. Please try again.", undefined, "error");
         }
     };
 
@@ -101,7 +107,7 @@ export default function TranslateScreen() {
     const copyToClipboard = async (text: string) => {
         await Clipboard.setStringAsync(text);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert("Copied", "Text copied to clipboard");
+        showAlert("Copied", "Text copied to clipboard", undefined, "success");
     };
 
     const clearAll = () => {
@@ -111,15 +117,14 @@ export default function TranslateScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-            {/* Header */}
-            <View className="px-6 py-4 flex-row justify-between items-center bg-white border-b border-gray-100">
-                <View>
-                    <Text className="text-gray-400 text-xs font-medium uppercase tracking-wider">Sophie AI</Text>
-                    <Text className="text-gray-900 text-xl font-bold">Translate</Text>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
+            <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+                <View className="items-center">
+                    <Text className="text-black text-2xl font-bold">Sophie AI</Text>
+                    <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
                 </View>
                 <Link href="/profile" asChild>
-                    <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50">
+                    <TouchableOpacity activeOpacity={0.7} className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
                         {user?.user_metadata?.avatar_url ? (
                             <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
                         ) : (
@@ -131,81 +136,110 @@ export default function TranslateScreen() {
                 </Link>
             </View>
 
+            <View className="px-6 mb-8">
+                <Text className="text-4xl font-bold text-black text-left">Translate</Text>
+                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Translate text to another language</Text>
+            </View>
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1"
             >
-                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                <ScrollView
+                    className="flex-1"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View className="px-4">
+                        {/* Language Selector Bar - Restored floating design */}
+                        <View className="bg-white rounded-full shadow-lg ">
+                            <View className="flex-row items-center justify-between p-4">
+                                {/* Source Language */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setShowSourcePicker(true)}
+                                    className="flex-1 flex-row items-center gap-1"
+                                >
+                                    <View className="flex-row items-center gap-2">
+                                        <CircleFlag countryCode={sourceLang.countryCode} size={28} />
+                                        <Text className="text-gray-900 font-semibold text-base">{sourceLang.name}</Text>
+                                    </View>
+                                    <ChevronDown size={16} color="#111827" />
+                                </TouchableOpacity>
 
-                    {/* Language Selector Bar */}
-                    <View className="bg-white mx-4 mt-4 rounded-2xl shadow-sm shadow-gray-200 border border-gray-100">
-                        <View className="flex-row items-center justify-between p-4">
-                            {/* Source Language */}
-                            <TouchableOpacity
-                                onPress={() => setShowSourcePicker(true)}
-                                className="flex-1 flex-row items-center"
-                            >
-                                <Text className="text-2xl mr-2">{sourceLang.flag}</Text>
-                                <Text className="text-gray-900 font-semibold text-base">{sourceLang.name}</Text>
-                                <ChevronDown size={16} color="#9ca3af" className="ml-1" />
-                            </TouchableOpacity>
+                                {/* Swap Button */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={handleSwap}
+                                    className="w-10 h-10 bg-blue-50 rounded-full items-center justify-center mx-4"
+                                >
+                                    <ArrowRightLeft size={18} color="#3b82f6" />
+                                </TouchableOpacity>
 
-                            {/* Swap Button */}
-                            <TouchableOpacity
-                                onPress={handleSwap}
-                                className="w-10 h-10 bg-blue-50 rounded-full items-center justify-center mx-4"
-                            >
-                                <ArrowRightLeft size={18} color="#3b82f6" />
-                            </TouchableOpacity>
+                                {/* Target Language */}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={() => setShowTargetPicker(true)}
+                                    className="flex-1 flex-row items-center justify-end gap-1"
+                                >
+                                    <ChevronDown size={16} color="#111827" className="mr-1" />
+                                    <View className="flex-row items-center gap-2">
+                                        <Text className="text-gray-900 font-semibold text-base">{targetLang.name}</Text>
+                                        <CircleFlag countryCode={targetLang.countryCode} size={28} />
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
-                            {/* Target Language */}
-                            <TouchableOpacity
-                                onPress={() => setShowTargetPicker(true)}
-                                className="flex-1 flex-row items-center justify-end"
-                            >
-                                <ChevronDown size={16} color="#9ca3af" className="mr-1" />
-                                <Text className="text-gray-900 font-semibold text-base">{targetLang.name}</Text>
-                                <Text className="text-2xl ml-2">{targetLang.flag}</Text>
-                            </TouchableOpacity>
+                        <View className="mt-3 mb-6">
+                            <Text className="text-gray-400 text-base text-center">Tap swap to reverse direction</Text>
                         </View>
                     </View>
 
-                    {/* Input Section - Clean, no visible border */}
-                    <View className="bg-white mx-4 mt-3 rounded-2xl shadow-sm shadow-gray-200 border border-gray-100">
-                        <View className="p-5 min-h-[160px]">
+                    {/* Top Section - Input Area (Clean Split) */}
+                    <View className="px-4">
+                        <View className='min-h-[140px]'>
+                            <View className="flex-row items-center gap-2 mb-2">
+                                <View className="w-2 h-2 rounded-full bg-blue-500" />
+                                <Text className="text-blue-500 text-xs font-bold uppercase tracking-wider">
+                                    {sourceLang.name}
+                                </Text>
+                            </View>
                             <TextInput
                                 placeholder="Enter text to translate..."
                                 multiline
-                                className="text-lg text-gray-900 leading-relaxed"
+                                className="text-gray-900 text-xl leading-normal"
                                 value={inputText}
                                 onChangeText={(text) => {
                                     setInputText(text);
                                     if (!text) setTranslatedText('');
                                 }}
-                                placeholderTextColor="#9ca3af"
+                                placeholderTextColor="gray"
                                 scrollEnabled={false}
-                                style={{ minHeight: 100 }}
                             />
                         </View>
 
-                        {/* Input Actions */}
-                        <View className="flex-row items-center justify-between px-5 pb-4">
+                        {/* Input Actions row */}
+                        <View className="flex-row items-center justify-between mt-6">
                             <View className="flex-row gap-2">
-                                <TouchableOpacity className="w-10 h-10 items-center justify-center rounded-full bg-gray-50">
-                                    <Mic size={18} color="#6b7280" />
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    className="w-10 h-10 items-center justify-center rounded-full bg-blue-500">
+                                    <FontAwesome name="microphone" size={18} color="white"/>
                                 </TouchableOpacity>
                                 {inputText.length > 0 && (
                                     <TouchableOpacity
+                                        activeOpacity={0.7}
                                         onPress={clearAll}
-                                        className="w-10 h-10 items-center justify-center rounded-full bg-gray-50"
+                                        className="w-10 h-10 items-center justify-center rounded-full bg-red-100 "
                                     >
-                                        <Trash2 size={18} color="#6b7280" />
+                                        <Trash2 size={18} color="#ef4444" />
                                     </TouchableOpacity>
                                 )}
                             </View>
 
-                            {/* Translate Button */}
                             <TouchableOpacity
+                                activeOpacity={0.7}
                                 onPress={handleTranslate}
                                 disabled={isTranslating || !inputText.trim()}
                                 className={`px-6 py-3 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
@@ -214,12 +248,11 @@ export default function TranslateScreen() {
                                     }`}
                             >
                                 {isTranslating ? (
-                                    <ActivityIndicator color="white" size="small" />
+                                    <ActivityIndicator color="#9ca3af" size="small" />
                                 ) : (
                                     <>
-                                        <Sparkles size={16} color={!inputText.trim() ? "#9ca3af" : "white"} />
-                                        <Text className={`font-semibold ${!inputText.trim() ? 'text-gray-400' : 'text-white'
-                                            }`}>
+                                        <Sparkles size={18} color={!inputText.trim() ? "#9ca3af" : "white"} />
+                                        <Text className={`font-semibold ${!inputText.trim() ? 'text-gray-400' : 'text-white'}`}>
                                             Translate
                                         </Text>
                                     </>
@@ -228,59 +261,77 @@ export default function TranslateScreen() {
                         </View>
                     </View>
 
-                    {/* Output Section */}
-                    {translatedText ? (
-                        <View className="bg-white mx-4 mt-3 rounded-2xl shadow-sm shadow-gray-200 border border-blue-100">
-                            <View className="p-5">
+                    {/* Bottom Section - Output Area (Clean Split) */}
+                    <View
+                        className="flex-1 bg-white rounded-t-[40px] mt-6 p-6 overflow-hidden"
+                        style={{
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: -4 },
+                            shadowOpacity: 0.05,
+                            shadowRadius: 10,
+                            elevation: 8
+                        }}
+                    >
+                        {translatedText ? (
+                            <>
                                 <View className="flex-row items-center gap-2 mb-3">
                                     <View className="w-2 h-2 rounded-full bg-blue-500" />
                                     <Text className="text-blue-500 text-xs font-bold uppercase tracking-wider">
                                         {targetLang.name}
                                     </Text>
                                 </View>
-
-                                <Text className="text-lg text-gray-900 leading-relaxed">
+                                <Text className="text-gray-900 text-xl leading-normal">
                                     {translatedText}
                                 </Text>
+
+                                <View className="mt-6 flex-row items-center gap-4 flex-wrap">
+                                    <TouchableOpacity
+                                        activeOpacity={0.7}
+                                        onPress={() => copyToClipboard(translatedText)}
+                                        className="flex-row items-center gap-2 bg-gray-50 px-4 py-3 rounded-full"
+                                    >
+                                        <Copy size={16} color="black" />
+                                        <Text className="text-gray-600 font-medium text-sm">Copy</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        activeOpacity={0.7}
+                                        className="flex-row items-center gap-2 bg-gray-50 px-4 py-3 rounded-full"
+                                    >
+                                        <Volume2 size={16} color="black" />
+                                        <Text className="text-gray-600 font-medium text-sm">Listen</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        activeOpacity={0.7}
+                                        onPress={handleSave}
+                                        className="flex-row items-center gap-2 bg-blue-100 px-4 py-3 rounded-full"
+                                    >
+                                        <Bookmark size={16} color="#3b82f6" />
+                                        <Text className="text-blue-500 font-medium text-sm">Save</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        activeOpacity={0.7}
+                                        onPress={handlePractice}
+                                        className="flex-row items-center gap-2 bg-blue-500 px-4 py-3 rounded-full"
+                                    >
+                                        <MessageSquare size={16} color="white" />
+                                        <Text className="text-white font-medium text-sm">Practice</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        ) : (
+                            <View className="flex-1 items-center justify-center gap-4">
+                                <View className="w-16 h-16 bg-gray-200 rounded-full items-center justify-center">
+                                    <MessageSquare size={28} color="#9ca3af" />
+                                </View>
+                                <Text className="text-gray-400 text-lg text-center font-medium italic">
+                                    Translation will appear here...
+                                </Text>
                             </View>
-
-                            {/* Output Actions */}
-                            <View className="flex-row items-center gap-2 px-5 pb-4 flex-wrap">
-                                <TouchableOpacity
-                                    onPress={() => copyToClipboard(translatedText)}
-                                    className="flex-row items-center gap-2 bg-gray-50 px-4 py-2.5 rounded-full"
-                                >
-                                    <Copy size={14} color="#6b7280" />
-                                    <Text className="text-gray-600 font-medium text-sm">Copy</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    className="flex-row items-center gap-2 bg-gray-50 px-4 py-2.5 rounded-full"
-                                >
-                                    <Volume2 size={14} color="#6b7280" />
-                                    <Text className="text-gray-600 font-medium text-sm">Listen</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={handleSave}
-                                    className="flex-row items-center gap-2 bg-blue-50 px-4 py-2.5 rounded-full"
-                                >
-                                    <Bookmark size={14} color="#3b82f6" />
-                                    <Text className="text-blue-600 font-medium text-sm">Save</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={handlePractice}
-                                    className="flex-row items-center gap-2 bg-blue-500 px-4 py-2.5 rounded-full"
-                                >
-                                    <MessageSquare size={14} color="white" />
-                                    <Text className="text-white font-medium text-sm">Practice</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    ) : null}
-
-                    <View className="h-32" />
+                        )}
+                    </View>
                 </ScrollView>
             </KeyboardAvoidingView>
 
@@ -299,6 +350,16 @@ export default function TranslateScreen() {
                 onSelect={setTargetLang}
                 selectedCode={targetLang.code}
                 title="Translate to"
+            />
+
+            {/* Custom AlertModal for Copy/Save feedback */}
+            <AlertModal
+                visible={alertState.visible}
+                title={alertState.title}
+                message={alertState.message}
+                onClose={hideAlert}
+                type={alertState.type}
+                buttons={alertState.buttons}
             />
         </SafeAreaView>
     );

@@ -10,7 +10,7 @@ import {
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
@@ -311,7 +311,8 @@ export default function VocabScreen() {
       {/* Search and Add */}
       <View className="px-6 flex-row gap-2 mb-6">
         <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
-          <Search size={20} color="gray" />
+          {/* <Search size={20} color="gray" /> */}
+          <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search saved words..."
             className="flex-1 ml-3 text-gray-900 font-medium"
@@ -339,6 +340,7 @@ export default function VocabScreen() {
           {languages.map((lang) => (
             <TouchableOpacity
               key={lang}
+              activeOpacity={0.7}
               onPress={() => setSelectedLanguage(lang)}
               className={`px-5 py-2 rounded-full border ${
                 selectedLanguage === lang

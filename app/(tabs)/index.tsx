@@ -1,3 +1,4 @@
+import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import {
   CATEGORIES,
   CEFRLevel,
@@ -6,6 +7,7 @@ import {
 } from "@/constants/scenarios";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
 import {
@@ -16,10 +18,8 @@ import {
   Compass,
   Mic,
   Plus,
-  Search,
   Sparkles,
   Star,
-  X,
 } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
@@ -111,7 +111,7 @@ export default function RoleplayScreen() {
       {/* Search and Create Row */}
       <View className="px-6 flex-row gap-2 mb-6">
         <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
-          <Search size={20} color="gray" />
+          <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search scenarios..."
             className="flex-1 ml-3 text-gray-900 font-medium text-base"
@@ -121,6 +121,7 @@ export default function RoleplayScreen() {
           />
         </View>
         <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() => setCreateModalVisible(true)}
           className="h-12 px-4 bg-blue-500 rounded-full flex-row items-center gap-2"
         >
@@ -138,6 +139,7 @@ export default function RoleplayScreen() {
         >
           {CATEGORIES.map((cat) => (
             <TouchableOpacity
+              activeOpacity={0.7}
               key={cat}
               onPress={() => setSelectedCategory(cat)}
               className={`px-5 py-2 rounded-full border ${
@@ -242,9 +244,17 @@ function CreateScenarioModal({
   const [level, setLevel] = useState<CEFRLevel>("B1");
   const [context, setContext] = useState("");
 
+  // Alert modal for validation errors
+  const { alertState, showAlert, hideAlert } = useAlertModal();
+
   const handleCreate = () => {
     if (!sophieRole || !topic) {
-      alert("Sophie's Role and Topic are required!");
+      showAlert(
+        "Required Fields Missing",
+        "Sophie's Role and Topic are required!",
+        [{ text: "OK", style: "default" }],
+        "warning"
+      );
       return;
     }
 
@@ -268,122 +278,141 @@ function CreateScenarioModal({
   };
 
   return (
-    /* Modal for creating a new scenario */
-    <Modal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-    >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 bg-white"
+    <>
+      {/* Modal for creating a new scenario */}
+      <Modal
+        visible={visible}
+        animationType="slide"
+        presentationStyle="pageSheet"
       >
-        <SafeAreaView className="flex-1">
-          <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
-            <Text className="text-2xl font-bold text-black">
-              Create Scenario
-            </Text>
-            <TouchableOpacity
-              onPress={onClose}
-              className="w-12 h-12 items-center justify-center rounded-full bg-gray-100"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1 bg-white"
+        >
+          <SafeAreaView className="flex-1">
+            <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+              <Text className="text-3xl font-bold text-black">
+                Create Scenario
+              </Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={onClose}
+                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+              >
+                <Ionicons name="close" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              className="flex-1 px-6 pt-6"
+              showsVerticalScrollIndicator={false}
             >
-              <X size={20} color="black" />
-            </TouchableOpacity>
-          </View>
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Sophie&apos;s Role <Text className="text-red-500">*</Text>
+                </Text>
+                <TextInput
+                  placeholder="e.g. A grumpy but helpful shopkeeper"
+                  placeholderTextColor="gray"
+                  className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                  value={sophieRole}
+                  onChangeText={setSophieRole}
+                />
+              </View>
 
-          <ScrollView
-            className="flex-1 px-6 pt-6"
-            showsVerticalScrollIndicator={false}
-          >
-            <View className="mb-6">
-              <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">
-                Sophie&apos;s Role *
-              </Text>
-              <TextInput
-                placeholder="e.g. A grumpy but helpful shopkeeper"
-                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
-                value={sophieRole}
-                onChangeText={setSophieRole}
-              />
-            </View>
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Your Role
+                </Text>
+                <TextInput
+                  placeholder="e.g. A customer in a hurry"
+                  placeholderTextColor="gray"
+                  className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                  value={userRole}
+                  onChangeText={setUserRole}
+                />
+              </View>
 
-            <View className="mb-6">
-              <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">
-                Your Role
-              </Text>
-              <TextInput
-                placeholder="e.g. A customer in a hurry"
-                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
-                value={userRole}
-                onChangeText={setUserRole}
-              />
-            </View>
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Topic <Text className="text-red-500">*</Text>
+                </Text>
+                <TextInput
+                  placeholder="e.g. Buying a vintage watch"
+                  placeholderTextColor="gray"
+                  className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                  value={topic}
+                  onChangeText={setTopic}
+                />
+              </View>
 
-            <View className="mb-6">
-              <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">
-                Topic *
-              </Text>
-              <TextInput
-                placeholder="e.g. Buying a vintage watch"
-                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium"
-                value={topic}
-                onChangeText={setTopic}
-              />
-            </View>
-
-            <View className="mb-6">
-              <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">
-                Level
-              </Text>
-              <View className="flex-row flex-wrap gap-2">
-                {CEFR_LEVELS.map((l) => (
-                  <TouchableOpacity
-                    key={l}
-                    onPress={() => setLevel(l)}
-                    className={`px-4 py-2 rounded-xl border ${
-                      level === l
-                        ? "bg-blue-500 border-blue-500"
-                        : "bg-white border-gray-100"
-                    }`}
-                  >
-                    <Text
-                      className={`font-bold text-xs ${
-                        level === l ? "text-white" : "text-gray-400"
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Level
+                </Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {CEFR_LEVELS.map((l) => (
+                    <TouchableOpacity
+                      key={l}
+                      activeOpacity={0.7}
+                      onPress={() => setLevel(l)}
+                      className={`px-4 py-2 rounded-full border ${
+                        level === l
+                          ? "bg-blue-100 border-blue-300"
+                          : "bg-white border-gray-300"
                       }`}
                     >
-                      {l}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                      <Text
+                        className={`font-bold text-xs ${
+                          level === l ? "text-blue-500" : "text-gray-600"
+                        }`}
+                      >
+                        {l}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
-            </View>
 
-            <View className="mb-10">
-              <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2 ml-1">
-                Context / Situation
-              </Text>
-              <TextInput
-                placeholder="Describe the setting..."
-                className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium h-32 text-start align-top"
-                multiline
-                value={context}
-                onChangeText={setContext}
-              />
-            </View>
-          </ScrollView>
+              <View className="mb-10">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Context / Situation
+                </Text>
+                <TextInput
+                  placeholder="Describe the setting..."
+                  placeholderTextColor="gray"
+                  className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium h-32 text-start align-top"
+                  multiline
+                  value={context}
+                  onChangeText={setContext}
+                />
+              </View>
+            </ScrollView>
 
-          <View className="px-6 py-8 border-t border-gray-50">
-            <TouchableOpacity
-              onPress={handleCreate}
-              className="w-full h-16 bg-gray-900 rounded-3xl items-center justify-center shadow-xl shadow-gray-200"
-            >
-              <Text className="text-white font-bold text-lg">
-                Start Scenario
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
-      </KeyboardAvoidingView>
-    </Modal>
+            <View className="px-6 py-8 border-t border-gray-100">
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleCreate}
+                className="w-full h-16 bg-blue-500 rounded-full items-center justify-center shadow-lg"
+              >
+                <Text className="text-white font-bold text-lg">
+                  Start Scenario
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Validation Error Modal */}
+      <AlertModal
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        onClose={hideAlert}
+        type={alertState.type}
+        buttons={alertState.buttons}
+      />
+    </>
   );
 }
