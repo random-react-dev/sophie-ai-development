@@ -1,13 +1,16 @@
+import CircleFlag from '@/components/common/CircleFlag';
 import { Language, SUPPORTED_LANGUAGES } from '@/constants/languages';
-import { Search, X } from 'lucide-react-native';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
     FlatList,
+    KeyboardAvoidingView,
     Modal,
-    Pressable,
+    Platform,
     Text, TextInput, TouchableOpacity,
     View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface LanguagePickerModalProps {
     visible: boolean;
@@ -52,38 +55,36 @@ export default function LanguagePickerModal({
         <Modal
             visible={visible}
             animationType="slide"
-            transparent={true}
+            presentationStyle="pageSheet"
             onRequestClose={handleClose}
         >
-            <Pressable
-                className="flex-1 bg-black/50"
-                onPress={handleClose}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className="flex-1 bg-white"
             >
-                <Pressable
-                    className="flex-1 mt-20 bg-white rounded-t-[32px]"
-                    onPress={(e) => e.stopPropagation()}
-                >
+                <SafeAreaView className="flex-1">
                     {/* Header */}
                     <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-100">
-                        <Text className="text-xl font-bold text-gray-900">{title}</Text>
+                        <Text className="text-3xl font-bold text-black">{title}</Text>
                         <TouchableOpacity
+                            activeOpacity={0.7}
                             onPress={handleClose}
                             className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
                         >
-                            <X size={20} color="#374151" />
+                            <Ionicons name="close" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
 
                     {/* Search Bar */}
-                    <View className="px-6 py-4">
-                        <View className="h-12 bg-gray-50 rounded-2xl flex-row items-center px-4 border border-gray-100">
-                            <Search size={18} color="#94a3b8" />
+                    <View className="p-4">
+                        <View className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-gray-100">
+                            <Feather name="search" size={20} color="gray" />
                             <TextInput
                                 placeholder="Search languages..."
                                 className="flex-1 ml-3 text-gray-900 font-medium"
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
-                                placeholderTextColor="#94a3b8"
+                                placeholderTextColor="gray"
                                 autoCapitalize="none"
                             />
                         </View>
@@ -93,27 +94,28 @@ export default function LanguagePickerModal({
                     <FlatList
                         data={filteredLanguages}
                         keyExtractor={(item) => item.code}
-                        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+                        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item }) => {
                             const isSelected = item.code === selectedCode;
                             return (
                                 <TouchableOpacity
+                                    activeOpacity={0.7}
                                     onPress={() => handleSelect(item)}
-                                    className={`flex-row items-center py-4 px-4 rounded-2xl mb-2 ${isSelected ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
+                                    className={`flex-row items-center py-4 px-4 rounded-2xl mb-2 gap-4 ${isSelected ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
                                         }`}
                                 >
-                                    <Text className="text-2xl mr-4">{item.flag}</Text>
+                                    <CircleFlag countryCode={item.countryCode} size={28} />
                                     <View className="flex-1">
-                                        <Text className={`font-bold text-base ${isSelected ? 'text-blue-600' : 'text-gray-900'
+                                        <Text className={`font-bold text-base ${isSelected ? 'text-blue-500' : 'text-gray-900'
                                             }`}>
                                             {item.name}
                                         </Text>
-                                        <Text className="text-gray-400 text-sm">{item.nativeName}</Text>
+                                        <Text className="text-gray-500 text-sm">{item.nativeName}</Text>
                                     </View>
                                     {isSelected && (
                                         <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
-                                            <Text className="text-white text-xs">✓</Text>
+                                            <Ionicons name="checkmark-sharp" size={16} color="white" />
                                         </View>
                                     )}
                                 </TouchableOpacity>
@@ -125,8 +127,8 @@ export default function LanguagePickerModal({
                             </View>
                         }
                     />
-                </Pressable>
-            </Pressable>
+                </SafeAreaView>
+            </KeyboardAvoidingView>
         </Modal>
     );
 }

@@ -112,18 +112,14 @@ export default function LanguageScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-            {/* Header */}
-            <View className="px-6 py-4 flex-row justify-between items-center">
-                <View>
-                    <Text className="text-gray-400 text-sm font-medium">Sophie AI</Text>
-                    <Text className="text-gray-900 text-2xl font-bold tracking-tight">Language Environment</Text>
+        <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
+            <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+                <View className="items-center">
+                    <Text className="text-black text-2xl font-bold">Sophie AI</Text>
+                    <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
                 </View>
                 <Link href="/profile" asChild>
-                    <TouchableOpacity
-                        onPress={() => console.log('Profile icon tapped!')}
-                        className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-gray-200/50"
-                    >
+                    <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
                         {user?.user_metadata?.avatar_url ? (
                             <Image source={{ uri: user.user_metadata.avatar_url }} className="w-full h-full" />
                         ) : (
@@ -134,16 +130,17 @@ export default function LanguageScreen() {
                     </TouchableOpacity>
                 </Link>
             </View>
+            <View className="px-6 mb-6">
+                <Text className="text-4xl font-bold text-black text-left">Language Environment</Text>
+                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Choose your native & target languages and preferred accent to customize your learning experience.</Text>
+            </View>
+           
 
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                <View className="px-6 pb-24">
-                    <Text className="text-gray-500 text-sm mb-6">
-                        Choose your native & target languages and preferred accent to customize your learning experience.
-                    </Text>
-
+            <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
+                <View className="px-4 pb-24">
                     {/* Active Profile Card */}
                     {activeProfile ? (
-                        <View className="bg-white rounded-[32px] p-6 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
+                        <View className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
                             <View className="flex-row items-center gap-2 mb-4">
                                 <Globe size={20} color="#3b82f6" />
                                 <Text className="text-xs font-black text-blue-500 uppercase tracking-widest">Current Learning Profile</Text>
