@@ -104,11 +104,11 @@ export default function TalkScreen() {
     error,
     isListening,
     isSpeaking,
+    isProcessing,
     isPTTActive,
     volumeLevel,
     messages,
     showTranscript,
-    isConversationActive,
     setShowTranscript,
     clearMessages,
     setHasGreeted,
@@ -255,29 +255,26 @@ Stay in character while teaching.`;
 
   const getStatusText = (): string => {
     if (isSpeaking) return "Sophie Speaking...";
+    if (isProcessing) return "Sophie is thinking...";
     if (isListening) return "Listening...";
-    if (isConversationActive) return "Hold mic to speak";
+
     switch (connectionState) {
-      case "idle":
-        return "Ready";
       case "connecting":
         return "Connecting...";
-      case "connected":
-        return "Hold mic to speak";
       case "reconnecting":
         return "Reconnecting...";
       case "error":
         return error || "Error";
+      default:
+        return "Hold mic to speak";
     }
   };
 
   const getDotColor = (): string => {
     if (isSpeaking) return "bg-purple-500";
     if (isListening) return "bg-blue-500";
-    if (isConversationActive) return "bg-green-500";
+
     switch (connectionState) {
-      case "idle":
-        return "bg-gray-400";
       case "connecting":
       case "reconnecting":
         return "bg-orange-500";
@@ -285,6 +282,8 @@ Stay in character while teaching.`;
         return "bg-green-500";
       case "error":
         return "bg-red-500";
+      default:
+        return "bg-gray-400";
     }
   };
 

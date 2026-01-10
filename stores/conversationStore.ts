@@ -5,14 +5,15 @@ import { audioRecorder } from '../services/audio/recorder';
 import { audioStreamer } from '../services/audio/streamer';
 import { geminiWebSocket } from '../services/gemini/websocket';
 
-// Throttle volume updates to reduce re-renders (10fps instead of 50fps)
 const VOLUME_THROTTLE_MS = 100;
+const MIN_PTT_DURATION_MS = 1000;
+
 let lastVolumeUpdate = 0;
 
 /**
- * Create throttled volume change handler to reduce re-renders.
+ * Create throttled volume handler to reduce re-renders.
  */
-function createVolumeHandler(setState: (state: Partial<ConversationState>) => void) {
+function createVolumeHandler(setState: (state: Partial<ConversationState>) => void): (rms: number) => void {
     return (rms: number): void => {
         const now = Date.now();
         if (now - lastVolumeUpdate >= VOLUME_THROTTLE_MS) {
@@ -47,6 +48,7 @@ interface ConversationState {
     isConversationActive: boolean; // Whether conversation mode is on
     isListening: boolean; // Whether currently recording audio
     isSpeaking: boolean; // Whether AI is speaking
+    isProcessing: boolean; // Whether AI is processing user's audio (after PTT release)
     isPTTActive: boolean; // Whether currently holding to speak (PTT mode)
     pttStartTime: number | null; // Timestamp when PTT recording started
     volumeLevel: number;
@@ -61,6 +63,7 @@ interface ConversationState {
     setError: (error: string | null) => void;
     setListening: (isListening: boolean) => void;
     setSpeaking: (isSpeaking: boolean) => void;
+    setProcessing: (isProcessing: boolean) => void;
     setVolumeLevel: (level: number) => void;
     setShowTranscript: (show: boolean) => void;
     setHasGreeted: (hasGreeted: boolean) => void;
@@ -84,14 +87,13 @@ interface ConversationState {
     toggleGlobalRecording: () => Promise<void>;
 }
 
-const MIN_PTT_DURATION_MS = 1000; // Minimum recording duration (1 second)
-
 const initialState = {
     connectionState: 'idle' as ConnectionState,
     error: null,
     isConversationActive: false,
     isListening: false,
     isSpeaking: false,
+    isProcessing: false,
     isPTTActive: false,
     pttStartTime: null as number | null,
     volumeLevel: 0,
@@ -110,6 +112,8 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
     setListening: (isListening: boolean) => set({ isListening }),
 
     setSpeaking: (isSpeaking: boolean) => set({ isSpeaking }),
+
+    setProcessing: (isProcessing: boolean) => set({ isProcessing }),
 
     setVolumeLevel: (volumeLevel: number) => set({ volumeLevel }),
 
@@ -220,14 +224,13 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 
     /**
      * Start push-to-talk recording (hold to speak).
-     * Called when user presses down on mic button.
      */
     startPTTRecording: async () => {
         const state = get();
-        if (state.isPTTActive) return;
-
-        if (!geminiWebSocket.isReady()) {
-            Logger.warn('ConversationStore', 'Cannot start PTT: WebSocket not ready');
+        if (state.isPTTActive || !geminiWebSocket.isReady()) {
+            if (!geminiWebSocket.isReady()) {
+                Logger.warn('ConversationStore', 'Cannot start PTT: WebSocket not ready');
+            }
             return;
         }
 
@@ -236,6 +239,8 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         await impactAsync(ImpactFeedbackStyle.Medium);
 
         Logger.info('ConversationStore', 'Starting PTT recording...');
+        geminiWebSocket.sendActivityStart();
+
         await audioRecorder.start({
             onAudioData: (base64) => geminiWebSocket.sendAudioChunk(base64),
             onVolumeChange: createVolumeHandler(set),
@@ -246,12 +251,12 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
             pttStartTime: Date.now(),
             isListening: true,
             isConversationActive: true,
+            isProcessing: false,
         });
     },
 
     /**
      * Stop push-to-talk recording.
-     * Called when user releases mic button.
      */
     stopPTTRecording: async () => {
         const state = get();
@@ -259,23 +264,25 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 
         const { notificationAsync, NotificationFeedbackType } = await import('expo-haptics');
         const duration = state.pttStartTime ? Date.now() - state.pttStartTime : 0;
+        const isValidRecording = duration >= MIN_PTT_DURATION_MS;
 
         Logger.info('ConversationStore', `Stopping PTT recording... Duration: ${duration}ms`);
         await audioRecorder.stop();
+        geminiWebSocket.sendActivityEnd();
 
         set({
             isPTTActive: false,
             pttStartTime: null,
             isListening: false,
+            isProcessing: isValidRecording,
             volumeLevel: 0,
         });
 
-        const isTooShort = duration < MIN_PTT_DURATION_MS;
         await notificationAsync(
-            isTooShort ? NotificationFeedbackType.Warning : NotificationFeedbackType.Success
+            isValidRecording ? NotificationFeedbackType.Success : NotificationFeedbackType.Warning
         );
 
-        if (isTooShort) {
+        if (!isValidRecording) {
             Logger.info('ConversationStore', `Recording too short: ${duration}ms - discarded`);
         }
     },

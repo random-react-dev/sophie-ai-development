@@ -223,11 +223,11 @@ class GeminiWebSocket {
                 },
                 inputAudioTranscription: {},
                 outputAudioTranscription: {},
-                // Configure VAD for reliable turn detection after model speaks
+                // PTT Mode: Disable automatic VAD, use manual activity control
+                // Client sends activityStart/activityEnd to control turn-taking
                 realtimeInputConfig: {
                     automaticActivityDetection: {
-                        endOfSpeechSensitivity: 'END_SENSITIVITY_LOW',
-                        silenceDurationMs: 300
+                        disabled: true
                     }
                 }
             }
@@ -236,25 +236,40 @@ class GeminiWebSocket {
         this.send(JSON.stringify(setupMsg));
     }
 
+    /**
+     * Signal start of user speech activity (PTT pressed).
+     */
+    sendActivityStart(): void {
+        if (!this.isReady()) {
+            Logger.warn(TAG, 'Cannot send activityStart: not ready');
+            return;
+        }
+        Logger.info(TAG, 'Sending activityStart signal');
+        this.send(JSON.stringify({ realtimeInput: { activityStart: {} } }));
+    }
+
+    /**
+     * Signal end of user speech activity (PTT released).
+     */
+    sendActivityEnd(): void {
+        if (!this.isReady()) {
+            Logger.warn(TAG, 'Cannot send activityEnd: not ready');
+            return;
+        }
+        Logger.info(TAG, 'Sending activityEnd signal');
+        this.send(JSON.stringify({ realtimeInput: { activityEnd: {} } }));
+    }
+
     sendAudioChunk(base64Data: string) {
-        // Validate input data
         if (!base64Data || base64Data.length === 0) {
             Logger.warn(TAG, 'sendAudioChunk called with empty data');
             return;
         }
 
-        if (this.connectionState !== 'connected' || !this.ws) {
-            Logger.warn(TAG, `Cannot send audio: state=${this.connectionState}`);
+        if (!this.isReady()) {
+            Logger.warn(TAG, `Cannot send audio: not ready (state=${this.connectionState})`);
             return;
         }
-
-        if (!this.isSetupComplete) {
-            Logger.warn(TAG, 'Cannot send audio: Setup not complete yet');
-            return;
-        }
-
-        // Audio is always sent - hardware AEC handles echo cancellation
-        // Gemini's automatic VAD handles turn detection and interruptions
 
         // Log first few chunks and then every 50th to verify audio is flowing
         this.audioChunksSent++;
@@ -277,8 +292,8 @@ class GeminiWebSocket {
      * Send a greeting request to Sophie. Called from HomeScreen on first mic press.
      */
     sendGreeting() {
-        if (!this.isSetupComplete) {
-            Logger.warn(TAG, 'Cannot send greeting: Setup not complete');
+        if (!this.isReady()) {
+            Logger.warn(TAG, 'Cannot send greeting: not ready');
             return;
         }
 
@@ -348,6 +363,10 @@ class GeminiWebSocket {
 
             // Handle audio from model
             if (modelTurn?.parts) {
+                // Model started responding - clear processing state
+                store.setProcessing(false);
+                store.setSpeaking(true);
+
                 for (const part of modelTurn.parts) {
                     const inlineData = part.inline_data || part.inlineData;
                     if (inlineData) {
