@@ -1,16 +1,19 @@
 import {
+    addErrorListener,
+    addFrameListener,
     requestPermission,
     start,
     stop,
-    addFrameListener,
-    addErrorListener,
-    type Subscription,
     type PermissionStatus,
+    type Subscription,
 } from 'expo-stream-audio';
-import { Platform, PermissionsAndroid } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
+
 import { Logger } from '../common/Logger';
 
 const TAG = 'AudioRecorder';
+const MAX_CONSECUTIVE_ERRORS = 5;
+const RESTART_DELAY_MS = 200;
 
 export interface RecorderOptions {
     onAudioData: (base64Data: string) => void;
@@ -23,6 +26,8 @@ class AudioRecorder {
     private frameSubscription: Subscription | null = null;
     private errorSubscription: Subscription | null = null;
     private chunkCount = 0;
+    private consecutiveErrors = 0;
+    private isRestarting = false;
 
     // Singleton pattern
     private static instance: AudioRecorder;
@@ -34,13 +39,14 @@ class AudioRecorder {
         return AudioRecorder.instance;
     }
 
-    async start(options: RecorderOptions) {
+    async start(options: RecorderOptions): Promise<void> {
         if (this.isRecording) {
             Logger.warn(TAG, 'Already recording, skipping start');
             return;
         }
         this.options = options;
         this.chunkCount = 0;
+        this.consecutiveErrors = 0;
 
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
@@ -63,6 +69,8 @@ class AudioRecorder {
 
             // Set up event listeners before starting
             this.frameSubscription = addFrameListener((frame) => {
+                // Reset error counter on successful frame
+                this.consecutiveErrors = 0;
                 this.chunkCount++;
 
                 // On first frame, log sample rate to verify it matches what Gemini expects
@@ -92,13 +100,16 @@ class AudioRecorder {
 
             this.errorSubscription = addErrorListener((event) => {
                 Logger.error(TAG, 'Microphone error', event.message);
+                this.handleRecordingError(event.message);
             });
 
             // Start streaming (16kHz, 20ms frames = ~50 frames/second)
+            // enableBackground starts foreground service on Android for reliable APK recording
             await start({
                 sampleRate: 16000,
                 frameDurationMs: 20,
                 enableLevelMeter: true,
+                enableBackground: Platform.OS === 'android',
             });
 
             this.isRecording = true;
@@ -111,7 +122,7 @@ class AudioRecorder {
         }
     }
 
-    async stop() {
+    async stop(): Promise<void> {
         if (!this.isRecording) {
             Logger.warn(TAG, 'Not recording, skipping stop');
             return;
@@ -129,12 +140,49 @@ class AudioRecorder {
         }
     }
 
-    private cleanup() {
+    private async restartRecording(): Promise<void> {
+        if (this.isRestarting || !this.options) return;
+
+        this.isRestarting = true;
+        const savedOptions = this.options;
+
+        try {
+            Logger.info(TAG, 'Restarting audio recording...');
+            await this.stop();
+            await new Promise((resolve) => setTimeout(resolve, RESTART_DELAY_MS));
+            await this.start(savedOptions);
+            Logger.info(TAG, 'Audio recording restarted successfully');
+        } catch (error) {
+            Logger.error(TAG, 'Failed to restart recording', error);
+        } finally {
+            this.isRestarting = false;
+            this.consecutiveErrors = 0;
+        }
+    }
+
+    private handleRecordingError(message: string): void {
+        if (!message.includes('0 bytes')) {
+            this.consecutiveErrors = 0;
+            return;
+        }
+
+        this.consecutiveErrors++;
+        Logger.warn(TAG, `Consecutive 0-byte errors: ${this.consecutiveErrors}`);
+
+        if (this.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS && !this.isRestarting) {
+            Logger.warn(TAG, 'Max consecutive errors reached, attempting restart...');
+            this.restartRecording();
+        }
+    }
+
+    private cleanup(): void {
         this.frameSubscription?.remove();
         this.errorSubscription?.remove();
         this.frameSubscription = null;
         this.errorSubscription = null;
         this.isRecording = false;
+        this.consecutiveErrors = 0;
+        this.isRestarting = false;
     }
 }
 
