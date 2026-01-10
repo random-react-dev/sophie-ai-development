@@ -19,6 +19,53 @@ Sophie uses Gemini Live API for real-time voice conversations. The user speaks, 
 └─────────────┘     └──────────────┘     └─────────────────┘
 ```
 
+## Push-to-Talk (PTT) Mode
+
+### User Flow
+
+1. **User visits Talk page** → Selects target and native languages
+2. **WebSocket connects** → Sophie **automatically greets** with hello word introduction
+3. **User holds mic button (200ms+)** → Recording starts, audio streams to Gemini
+4. **User releases mic** → Recording stops, Gemini processes and Sophie responds
+5. **Flow continues** → User can hold again to speak
+
+### Key Implementation Details
+
+**Auto-Greeting on Setup Complete** (`services/gemini/websocket.ts:314-324`)
+```typescript
+if (isSetupCompleteReceived) {
+    this.isSetupComplete = true;
+    this.setConnectionState('connected');
+
+    // Auto-greet on first connection
+    if (!store.hasGreeted) {
+        this.sendGreeting();
+        store.setHasGreeted(true);
+    }
+}
+```
+
+**Timer-Based Hold Detection** (`app/(tabs)/_layout.tsx`)
+- Uses 200ms threshold to distinguish tap from hold
+- `onPressIn` starts a timer, recording only begins after threshold
+- Quick taps show tooltip: "Hold to Speak"
+- `onPressOut` clears timer and stops recording if active
+
+```typescript
+const HOLD_THRESHOLD = 200; // milliseconds
+const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+const isHoldingRef = useRef(false);
+
+// onPressIn: Start timer, only record if held 200ms+
+// onPressOut: Clear timer, stop recording if was holding
+// onPress: Show tooltip if tap (not hold)
+```
+
+**DO NOT:**
+- Trigger greeting on button press (it's auto on setup)
+- Start recording immediately on `onPressIn` (use timer)
+- Remove the hold threshold (prevents accidental recordings)
+
 ## Critical Design Decisions
 
 ### 1. Continuous Audio Streaming (DO NOT PAUSE)
@@ -224,7 +271,9 @@ services/
 ## Testing Checklist
 
 - [ ] WebSocket stays connected (no 1007 errors)
-- [ ] Sophie greets when mic is pressed
+- [ ] Sophie auto-greets when WebSocket setup completes (no button press needed)
+- [ ] Quick tap on mic shows "Hold to Speak" tooltip
+- [ ] Holding mic (200ms+) starts recording
 - [ ] Sophie's voice is clear (no choppy audio)
 - [ ] User can speak after Sophie finishes
 - [ ] User's speech is transcribed (`input_transcription` in logs)
@@ -239,10 +288,17 @@ services/
 ```
 [GeminiWS] WebSocket Connected successfully
 [GeminiWS] Setup complete - ready for conversation
+[GeminiWS] Auto-sending greeting...
+[GeminiWS] Sending greeting request
 [AudioStreamer] Sophie started speaking
 [AudioStreamer] Queued audio chunk #1 (23040 samples)
 [AudioStreamer] onEnded: bufferId=X, isLast=true
 [AudioStreamer] Sophie finished speaking
+... user holds mic button ...
+[ConversationStore] Starting PTT recording...
+[GeminiWS] Sending audio chunk #1 (xxx chars)
+... user releases mic button ...
+[ConversationStore] Stopping PTT recording...
 [GeminiWS] User transcribed: <user's speech>
 [GeminiWS] Model transcribed: <Sophie's response>
 ```
@@ -262,6 +318,13 @@ services/
 - Native WebSocket: Connection to Gemini Live API
 
 ## Version History
+
+- **v1.1** (2025-01-10): Push-to-Talk (PTT) Mode
+  - Auto-greeting on WebSocket setup complete (no button press needed)
+  - Timer-based hold detection (200ms threshold)
+  - Quick tap shows "Hold to Speak" tooltip
+  - Removed greeting from `startPTTRecording()` (now auto on setup)
+  - Files changed: `websocket.ts`, `_layout.tsx`, `conversationStore.ts`
 
 - **v1.0** (2025-01-07): Initial working implementation
   - Continuous audio streaming (no pausing)

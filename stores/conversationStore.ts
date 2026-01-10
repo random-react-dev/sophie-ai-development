@@ -18,6 +18,7 @@ interface ConversationState {
     isConversationActive: boolean; // Whether conversation mode is on
     isListening: boolean; // Whether currently recording audio
     isSpeaking: boolean; // Whether AI is speaking
+    isPTTActive: boolean; // Whether currently holding to speak (PTT mode)
     volumeLevel: number;
 
     // UI state
@@ -43,6 +44,10 @@ interface ConversationState {
     stopConversation: () => Promise<void>;
     toggleConversation: () => Promise<void>;
 
+    // Push-to-talk (PTT) actions
+    startPTTRecording: () => Promise<void>;
+    stopPTTRecording: () => Promise<void>;
+
     // Legacy actions (deprecated, kept for compatibility)
     startGlobalRecording: () => Promise<void>;
     stopGlobalRecording: () => Promise<void>;
@@ -55,6 +60,7 @@ const initialState = {
     isConversationActive: false,
     isListening: false,
     isSpeaking: false,
+    isPTTActive: false,
     volumeLevel: 0,
     showTranscript: false,
     messages: [] as Message[],
@@ -212,6 +218,76 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         } else {
             await state.startConversation();
         }
+    },
+
+    /**
+     * Start push-to-talk recording (hold to speak).
+     * Called when user presses down on mic button.
+     */
+    startPTTRecording: async () => {
+        const state = get();
+
+        // Don't start if already recording
+        if (state.isPTTActive) return;
+
+        const { audioRecorder } = await import('../services/audio/recorder');
+        const { audioStreamer } = await import('../services/audio/streamer');
+        const { geminiWebSocket } = await import('../services/gemini/websocket');
+        const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
+
+        if (!geminiWebSocket.isReady()) {
+            Logger.warn('ConversationStore', 'Cannot start PTT: WebSocket not ready');
+            return;
+        }
+
+        // Initialize audio streamer
+        await audioStreamer.initialize();
+
+        // Haptic feedback
+        await impactAsync(ImpactFeedbackStyle.Medium);
+
+        // Start recording
+        Logger.info('ConversationStore', 'Starting PTT recording...');
+        await audioRecorder.start({
+            onAudioData: (base64) => {
+                geminiWebSocket.sendAudioChunk(base64);
+            },
+            onVolumeChange: (rms) => {
+                set({ volumeLevel: rms });
+            }
+        });
+
+        set({
+            isPTTActive: true,
+            isListening: true,
+            isConversationActive: true
+        });
+    },
+
+    /**
+     * Stop push-to-talk recording.
+     * Called when user releases mic button.
+     */
+    stopPTTRecording: async () => {
+        const state = get();
+
+        if (!state.isPTTActive) return;
+
+        const { audioRecorder } = await import('../services/audio/recorder');
+        const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
+
+        Logger.info('ConversationStore', 'Stopping PTT recording...');
+        await audioRecorder.stop();
+
+        // Haptic feedback
+        await impactAsync(ImpactFeedbackStyle.Light);
+
+        set({
+            isPTTActive: false,
+            isListening: false,
+            volumeLevel: 0
+            // Keep isConversationActive true - conversation continues
+        });
     },
 
     // Legacy methods - redirect to conversation mode
