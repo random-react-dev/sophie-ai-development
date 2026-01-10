@@ -20,6 +20,7 @@ export default function TabLayout() {
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
   const [isPressing, setIsPressing] = useState(false);
 
   useEffect(() => {
@@ -27,6 +28,32 @@ export default function TabLayout() {
       fetchProfiles();
     }
   }, [user]);
+
+  // Pulsing animation when recording
+  useEffect(() => {
+    if (!isPTTActive) {
+      pulseAnim.setValue(1);
+      return;
+    }
+
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.4,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+    return () => animation.stop();
+  }, [isPTTActive]);
 
   // Find flag for active profile target language
   const activeFlag = activeProfile
@@ -137,6 +164,19 @@ export default function TabLayout() {
                     style={{ transform: [{ scale: scaleAnim }] }}
                     className="items-center justify-center -top-8"
                   >
+                    {/* Pulsing ring when recording */}
+                    {isPTTActive && (
+                      <Animated.View
+                        style={{
+                          position: 'absolute',
+                          width: 80,
+                          height: 80,
+                          borderRadius: 24,
+                          backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                          transform: [{ scale: pulseAnim }],
+                        }}
+                      />
+                    )}
                     <Pressable
                       onPressIn={handlePressIn}
                       onPressOut={handlePressOut}

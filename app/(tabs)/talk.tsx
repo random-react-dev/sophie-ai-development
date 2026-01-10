@@ -31,6 +31,12 @@ import { Feather } from "@expo/vector-icons";
 
 const TAG = "TalkTab";
 
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
 // Hello words for initial greeting
 const HELLO_WORDS: Record<string, string> = {
   en: "Hello",
@@ -98,6 +104,7 @@ export default function TalkScreen() {
     error,
     isListening,
     isSpeaking,
+    isPTTActive,
     volumeLevel,
     messages,
     showTranscript,
@@ -128,12 +135,30 @@ export default function TalkScreen() {
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [pickerMode, setPickerMode] = useState<"target" | "native">("target");
 
+  // Recording timer state
+  const [recordingTime, setRecordingTime] = useState(0);
+
   // Alert modal state for reset confirmation
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
   // Check if both languages are selected
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
+
+  // Recording timer effect
+  useEffect(() => {
+    if (!isPTTActive) {
+      setRecordingTime(0);
+      return;
+    }
+
+    setRecordingTime(0);
+    const interval = setInterval(() => {
+      setRecordingTime((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isPTTActive]);
 
   useEffect(() => {
     let isMounted = true;
@@ -429,7 +454,14 @@ Stay in character while teaching.`;
           </View>
 
           {/* Rainbow Wave */}
-          <View className="flex-1 justify-center items-center">
+          <View className="flex-1 justify-center items-center relative">
+            {/* Recording Timer */}
+            {isPTTActive && (
+              <View className="absolute top-4 bg-red-500 px-4 py-2 rounded-full flex-row items-center z-10">
+                <View className="w-2 h-2 rounded-full bg-white mr-2" />
+                <Text className="text-white font-semibold">{formatTime(recordingTime)}</Text>
+              </View>
+            )}
             <RainbowWave
               isListening={isListening}
               isSpeaking={isSpeaking}
