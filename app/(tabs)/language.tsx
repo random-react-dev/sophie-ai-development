@@ -125,7 +125,7 @@ export default function LanguageScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
-            <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+            <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
                 <View className="items-center">
                     <Text className="text-black text-2xl font-bold">Sophie AI</Text>
                     <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
@@ -142,7 +142,7 @@ export default function LanguageScreen() {
                     </TouchableOpacity>
                 </Link>
             </View>
-            <View className="px-6 mb-6">
+            <View className="px-4 mb-6">
                 <Text className="text-3xl font-bold text-black text-left">Language Environment</Text>
                 <Text className="text-gray-500 text-base font-medium mt-1 text-left">Choose your native & target languages and preferred accent.</Text>
             </View>
@@ -260,7 +260,7 @@ export default function LanguageScreen() {
                     )}
 
                     {/* Accent Playground */}
-                    <View className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm shadow-gray-100 mb-8">
+                    <View className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-8">
                         <Text className="text-blue-500 text-base font-semibold capitalize mb-4">Accent Playground</Text>
 
                         <TextInput
@@ -398,7 +398,7 @@ export default function LanguageScreen() {
                     className="flex-1 bg-white"
                 >
                     <SafeAreaView className="flex-1">
-                        <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+                        <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
                             <Text className="text-2xl font-bold text-black">New Learning Profile</Text>
                             <TouchableOpacity
                                 activeOpacity={0.7}
@@ -409,7 +409,7 @@ export default function LanguageScreen() {
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
+                        <ScrollView className="flex-1 px-4 pt-6" showsVerticalScrollIndicator={false}>
                             {/* Native Language */}
                             <View className="mb-6">
                                 <Text className="text-gray-500 text-base font-semibold capitalize mb-2">Native Language</Text>
@@ -469,7 +469,7 @@ export default function LanguageScreen() {
                             </View>
                         </ScrollView>
 
-                        <View className="px-6 py-8 border-t border-gray-100">
+                        <View className="px-4 py-8 border-t border-gray-100">
                             <TouchableOpacity
                                 activeOpacity={0.7}
                                 onPress={handleCreateProfile}

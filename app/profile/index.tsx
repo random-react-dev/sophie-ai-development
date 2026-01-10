@@ -154,7 +154,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
       {/* Header */}
-      <View className="px-6 py-4 flex-row items-center bg-white border-b border-gray-100">
+      <View className="px-4 py-4 flex-row items-center bg-white border-b border-gray-100">
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => router.back()}

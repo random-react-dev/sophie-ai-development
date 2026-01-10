@@ -85,7 +85,7 @@ export default function ChangePasswordModal({
             className="flex-1 justify-end"
           >
             <View className="bg-white rounded-t-[32px] overflow-hidden max-h-[80%]">
-              <View className="px-6 py-5 border-b border-gray-100">
+              <View className="px-4 py-5 border-b border-gray-100">
                 <View className="flex-row justify-between items-center">
                   <View className="flex-1 pr-4">
                     <Text className="text-2xl font-bold text-gray-900">
@@ -102,7 +102,7 @@ export default function ChangePasswordModal({
               </View>
 
               <ScrollView
-                contentContainerStyle={{ padding: 24, paddingBottom: 40 }}
+                contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
               >
                 <View className="mb-6">
                   <Text className="text-gray-500 font-medium mb-2">

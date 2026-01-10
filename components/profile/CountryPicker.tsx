@@ -170,7 +170,7 @@ export default function CountryPicker({
         {/* Modal Content */}
         <SafeAreaView className="flex-1 bg-white mt-16 rounded-t-[32px] overflow-hidden">
           {/* Header */}
-          <View className="px-6 py-6 bg-white border-b border-gray-100">
+          <View className="px-4 py-6 bg-white border-b border-gray-100">
             <View className="flex-row justify-between items-center">
               <View className="flex-1 pr-4">
                 <Text className="text-2xl font-bold text-gray-900">

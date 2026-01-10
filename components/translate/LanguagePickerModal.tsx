@@ -202,7 +202,7 @@ export default function LanguagePickerModal({
       >
         <SafeAreaView className="flex-1">
           {/* Header */}
-          <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-100">
+          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
             <Text className="text-2xl font-bold text-black">{title}</Text>
             <Pressable
               onPress={handleClose}
@@ -231,7 +231,7 @@ export default function LanguagePickerModal({
           <FlatList
             data={filteredLanguages}
             keyExtractor={(item) => item.code}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, marginTop: 10 }}
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View className="h-3" />}
             renderItem={({ item }) => (

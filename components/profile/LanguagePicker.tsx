@@ -155,7 +155,7 @@ export default function LanguagePicker({
         {/* Bottom Sheet */}
         <View className="bg-white rounded-t-[32px] overflow-hidden">
           {/* Header */}
-          <View className="px-6 py-5 border-b border-gray-100">
+          <View className="px-4 py-5 border-b border-gray-100">
             <View className="flex-row justify-between items-center">
               <View className="flex-1 pr-4">
                 <Text className="text-2xl font-bold text-gray-900">
@@ -172,7 +172,7 @@ export default function LanguagePicker({
           </View>
 
           {/* Language List */}
-          <View className="p-6 pb-12">
+          <View className="p-4 pb-12">
             {LANGUAGES.map((lang) => (
               <LanguageItem
                 key={lang.code}

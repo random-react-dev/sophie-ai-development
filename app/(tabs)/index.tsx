@@ -74,7 +74,7 @@ export default function RoleplayScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
-      <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+      <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
           <Text className="text-gray-500 text-base font-medium">
@@ -99,7 +99,7 @@ export default function RoleplayScreen() {
         </Link>
       </View>
 
-      <View className="px-6 mb-8">
+      <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">
           Choose a Scenario
         </Text>
@@ -109,7 +109,7 @@ export default function RoleplayScreen() {
       </View>
 
       {/* Search and Create Row */}
-      <View className="px-6 flex-row gap-2 mb-6">
+      <View className="px-4 flex-row gap-2 mb-6">
         <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
           <Feather name="search" size={20} color="gray" />
           <TextInput
@@ -290,7 +290,7 @@ function CreateScenarioModal({
           className="flex-1 bg-white"
         >
           <SafeAreaView className="flex-1">
-            <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+            <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
               <Text className="text-2xl font-bold text-black">
                 Create Scenario
               </Text>
@@ -304,7 +304,7 @@ function CreateScenarioModal({
             </View>
 
             <ScrollView
-              className="flex-1 px-6 pt-6"
+              className="flex-1 px-4 pt-6"
               showsVerticalScrollIndicator={false}
             >
               <View className="mb-6">
@@ -389,7 +389,7 @@ function CreateScenarioModal({
               </View>
             </ScrollView>
 
-            <View className="px-6 py-8 border-t border-gray-100">
+            <View className="px-4 py-8 border-t border-gray-100">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleCreate}
