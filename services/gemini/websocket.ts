@@ -315,7 +315,13 @@ class GeminiWebSocket {
             Logger.info(TAG, 'Setup complete - ready for conversation');
             this.isSetupComplete = true;
             this.setConnectionState('connected');
-            // No auto-greeting - wait for user to press mic first
+
+            // Auto-greet on first connection
+            if (!store.hasGreeted) {
+                Logger.info(TAG, 'Auto-sending greeting...');
+                this.sendGreeting();
+                store.setHasGreeted(true);
+            }
         }
 
         // Support both camelCase and snake_case
