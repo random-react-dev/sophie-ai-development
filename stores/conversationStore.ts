@@ -19,6 +19,7 @@ interface ConversationState {
     isListening: boolean; // Whether currently recording audio
     isSpeaking: boolean; // Whether AI is speaking
     isPTTActive: boolean; // Whether currently holding to speak (PTT mode)
+    pttStartTime: number | null; // Timestamp when PTT recording started
     volumeLevel: number;
 
     // UI state
@@ -54,6 +55,8 @@ interface ConversationState {
     toggleGlobalRecording: () => Promise<void>;
 }
 
+const MIN_PTT_DURATION_MS = 1000; // Minimum recording duration (1 second)
+
 const initialState = {
     connectionState: 'idle' as ConnectionState,
     error: null,
@@ -61,6 +64,7 @@ const initialState = {
     isListening: false,
     isSpeaking: false,
     isPTTActive: false,
+    pttStartTime: null as number | null,
     volumeLevel: 0,
     showTranscript: false,
     messages: [] as Message[],
@@ -259,6 +263,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 
         set({
             isPTTActive: true,
+            pttStartTime: Date.now(),
             isListening: true,
             isConversationActive: true
         });
@@ -274,20 +279,30 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         if (!state.isPTTActive) return;
 
         const { audioRecorder } = await import('../services/audio/recorder');
-        const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
+        const { notificationAsync, NotificationFeedbackType } = await import('expo-haptics');
 
-        Logger.info('ConversationStore', 'Stopping PTT recording...');
+        const duration = state.pttStartTime ? Date.now() - state.pttStartTime : 0;
+
+        Logger.info('ConversationStore', `Stopping PTT recording... Duration: ${duration}ms`);
         await audioRecorder.stop();
-
-        // Haptic feedback
-        await impactAsync(ImpactFeedbackStyle.Light);
 
         set({
             isPTTActive: false,
+            pttStartTime: null,
             isListening: false,
-            volumeLevel: 0
-            // Keep isConversationActive true - conversation continues
+            volumeLevel: 0,
         });
+
+        const isTooShort = duration < MIN_PTT_DURATION_MS;
+        const feedbackType = isTooShort
+            ? NotificationFeedbackType.Warning
+            : NotificationFeedbackType.Success;
+
+        await notificationAsync(feedbackType);
+
+        if (isTooShort) {
+            Logger.info('ConversationStore', `Recording too short: ${duration}ms - discarded`);
+        }
     },
 
     // Legacy methods - redirect to conversation mode
