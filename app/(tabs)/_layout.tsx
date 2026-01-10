@@ -4,10 +4,11 @@ import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { isVoiceModeAvailable } from "@/utils/environment";
 import { Feather } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
-import React, { useEffect, useRef } from "react";
-import { Alert, Animated, Platform, Pressable, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Platform, Pressable, Text, View } from "react-native";
 
 // Check if voice mode is available (not available in Expo Go)
 const voiceAvailable = isVoiceModeAvailable();
@@ -19,9 +20,7 @@ export default function TabLayout() {
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isHoldingRef = useRef(false);
-  const HOLD_THRESHOLD = 200; // milliseconds
+  const [isPressing, setIsPressing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -85,59 +84,51 @@ export default function TabLayout() {
                 const isFocused = pathname === "/talk";
                 const isConnected = connectionState === "connected";
 
-                const handlePressIn = async () => {
+                const handlePressIn = () => {
                   if (!isFocused) return;
 
-                  // Start scale animation immediately for feedback
+                  setIsPressing(true);
+
                   Animated.spring(scaleAnim, {
                     toValue: 1.1,
                     useNativeDriver: true,
                   }).start();
 
-                  // Set timer - only start recording if held for HOLD_THRESHOLD
-                  holdTimerRef.current = setTimeout(async () => {
-                    if (isConnected) {
-                      isHoldingRef.current = true;
-                      await startPTTRecording();
-                    }
-                  }, HOLD_THRESHOLD);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 };
 
-                const handlePressOut = async () => {
-                  // Reset scale animation
+                const handlePressOut = () => {
+                  setIsPressing(false);
+
                   Animated.spring(scaleAnim, {
                     toValue: 1,
                     useNativeDriver: true,
                   }).start();
 
-                  // Clear the hold timer
-                  if (holdTimerRef.current) {
-                    clearTimeout(holdTimerRef.current);
-                    holdTimerRef.current = null;
+                  if (isPTTActive) {
+                    stopPTTRecording();
                   }
+                };
 
-                  // If was actually holding (recording started), stop recording
-                  if (isHoldingRef.current) {
-                    isHoldingRef.current = false;
-                    await stopPTTRecording();
-                  }
+                const handleLongPress = () => {
+                  if (!isFocused || !isConnected) return;
+
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  startPTTRecording();
                 };
 
                 const handlePress = () => {
                   if (!isFocused) {
                     router.push("/(tabs)/talk");
-                  } else if (!isHoldingRef.current && isConnected) {
-                    // Was a tap, not a hold - show tooltip
-                    Alert.alert("Hold to Speak", "Press and hold the mic button to speak to Sophie.");
                   }
                 };
 
-                // Button color based on state
                 const getButtonColor = () => {
                   if (isPTTActive) return "bg-red-500 shadow-red-200";
-                  if (isFocused && isConnected) return "bg-blue-500 shadow-blue-200";
-                  if (isFocused) return "bg-gray-600 shadow-gray-400";
-                  return "bg-gray-900 shadow-gray-400";
+                  if (!isFocused) return "bg-gray-900 shadow-gray-400";
+                  if (!isConnected) return "bg-gray-600 shadow-gray-400";
+                  if (isPressing) return "bg-blue-400 shadow-blue-200";
+                  return "bg-blue-500 shadow-blue-200";
                 };
 
                 return (
@@ -148,17 +139,14 @@ export default function TabLayout() {
                     <Pressable
                       onPressIn={handlePressIn}
                       onPressOut={handlePressOut}
+                      onLongPress={handleLongPress}
+                      delayLongPress={400}
                       onPress={handlePress}
                     >
-                      {/* Button Microphone */}
                       <View
                         className={`size-20 rounded-3xl items-center justify-center shadow-2xl ${getButtonColor()} border-4 border-white`}
                       >
-                        <Feather
-                          name={isPTTActive ? "mic" : "mic"}
-                          size={26}
-                          color="white"
-                        />
+                        <Feather name="mic" size={26} color="white" />
                       </View>
                     </Pressable>
                   </Animated.View>
