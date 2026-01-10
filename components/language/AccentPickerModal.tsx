@@ -1,19 +1,16 @@
-import { Check, X } from 'lucide-react-native';
-import React from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
-
-export interface Accent {
-    name: string;
-    countryCode: string;
-    native: string;
-}
-
-export const SUPPORTED_ACCENTS: Accent[] = [
-    { name: 'American', countryCode: 'us', native: 'American English' },
-    { name: 'British', countryCode: 'gb', native: 'British English' },
-    { name: 'Indian', countryCode: 'in', native: 'Indian English' },
-    { name: 'Australian', countryCode: 'au', native: 'Australian English' },
-];
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect } from "react";
+import { Modal, Pressable, Text, View } from "react-native";
+import Animated, {
+    interpolate,
+    interpolateColor,
+    useAnimatedProps,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
+} from "react-native-reanimated";
+import Svg, { Path } from "react-native-svg";
 
 interface AccentPickerModalProps {
     visible: boolean;
@@ -22,41 +19,167 @@ interface AccentPickerModalProps {
     selectedAccent?: string;
 }
 
-export default function AccentPickerModal({ visible, onClose, onSelect, selectedAccent }: AccentPickerModalProps) {
+const ACCENTS = [
+    { code: "American", name: "American", native: "American English" },
+    { code: "British", name: "British", native: "British English" },
+    { code: "Indian", name: "Indian", native: "Indian English" },
+    { code: "Australian", name: "Australian", native: "Australian English" },
+];
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+// Animated Checkbox with smooth "drawing" animation
+function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
+    const progress = useSharedValue(isChecked ? 1 : 0);
+    const pathLength = 22;
+
+    useEffect(() => {
+        progress.value = withTiming(isChecked ? 1 : 0, {
+            duration: 300,
+        });
+    }, [isChecked]);
+
+    const animatedProps = useAnimatedProps(() => {
+        return {
+            strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
+        };
+    });
+
+    const bgAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            backgroundColor: interpolateColor(
+                progress.value,
+                [0, 1],
+                ["transparent", "#3b82f6"]
+            ),
+            borderColor: interpolateColor(
+                progress.value,
+                [0, 1],
+                ["#d1d5db", "#3b82f6"]
+            ),
+            borderWidth: 2,
+        };
+    });
+
     return (
-        <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
+        <Animated.View
+            style={bgAnimatedStyle}
+            className="w-6 h-6 rounded-full items-center justify-center shadow-sm"
+        >
+            <Svg width="14" height="14" viewBox="0 0 24 24">
+                <AnimatedPath
+                    d="M5 12l5 5L20 7"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeDasharray={pathLength}
+                    animatedProps={animatedProps}
+                />
+            </Svg>
+        </Animated.View>
+    );
+}
+
+// Animated Accent Item Component
+function AccentItem({
+    accent,
+    isSelected,
+    onPress,
+}: {
+    accent: { code: string; name: string; native: string };
+    isSelected: boolean;
+    onPress: () => void;
+}) {
+    const progress = useSharedValue(isSelected ? 1 : 0);
+
+    useEffect(() => {
+        progress.value = withSpring(isSelected ? 1 : 0, {
+            damping: 20,
+            stiffness: 90,
+        });
+    }, [isSelected]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
+            backgroundColor: interpolateColor(
+                progress.value,
+                [0, 1],
+                ["#ffffff", "#f8fbff"]
+            ),
+            borderColor: interpolateColor(
+                progress.value,
+                [0, 1],
+                ["#e5e7eb", "#3b82f6"]
+            ),
+        };
+    });
+
+    return (
+        <Pressable onPress={onPress}>
+            <Animated.View
+                style={[
+                    animatedStyle,
+                    { borderWidth: 1.5, borderRadius: 20, padding: 18, marginBottom: 12 },
+                ]}
+                className="flex-row items-center justify-between"
+            >
+                <View>
+                    <Text
+                        className={`text-base font-bold ${isSelected ? "text-blue-500" : "text-gray-900"
+                            }`}
+                    >
+                        {accent.name}
+                    </Text>
+                    <Text className="text-gray-500 text-sm mt-0.5">{accent.native}</Text>
+                </View>
+
+                <AnimatedCheckbox isChecked={isSelected} />
+            </Animated.View>
+        </Pressable>
+    );
+}
+
+export default function AccentPickerModal({
+    visible,
+    onClose,
+    onSelect,
+    selectedAccent,
+}: AccentPickerModalProps) {
+    return (
+        <Modal visible={visible} animationType="slide" transparent>
+            {/* Background overlay */}
             <View className="flex-1 bg-black/50 justify-end">
+                {/* Bottom Sheet */}
                 <View className="bg-white rounded-t-[32px] overflow-hidden">
-                    <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-100">
-                        <Text className="text-xl font-bold text-gray-900">Preferred Accent</Text>
-                        <TouchableOpacity onPress={onClose} className="p-2 bg-gray-100 rounded-full">
-                            <X size={20} color="#64748b" />
-                        </TouchableOpacity>
+                    {/* Header */}
+                    <View className="px-6 py-5 border-b border-gray-100">
+                        <View className="flex-row justify-between items-center">
+                            <View className="flex-1 pr-4">
+                                <Text className="text-2xl font-bold text-gray-900">
+                                    Preferred Accent
+                                </Text>
+                            </View>
+                            <Pressable
+                                onPress={onClose}
+                                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                            >
+                                <Ionicons name="close" size={24} color="black" />
+                            </Pressable>
+                        </View>
                     </View>
 
-                    <View className="p-6 pb-12 ">
-                        {SUPPORTED_ACCENTS.map((accent) => (
-                            <TouchableOpacity
-                                key={accent.name}
-                                onPress={() => onSelect(accent.name)}
-                                className={`flex-row items-center justify-between p-4 rounded-2xl border ${selectedAccent === accent.name
-                                    ? 'bg-blue-50 border-blue-500'
-                                    : 'bg-white border-gray-100'
-                                    }`}
-                            >
-                                <View>
-                                    <Text className={`text-base font-bold ${selectedAccent === accent.name ? 'text-blue-700' : 'text-gray-900'
-                                        }`}>
-                                        {accent.name}
-                                    </Text>
-                                    <Text className="text-gray-500 text-sm mt-0.5">{accent.native}</Text>
-                                </View>
-                                {selectedAccent === accent.name && (
-                                    <View className="bg-blue-500 rounded-full p-1">
-                                        <Check size={12} color="white" />
-                                    </View>
-                                )}
-                            </TouchableOpacity>
+                    {/* Accent List */}
+                    <View className="p-6 pb-12">
+                        {ACCENTS.map((accent) => (
+                            <AccentItem
+                                key={accent.code}
+                                accent={accent}
+                                isSelected={selectedAccent === accent.code}
+                                onPress={() => onSelect(accent.code)}
+                            />
                         ))}
                     </View>
                 </View>

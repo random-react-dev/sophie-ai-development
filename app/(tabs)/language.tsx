@@ -506,7 +506,8 @@ export default function LanguageScreen() {
                 onClose={() => setPickerType(null)}
                 onSelect={(accent) => {
                     setNewAccent(accent);
-                    setPickerType(null);
+                    // Delay closing to allow selection animation to play
+                    setTimeout(() => setPickerType(null), 300);
                 }}
                 selectedAccent={newAccent}
             />
