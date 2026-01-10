@@ -53,19 +53,23 @@ export const RainbowWave = React.memo(({ isListening, isSpeaking, volumeLevel }:
         const currentAmplitude = amplitude.value;
         const currentPhase = phase.value;
 
-        let path = `M 0 ${height / 2}`;
+        // Optimized: Use array.join() instead of string concatenation for better performance
+        // Using step of 4 instead of 2 (50% fewer points, still smooth)
+        const STEP = 4;
+        const numPoints = Math.ceil(width / STEP) + 1;
+        const pathParts = new Array(numPoints);
+        pathParts[0] = `M 0 ${height / 2}`;
 
-        // Higher resolution for smoothness (step of 2 instead of 5)
-        for (let x = 0; x <= width; x += 2) {
+        let idx = 1;
+        for (let x = STEP; x <= width; x += STEP) {
             const nx = x / width;
-            // Refined envelope function from reference
             const envelope = Math.pow(Math.sin(nx * Math.PI), 1.5);
             const y = (height / 2) + (envelope * currentAmplitude * Math.sin(frequency * x - currentPhase));
-            path += ` L ${x} ${y}`;
+            pathParts[idx++] = `L ${x} ${y}`;
         }
 
         return {
-            d: path,
+            d: pathParts.join(' '),
         };
     });
 
@@ -75,17 +79,22 @@ export const RainbowWave = React.memo(({ isListening, isSpeaking, volumeLevel }:
         const currentAmplitude = amplitude.value * 0.8;
         const currentPhase = phase.value + Math.PI / 2; // Offset phase for depth
 
-        let path = `M 0 ${height / 2}`;
+        // Optimized: Use array.join() instead of string concatenation
+        const STEP = 6; // Lower resolution for glow effect (was 4)
+        const numPoints = Math.ceil(width / STEP) + 1;
+        const pathParts = new Array(numPoints);
+        pathParts[0] = `M 0 ${height / 2}`;
 
-        for (let x = 0; x <= width; x += 4) {
+        let idx = 1;
+        for (let x = STEP; x <= width; x += STEP) {
             const nx = x / width;
             const envelope = Math.pow(Math.sin(nx * Math.PI), 2.0);
             const y = (height / 2) + (envelope * currentAmplitude * Math.sin(frequency * x - currentPhase));
-            path += ` L ${x} ${y}`;
+            pathParts[idx++] = `L ${x} ${y}`;
         }
 
         return {
-            d: path,
+            d: pathParts.join(' '),
         };
     });
 

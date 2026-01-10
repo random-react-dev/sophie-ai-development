@@ -29,6 +29,14 @@ class AudioStreamer {
     }
 
     /**
+     * Check if audio streamer is ready for playback (already initialized).
+     * Use this to avoid awaiting initialize() when already ready.
+     */
+    isReady(): boolean {
+        return this.audioContext !== null && this.queueSource !== null;
+    }
+
+    /**
      * Initialize the audio context and queue source.
      * Must be called before queueAudio() to avoid silent failures.
      */
