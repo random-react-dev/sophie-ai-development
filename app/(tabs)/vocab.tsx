@@ -20,7 +20,6 @@ import {
   MessageSquare,
   MoreVertical,
   Plus,
-  Search,
   Trash2,
   Volume2,
 } from "lucide-react-native";
