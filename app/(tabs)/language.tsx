@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from '@/components/common/AlertModal';
 import CircleFlag from '@/components/common/CircleFlag';
+import AccentPickerModal from '@/components/language/AccentPickerModal';
 import LanguagePickerModal from '@/components/translate/LanguagePickerModal';
 import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from '@/constants/languages';
 import { CreateProfileDTO } from '@/services/supabase/profiles';
@@ -54,7 +55,7 @@ export default function LanguageScreen() {
     const [newAccent, setNewAccent] = useState('American');
 
     // Picker Modals
-    const [pickerType, setPickerType] = useState<'native' | 'target' | 'medium' | null>(null);
+    const [pickerType, setPickerType] = useState<'native' | 'target' | 'medium' | 'accent' | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -222,7 +223,8 @@ export default function LanguageScreen() {
                                 {/* Preferred Accent Row */}
                                 <TouchableOpacity
                                     activeOpacity={0.7}
-                                    className="flex-row items-center py-4"
+                                    onPress={() => setPickerType('accent')}
+                                    className="flex-row items-center pt-4"
                                 >
                                     <CircleFlag
                                         countryCode={
@@ -482,7 +484,7 @@ export default function LanguageScreen() {
 
             {/* Language Picker Modal - Shared across main screen and create profile */}
             <LanguagePickerModal
-                visible={pickerType !== null}
+                visible={pickerType !== null && pickerType !== 'accent'}
                 onClose={() => setPickerType(null)}
                 onSelect={(lang) => {
                     if (pickerType === 'native') setNewNativeLang(lang);
@@ -496,6 +498,17 @@ export default function LanguageScreen() {
                             newMediumLang?.code
                 }
                 title={`Select ${pickerType === 'native' ? 'Your Native' : pickerType === 'target' ? 'Target' : 'Instruction'} Language`}
+            />
+
+            {/* Accent Picker Modal */}
+            <AccentPickerModal
+                visible={pickerType === 'accent'}
+                onClose={() => setPickerType(null)}
+                onSelect={(accent) => {
+                    setNewAccent(accent);
+                    setPickerType(null);
+                }}
+                selectedAccent={newAccent}
             />
 
             <AlertModal
