@@ -118,7 +118,7 @@ export default function TranslateScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
-            <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
+            <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
                 <View className="items-center">
                     <Text className="text-black text-2xl font-bold">Sophie AI</Text>
                     <Text className="text-gray-500 text-base font-medium">Native speaker in your pocket</Text>
@@ -136,9 +136,9 @@ export default function TranslateScreen() {
                 </Link>
             </View>
 
-            <View className="px-6 mb-8">
-                <Text className="text-4xl font-bold text-black text-left">Translate</Text>
-                <Text className="text-gray-500 text-lg font-medium mt-1 text-left">Translate text to another language</Text>
+            <View className="px-4 mb-8">
+                <Text className="text-3xl font-bold text-black text-left">Translate</Text>
+                <Text className="text-gray-500 text-base font-medium mt-1 text-left">Translate text to another language</Text>
             </View>
 
             <KeyboardAvoidingView
@@ -242,7 +242,7 @@ export default function TranslateScreen() {
                                 activeOpacity={0.7}
                                 onPress={handleTranslate}
                                 disabled={isTranslating || !inputText.trim()}
-                                className={`px-6 py-3 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
+                                className={`px-5 py-3 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
                                     ? 'bg-gray-200'
                                     : 'bg-blue-500'
                                     }`}
@@ -263,7 +263,7 @@ export default function TranslateScreen() {
 
                     {/* Bottom Section - Output Area (Clean Split) */}
                     <View
-                        className="flex-1 bg-white rounded-t-[40px] mt-6 p-6 overflow-hidden"
+                        className="flex-1 bg-white rounded-t-3xl mt-6 p-4 overflow-hidden"
                         style={{
                             shadowColor: '#000',
                             shadowOffset: { width: 0, height: -4 },

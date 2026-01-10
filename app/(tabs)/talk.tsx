@@ -427,7 +427,7 @@ Stay in character while teaching.`;
       </View>
 
       {/* Main Interaction Area */}
-      <View className="flex-1 px-6">
+      <View className="flex-1 px-6 mt-2">
         {/* Conversation Area */}
         <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[320px] overflow-hidden">
           {/* Status Bar inside the card */}
