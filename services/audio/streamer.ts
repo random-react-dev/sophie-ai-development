@@ -30,15 +30,13 @@ class AudioStreamer {
 
     /**
      * Initialize the audio context and queue source.
-     * Call this once when conversation starts.
+     * Must be called before queueAudio() to avoid silent failures.
      */
     async initialize(): Promise<void> {
         if (this.audioContext) {
-            return; // Already initialized
+            return;
         }
 
-        // Configure audio session BEFORE creating AudioContext
-        // This enables hardware echo cancellation (AEC) for duplex audio
         const { configureAudioSession } = await import('./audioManager');
         configureAudioSession();
 
@@ -75,38 +73,33 @@ class AudioStreamer {
      * @param base64Pcm Base64-encoded 16-bit PCM audio data
      */
     queueAudio(base64Pcm: string): void {
-        if (this.isInterrupted || !this.audioContext || !this.queueSource) {
+        if (this.isInterrupted) {
+            return;
+        }
+
+        if (!this.audioContext || !this.queueSource) {
+            Logger.error(TAG, 'Cannot queue audio: AudioContext not initialized. Call initialize() first.');
             return;
         }
 
         try {
-            // Decode base64 to ArrayBuffer
             const pcmArrayBuffer = decode(base64Pcm);
-
-            // Convert 16-bit PCM (Int16) to Float32 (required by AudioBuffer)
             const int16Array = new Int16Array(pcmArrayBuffer);
             const float32Array = new Float32Array(int16Array.length);
 
             for (let i = 0; i < int16Array.length; i++) {
-                // Convert from Int16 range [-32768, 32767] to Float32 range [-1, 1]
                 float32Array[i] = int16Array[i] / 32768;
             }
 
-            // Create AudioBuffer
             const audioBuffer = this.audioContext.createBuffer(
-                1,                    // numberOfChannels (mono)
-                float32Array.length,  // length (frames)
-                SAMPLE_RATE           // sampleRate
+                1,
+                float32Array.length,
+                SAMPLE_RATE
             );
 
-            // Copy data into buffer
-            const channelData = audioBuffer.getChannelData(0);
-            channelData.set(float32Array);
-
-            // Enqueue for gapless playback
+            audioBuffer.getChannelData(0).set(float32Array);
             this.queueSource.enqueueBuffer(audioBuffer);
 
-            // Track state and log
             this.chunkCount++;
             if (this.chunkCount === 1) {
                 this.startSpeaking();
@@ -130,12 +123,7 @@ class AudioStreamer {
         this.isGenerationComplete = false;
 
         Logger.info(TAG, 'Sophie started speaking');
-
-        const store = useConversationStore.getState();
-        store.setSpeaking(true);
-
-        // Audio continues streaming - hardware AEC handles echo cancellation
-        // Gemini's automatic VAD will detect user interruptions
+        useConversationStore.getState().setSpeaking(true);
     }
 
     /**
@@ -159,11 +147,7 @@ class AudioStreamer {
         this.isGenerationComplete = false;
         this.chunkCount = 0;
 
-        const store = useConversationStore.getState();
-        store.setSpeaking(false);
-
-        // Audio streaming continues automatically - no pause/resume needed
-        // Gemini's automatic VAD continues to detect user speech
+        useConversationStore.getState().setSpeaking(false);
     }
 
     /**
@@ -176,22 +160,16 @@ class AudioStreamer {
         this.isGenerationComplete = false;
         this.chunkCount = 0;
 
-        // Stop and recreate the queue source to clear pending audio
         if (this.queueSource && this.audioContext) {
             try {
                 this.queueSource.stop();
             } catch {
                 // Ignore stop errors
             }
-
-            // Recreate queue source for next playback
             this.setupQueueSource();
         }
 
-        const store = useConversationStore.getState();
-        store.setSpeaking(false);
-
-        // Audio streaming continues automatically - VAD detects user speech
+        useConversationStore.getState().setSpeaking(false);
     }
 
     /**

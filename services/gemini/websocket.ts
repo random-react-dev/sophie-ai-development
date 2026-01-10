@@ -297,6 +297,21 @@ class GeminiWebSocket {
         this.send(JSON.stringify(greetingMsg));
     }
 
+    /**
+     * Initialize audio streamer and send greeting on first connection.
+     * Audio streamer must be initialized before greeting to avoid dropped audio chunks.
+     */
+    private async initializeAndGreet(store: ReturnType<typeof useConversationStore.getState>): Promise<void> {
+        try {
+            await audioStreamer.initialize();
+            Logger.info(TAG, 'AudioStreamer initialized, sending greeting...');
+            this.sendGreeting();
+            store.setHasGreeted(true);
+        } catch (err) {
+            Logger.error(TAG, 'Failed to initialize audio streamer', err);
+        }
+    }
+
     private send(data: string) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(data);
@@ -315,7 +330,10 @@ class GeminiWebSocket {
             Logger.info(TAG, 'Setup complete - ready for conversation');
             this.isSetupComplete = true;
             this.setConnectionState('connected');
-            // No auto-greeting - wait for user to press mic first
+
+            if (!store.hasGreeted) {
+                this.initializeAndGreet(store);
+            }
         }
 
         // Support both camelCase and snake_case

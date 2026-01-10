@@ -229,16 +229,16 @@ Stay in character while teaching.`;
   ]);
 
   const getStatusText = (): string => {
-    if (isSpeaking) return "Sophie Speaking";
-    if (isListening && isConversationActive) return "Listening";
-    if (isConversationActive) return "Conversation Active";
+    if (isSpeaking) return "Sophie Speaking...";
+    if (isListening) return "Listening...";
+    if (isConversationActive) return "Hold mic to speak";
     switch (connectionState) {
       case "idle":
         return "Ready";
       case "connecting":
         return "Connecting...";
       case "connected":
-        return "Tap mic to start";
+        return "Hold mic to speak";
       case "reconnecting":
         return "Reconnecting...";
       case "error":
@@ -361,6 +361,46 @@ Stay in character while teaching.`;
         </Link>
       </View>
 
+      {/* Language Selection */}
+      <View className="px-6 py-2 flex-row justify-center items-center gap-4">
+        {/* Target Language (what to learn) */}
+        <TouchableOpacity
+          onPress={() => { setPickerMode('target'); setShowLanguagePicker(true); }}
+          className="items-center"
+        >
+          <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
+            {targetLanguage ? (
+              <Text className="text-2xl">{targetLanguage.flag}</Text>
+            ) : (
+              <Globe size={20} color="#9ca3af" />
+            )}
+          </View>
+          <Text className="text-[10px] text-gray-500 mt-1 font-medium">
+            {targetLanguage ? 'Learning' : 'Select'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Arrow */}
+        <Text className="text-gray-300 text-lg mb-4">→</Text>
+
+        {/* Native Language (explanations) */}
+        <TouchableOpacity
+          onPress={() => { setPickerMode('native'); setShowLanguagePicker(true); }}
+          className="items-center"
+        >
+          <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
+            {nativeLanguage ? (
+              <Text className="text-2xl">{nativeLanguage.flag}</Text>
+            ) : (
+              <Globe size={20} color="#9ca3af" />
+            )}
+          </View>
+          <Text className="text-[10px] text-gray-500 mt-1 font-medium">
+            {nativeLanguage ? 'Explain in' : 'Select'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Main Interaction Area */}
       <View className="flex-1 px-6">
         {/* Conversation Area */}
@@ -417,7 +457,7 @@ Stay in character while teaching.`;
                   </Text>
                 ) : (
                   <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                    Tap the large mic below to start your{" "}
+                    Hold the mic button below to start your{" "}
                     {selectedScenario ? "roleplay" : targetLanguage?.name}{" "}
                     lesson.
                   </Text>
