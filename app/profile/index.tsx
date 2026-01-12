@@ -2,6 +2,7 @@ import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import CountryPicker from "@/components/profile/CountryPicker";
 import LanguagePicker from "@/components/profile/LanguagePicker";
+import { getLanguageByCode } from "@/constants/languages";
 import { setAppLanguage } from "@/services/i18n";
 import { uploadAvatar } from "@/services/supabase/storage";
 import { useAuthStore } from "@/stores/authStore";
@@ -274,11 +275,8 @@ export default function ProfileScreen() {
                   App Language
                 </Text>
                 <Text className="text-base font-semibold text-gray-900">
-                  {user?.user_metadata?.app_language === "hi"
-                    ? "Hindi"
-                    : user?.user_metadata?.app_language === "es"
-                    ? "Spanish"
-                    : "English"}
+                  {getLanguageByCode(user?.user_metadata?.app_language)?.name ||
+                    "English"}
                 </Text>
               </View>
             </View>

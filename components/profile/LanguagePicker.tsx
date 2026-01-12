@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
+import { FlatList, Modal, Pressable, Text, View } from "react-native";
 import Animated, {
   interpolate,
   interpolateColor,
@@ -10,7 +10,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
+
+import { APP_LANGUAGES, Language } from "@/constants/languages";
 
 interface LanguagePickerProps {
   visible: boolean;
@@ -19,11 +22,7 @@ interface LanguagePickerProps {
   selectedLang?: string;
 }
 
-const LANGUAGES = [
-  { code: "en", name: "English", native: "English" },
-  { code: "hi", name: "Hindi", native: "हिन्दी" },
-  { code: "es", name: "Spanish", native: "Español" },
-];
+const LANGUAGES = APP_LANGUAGES;
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -87,7 +86,7 @@ function LanguageItem({
   isSelected,
   onPress,
 }: {
-  lang: { code: string; name: string; native: string };
+  lang: Language;
   isSelected: boolean;
   onPress: () => void;
 }) {
@@ -121,19 +120,26 @@ function LanguageItem({
       <Animated.View
         style={[
           animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 18, marginBottom: 12 },
+          { borderWidth: 1.5, borderRadius: 20, padding: 18 },
         ]}
         className="flex-row items-center justify-between"
       >
-        <View>
-          <Text
-            className={`text-base font-bold ${
-              isSelected ? "text-blue-500" : "text-gray-900"
-            }`}
-          >
-            {lang.name}
-          </Text>
-          <Text className="text-gray-500 text-sm mt-0.5">{lang.native}</Text>
+        <View className="flex-row items-center gap-4">
+          <View className="w-10 h-10 rounded-xl bg-gray-50 items-center justify-center">
+            <Text className="text-xl">{lang.flag}</Text>
+          </View>
+          <View>
+            <Text
+              className={`text-base font-bold ${
+                isSelected ? "text-blue-500" : "text-gray-900"
+              }`}
+            >
+              {lang.name}
+            </Text>
+            <Text className="text-gray-500 text-sm mt-0.5">
+              {lang.nativeName}
+            </Text>
+          </View>
         </View>
 
         <AnimatedCheckbox isChecked={isSelected} />
@@ -149,13 +155,16 @@ export default function LanguagePicker({
   selectedLang,
 }: LanguagePickerProps) {
   return (
-    <Modal visible={visible} animationType="slide" transparent>
-      {/* Background overlay */}
-      <View className="flex-1 bg-black/50 justify-end">
-        {/* Bottom Sheet */}
-        <View className="bg-white rounded-t-[32px] overflow-hidden">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1">
           {/* Header */}
-          <View className="px-4 py-5 border-b border-gray-100">
+          <View className="px-4 py-6 bg-white border-b border-gray-100">
             <View className="flex-row justify-between items-center">
               <View className="flex-1 pr-4">
                 <Text className="text-2xl font-bold text-gray-900">
@@ -172,17 +181,21 @@ export default function LanguagePicker({
           </View>
 
           {/* Language List */}
-          <View className="p-4 pb-12">
-            {LANGUAGES.map((lang) => (
+          <FlatList
+            data={LANGUAGES}
+            keyExtractor={(item) => item.code}
+            contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            renderItem={({ item }) => (
               <LanguageItem
-                key={lang.code}
-                lang={lang}
-                isSelected={selectedLang === lang.code}
-                onPress={() => onSelect(lang.code)}
+                lang={item}
+                isSelected={selectedLang === item.code}
+                onPress={() => onSelect(item.code)}
               />
-            ))}
-          </View>
-        </View>
+            )}
+          />
+        </SafeAreaView>
       </View>
     </Modal>
   );
