@@ -23,7 +23,6 @@ import {
   Pencil,
   Plus,
   Trash2,
-  Volume2,
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -734,6 +733,7 @@ function ActionModalContent({
 
             {/* Action Buttons */}
             <View className="gap-2">
+              {/* Temporarily removed Play Audio button
               <Pressable
                 onPress={() => onAction("play")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -745,7 +745,7 @@ function ActionModalContent({
                   Play Audio
                 </Text>
               </Pressable>
-
+              */}
               <Pressable
                 onPress={() => onAction("translate")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -757,7 +757,6 @@ function ActionModalContent({
                   Translate
                 </Text>
               </Pressable>
-
               <Pressable
                 onPress={() => onAction("conversation")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -769,7 +768,7 @@ function ActionModalContent({
                   Start Conversation
                 </Text>
               </Pressable>
-
+              {/*Temporarily removed Edit button*/}
               <Pressable
                 onPress={() => {}}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -781,7 +780,6 @@ function ActionModalContent({
                   Edit Vocabulary
                 </Text>
               </Pressable>
-
               <Pressable
                 onPress={() => onAction("delete")}
                 className="flex-row items-center px-4 py-4 bg-red-50 rounded-2xl active:bg-red-100 mt-2"

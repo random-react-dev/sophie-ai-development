@@ -187,216 +187,6 @@ export default function LanguageScreen() {
 
       <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
         <View className="px-4 pb-24">
-          {/* Learning Preferences Card */}
-          {activeProfile ? (
-            <View className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
-              {/* Section Header */}
-              <View className="flex-row items-center gap-2 mb-2">
-                <Globe size={18} color="#3b82f6" />
-                <Text className="text-blue-500 text-base font-semibold capitalize">
-                  Learning Preferences
-                </Text>
-              </View>
-
-              {/* Preference Rows */}
-              <View>
-                {/* Native Language Row - Temporarily Hidden */}
-                {/* 
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("native")}
-                  className="flex-row items-center py-4"
-                >
-                  <CircleFlag
-                    countryCode={newNativeLang.countryCode}
-                    size={28}
-                  />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-500 text-sm">
-                      I speak (Native language)
-                    </Text>
-                    <Text className="text-gray-900 font-semibold text-base">
-                      {newNativeLang.name}
-                    </Text>
-                  </View>
-                  <ChevronDown size={20} color="#111827" />
-                </TouchableOpacity>
-                <View className="h-[1px] bg-gray-100" />
-                */}
-
-                {/* Target Language Row */}
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("target")}
-                  className="flex-row items-center py-4"
-                >
-                  <CircleFlag
-                    countryCode={newTargetLang.countryCode}
-                    size={28}
-                  />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-500 text-sm">
-                      I want to learn (language)
-                    </Text>
-                    <Text className="text-gray-900 font-semibold text-base">
-                      {newTargetLang.name}
-                    </Text>
-                  </View>
-                  <ChevronDown size={20} color="#111827" />
-                </TouchableOpacity>
-                <View className="h-[1px] bg-gray-100" />
-
-                {/* Base Language Row (Instruction Language) */}
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("medium")}
-                  className="flex-row items-center py-4"
-                >
-                  <CircleFlag
-                    countryCode={newMediumLang?.countryCode || "in"}
-                    size={28}
-                  />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-500 text-sm">
-                      Base Language (Instruction)
-                    </Text>
-                    <Text className="text-gray-900 font-semibold text-base">
-                      {newMediumLang?.name || "Same as Native"}
-                    </Text>
-                  </View>
-                  <ChevronDown size={20} color="#111827" />
-                </TouchableOpacity>
-                <View className="h-[1px] bg-gray-100" />
-
-                {/* Preferred Accent Row */}
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("accent")}
-                  className="flex-row items-center pt-4"
-                >
-                  <CircleFlag
-                    countryCode={(() => {
-                      if (newAccent === "American") return "us";
-                      if (newAccent === "British") return "gb";
-                      if (newAccent === "Indian") return "in";
-                      if (newAccent === "Australian") return "au";
-                      return "us";
-                    })()}
-                    size={28}
-                  />
-                  <View className="flex-1 ml-3">
-                    <Text className="text-gray-500 text-sm">
-                      Preferred accent
-                    </Text>
-                    <View className="flex-row items-center gap-1">
-                      <Text className="text-gray-900 font-semibold text-base">
-                        {newAccent}
-                      </Text>
-                    </View>
-                  </View>
-                  <ChevronDown size={20} color="#111827" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View className="items-center justify-center p-8 bg-gray-50 rounded-2xl mb-6 border border-dashed border-gray-200">
-              <Text className="text-gray-400 font-medium text-center">
-                No active profile selected.
-              </Text>
-              <TouchableOpacity onPress={() => setIsCreateModalVisible(true)}>
-                <Text className="text-blue-500 font-bold mt-2">
-                  Create Profile
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* Accent Playground */}
-          <View className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-8">
-            <Text className="text-blue-500 text-base font-semibold capitalize mb-4">
-              Accent Playground
-            </Text>
-
-            <TextInput
-              value={testPhrase}
-              onChangeText={setTestPhrase}
-              className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-gray-100 mb-4"
-              placeholder="Type your text here..."
-              placeholderTextColor="gray"
-            />
-
-            {/* Waveform Placeholder */}
-            {/* <View className="h-8 flex-row items-center justify-center gap-1 mb-6 opacity-30">
-                            {[...Array(20)].map((_, i) => (
-                                <View
-                                    key={i}
-                                    className="w-1 bg-gray-900 rounded-full"
-                                    style={{ height: Math.random() * 20 + 4 }}
-                                />
-                            ))}
-                        </View> */}
-
-            {/* Speed Section */}
-            <View className="mt-2">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-gray-900 text-base font-semibold capitalize">
-                  Speed
-                </Text>
-                <View className="flex-row items-center gap-2">
-                  <Text className="text-blue-500 font-bold text-sm bg-blue-50 px-2 py-1 rounded-lg">
-                    {speechRate.toFixed(2)}x
-                  </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={handlePlayAccent}
-                    disabled={isPlaying}
-                    className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center shadow-sm shadow-blue-200"
-                  >
-                    {isPlaying ? (
-                      <ActivityIndicator size="small" color="white" />
-                    ) : (
-                      <Play size={14} color="white" fill="white" />
-                    )}
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <Slider
-                style={{ width: "100%", height: 40 }}
-                minimumValue={0.25}
-                maximumValue={2.0}
-                step={0.05}
-                value={speechRate}
-                onValueChange={setSpeechRate}
-                minimumTrackTintColor="#3b82f6"
-                maximumTrackTintColor="#9ca3af"
-                thumbTintColor="#3b82f6"
-              />
-
-              <View className="flex-row justify-between px-1">
-                <Text className="text-sm text-gray-400 font-bold">0.25x</Text>
-                <Text className="text-sm text-gray-400 font-bold">1.0x</Text>
-                <Text className="text-sm text-gray-400 font-bold">2.0x</Text>
-              </View>
-            </View>
-
-            <Text className="text-center text-gray-500 text-base mt-6 leading-normal">
-              Test selected accent and adjust speaking speed. Tap Play to
-              preview.
-            </Text>
-
-            {activeProfile && (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                className="mt-6 bg-blue-500 py-4 rounded-full items-center shadow-sm shadow-blue-200"
-              >
-                <Text className="text-white font-bold text-base">
-                  Save Changes
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
           {/* Profiles List (Folders) */}
           <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">
             My Language Profile
@@ -546,92 +336,161 @@ export default function LanguageScreen() {
               className="flex-1 px-4 pt-6"
               showsVerticalScrollIndicator={false}
             >
-              {/* Native Language */}
-              <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">
-                  Native Language
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("native")}
-                  className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
-                >
-                  <Text className="text-lg font-bold text-gray-900">
-                    {newNativeLang.name}
+              {/* Learning Preferences Card - Same UI as was on main page */}
+              <View className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
+                {/* Section Header */}
+                <View className="flex-row items-center gap-2 mb-2">
+                  <Globe size={18} color="#3b82f6" />
+                  <Text className="text-blue-500 text-base font-semibold capitalize">
+                    Learning Preferences
                   </Text>
-                  <Text className="text-2xl">{newNativeLang.flag}</Text>
-                </TouchableOpacity>
+                </View>
+
+                {/* Preference Rows */}
+                <View>
+                  {/* Target Language Row */}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => setPickerType("target")}
+                    className="flex-row items-center py-4"
+                  >
+                    <CircleFlag
+                      countryCode={newTargetLang.countryCode}
+                      size={28}
+                    />
+                    <View className="flex-1 ml-3">
+                      <Text className="text-gray-500 text-sm">
+                        I want to learn (language)
+                      </Text>
+                      <Text className="text-gray-900 font-semibold text-base">
+                        {newTargetLang.name}
+                      </Text>
+                    </View>
+                    <ChevronDown size={20} color="#111827" />
+                  </TouchableOpacity>
+                  <View className="h-[1px] bg-gray-100" />
+
+                  {/* Base Language Row (Instruction Language) */}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => setPickerType("medium")}
+                    className="flex-row items-center py-4"
+                  >
+                    <CircleFlag
+                      countryCode={newMediumLang?.countryCode || "in"}
+                      size={28}
+                    />
+                    <View className="flex-1 ml-3">
+                      <Text className="text-gray-500 text-sm">
+                        Base Language (Instruction)
+                      </Text>
+                      <Text className="text-gray-900 font-semibold text-base">
+                        {newMediumLang?.name || "Same as Native"}
+                      </Text>
+                    </View>
+                    <ChevronDown size={20} color="#111827" />
+                  </TouchableOpacity>
+                  <View className="h-[1px] bg-gray-100" />
+
+                  {/* Preferred Accent Row */}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => setPickerType("accent")}
+                    className="flex-row items-center pt-4"
+                  >
+                    <CircleFlag
+                      countryCode={(() => {
+                        if (newAccent === "American") return "us";
+                        if (newAccent === "British") return "gb";
+                        if (newAccent === "Indian") return "in";
+                        if (newAccent === "Australian") return "au";
+                        return "us";
+                      })()}
+                      size={28}
+                    />
+                    <View className="flex-1 ml-3">
+                      <Text className="text-gray-500 text-sm">
+                        Preferred accent
+                      </Text>
+                      <View className="flex-row items-center gap-1">
+                        <Text className="text-gray-900 font-semibold text-base">
+                          {newAccent}
+                        </Text>
+                      </View>
+                    </View>
+                    <ChevronDown size={20} color="#111827" />
+                  </TouchableOpacity>
+                </View>
               </View>
 
-              {/* Medium Language */}
-              <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">
-                  Instruction Language (Optional)
+              {/* Accent Playground */}
+              <View className="bg-gray-50 rounded-2xl p-5 border border-gray-100 mb-6">
+                <Text className="text-blue-500 text-base font-semibold capitalize mb-4">
+                  Accent Playground
                 </Text>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("medium")}
-                  className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex-row items-center justify-between"
-                >
-                  <Text className="text-lg font-bold text-gray-900">
-                    {newMediumLang?.name || "Same as Native"}
-                  </Text>
-                  {newMediumLang && (
-                    <Text className="text-2xl">{newMediumLang.flag}</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
 
-              <View className="h-[1px] bg-gray-100 w-full mb-6" />
+                <TextInput
+                  value={testPhrase}
+                  onChangeText={setTestPhrase}
+                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4"
+                  placeholder="Type your text here..."
+                  placeholderTextColor="gray"
+                />
 
-              {/* Target Language */}
-              <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">
-                  I want to learn
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setPickerType("target")}
-                  className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex-row items-center justify-between"
-                >
-                  <Text className="text-lg font-bold text-blue-900">
-                    {newTargetLang.name}
-                  </Text>
-                  <Text className="text-2xl">{newTargetLang.flag}</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Accent */}
-              <View className="mb-10">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2">
-                  Preferred Accent
-                </Text>
-                <View className="flex-row gap-2 flex-wrap">
-                  {["American", "British", "Indian", "Australian"].map(
-                    (accent) => (
+                {/* Speed Section */}
+                <View className="mt-2">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-gray-900 text-base font-semibold capitalize">
+                      Speed
+                    </Text>
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-blue-500 font-bold text-sm bg-blue-50 px-2 py-1 rounded-lg">
+                        {speechRate.toFixed(2)}x
+                      </Text>
                       <TouchableOpacity
                         activeOpacity={0.7}
-                        key={accent}
-                        onPress={() => setNewAccent(accent)}
-                        className={`px-4 py-2 rounded-full border ${
-                          newAccent === accent
-                            ? "bg-blue-100 border-blue-300"
-                            : "bg-white border-gray-300"
-                        }`}
+                        onPress={handlePlayAccent}
+                        disabled={isPlaying}
+                        className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center shadow-sm shadow-blue-200"
                       >
-                        <Text
-                          className={`font-bold text-xs ${
-                            newAccent === accent
-                              ? "text-blue-500"
-                              : "text-gray-600"
-                          }`}
-                        >
-                          {accent}
-                        </Text>
+                        {isPlaying ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Play size={14} color="white" fill="white" />
+                        )}
                       </TouchableOpacity>
-                    )
-                  )}
+                    </View>
+                  </View>
+
+                  <Slider
+                    style={{ width: "100%", height: 40 }}
+                    minimumValue={0.25}
+                    maximumValue={2.0}
+                    step={0.05}
+                    value={speechRate}
+                    onValueChange={setSpeechRate}
+                    minimumTrackTintColor="#3b82f6"
+                    maximumTrackTintColor="#9ca3af"
+                    thumbTintColor="#3b82f6"
+                  />
+
+                  <View className="flex-row justify-between px-1">
+                    <Text className="text-sm text-gray-400 font-bold">
+                      0.25x
+                    </Text>
+                    <Text className="text-sm text-gray-400 font-bold">
+                      1.0x
+                    </Text>
+                    <Text className="text-sm text-gray-400 font-bold">
+                      2.0x
+                    </Text>
+                  </View>
                 </View>
+
+                <Text className="text-center text-gray-500 text-sm mt-4 leading-normal">
+                  Test selected accent and adjust speaking speed. Tap Play to
+                  preview.
+                </Text>
               </View>
             </ScrollView>
 

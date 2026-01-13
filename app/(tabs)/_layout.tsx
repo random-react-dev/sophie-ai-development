@@ -16,7 +16,8 @@ const voiceAvailable = isVoiceModeAvailable();
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  const { startPTTRecording, stopPTTRecording, isPTTActive, connectionState } = useConversationStore();
+  const { startPTTRecording, stopPTTRecording, isPTTActive, connectionState } =
+    useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -168,11 +169,11 @@ export default function TabLayout() {
                     {isPTTActive && (
                       <Animated.View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           width: 80,
                           height: 80,
                           borderRadius: 24,
-                          backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                          backgroundColor: "rgba(239, 68, 68, 0.3)",
                           transform: [{ scale: pulseAnim }],
                         }}
                       />
@@ -210,7 +211,7 @@ export default function TabLayout() {
         name="language"
         options={{
           title: "Language",
-          tabBarActiveTintColor: "#EA580C",
+          tabBarActiveTintColor: "#ef4444",
           tabBarIcon: ({ color }) => (
             <View>
               <Globe size={24} color={color} />
