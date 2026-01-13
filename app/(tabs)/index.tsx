@@ -526,7 +526,7 @@ function CreateScenarioModal({
                             }}
                             className={`px-4 py-3.5 flex-row items-center justify-between ${
                               isSelected ? "bg-blue-50" : "bg-surface"
-                            } ${!isLast ? "border-b border-gray-100" : ""}`}
+                            } ${!isLast ? "border-b border-gray-200" : ""}`}
                           >
                             <View className="flex-row items-center gap-3">
                               <View

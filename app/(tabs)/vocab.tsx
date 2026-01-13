@@ -322,6 +322,7 @@ export default function VocabScreen() {
           />
         </View>
         <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() => setIsAddModalVisible(true)}
           className="h-12 px-4 bg-blue-500 rounded-full flex-row items-center gap-2"
         >
@@ -446,6 +447,7 @@ export default function VocabScreen() {
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
               <Text className="text-2xl font-bold text-black">Add Phrase</Text>
               <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={() => setIsAddModalVisible(false)}
                 className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
               >
@@ -462,6 +464,7 @@ export default function VocabScreen() {
                   Language
                 </Text>
                 <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={() => setShowLangPicker(true)}
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
