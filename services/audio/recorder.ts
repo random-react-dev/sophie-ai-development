@@ -1,3 +1,4 @@
+import { Audio } from 'expo-av';
 import {
     addErrorListener,
     addFrameListener,
@@ -31,7 +32,7 @@ class AudioRecorder {
 
     // Singleton pattern
     private static instance: AudioRecorder;
-    private constructor() {}
+    private constructor() { }
     public static getInstance(): AudioRecorder {
         if (!AudioRecorder.instance) {
             AudioRecorder.instance = new AudioRecorder();
@@ -51,15 +52,25 @@ class AudioRecorder {
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
 
-            // Request permissions
-            let permission: PermissionStatus = await requestPermission();
+            // Request permissions - iOS needs expo-av to properly show the popup
+            let permission: PermissionStatus = 'undetermined';
 
-            if (Platform.OS === 'android' && permission !== 'granted') {
-                const result = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-                );
-                if (result === PermissionsAndroid.RESULTS.GRANTED) {
-                    permission = 'granted';
+            if (Platform.OS === 'ios') {
+                // Use expo-av for iOS - it properly triggers the permission popup
+                const { status } = await Audio.requestPermissionsAsync();
+                permission = status as PermissionStatus;
+                Logger.info(TAG, `iOS permission status: ${status}`);
+            } else {
+                // For Android, use expo-stream-audio first, then fallback to PermissionsAndroid
+                permission = await requestPermission();
+
+                if (permission !== 'granted') {
+                    const result = await PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+                    );
+                    if (result === PermissionsAndroid.RESULTS.GRANTED) {
+                        permission = 'granted';
+                    }
                 }
             }
 

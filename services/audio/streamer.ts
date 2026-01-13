@@ -1,18 +1,22 @@
 import { decode } from 'base64-arraybuffer';
-import { AudioBufferQueueSourceNode, AudioContext } from 'react-native-audio-api';
+import { AudioBufferQueueSourceNode, AudioContext, GainNode } from 'react-native-audio-api';
 import { Logger } from '../common/Logger';
 
 const TAG = 'AudioStreamer';
 const SAMPLE_RATE = 24000; // Gemini output rate
 
-// Accumulate chunks into 0.5s buffers before sending to native
-const ACCUMULATION_TARGET = 12000; // 0.5s of audio at 24kHz
-const MIN_INITIAL_BUFFER = 12000; // 0.5s of audio before starting playback
+// Accumulate chunks into 2s buffers before sending to native (increased for iOS stability)
+const ACCUMULATION_TARGET = 48000; // 2.0s of audio at 24kHz
+const MIN_INITIAL_BUFFER = 60000; // 2.5s of audio before starting playback
+
+// Periodic reset to prevent memory buildup
+const RESET_AFTER_RESPONSES = 10;
 
 type SpeakingStateCallback = (isSpeaking: boolean) => void;
 
 class AudioStreamer {
     private audioContext: AudioContext | null = null;
+    private gainNode: GainNode | null = null;
     private queueSource: AudioBufferQueueSourceNode | null = null;
     private isPlaying = false;
     private isInterrupted = false;
@@ -22,6 +26,8 @@ class AudioStreamer {
     private speakingStateCallback: SpeakingStateCallback | null = null;
     private finishTimeout: ReturnType<typeof setTimeout> | null = null;
     private responseId = 0;
+    private responsesSinceReset = 0;
+    private isAudioPrimed = false;
 
     // Buffer accumulation
     private accumulatedSamples: Float32Array[] = [];
@@ -54,11 +60,40 @@ class AudioStreamer {
 
         Logger.info(TAG, 'Initializing audio context');
         this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
+
+        // Create GainNode at full volume to prevent iOS fade-in effects
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.gain.value = 1.0;
+        this.gainNode.connect(this.audioContext.destination);
+
+        // Prime iOS audio engine with silent buffer
+        this.primeAudioEngine();
+    }
+
+    /**
+     * Play a tiny silent buffer to "wake up" iOS audio hardware.
+     * Prevents fade-in effect on first real audio playback.
+     */
+    private primeAudioEngine(): void {
+        if (!this.audioContext || this.isAudioPrimed) return;
+
+        try {
+            // Create a tiny silent buffer (1 sample)
+            const silentBuffer = this.audioContext.createBuffer(1, 1, SAMPLE_RATE);
+            const source = this.audioContext.createBufferSource();
+            source.buffer = silentBuffer;
+            source.connect(this.audioContext.destination);
+            source.start();
+
+            this.isAudioPrimed = true;
+            Logger.info(TAG, 'iOS audio engine primed with silent buffer');
+        } catch (error) {
+            Logger.error(TAG, 'Failed to prime audio engine', error);
+        }
     }
 
     prepareForNewResponse(): void {
         // If currently playing, stop and reset first
-        // This handles the case where user starts a new turn before previous audio finishes
         if (this.isPlaying) {
             Logger.info(TAG, 'Stopping current playback for new response');
             this.stopCurrentPlayback();
@@ -73,7 +108,21 @@ class AudioStreamer {
         // Increment response ID to invalidate stale callbacks
         this.responseId++;
 
-        // CRITICAL: Create a FRESH queueSource for each response
+        // Periodic full reset to prevent memory buildup (every N responses)
+        this.responsesSinceReset++;
+        if (this.responsesSinceReset >= RESET_AFTER_RESPONSES) {
+            Logger.info(TAG, `Performing periodic full reset after ${RESET_AFTER_RESPONSES} responses`);
+            this.performFullReset();
+            this.responsesSinceReset = 0;
+        }
+
+        // Resume AudioContext if suspended
+        if (this.audioContext?.state === 'suspended') {
+            Logger.info(TAG, 'Resuming AudioContext for new response');
+            this.audioContext.resume();
+        }
+
+        // Create a FRESH queueSource for each response
         this.createFreshQueueSource();
 
         this.isInterrupted = false;
@@ -85,6 +134,44 @@ class AudioStreamer {
         this.totalQueuedSamples = 0;
 
         Logger.info(TAG, `Prepared for response #${this.responseId}`);
+    }
+
+    private performFullReset(): void {
+        // Close and recreate AudioContext to release all native resources
+        if (this.queueSource) {
+            try {
+                this.queueSource.clearBuffers();
+                this.queueSource.stop();
+                this.queueSource.disconnect();
+            } catch { }
+            this.queueSource = null;
+        }
+
+        if (this.gainNode) {
+            try {
+                this.gainNode.disconnect();
+            } catch { }
+            this.gainNode = null;
+        }
+
+        if (this.audioContext) {
+            try {
+                this.audioContext.close();
+            } catch { }
+            this.audioContext = null;
+        }
+
+        // Reinitialize
+        this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.gain.value = 1.0;
+        this.gainNode.connect(this.audioContext.destination);
+
+        // Re-prime after full reset
+        this.isAudioPrimed = false;
+        this.primeAudioEngine();
+
+        Logger.info(TAG, 'Full reset complete - fresh AudioContext created');
     }
 
     private stopCurrentPlayback(): void {
@@ -106,7 +193,7 @@ class AudioStreamer {
     }
 
     private createFreshQueueSource(): void {
-        if (!this.audioContext) return;
+        if (!this.audioContext || !this.gainNode) return;
 
         // Cleanup old queue source if exists
         if (this.queueSource) {
@@ -116,23 +203,17 @@ class AudioStreamer {
             this.queueSource = null;
         }
 
-        // Create fresh queue source
+        // Create fresh queue source and connect through GainNode
         this.queueSource = this.audioContext.createBufferQueueSource();
-        this.queueSource.connect(this.audioContext.destination);
+        this.queueSource.connect(this.gainNode);
     }
 
     /**
      * Queue a PCM audio chunk. Chunks are accumulated into larger buffers
-     * (0.5s) before sending to native layer to reduce bridge traffic.
+     * (2.0s) before sending to native layer to reduce bridge traffic.
      */
     queueAudio(base64Pcm: string): void {
         if (this.isInterrupted || !this.audioContext || !this.queueSource) return;
-
-        // Resume AudioContext if suspended
-        if (this.audioContext.state === 'suspended') {
-            Logger.info(TAG, 'Resuming suspended AudioContext');
-            this.audioContext.resume();
-        }
 
         try {
             // Decode base64 to Float32
@@ -155,7 +236,7 @@ class AudioStreamer {
                 this.flushAccumulatedBuffer();
             }
 
-            // Start playback once we have enough initial buffer
+            // Start playback once we have enough initial buffer (2.5s)
             if (!this.hasStartedPlayback && this.totalQueuedSamples >= MIN_INITIAL_BUFFER) {
                 this.startSpeaking();
             }
@@ -186,7 +267,8 @@ class AudioStreamer {
         // Track total queued
         this.totalQueuedSamples += this.accumulatedLength;
 
-        // Clear accumulator
+        // Explicit memory cleanup
+        this.accumulatedSamples.length = 0;
         this.accumulatedSamples = [];
         this.accumulatedLength = 0;
     }
@@ -258,6 +340,11 @@ class AudioStreamer {
         this.isGenerationComplete = false;
         this.hasStartedPlayback = false;
         this.chunkCount = 0;
+
+        // Explicit memory cleanup
+        if (this.accumulatedSamples.length > 0) {
+            this.accumulatedSamples.length = 0;
+        }
         this.accumulatedSamples = [];
         this.accumulatedLength = 0;
         this.totalQueuedSamples = 0;
@@ -291,12 +378,21 @@ class AudioStreamer {
 
         this.stopCurrentPlayback();
 
+        if (this.gainNode) {
+            try {
+                this.gainNode.disconnect();
+            } catch { }
+            this.gainNode = null;
+        }
+
         if (this.audioContext) {
             this.audioContext.close();
             this.audioContext = null;
         }
 
         this.resetState();
+        this.responsesSinceReset = 0;
+        this.isAudioPrimed = false;
     }
 }
 
