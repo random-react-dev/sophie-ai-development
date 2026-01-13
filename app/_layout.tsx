@@ -58,17 +58,26 @@ export default function RootLayout() {
     if (!initialized) return;
 
     const inAuthGroup = segments[0] === "(auth)";
-    const inProtectedRoute =
-      segments[0] === "(tabs)" ||
-      segments[0] === "profile" ||
-      segments[0] === "lesson" ||
-      segments[0] === "report";
+    const inOnboardingGroup = segments[0] === "(onboarding)";
 
-    if (session && inAuthGroup) {
-      // User is signed in but on auth screen, redirect to home
-      router.replace("/(tabs)");
-    } else if (!session && !inAuthGroup) {
-      // User is not signed in and not on auth screen, redirect to login
+    // Check if onboarding is completed from user metadata
+    const onboardingCompleted =
+      session?.user?.user_metadata?.onboarding_data?.completed_at;
+
+    if (session) {
+      if (!onboardingCompleted) {
+        // User is signed in but hasn't finished onboarding
+        if (!inOnboardingGroup) {
+          router.replace("/(onboarding)/onboarding");
+        }
+      } else {
+        // User is signed in and finished onboarding
+        if (inAuthGroup || inOnboardingGroup) {
+          router.replace("/(tabs)");
+        }
+      }
+    } else if (!inAuthGroup) {
+      // User is not signed in and not in auth group
       router.replace("/(auth)/login");
     }
   }, [session, segments, initialized, router]);
@@ -86,6 +95,10 @@ export default function RootLayout() {
         >
           <Stack>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(onboarding)"
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
               name="profile"

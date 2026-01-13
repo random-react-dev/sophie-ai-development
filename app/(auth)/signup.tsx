@@ -62,7 +62,7 @@ export default function SignupScreen() {
         app_language: appLanguage,
         learn_language: learnLanguage,
       });
-      router.replace("/(tabs)");
+      router.replace("/(onboarding)/onboarding");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to save profile";
