@@ -1,4 +1,5 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
+import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { uploadAvatar } from "@/services/supabase/storage";
 import { useAuthStore } from "@/stores/authStore";
@@ -6,7 +7,6 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import {
-  ArrowLeft,
   BarChart3,
   Camera,
   HelpCircle,
@@ -109,25 +109,16 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <View className="px-4 py-4 flex-row items-center bg-white border-b border-gray-100">
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => router.back()}
-          className="mr-4 p-2 -ml-2"
-        >
-          <ArrowLeft size={24} color="#1e293b" />
-        </TouchableOpacity>
-        <Text className="text-xl font-bold text-gray-900">My Profile</Text>
-      </View>
+      <ProfileHeader title="My Profile" />
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         {/* Profile Card */}
-        <View className="bg-white mx-4 mt-6 rounded-2xl p-6 shadow-sm">
+        <View className="bg-surface mx-4 mt-6 rounded-2xl p-6 shadow-sm">
           <View className="items-center">
             {/* Avatar */}
             <TouchableOpacity
@@ -267,7 +258,7 @@ export default function ProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleDeleteAccount}
-            className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-100"
+            className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-200"
           >
             <View className="flex-row items-center gap-4">
               <View className="w-11 h-11 rounded-xl bg-red-50 items-center justify-center">

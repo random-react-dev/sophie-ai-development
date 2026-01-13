@@ -104,16 +104,17 @@ export default function LanguageSelectorModal({
           </View>
 
           {/* Search Bar */}
-          <View className="px-6 py-4">
-            <View className="h-12 bg-gray-50 rounded-2xl flex-row items-center px-4 border border-gray-100">
-              <Search size={18} color="#94a3b8" />
+          <View className="px-6 py-3">
+            <View className="h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
+              <Search size={18} color="gray" />
               <TextInput
                 placeholder="Search languages..."
-                className="flex-1 ml-3 text-gray-900 font-medium"
+                className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholderTextColor="#94a3b8"
-                autoCapitalize="none"
+                placeholderTextColor="gray"
+                textAlignVertical="center"
+                style={{ includeFontPadding: false }}
               />
             </View>
           </View>

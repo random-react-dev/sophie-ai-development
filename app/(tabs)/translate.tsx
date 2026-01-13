@@ -189,7 +189,7 @@ export default function TranslateScreen() {
         >
           <View className="px-4">
             {/* Language Selector Bar - Restored floating design */}
-            <View className="bg-white rounded-full shadow-lg ">
+            <View className="bg-surface rounded-full shadow-lg">
               <View className="flex-row items-center justify-between p-4">
                 {/* Source Language */}
                 <TouchableOpacity
@@ -292,7 +292,7 @@ export default function TranslateScreen() {
                 activeOpacity={0.7}
                 onPress={handleTranslate}
                 disabled={isTranslating || !inputText.trim()}
-                className={`px-5 py-3 rounded-full flex-row items-center gap-2 ${
+                className={`px-5 py-4 rounded-full flex-row items-center gap-2 ${
                   isTranslating || !inputText.trim()
                     ? "bg-gray-200"
                     : "bg-blue-500"
@@ -307,7 +307,7 @@ export default function TranslateScreen() {
                       color={!inputText.trim() ? "#9ca3af" : "white"}
                     />
                     <Text
-                      className={`font-semibold ${
+                      className={`font-bold ${
                         !inputText.trim() ? "text-gray-400" : "text-white"
                       }`}
                     >
