@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { requestRecordingPermissionsAsync } from 'expo-audio';
 import {
     addErrorListener,
     addFrameListener,
@@ -52,12 +52,12 @@ class AudioRecorder {
         try {
             Logger.info(TAG, 'Starting recording (16kHz, mono, PCM)...');
 
-            // Request permissions - iOS needs expo-av to properly show the popup
+            // Request permissions - iOS needs expo-audio to properly show the popup
             let permission: PermissionStatus = 'undetermined';
 
             if (Platform.OS === 'ios') {
-                // Use expo-av for iOS - it properly triggers the permission popup
-                const { status } = await Audio.requestPermissionsAsync();
+                // Use expo-audio for iOS - it properly triggers the permission popup
+                const { status } = await requestRecordingPermissionsAsync();
                 permission = status as PermissionStatus;
                 Logger.info(TAG, `iOS permission status: ${status}`);
             } else {

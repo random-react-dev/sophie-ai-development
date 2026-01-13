@@ -7,16 +7,16 @@ import React from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BarrierStep } from "./components/BarrierStep";
-import { CompletionStep } from "./components/CompletionStep";
-import { ConfidenceStep } from "./components/ConfidenceStep";
-import { DiscoveryStep } from "./components/DiscoveryStep";
-import { DurationStep } from "./components/DurationStep";
-import { FluencyStep } from "./components/FluencyStep";
-import { FocusStep } from "./components/FocusStep";
-import { GoalStep } from "./components/GoalStep";
-import { LevelStep } from "./components/LevelStep";
-import { ProfileStep } from "./components/ProfileStep";
+import { BarrierStep } from "@/components/onboarding/BarrierStep";
+import { CompletionStep } from "@/components/onboarding/CompletionStep";
+import { ConfidenceStep } from "@/components/onboarding/ConfidenceStep";
+import { DiscoveryStep } from "@/components/onboarding/DiscoveryStep";
+import { DurationStep } from "@/components/onboarding/DurationStep";
+import { FluencyStep } from "@/components/onboarding/FluencyStep";
+import { FocusStep } from "@/components/onboarding/FocusStep";
+import { GoalStep } from "@/components/onboarding/GoalStep";
+import { LevelStep } from "@/components/onboarding/LevelStep";
+import { ProfileStep } from "@/components/onboarding/ProfileStep";
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -116,9 +116,8 @@ export default function OnboardingScreen() {
         {[...Array(10)].map((_, i) => (
           <View
             key={i}
-            className={`flex-1 h-full mx-0.5 rounded-full ${
-              i < currentStep ? "bg-blue-500" : "bg-gray-200"
-            }`}
+            className={`flex-1 h-full mx-0.5 rounded-full ${i < currentStep ? "bg-blue-500" : "bg-gray-200"
+              }`}
           />
         ))}
       </View>
@@ -137,8 +136,8 @@ export default function OnboardingScreen() {
             isSaving
               ? "Saving..."
               : currentStep === 10
-              ? "Start Learning"
-              : "Continue"
+                ? "Start Learning"
+                : "Continue"
           }
           onPress={handleContinue}
           disabled={isSaving}

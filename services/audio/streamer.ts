@@ -7,7 +7,7 @@ const SAMPLE_RATE = 24000; // Gemini output rate
 
 // Accumulate chunks into 2s buffers before sending to native (increased for iOS stability)
 const ACCUMULATION_TARGET = 48000; // 2.0s of audio at 24kHz
-const MIN_INITIAL_BUFFER = 60000; // 2.5s of audio before starting playback
+const MIN_INITIAL_BUFFER = 72000; // 3s of audio before starting playback
 
 // Periodic reset to prevent memory buildup
 const RESET_AFTER_RESPONSES = 10;
