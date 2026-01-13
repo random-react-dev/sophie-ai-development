@@ -1,4 +1,3 @@
-import { useConversationStore } from '../../stores/conversationStore';
 import { audioStreamer } from '../audio/streamer';
 import { Logger } from '../common/Logger';
 import {
@@ -9,6 +8,9 @@ import {
     GeminiRealtimeInput,
     GeminiServerResponse
 } from './types';
+
+// Lazy getter to break circular dependency with conversationStore
+const getConversationStore = () => require('../../stores/conversationStore').useConversationStore;
 
 const TAG = 'GeminiWS';
 const MODEL = 'models/gemini-2.5-flash-native-audio-preview-09-2025';
@@ -25,6 +27,7 @@ class GeminiWebSocket {
     private lastApiKey: string = '';
     private lastInstruction: string = '';
     private audioChunksSent = 0;
+    private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
 
     // Singleton
     private static instance: GeminiWebSocket;
@@ -46,7 +49,7 @@ class GeminiWebSocket {
 
     private setConnectionState(state: ConnectionState, error?: GeminiError) {
         this.connectionState = state;
-        const store = useConversationStore.getState();
+        const store = getConversationStore().getState();
         store.setConnectionState(state);
         if (error) {
             store.setError(error.message);
@@ -316,9 +319,14 @@ class GeminiWebSocket {
      * Initialize audio streamer and send greeting on first connection.
      * Audio streamer must be initialized before greeting to avoid dropped audio chunks.
      */
-    private async initializeAndGreet(store: ReturnType<typeof useConversationStore.getState>): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private async initializeAndGreet(store: { hasGreeted: boolean; setHasGreeted: (v: boolean) => void }): Promise<void> {
         try {
             await audioStreamer.initialize();
+            // Wire up the speaking state callback to break circular dependency
+            audioStreamer.setSpeakingStateCallback((isSpeaking) => {
+                getConversationStore().getState().setSpeaking(isSpeaking);
+            });
             Logger.info(TAG, 'AudioStreamer initialized, sending greeting...');
             this.sendGreeting();
             store.setHasGreeted(true);
@@ -336,7 +344,7 @@ class GeminiWebSocket {
     }
 
     private handleMessage(response: GeminiServerResponse) {
-        const store = useConversationStore.getState();
+        const store = getConversationStore().getState();
 
         // Support both camelCase and snake_case (API can return either)
         const isSetupCompleteReceived = !!(response.setup_complete || response.setupComplete);
@@ -365,13 +373,17 @@ class GeminiWebSocket {
             if (modelTurn?.parts) {
                 // Model started responding - clear processing state
                 store.setProcessing(false);
-                store.setSpeaking(true);
 
                 for (const part of modelTurn.parts) {
                     const inlineData = part.inline_data || part.inlineData;
                     if (inlineData) {
                         const mimeType = inlineData.mime_type || inlineData.mimeType;
                         if (mimeType?.startsWith('audio/pcm')) {
+                            // Prepare streamer for new response on first audio chunk
+                            if (this.isFirstAudioChunk) {
+                                audioStreamer.prepareForNewResponse();
+                                this.isFirstAudioChunk = false;
+                            }
                             Logger.debug(TAG, 'Received audio chunk from model');
                             audioStreamer.queueAudio(inlineData.data);
                         }
@@ -411,6 +423,7 @@ class GeminiWebSocket {
             if (isGenerationComplete) {
                 Logger.debug(TAG, 'Generation complete');
                 audioStreamer.onGenerationComplete();
+                this.isFirstAudioChunk = true; // Reset for next response
             }
 
             // Handle interruption (user spoke while model was speaking)
@@ -418,6 +431,7 @@ class GeminiWebSocket {
                 Logger.info(TAG, 'Model interrupted by user');
                 audioStreamer.handleInterruption();
                 store.handleInterruption();
+                this.isFirstAudioChunk = true; // Reset for next response
             }
         }
     }

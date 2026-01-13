@@ -1,15 +1,15 @@
-import { AudioContext, AudioBufferQueueSourceNode } from 'react-native-audio-api';
 import { decode } from 'base64-arraybuffer';
-import { useConversationStore } from '../../stores/conversationStore';
+import { AudioBufferQueueSourceNode, AudioContext } from 'react-native-audio-api';
 import { Logger } from '../common/Logger';
 
 const TAG = 'AudioStreamer';
 const SAMPLE_RATE = 24000; // Gemini output rate
 
-interface OnEndedEvent {
-    bufferId: string | undefined;
-    isLast: boolean | undefined;
-}
+// Accumulate chunks into 0.5s buffers before sending to native
+const ACCUMULATION_TARGET = 12000; // 0.5s of audio at 24kHz
+const MIN_INITIAL_BUFFER = 12000; // 0.5s of audio before starting playback
+
+type SpeakingStateCallback = (isSpeaking: boolean) => void;
 
 class AudioStreamer {
     private audioContext: AudioContext | null = null;
@@ -17,10 +17,20 @@ class AudioStreamer {
     private isPlaying = false;
     private isInterrupted = false;
     private isGenerationComplete = false;
+    private hasStartedPlayback = false;
     private chunkCount = 0;
+    private speakingStateCallback: SpeakingStateCallback | null = null;
+    private finishTimeout: ReturnType<typeof setTimeout> | null = null;
+    private responseId = 0;
+
+    // Buffer accumulation
+    private accumulatedSamples: Float32Array[] = [];
+    private accumulatedLength = 0;
+    private totalQueuedSamples = 0;
 
     private static instance: AudioStreamer;
-    private constructor() {}
+    private constructor() { }
+
     public static getInstance(): AudioStreamer {
         if (!AudioStreamer.instance) {
             AudioStreamer.instance = new AudioStreamer();
@@ -28,69 +38,104 @@ class AudioStreamer {
         return AudioStreamer.instance;
     }
 
-    /**
-     * Check if audio streamer is ready for playback (already initialized).
-     * Use this to avoid awaiting initialize() when already ready.
-     */
-    isReady(): boolean {
-        return this.audioContext !== null && this.queueSource !== null;
+    setSpeakingStateCallback(callback: SpeakingStateCallback): void {
+        this.speakingStateCallback = callback;
     }
 
-    /**
-     * Initialize the audio context and queue source.
-     * Must be called before queueAudio() to avoid silent failures.
-     */
+    isReady(): boolean {
+        return this.audioContext !== null;
+    }
+
     async initialize(): Promise<void> {
-        if (this.audioContext) {
-            return;
-        }
+        if (this.audioContext) return;
 
         const { configureAudioSession } = await import('./audioManager');
         configureAudioSession();
 
         Logger.info(TAG, 'Initializing audio context');
         this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
-        this.setupQueueSource();
     }
 
-    /**
-     * Set up the queue source with onEnded callback.
-     */
-    private setupQueueSource(): void {
-        if (!this.audioContext) return;
-
-        this.queueSource = this.audioContext.createBufferQueueSource();
-        this.queueSource.connect(this.audioContext.destination);
-
-        // Set up onEnded callback for proper playback completion detection
-        this.queueSource.onEnded = (event: OnEndedEvent) => {
-            Logger.debug(TAG, `onEnded: bufferId=${event.bufferId}, isLast=${event.isLast}`);
-
-            // isLast=true means the last buffer finished playing
-            if (event.isLast && this.isGenerationComplete) {
-                this.finishSpeaking();
-            }
-        };
-
-        this.queueSource.start();
-        this.chunkCount = 0;
-    }
-
-    /**
-     * Queue a PCM audio chunk for gapless playback.
-     * @param base64Pcm Base64-encoded 16-bit PCM audio data
-     */
-    queueAudio(base64Pcm: string): void {
-        if (this.isInterrupted) {
-            return;
+    prepareForNewResponse(): void {
+        // If currently playing, stop and reset first
+        // This handles the case where user starts a new turn before previous audio finishes
+        if (this.isPlaying) {
+            Logger.info(TAG, 'Stopping current playback for new response');
+            this.stopCurrentPlayback();
         }
 
-        if (!this.audioContext || !this.queueSource) {
-            Logger.error(TAG, 'Cannot queue audio: AudioContext not initialized. Call initialize() first.');
-            return;
+        // Cancel any pending finish timeout
+        if (this.finishTimeout) {
+            clearTimeout(this.finishTimeout);
+            this.finishTimeout = null;
+        }
+
+        // Increment response ID to invalidate stale callbacks
+        this.responseId++;
+
+        // CRITICAL: Create a FRESH queueSource for each response
+        this.createFreshQueueSource();
+
+        this.isInterrupted = false;
+        this.isGenerationComplete = false;
+        this.hasStartedPlayback = false;
+        this.chunkCount = 0;
+        this.accumulatedSamples = [];
+        this.accumulatedLength = 0;
+        this.totalQueuedSamples = 0;
+
+        Logger.info(TAG, `Prepared for response #${this.responseId}`);
+    }
+
+    private stopCurrentPlayback(): void {
+        if (this.queueSource) {
+            try {
+                this.queueSource.clearBuffers();
+                this.queueSource.stop();
+                this.queueSource.disconnect();
+            } catch { }
+            this.queueSource = null;
+        }
+
+        const wasPlaying = this.isPlaying;
+        this.isPlaying = false;
+
+        if (wasPlaying) {
+            this.speakingStateCallback?.(false);
+        }
+    }
+
+    private createFreshQueueSource(): void {
+        if (!this.audioContext) return;
+
+        // Cleanup old queue source if exists
+        if (this.queueSource) {
+            try {
+                this.queueSource.disconnect();
+            } catch { }
+            this.queueSource = null;
+        }
+
+        // Create fresh queue source
+        this.queueSource = this.audioContext.createBufferQueueSource();
+        this.queueSource.connect(this.audioContext.destination);
+    }
+
+    /**
+     * Queue a PCM audio chunk. Chunks are accumulated into larger buffers
+     * (0.5s) before sending to native layer to reduce bridge traffic.
+     */
+    queueAudio(base64Pcm: string): void {
+        if (this.isInterrupted || !this.audioContext || !this.queueSource) return;
+
+        // Resume AudioContext if suspended
+        if (this.audioContext.state === 'suspended') {
+            Logger.info(TAG, 'Resuming suspended AudioContext');
+            this.audioContext.resume();
         }
 
         try {
+            // Decode base64 to Float32
             const pcmArrayBuffer = decode(base64Pcm);
             const int16Array = new Int16Array(pcmArrayBuffer);
             const float32Array = new Float32Array(int16Array.length);
@@ -99,21 +144,20 @@ class AudioStreamer {
                 float32Array[i] = int16Array[i] / 32768;
             }
 
-            const audioBuffer = this.audioContext.createBuffer(
-                1,
-                float32Array.length,
-                SAMPLE_RATE
-            );
-
-            audioBuffer.getChannelData(0).set(float32Array);
-            this.queueSource.enqueueBuffer(audioBuffer);
-
             this.chunkCount++;
-            if (this.chunkCount === 1) {
-                this.startSpeaking();
+
+            // Accumulate samples
+            this.accumulatedSamples.push(float32Array);
+            this.accumulatedLength += float32Array.length;
+
+            // If we have enough accumulated, flush to native
+            if (this.accumulatedLength >= ACCUMULATION_TARGET) {
+                this.flushAccumulatedBuffer();
             }
-            if (this.chunkCount <= 3 || this.chunkCount % 20 === 0) {
-                Logger.debug(TAG, `Queued audio chunk #${this.chunkCount} (${float32Array.length} samples)`);
+
+            // Start playback once we have enough initial buffer
+            if (!this.hasStartedPlayback && this.totalQueuedSamples >= MIN_INITIAL_BUFFER) {
+                this.startSpeaking();
             }
         } catch (error) {
             Logger.error(TAG, 'Error queueing audio', error);
@@ -121,93 +165,138 @@ class AudioStreamer {
     }
 
     /**
-     * Called when the first audio chunk arrives.
+     * Flush accumulated samples into a single AudioBuffer and queue it.
      */
-    private startSpeaking(): void {
-        if (this.isPlaying) return;
+    private flushAccumulatedBuffer(): void {
+        if (!this.audioContext || !this.queueSource || this.accumulatedLength === 0) return;
 
-        this.isPlaying = true;
-        this.isInterrupted = false;
-        this.isGenerationComplete = false;
+        // Merge all accumulated samples
+        const merged = new Float32Array(this.accumulatedLength);
+        let offset = 0;
+        for (const chunk of this.accumulatedSamples) {
+            merged.set(chunk, offset);
+            offset += chunk.length;
+        }
 
-        Logger.info(TAG, 'Sophie started speaking');
-        useConversationStore.getState().setSpeaking(true);
+        // Create AudioBuffer and queue
+        const audioBuffer = this.audioContext.createBuffer(1, this.accumulatedLength, SAMPLE_RATE);
+        audioBuffer.getChannelData(0).set(merged);
+        this.queueSource.enqueueBuffer(audioBuffer);
+
+        // Track total queued
+        this.totalQueuedSamples += this.accumulatedLength;
+
+        // Clear accumulator
+        this.accumulatedSamples = [];
+        this.accumulatedLength = 0;
     }
 
-    /**
-     * Called when generation is complete.
-     * Sets flag so onEnded callback knows to finish speaking.
-     */
-    onGenerationComplete(): void {
-        if (!this.isPlaying || this.isInterrupted) return;
+    private startSpeaking(): void {
+        if (this.isPlaying || !this.queueSource) return;
 
-        Logger.debug(TAG, `Generation complete after ${this.chunkCount} chunks`);
+        // Start the queue source playback
+        Logger.info(TAG, `Starting playback (${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(1)}s buffered)`);
+        this.queueSource.start();
+
+        this.isPlaying = true;
+        this.hasStartedPlayback = true;
+        Logger.info(TAG, 'Sophie started speaking');
+        this.speakingStateCallback?.(true);
+    }
+
+    onGenerationComplete(): void {
+        if (this.isInterrupted) return;
+
         this.isGenerationComplete = true;
 
-        // The onEnded callback will call finishSpeaking() when last buffer plays
+        // Flush any remaining samples
+        if (this.accumulatedLength > 0) {
+            this.flushAccumulatedBuffer();
+        }
+
+        Logger.info(TAG, `Generation complete (${this.chunkCount} chunks, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(1)}s total)`);
+
+        // Start playback if we haven't yet (short responses)
+        if (!this.hasStartedPlayback && this.totalQueuedSamples > 0) {
+            this.startSpeaking();
+        }
+
+        // Capture response ID for staleness check
+        const currentResponseId = this.responseId;
+
+        // Schedule finish based on audio duration
+        const durationMs = (this.totalQueuedSamples / SAMPLE_RATE) * 1000;
+        Logger.info(TAG, `Playback will finish in ~${(durationMs / 1000).toFixed(1)}s`);
+
+        if (this.finishTimeout) {
+            clearTimeout(this.finishTimeout);
+        }
+
+        this.finishTimeout = setTimeout(() => {
+            if (this.responseId === currentResponseId && this.isPlaying && !this.isInterrupted) {
+                this.finishSpeaking();
+            }
+        }, durationMs + 1000);
     }
 
     private finishSpeaking(): void {
         if (!this.isPlaying) return;
 
         Logger.info(TAG, 'Sophie finished speaking');
-        this.isPlaying = false;
-        this.isGenerationComplete = false;
-        this.chunkCount = 0;
 
-        useConversationStore.getState().setSpeaking(false);
+        if (this.finishTimeout) {
+            clearTimeout(this.finishTimeout);
+            this.finishTimeout = null;
+        }
+
+        this.resetState();
+        this.speakingStateCallback?.(false);
     }
 
-    /**
-     * Handle interruption - stop playback immediately.
-     */
+    private resetState(): void {
+        this.isPlaying = false;
+        this.isGenerationComplete = false;
+        this.hasStartedPlayback = false;
+        this.chunkCount = 0;
+        this.accumulatedSamples = [];
+        this.accumulatedLength = 0;
+        this.totalQueuedSamples = 0;
+    }
+
     handleInterruption(): void {
         Logger.info(TAG, 'Handling interruption');
         this.isInterrupted = true;
-        this.isPlaying = false;
-        this.isGenerationComplete = false;
-        this.chunkCount = 0;
+        this.responseId++;
 
-        if (this.queueSource && this.audioContext) {
-            try {
-                this.queueSource.stop();
-            } catch {
-                // Ignore stop errors
-            }
-            this.setupQueueSource();
+        if (this.finishTimeout) {
+            clearTimeout(this.finishTimeout);
+            this.finishTimeout = null;
         }
 
-        useConversationStore.getState().setSpeaking(false);
+        this.stopCurrentPlayback();
+        this.resetState();
     }
 
-    /**
-     * Clear queue and reset state (for disconnect/reset).
-     */
     clearQueue(): void {
         Logger.info(TAG, 'Clearing audio queue');
         this.handleInterruption();
-        this.isInterrupted = false; // Reset for next session
+        this.isInterrupted = false;
     }
 
-    /**
-     * Clean up resources.
-     */
     dispose(): void {
-        if (this.queueSource) {
-            try {
-                this.queueSource.stop();
-            } catch {
-                // Ignore
-            }
-            this.queueSource = null;
+        if (this.finishTimeout) {
+            clearTimeout(this.finishTimeout);
+            this.finishTimeout = null;
         }
+
+        this.stopCurrentPlayback();
+
         if (this.audioContext) {
             this.audioContext.close();
             this.audioContext = null;
         }
-        this.isPlaying = false;
-        this.isGenerationComplete = false;
-        this.chunkCount = 0;
+
+        this.resetState();
     }
 }
 

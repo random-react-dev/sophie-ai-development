@@ -1,8 +1,7 @@
 import { create } from 'zustand';
+import { audioRecorder } from '../services/audio/recorder';
 import { Logger } from '../services/common/Logger';
 import { ConnectionState } from '../services/gemini/types';
-import { audioRecorder } from '../services/audio/recorder';
-import { audioStreamer } from '../services/audio/streamer';
 import { geminiWebSocket } from '../services/gemini/websocket';
 
 const VOLUME_THROTTLE_MS = 100;
@@ -25,8 +24,10 @@ function createVolumeHandler(setState: (state: Partial<ConversationState>) => vo
 
 /**
  * Ensure audio streamer is initialized before use.
+ * Uses lazy import to break circular dependency.
  */
 async function ensureAudioStreamerReady(): Promise<void> {
+    const { audioStreamer } = await import('../services/audio/streamer');
     if (!audioStreamer.isReady()) {
         await audioStreamer.initialize();
     }
@@ -195,6 +196,7 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
         }
 
         const { impactAsync, ImpactFeedbackStyle } = await import('expo-haptics');
+        const { audioStreamer } = await import('../services/audio/streamer');
 
         Logger.info('ConversationStore', 'Stopping conversation...');
         await audioRecorder.stop();
