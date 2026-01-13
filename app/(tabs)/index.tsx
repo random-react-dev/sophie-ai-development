@@ -80,7 +80,7 @@ export default function RoleplayScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
@@ -117,7 +117,7 @@ export default function RoleplayScreen() {
 
       {/* Search and Create Row */}
       <View className="px-4 flex-row gap-2 mb-6">
-        <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
+        <View className="flex-1 h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
           <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search scenarios..."
@@ -174,7 +174,7 @@ export default function RoleplayScreen() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
         renderItem={({ item }) => {
           const Icon = IconMap[item.icon] || Sparkles;
-          const bgColor = "bg-white";
+          const bgColor = "bg-surface";
 
           return (
             <TouchableOpacity
@@ -368,7 +368,7 @@ function CreateScenarioModal({
                       className={`px-4 py-2 rounded-full border ${
                         level === l
                           ? "bg-blue-100 border-blue-300"
-                          : "bg-white border-gray-300"
+                          : "bg-surface border-gray-300"
                       }`}
                     >
                       <Text
@@ -393,7 +393,7 @@ function CreateScenarioModal({
                   onPress={() =>
                     setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
                   }
-                  className={`bg-white rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${
+                  className={`bg-surface rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${
                     isCategoryDropdownOpen
                       ? "border-2 border-blue-400"
                       : "border border-gray-200"
@@ -455,7 +455,7 @@ function CreateScenarioModal({
 
                 {/* Premium Dropdown Options */}
                 {isCategoryDropdownOpen && (
-                  <View className="mt-3 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xl">
+                  <View className="mt-3 bg-surface rounded-2xl border border-gray-100 overflow-hidden shadow-xl">
                     {CATEGORIES.filter((cat) => cat !== "All").map(
                       (cat, index, arr) => {
                         const isSelected = category === cat;
@@ -525,7 +525,7 @@ function CreateScenarioModal({
                               setIsCategoryDropdownOpen(false);
                             }}
                             className={`px-4 py-3.5 flex-row items-center justify-between ${
-                              isSelected ? "bg-blue-50" : "bg-white"
+                              isSelected ? "bg-blue-50" : "bg-surface"
                             } ${!isLast ? "border-b border-gray-100" : ""}`}
                           >
                             <View className="flex-row items-center gap-3">

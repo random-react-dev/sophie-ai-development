@@ -275,7 +275,7 @@ export default function VocabScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
@@ -310,7 +310,7 @@ export default function VocabScreen() {
 
       {/* Search and Add */}
       <View className="px-4 flex-row gap-2 mb-6">
-        <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
+        <View className="flex-1 h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
           {/* <Search size={20} color="gray" /> */}
           <Feather name="search" size={20} color="gray" />
           <TextInput
@@ -380,7 +380,7 @@ export default function VocabScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity
               activeOpacity={0.7}
-              className="mb-4 p-4 rounded-2xl shadow-lg flex-row items-center bg-white"
+              className="mb-4 p-4 rounded-2xl shadow-lg flex-row items-center bg-surface"
             >
               <View className="flex-row justify-between items-start">
                 <View className="flex-1 mr-4">

@@ -360,7 +360,7 @@ Stay in character while teaching.`;
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
@@ -390,7 +390,10 @@ Stay in character while teaching.`;
       <View className="px-6 py-2 flex-row justify-center items-center gap-4">
         {/* Target Language (what to learn) */}
         <TouchableOpacity
-          onPress={() => { setPickerMode('target'); setShowLanguagePicker(true); }}
+          onPress={() => {
+            setPickerMode("target");
+            setShowLanguagePicker(true);
+          }}
           className="items-center"
         >
           <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
@@ -401,7 +404,7 @@ Stay in character while teaching.`;
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
-            {targetLanguage ? 'Learning' : 'Select'}
+            {targetLanguage ? "Learning" : "Select"}
           </Text>
         </TouchableOpacity>
 
@@ -410,7 +413,10 @@ Stay in character while teaching.`;
 
         {/* Native Language (explanations) */}
         <TouchableOpacity
-          onPress={() => { setPickerMode('native'); setShowLanguagePicker(true); }}
+          onPress={() => {
+            setPickerMode("native");
+            setShowLanguagePicker(true);
+          }}
           className="items-center"
         >
           <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
@@ -421,7 +427,7 @@ Stay in character while teaching.`;
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
-            {nativeLanguage ? 'Explain in' : 'Select'}
+            {nativeLanguage ? "Explain in" : "Select"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -459,7 +465,9 @@ Stay in character while teaching.`;
             {isPTTActive && (
               <View className="absolute top-4 bg-red-500 px-4 py-2 rounded-full flex-row items-center z-10">
                 <View className="w-2 h-2 rounded-full bg-white mr-2" />
-                <Text className="text-white font-semibold">{formatTime(recordingTime)}</Text>
+                <Text className="text-white font-semibold">
+                  {formatTime(recordingTime)}
+                </Text>
               </View>
             )}
             <RainbowWave

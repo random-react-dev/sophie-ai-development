@@ -23,6 +23,7 @@ import {
   Play,
   Plus,
   Trash2,
+  Volume2,
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -148,7 +149,7 @@ export default function LanguageScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
@@ -337,7 +338,7 @@ export default function LanguageScreen() {
               showsVerticalScrollIndicator={false}
             >
               {/* Learning Preferences Card - Same UI as was on main page */}
-              <View className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
+              <View className="bg-surface rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
                 {/* Section Header */}
                 <View className="flex-row items-center gap-2 mb-2">
                   <Globe size={18} color="#3b82f6" />
@@ -368,7 +369,7 @@ export default function LanguageScreen() {
                     </View>
                     <ChevronDown size={20} color="#111827" />
                   </TouchableOpacity>
-                  <View className="h-[1px] bg-gray-100" />
+                  <View className="h-[1px] bg-gray-200" />
 
                   {/* Base Language Row (Instruction Language) */}
                   <TouchableOpacity
@@ -390,7 +391,7 @@ export default function LanguageScreen() {
                     </View>
                     <ChevronDown size={20} color="#111827" />
                   </TouchableOpacity>
-                  <View className="h-[1px] bg-gray-100" />
+                  <View className="h-[1px] bg-gray-200" />
 
                   {/* Preferred Accent Row */}
                   <TouchableOpacity
@@ -424,10 +425,13 @@ export default function LanguageScreen() {
               </View>
 
               {/* Accent Playground */}
-              <View className="bg-gray-50 rounded-2xl p-5 border border-gray-100 mb-6">
-                <Text className="text-blue-500 text-base font-semibold capitalize mb-4">
-                  Accent Playground
-                </Text>
+              <View className="bg-surface rounded-2xl p-5 border border-gray-100 mb-6">
+                <View className="flex-row items-center gap-2 mb-4">
+                  <Volume2 size={18} color="#3b82f6" />
+                  <Text className="text-blue-500 text-base font-semibold capitalize">
+                    Accent Playground
+                  </Text>
+                </View>
 
                 <TextInput
                   value={testPhrase}
