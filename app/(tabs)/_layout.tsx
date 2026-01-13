@@ -16,8 +16,7 @@ const voiceAvailable = isVoiceModeAvailable();
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  const { startPTTRecording, stopPTTRecording, isPTTActive, connectionState } =
-    useConversationStore();
+  const { startPTTRecording, stopPTTRecording, isPTTActive, isProcessing, connectionState } = useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -162,12 +161,14 @@ export default function TabLayout() {
                   }
                 };
 
-                const getButtonColor = () => {
+                const getButtonColor = (): string => {
                   if (isPTTActive) return "bg-red-500 shadow-red-200";
+                  if (isProcessing) return "bg-orange-500 shadow-orange-200";
                   if (!isFocused) return "bg-gray-900 shadow-gray-400";
                   if (!isConnected) return "bg-gray-600 shadow-gray-400";
-                  if (isPressing) return "bg-blue-400 shadow-blue-200";
-                  return "bg-blue-500 shadow-blue-200";
+                  return isPressing
+                    ? "bg-blue-400 shadow-blue-200"
+                    : "bg-blue-500 shadow-blue-200";
                 };
 
                 return (

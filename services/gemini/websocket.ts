@@ -1,4 +1,3 @@
-import { useConversationStore } from '../../stores/conversationStore';
 import { audioStreamer } from '../audio/streamer';
 import { Logger } from '../common/Logger';
 import {
@@ -9,6 +8,9 @@ import {
     GeminiRealtimeInput,
     GeminiServerResponse
 } from './types';
+
+// Lazy getter to break circular dependency with conversationStore
+const getConversationStore = () => require('../../stores/conversationStore').useConversationStore;
 
 const TAG = 'GeminiWS';
 const MODEL = 'models/gemini-2.5-flash-native-audio-preview-09-2025';
@@ -25,6 +27,7 @@ class GeminiWebSocket {
     private lastApiKey: string = '';
     private lastInstruction: string = '';
     private audioChunksSent = 0;
+    private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
 
     // Singleton
     private static instance: GeminiWebSocket;
@@ -46,7 +49,7 @@ class GeminiWebSocket {
 
     private setConnectionState(state: ConnectionState, error?: GeminiError) {
         this.connectionState = state;
-        const store = useConversationStore.getState();
+        const store = getConversationStore().getState();
         store.setConnectionState(state);
         if (error) {
             store.setError(error.message);
@@ -223,11 +226,11 @@ class GeminiWebSocket {
                 },
                 inputAudioTranscription: {},
                 outputAudioTranscription: {},
-                // Configure VAD for reliable turn detection after model speaks
+                // PTT Mode: Disable automatic VAD, use manual activity control
+                // Client sends activityStart/activityEnd to control turn-taking
                 realtimeInputConfig: {
                     automaticActivityDetection: {
-                        endOfSpeechSensitivity: 'END_SENSITIVITY_LOW',
-                        silenceDurationMs: 300
+                        disabled: true
                     }
                 }
             }
@@ -236,25 +239,40 @@ class GeminiWebSocket {
         this.send(JSON.stringify(setupMsg));
     }
 
+    /**
+     * Signal start of user speech activity (PTT pressed).
+     */
+    sendActivityStart(): void {
+        if (!this.isReady()) {
+            Logger.warn(TAG, 'Cannot send activityStart: not ready');
+            return;
+        }
+        Logger.info(TAG, 'Sending activityStart signal');
+        this.send(JSON.stringify({ realtimeInput: { activityStart: {} } }));
+    }
+
+    /**
+     * Signal end of user speech activity (PTT released).
+     */
+    sendActivityEnd(): void {
+        if (!this.isReady()) {
+            Logger.warn(TAG, 'Cannot send activityEnd: not ready');
+            return;
+        }
+        Logger.info(TAG, 'Sending activityEnd signal');
+        this.send(JSON.stringify({ realtimeInput: { activityEnd: {} } }));
+    }
+
     sendAudioChunk(base64Data: string) {
-        // Validate input data
         if (!base64Data || base64Data.length === 0) {
             Logger.warn(TAG, 'sendAudioChunk called with empty data');
             return;
         }
 
-        if (this.connectionState !== 'connected' || !this.ws) {
-            Logger.warn(TAG, `Cannot send audio: state=${this.connectionState}`);
+        if (!this.isReady()) {
+            Logger.warn(TAG, `Cannot send audio: not ready (state=${this.connectionState})`);
             return;
         }
-
-        if (!this.isSetupComplete) {
-            Logger.warn(TAG, 'Cannot send audio: Setup not complete yet');
-            return;
-        }
-
-        // Audio is always sent - hardware AEC handles echo cancellation
-        // Gemini's automatic VAD handles turn detection and interruptions
 
         // Log first few chunks and then every 50th to verify audio is flowing
         this.audioChunksSent++;
@@ -277,8 +295,8 @@ class GeminiWebSocket {
      * Send a greeting request to Sophie. Called from HomeScreen on first mic press.
      */
     sendGreeting() {
-        if (!this.isSetupComplete) {
-            Logger.warn(TAG, 'Cannot send greeting: Setup not complete');
+        if (!this.isReady()) {
+            Logger.warn(TAG, 'Cannot send greeting: not ready');
             return;
         }
 
@@ -301,9 +319,14 @@ class GeminiWebSocket {
      * Initialize audio streamer and send greeting on first connection.
      * Audio streamer must be initialized before greeting to avoid dropped audio chunks.
      */
-    private async initializeAndGreet(store: ReturnType<typeof useConversationStore.getState>): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private async initializeAndGreet(store: { hasGreeted: boolean; setHasGreeted: (v: boolean) => void }): Promise<void> {
         try {
             await audioStreamer.initialize();
+            // Wire up the speaking state callback to break circular dependency
+            audioStreamer.setSpeakingStateCallback((isSpeaking) => {
+                getConversationStore().getState().setSpeaking(isSpeaking);
+            });
             Logger.info(TAG, 'AudioStreamer initialized, sending greeting...');
             this.sendGreeting();
             store.setHasGreeted(true);
@@ -321,7 +344,7 @@ class GeminiWebSocket {
     }
 
     private handleMessage(response: GeminiServerResponse) {
-        const store = useConversationStore.getState();
+        const store = getConversationStore().getState();
 
         // Support both camelCase and snake_case (API can return either)
         const isSetupCompleteReceived = !!(response.setup_complete || response.setupComplete);
@@ -348,11 +371,19 @@ class GeminiWebSocket {
 
             // Handle audio from model
             if (modelTurn?.parts) {
+                // Model started responding - clear processing state
+                store.setProcessing(false);
+
                 for (const part of modelTurn.parts) {
                     const inlineData = part.inline_data || part.inlineData;
                     if (inlineData) {
                         const mimeType = inlineData.mime_type || inlineData.mimeType;
                         if (mimeType?.startsWith('audio/pcm')) {
+                            // Prepare streamer for new response on first audio chunk
+                            if (this.isFirstAudioChunk) {
+                                audioStreamer.prepareForNewResponse();
+                                this.isFirstAudioChunk = false;
+                            }
                             Logger.debug(TAG, 'Received audio chunk from model');
                             audioStreamer.queueAudio(inlineData.data);
                         }
@@ -392,6 +423,7 @@ class GeminiWebSocket {
             if (isGenerationComplete) {
                 Logger.debug(TAG, 'Generation complete');
                 audioStreamer.onGenerationComplete();
+                this.isFirstAudioChunk = true; // Reset for next response
             }
 
             // Handle interruption (user spoke while model was speaking)
@@ -399,6 +431,7 @@ class GeminiWebSocket {
                 Logger.info(TAG, 'Model interrupted by user');
                 audioStreamer.handleInterruption();
                 store.handleInterruption();
+                this.isFirstAudioChunk = true; // Reset for next response
             }
         }
     }

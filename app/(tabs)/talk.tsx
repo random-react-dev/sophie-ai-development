@@ -22,8 +22,8 @@ import {
   RotateCcw,
   Wand2,
 } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Logger } from "@/services/common/Logger";
@@ -104,11 +104,11 @@ export default function TalkScreen() {
     error,
     isListening,
     isSpeaking,
+    isProcessing,
     isPTTActive,
     volumeLevel,
     messages,
     showTranscript,
-    isConversationActive,
     setShowTranscript,
     clearMessages,
     setHasGreeted,
@@ -127,7 +127,7 @@ export default function TalkScreen() {
     setNativeLanguage,
   } = useLearningStore();
   const { session, user } = useAuthStore();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef(false);
   const router = useRouter();
 
@@ -255,29 +255,26 @@ Stay in character while teaching.`;
 
   const getStatusText = (): string => {
     if (isSpeaking) return "Sophie Speaking...";
+    if (isProcessing) return "Sophie is thinking...";
     if (isListening) return "Listening...";
-    if (isConversationActive) return "Hold mic to speak";
+
     switch (connectionState) {
-      case "idle":
-        return "Ready";
       case "connecting":
         return "Connecting...";
-      case "connected":
-        return "Hold mic to speak";
       case "reconnecting":
         return "Reconnecting...";
       case "error":
         return error || "Error";
+      default:
+        return "Hold mic to speak";
     }
   };
 
   const getDotColor = (): string => {
     if (isSpeaking) return "bg-purple-500";
     if (isListening) return "bg-blue-500";
-    if (isConversationActive) return "bg-green-500";
+
     switch (connectionState) {
-      case "idle":
-        return "bg-gray-400";
       case "connecting":
       case "reconnecting":
         return "bg-orange-500";
@@ -285,12 +282,14 @@ Stay in character while teaching.`;
         return "bg-green-500";
       case "error":
         return "bg-red-500";
+      default:
+        return "bg-gray-400";
     }
   };
 
   useEffect(() => {
-    if (showTranscript) {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
+    if (showTranscript && messages.length > 0) {
+      flatListRef.current?.scrollToEnd({ animated: true });
     }
   }, [messages, showTranscript]);
 
@@ -358,6 +357,61 @@ Stay in character while teaching.`;
       Alert.alert("Success", "Added to your vocabulary!");
     }
   };
+
+  // Message type for FlatList
+  interface Message {
+    id: string;
+    role: 'user' | 'model';
+    text: string;
+    timestamp: number;
+  }
+
+  // Memoized render function for FlatList performance
+  const renderMessage = useCallback(({ item: msg }: { item: Message }) => (
+    <View
+      className={`mb-6 ${msg.role === "user" ? "items-end" : "items-start"}`}
+    >
+      <View
+        className={`p-4 rounded-3xl max-w-[85%] ${
+          msg.role === "user"
+            ? "bg-gray-100"
+            : "bg-white border border-gray-100 shadow-sm"
+        }`}
+      >
+        {msg.role === "model" && (
+          <View className="flex-row items-center gap-1 mb-1">
+            <Wand2 size={10} color="#3b82f6" />
+            <Text className="text-blue-500 text-[8px] font-black uppercase tracking-widest">
+              Natural Correction
+            </Text>
+          </View>
+        )}
+        <Text className="text-gray-900 text-base font-medium leading-relaxed">
+          {msg.text}
+        </Text>
+        <View className="flex-row mt-2 gap-4 border-t border-gray-50 pt-2">
+          <TouchableOpacity
+            className="flex-row items-center gap-1"
+            onPress={() => handleTranslate(msg.text)}
+          >
+            <Globe size={12} color="#94a3b8" />
+            <Text className="text-[10px] text-gray-400 font-bold">
+              Translate
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-row items-center gap-1"
+            onPress={() => handleSaveVocabulary(msg.text)}
+          >
+            <Bookmark size={12} color="#94a3b8" />
+            <Text className="text-[10px] text-gray-400 font-bold">
+              Save
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  ), []);
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -479,81 +533,38 @@ Stay in character while teaching.`;
         </View>
 
         <View className="flex-1 mt-6">
-          <ScrollView
-            ref={scrollViewRef}
-            className="flex-1"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
-          >
-            {messages.length === 0 ? (
-              <View className="items-center mt-10">
-                <View className="w-16 h-16 rounded-3xl bg-blue-500 items-center justify-center mb-4">
-                  <Feather name="mic" size={26} color="white" />
-                </View>
-                {!canStartConversation ? (
-                  <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                    Select both languages above to start your lesson with
-                    Sophie.
-                  </Text>
-                ) : (
-                  <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                    Hold the mic button below to start your{" "}
-                    {selectedScenario ? "roleplay" : targetLanguage?.name}{" "}
-                    lesson.
-                  </Text>
-                )}
+          {messages.length === 0 ? (
+            <View className="items-center mt-10">
+              <View className="w-16 h-16 rounded-3xl bg-blue-500 items-center justify-center mb-4">
+                <Feather name="mic" size={26} color="white" />
               </View>
-            ) : (
-              messages.map((msg) => (
-                <View
-                  key={msg.id}
-                  className={`mb-6 ${
-                    msg.role === "user" ? "items-end" : "items-start"
-                  }`}
-                >
-                  <View
-                    className={`p-4 rounded-3xl max-w-[85%] ${
-                      msg.role === "user"
-                        ? "bg-gray-100"
-                        : "bg-white border border-gray-100 shadow-sm"
-                    }`}
-                  >
-                    {msg.role === "model" && (
-                      <View className="flex-row items-center gap-1 mb-1">
-                        <Wand2 size={10} color="#3b82f6" />
-                        <Text className="text-blue-500 text-[8px] font-black uppercase tracking-widest">
-                          Natural Correction
-                        </Text>
-                      </View>
-                    )}
-                    <Text className="text-gray-900 text-base font-medium leading-relaxed">
-                      {msg.text}
-                    </Text>
-                    <View className="flex-row mt-2 gap-4 border-t border-gray-50 pt-2">
-                      <TouchableOpacity
-                        className="flex-row items-center gap-1"
-                        onPress={() => handleTranslate(msg.text)}
-                      >
-                        <Globe size={12} color="#94a3b8" />
-                        <Text className="text-[10px] text-gray-400 font-bold">
-                          Translate
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        className="flex-row items-center gap-1"
-                        onPress={() => handleSaveVocabulary(msg.text)}
-                      >
-                        <Bookmark size={12} color="#94a3b8" />
-                        <Text className="text-[10px] text-gray-400 font-bold">
-                          Save
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              ))
-            )}
-          </ScrollView>
+              {!canStartConversation ? (
+                <Text className="text-black/60 font-medium text-center px-10 leading-5">
+                  Select both languages above to start your lesson with
+                  Sophie.
+                </Text>
+              ) : (
+                <Text className="text-black/60 font-medium text-center px-10 leading-5">
+                  Hold the mic button below to start your{" "}
+                  {selectedScenario ? "roleplay" : targetLanguage?.name}{" "}
+                  lesson.
+                </Text>
+              )}
+            </View>
+          ) : (
+            <FlatList
+              ref={flatListRef}
+              data={messages}
+              renderItem={renderMessage}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+              initialNumToRender={10}
+              maxToRenderPerBatch={5}
+              windowSize={7}
+            />
+          )}
         </View>
       </View>
 
