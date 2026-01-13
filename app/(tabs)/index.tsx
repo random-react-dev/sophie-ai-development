@@ -121,10 +121,12 @@ export default function RoleplayScreen() {
           <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search scenarios..."
-            className="flex-1 ml-3 text-gray-900 font-medium text-base"
+            className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="gray"
+            textAlignVertical="center"
+            style={{ includeFontPadding: false }}
           />
         </View>
         <TouchableOpacity
@@ -323,9 +325,11 @@ function CreateScenarioModal({
                 <TextInput
                   placeholder="e.g. A grumpy but helpful shopkeeper"
                   placeholderTextColor="gray"
-                  className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                  className="bg-gray-50 rounded-full px-4 text-gray-900 border border-gray-100 font-medium h-12 p-0"
                   value={sophieRole}
                   onChangeText={setSophieRole}
+                  textAlignVertical="center"
+                  style={{ includeFontPadding: false }}
                 />
               </View>
 
@@ -336,9 +340,11 @@ function CreateScenarioModal({
                 <TextInput
                   placeholder="e.g. A customer in a hurry"
                   placeholderTextColor="gray"
-                  className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                  className="bg-gray-50 rounded-full px-4 text-gray-900 border border-gray-100 font-medium h-12 p-0"
                   value={userRole}
                   onChangeText={setUserRole}
+                  textAlignVertical="center"
+                  style={{ includeFontPadding: false }}
                 />
               </View>
 
@@ -349,9 +355,11 @@ function CreateScenarioModal({
                 <TextInput
                   placeholder="e.g. Buying a vintage watch"
                   placeholderTextColor="gray"
-                  className="bg-gray-50 rounded-full px-4 py-4 text-gray-900 border border-gray-100 font-medium"
+                  className="bg-gray-50 rounded-full px-4 text-gray-900 border border-gray-100 font-medium h-12 p-0"
                   value={topic}
                   onChangeText={setTopic}
+                  textAlignVertical="center"
+                  style={{ includeFontPadding: false }}
                 />
               </View>
 

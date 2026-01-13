@@ -213,16 +213,17 @@ export default function LanguagePickerModal({
           </View>
 
           {/* Search Bar */}
-          <View className="p-4">
-            <View className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-gray-100">
+          <View className="px-4 py-3">
+            <View className="h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
               <Feather name="search" size={20} color="gray" />
               <TextInput
                 placeholder="Search languages..."
-                className="flex-1 ml-3 text-gray-900 font-medium"
+                className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 placeholderTextColor="gray"
-                autoCapitalize="none"
+                textAlignVertical="center"
+                style={{ includeFontPadding: false }}
               />
             </View>
           </View>
@@ -231,7 +232,11 @@ export default function LanguagePickerModal({
           <FlatList
             data={filteredLanguages}
             keyExtractor={(item) => item.code}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40, marginTop: 10 }}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingBottom: 40,
+              marginTop: 10,
+            }}
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View className="h-3" />}
             renderItem={({ item }) => (

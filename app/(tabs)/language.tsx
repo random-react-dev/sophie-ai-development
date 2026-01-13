@@ -189,9 +189,9 @@ export default function LanguageScreen() {
       <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
         <View className="px-4 pb-24">
           {/* Profiles List (Folders) */}
-          <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">
+          {/* <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">
             My Language Profile
-          </Text>
+          </Text> */}
           {profiles.map((profile) => (
             <TouchableOpacity
               activeOpacity={0.7}
@@ -436,9 +436,11 @@ export default function LanguageScreen() {
                 <TextInput
                   value={testPhrase}
                   onChangeText={setTestPhrase}
-                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4"
+                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4 p-0"
                   placeholder="Type your text here..."
                   placeholderTextColor="gray"
+                  textAlignVertical="center"
+                  style={{ includeFontPadding: false }}
                 />
 
                 {/* Speed Section */}

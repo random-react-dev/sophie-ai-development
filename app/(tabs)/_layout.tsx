@@ -76,13 +76,23 @@ export default function TabLayout() {
           paddingTop: 12,
           paddingHorizontal: 8,
         },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: "700",
-          letterSpacing: 0.5,
-        },
+        tabBarLabel: ({ children, color }) => (
+          <Text
+            allowFontScaling={false}
+            style={{
+              color,
+              fontFamily: "GoogleSans-Bold",
+              fontSize: 10,
+              fontWeight: "bold",
+              textAlign: "center",
+              includeFontPadding: false,
+            }}
+          >
+            {children}
+          </Text>
+        ),
         tabBarItemStyle: {
-          paddingHorizontal: 4,
+          paddingHorizontal: 0,
         },
       }}
     >

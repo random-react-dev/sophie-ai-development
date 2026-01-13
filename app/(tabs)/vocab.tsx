@@ -315,10 +315,12 @@ export default function VocabScreen() {
           <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search saved words..."
-            className="flex-1 ml-3 text-gray-900 font-medium"
+            className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="gray"
+            textAlignVertical="center"
+            style={{ includeFontPadding: false }}
           />
         </View>
         <TouchableOpacity
@@ -489,6 +491,7 @@ export default function VocabScreen() {
                   value={newPhrase}
                   onChangeText={setNewPhrase}
                   multiline
+                  style={{ includeFontPadding: false }}
                 />
               </View>
 
@@ -503,6 +506,7 @@ export default function VocabScreen() {
                   value={newTranslation}
                   onChangeText={setNewTranslation}
                   multiline
+                  style={{ includeFontPadding: false }}
                 />
               </View>
             </ScrollView>
