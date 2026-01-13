@@ -31,10 +31,12 @@ export function AuthInput({
         }`}
       >
         <TextInput
-          className={`flex-1 py-4 text-gray-900 text-base ${className}`}
+          className={`flex-1 text-gray-900 text-base h-14 p-0 ${className}`}
           placeholderTextColor="#9CA3AF"
           secureTextEntry={isPassword && !isPasswordVisible}
           autoCapitalize="none"
+          textAlignVertical="center"
+          style={{ includeFontPadding: false }}
           {...props}
         />
 

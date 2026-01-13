@@ -20,9 +20,9 @@ import {
   Languages,
   MessageSquare,
   MoreVertical,
+  Pencil,
   Plus,
   Trash2,
-  Volume2,
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -275,7 +275,7 @@ export default function VocabScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
@@ -310,18 +310,21 @@ export default function VocabScreen() {
 
       {/* Search and Add */}
       <View className="px-4 flex-row gap-2 mb-6">
-        <View className="flex-1 h-12 bg-white shadow-lg rounded-full flex-row items-center px-4">
+        <View className="flex-1 h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
           {/* <Search size={20} color="gray" /> */}
           <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search saved words..."
-            className="flex-1 ml-3 text-gray-900 font-medium"
+            className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="gray"
+            textAlignVertical="center"
+            style={{ includeFontPadding: false }}
           />
         </View>
         <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() => setIsAddModalVisible(true)}
           className="h-12 px-4 bg-blue-500 rounded-full flex-row items-center gap-2"
         >
@@ -342,14 +345,16 @@ export default function VocabScreen() {
               key={lang}
               activeOpacity={0.7}
               onPress={() => setSelectedLanguage(lang)}
-              className={`px-5 py-2 rounded-full border ${selectedLanguage === lang
+              className={`px-5 py-2 rounded-full border ${
+                selectedLanguage === lang
                   ? "bg-blue-100 border-blue-300"
                   : "bg-white border-gray-300"
-                }`}
+              }`}
             >
               <Text
-                className={`font-bold text-[13px] ${selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
-                  }`}
+                className={`font-bold text-[13px] ${
+                  selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
+                }`}
               >
                 {lang}
               </Text>
@@ -378,7 +383,7 @@ export default function VocabScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity
               activeOpacity={0.7}
-              className="mb-4 p-4 rounded-2xl shadow-lg flex-row items-center bg-white"
+              className="mb-4 p-4 rounded-2xl shadow-lg flex-row items-center bg-surface"
             >
               <View className="flex-row justify-between items-start">
                 <View className="flex-1 mr-4">
@@ -444,6 +449,7 @@ export default function VocabScreen() {
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
               <Text className="text-2xl font-bold text-black">Add Phrase</Text>
               <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={() => setIsAddModalVisible(false)}
                 className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
               >
@@ -460,6 +466,7 @@ export default function VocabScreen() {
                   Language
                 </Text>
                 <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={() => setShowLangPicker(true)}
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
@@ -484,6 +491,7 @@ export default function VocabScreen() {
                   value={newPhrase}
                   onChangeText={setNewPhrase}
                   multiline
+                  style={{ includeFontPadding: false }}
                 />
               </View>
 
@@ -498,6 +506,7 @@ export default function VocabScreen() {
                   value={newTranslation}
                   onChangeText={setNewTranslation}
                   multiline
+                  style={{ includeFontPadding: false }}
                 />
               </View>
             </ScrollView>
@@ -505,8 +514,9 @@ export default function VocabScreen() {
             <View className="px-6 py-8 border-t border-gray-100">
               <TouchableOpacity
                 onPress={handleAddItem}
-                className={`w-full h-16 rounded-full items-center justify-center shadow-lg ${!newPhrase.trim() ? "bg-gray-200" : "bg-blue-500"
-                  }`}
+                className={`w-full h-16 rounded-full items-center justify-center shadow-lg ${
+                  !newPhrase.trim() ? "bg-gray-200" : "bg-blue-500"
+                }`}
                 disabled={!newPhrase.trim()}
               >
                 <Text className="text-white font-bold text-lg">
@@ -583,16 +593,18 @@ export default function VocabScreen() {
               onPress={startPracticeSession}
               disabled={selectedForPractice.size === 0}
               activeOpacity={0.8}
-              className={`h-16 rounded-full items-center justify-center flex-row gap-3 shadow-lg shadow-blue-200 ${selectedForPractice.size > 0 ? "bg-blue-500" : "bg-gray-200"
-                }`}
+              className={`h-16 rounded-full items-center justify-center flex-row gap-3 shadow-lg shadow-blue-200 ${
+                selectedForPractice.size > 0 ? "bg-blue-500" : "bg-gray-200"
+              }`}
             >
               <MessageSquare
                 size={22}
                 color={selectedForPractice.size > 0 ? "white" : "#9ca3af"}
               />
               <Text
-                className={`font-bold text-lg ${selectedForPractice.size > 0 ? "text-white" : "text-gray-400"
-                  }`}
+                className={`font-bold text-lg ${
+                  selectedForPractice.size > 0 ? "text-white" : "text-gray-400"
+                }`}
               >
                 Start with {selectedForPractice.size} Phrase
                 {selectedForPractice.size === 1 ? "" : "s"}
@@ -728,6 +740,7 @@ function ActionModalContent({
 
             {/* Action Buttons */}
             <View className="gap-2">
+              {/* Temporarily removed Play Audio button
               <Pressable
                 onPress={() => onAction("play")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -739,7 +752,7 @@ function ActionModalContent({
                   Play Audio
                 </Text>
               </Pressable>
-
+              */}
               <Pressable
                 onPress={() => onAction("translate")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -751,7 +764,6 @@ function ActionModalContent({
                   Translate
                 </Text>
               </Pressable>
-
               <Pressable
                 onPress={() => onAction("conversation")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
@@ -763,7 +775,18 @@ function ActionModalContent({
                   Start Conversation
                 </Text>
               </Pressable>
-
+              {/*Temporarily removed Edit button*/}
+              <Pressable
+                onPress={() => {}}
+                className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
+              >
+                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
+                  <Pencil size={20} color="#3b82f6" />
+                </View>
+                <Text className="text-base font-semibold text-gray-900">
+                  Edit Vocabulary
+                </Text>
+              </Pressable>
               <Pressable
                 onPress={() => onAction("delete")}
                 className="flex-row items-center px-4 py-4 bg-red-50 rounded-2xl active:bg-red-100 mt-2"
@@ -909,8 +932,9 @@ function SelectablePhraseItem({
           </View>
           {item.translation && (
             <Text
-              className={`text-sm ${isActive ? "text-blue-600/70" : "text-gray-500"
-                }`}
+              className={`text-sm ${
+                isActive ? "text-blue-600/70" : "text-gray-500"
+              }`}
               numberOfLines={2}
             >
               {item.translation}

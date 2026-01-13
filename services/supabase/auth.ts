@@ -42,6 +42,7 @@ export const resetPasswordForEmail = async (email: string, redirectTo: string) =
 export interface UserProfileUpdate {
     full_name?: string;
     country?: string;
+    native_language?: string;
     app_language?: string;
     learn_language?: string;
     avatar_url?: string;

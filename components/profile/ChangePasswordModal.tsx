@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ChangePasswordModalProps {
   visible: boolean;
@@ -78,30 +79,34 @@ export default function ChangePasswordModal({
 
   return (
     <>
-      <Modal visible={visible} animationType="slide" transparent>
-        <View className="flex-1 bg-black/50 justify-end">
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            className="flex-1 justify-end"
-          >
-            <View className="bg-white rounded-t-[32px] overflow-hidden max-h-[80%]">
-              <View className="px-4 py-5 border-b border-gray-100">
-                <View className="flex-row justify-between items-center">
-                  <View className="flex-1 pr-4">
-                    <Text className="text-2xl font-bold text-gray-900">
-                      Change Password
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={onClose}
-                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-                  >
-                    <Ionicons name="close" size={24} color="black" />
-                  </Pressable>
+      <Modal
+        visible={visible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={onClose}
+      >
+        <View className="flex-1 bg-white">
+          <SafeAreaView className="flex-1">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              className="flex-1"
+            >
+              <View className="flex-row justify-between items-center px-4 py-5 border-b border-gray-100">
+                <View className="flex-1 pr-4">
+                  <Text className="text-2xl font-bold text-gray-900">
+                    Change Password
+                  </Text>
                 </View>
+                <Pressable
+                  onPress={onClose}
+                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                >
+                  <Ionicons name="close" size={24} color="black" />
+                </Pressable>
               </View>
 
               <ScrollView
+                className="flex-1"
                 contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
               >
                 <View className="mb-6">
@@ -167,8 +172,8 @@ export default function ChangePasswordModal({
                   )}
                 </TouchableOpacity>
               </ScrollView>
-            </View>
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+          </SafeAreaView>
         </View>
       </Modal>
 

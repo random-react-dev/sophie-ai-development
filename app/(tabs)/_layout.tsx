@@ -75,13 +75,23 @@ export default function TabLayout() {
           paddingTop: 12,
           paddingHorizontal: 8,
         },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: "700",
-          letterSpacing: 0.5,
-        },
+        tabBarLabel: ({ children, color }) => (
+          <Text
+            allowFontScaling={false}
+            style={{
+              color,
+              fontFamily: "GoogleSans-Bold",
+              fontSize: 10,
+              fontWeight: "bold",
+              textAlign: "center",
+              includeFontPadding: false,
+            }}
+          >
+            {children}
+          </Text>
+        ),
         tabBarItemStyle: {
-          paddingHorizontal: 4,
+          paddingHorizontal: 0,
         },
       }}
     >
@@ -170,11 +180,11 @@ export default function TabLayout() {
                     {isPTTActive && (
                       <Animated.View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           width: 80,
                           height: 80,
                           borderRadius: 24,
-                          backgroundColor: 'rgba(239, 68, 68, 0.3)',
+                          backgroundColor: "rgba(239, 68, 68, 0.3)",
                           transform: [{ scale: pulseAnim }],
                         }}
                       />
@@ -212,7 +222,7 @@ export default function TabLayout() {
         name="language"
         options={{
           title: "Language",
-          tabBarActiveTintColor: "#EA580C",
+          tabBarActiveTintColor: "#ef4444",
           tabBarIcon: ({ color }) => (
             <View>
               <Globe size={24} color={color} />

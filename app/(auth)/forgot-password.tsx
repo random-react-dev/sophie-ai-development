@@ -57,7 +57,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -77,19 +77,19 @@ export default function ForgotPasswordScreen() {
                   <Text className="text-4xl font-bold text-gray-900">
                     Sophie AI
                   </Text>
-                  <Text className="text-gray-500 text-base mt-1">
+                  <Text className="text-gray-500 text-base mt-1 w-full text-center">
                     Native speaker in your pocket
                   </Text>
                 </View>
 
                 {/* White Card */}
-                <View className="bg-white rounded-3xl p-6 shadow-sm">
+                <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                   {/* Title */}
-                  <View className="items-center mb-6">
-                    <Text className="text-2xl font-bold text-gray-900">
+                  <View className="items-center mb-8">
+                    <Text className="text-3xl font-bold text-gray-900">
                       Reset Password
                     </Text>
-                    <Text className="text-gray-500 mt-1 text-center">
+                    <Text className="text-gray-500 mt-1 w-full text-center">
                       Enter your email to receive reset instructions
                     </Text>
                   </View>

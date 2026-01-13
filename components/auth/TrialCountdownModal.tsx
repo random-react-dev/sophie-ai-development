@@ -121,7 +121,7 @@ export const TrialCountdownModal = () => {
           {/* Benefits List */}
           <View className="bg-gray-50 rounded-2xl p-4 mb-5">
             <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              What you'll get
+              What you&apos;ll get
             </Text>
             <BenefitItem text="Unlimited AI conversations" />
             <BenefitItem text="All 10+ languages unlocked" />
