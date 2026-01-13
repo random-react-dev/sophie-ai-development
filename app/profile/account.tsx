@@ -36,7 +36,7 @@ export default function AccountScreen() {
                 contentContainerStyle={{ paddingBottom: 40 }}
             >
                 {/* Main Card Display */}
-                <View className="mx-4 mt-6">
+                {/* <View className="mx-4 mt-6">
                     <View className="bg-white rounded-2xl p-6 shadow-sm items-center">
                         <View className="w-16 h-16 rounded-2xl bg-amber-50 items-center justify-center mb-4">
                             <User size={32} color="#f59e0b" />
@@ -46,7 +46,7 @@ export default function AccountScreen() {
                             Manage your account settings
                         </Text>
                     </View>
-                </View>
+                </View> */}
 
                 {/* Account Items */}
                 <View className="mx-4 mt-6">

@@ -29,7 +29,7 @@ export default function SecurityScreen() {
                 contentContainerStyle={{ paddingBottom: 40 }}
             >
                 {/* Main Card Display */}
-                <View className="mx-4 mt-6">
+                {/* <View className="mx-4 mt-6">
                     <View className="bg-white rounded-2xl p-6 shadow-sm items-center">
                         <View className="w-16 h-16 rounded-2xl bg-indigo-50 items-center justify-center mb-4">
                             <Shield size={32} color="#6366f1" />
@@ -39,7 +39,7 @@ export default function SecurityScreen() {
                             Protect your account
                         </Text>
                     </View>
-                </View>
+                </View> */}
 
                 {/* Security Items */}
                 <View className="mx-4 mt-6">

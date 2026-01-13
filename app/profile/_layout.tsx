@@ -9,6 +9,8 @@ export default function ProfileLayout() {
             <Stack.Screen name="security" />
             <Stack.Screen name="progress" />
             <Stack.Screen name="support" />
+            <Stack.Screen name="privacy" />
+            <Stack.Screen name="terms" />
         </Stack>
     );
 }

@@ -59,14 +59,7 @@ export default function SupportScreen() {
                         title="Privacy Policy"
                         icon={<FileText size={20} color="#64748b" />}
                         iconBgColor="bg-slate-100"
-                        onPress={() =>
-                            showAlert(
-                                "Coming Soon",
-                                "Privacy Policy will be available soon.",
-                                undefined,
-                                "info"
-                            )
-                        }
+                        onPress={() => router.push("/profile/privacy")}
                     />
 
                     {/* Terms of Service Card */}
@@ -74,14 +67,7 @@ export default function SupportScreen() {
                         title="Terms of Service"
                         icon={<Scale size={20} color="#64748b" />}
                         iconBgColor="bg-slate-100"
-                        onPress={() =>
-                            showAlert(
-                                "Coming Soon",
-                                "Terms of Service will be available soon.",
-                                undefined,
-                                "info"
-                            )
-                        }
+                        onPress={() => router.push("/profile/terms")}
                     />
                 </View>
 
