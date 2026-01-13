@@ -6,8 +6,7 @@ import {
     Crown,
     Receipt,
     Sparkles,
-    User,
-    Wallet,
+    Wallet
 } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -76,7 +75,7 @@ export default function AccountScreen() {
                         iconBgColor="bg-blue-50"
                         textColor="text-blue-500"
                         onPress={() => {
-                            // Coming soon
+                            router.push("/profile/subscription");
                         }}
                     />
                 </View>
