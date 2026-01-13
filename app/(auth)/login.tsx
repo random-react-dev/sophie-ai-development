@@ -65,19 +65,19 @@ export default function LoginScreen() {
                 <Text className="text-4xl font-bold text-gray-900">
                   Sophie AI
                 </Text>
-                <Text className="text-gray-500 text-base mt-1">
+                <Text className="text-gray-500 text-base mt-1 w-full text-center">
                   Native speaker in your pocket
                 </Text>
               </View>
 
               {/* White Card */}
-              <View className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+              <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                 {/* Welcome */}
                 <View className="items-center mb-8">
                   <Text className="text-3xl font-bold text-gray-900">
                     Welcome back
                   </Text>
-                  <Text className="text-gray-500 mt-1">
+                  <Text className="text-gray-500 mt-1 w-full text-center">
                     Log in to continue learning
                   </Text>
                 </View>
@@ -130,20 +130,22 @@ export default function LoginScreen() {
               </View>
 
               {/* Bottom Section - Sign Up */}
-              <View className="items-center py-4">
-                <Text className="text-black font-bold text-base">
+              <View className="items-center mb-6">
+                <Text className="text-gray-500 w-full text-center">
                   Don&apos;t have an account?{" "}
-                  <Link href="/signup" asChild>
-                    <Text className="text-blue-500 font-bold text-base underline">
+                </Text>
+                <Link href="/signup" asChild>
+                  <TouchableOpacity>
+                    <Text className="text-blue-600 font-bold text-lg">
                       Sign up
                     </Text>
-                  </Link>
-                </Text>
+                  </TouchableOpacity>
+                </Link>
               </View>
 
               {/* Terms */}
               <View className="items-center pb-6">
-                <Text className="text-gray-400 text-sm text-center">
+                <Text className="text-gray-400 text-sm text-center w-full">
                   By continuing, you agree to our{" "}
                   <Text className="text-gray-600 font-bold">
                     Terms to Service
