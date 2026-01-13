@@ -2,19 +2,27 @@ import CountryPicker from "@/components/profile/CountryPicker";
 import LanguagePicker from "@/components/profile/LanguagePicker";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import ThemeCard from "@/components/profile/ThemeCard";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { getLanguageByCode } from "@/constants/languages";
 import { setAppLanguage } from "@/services/i18n";
 import { useAuthStore } from "@/stores/authStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { useRouter } from "expo-router";
 import { Globe, Languages, Mail, MapPin, User } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PreferencesScreen() {
   const router = useRouter();
   const { user, updateProfile } = useAuthStore();
+  const { theme, setTheme, loadTheme } = useThemeStore();
+
+  // Load saved theme on mount
+  useEffect(() => {
+    loadTheme();
+  }, [loadTheme]);
 
   // Modal states
   const [showCountryPicker, setShowCountryPicker] = useState(false);
@@ -137,6 +145,38 @@ export default function PreferencesScreen() {
             iconBgColor="bg-violet-50"
             onPress={() => setShowPreferredPicker(true)}
           />
+        </View>
+
+        {/* Appearance Section */}
+        <View className="mx-4 mt-6">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+            Appearance
+          </Text>
+
+          {/* Theme Selector Card */}
+          <View className="bg-surface rounded-2xl p-6 shadow-sm">
+            {/* Theme Cards Row */}
+            <View className="flex-row justify-center gap-8">
+              <ThemeCard
+                theme="light"
+                isSelected={theme === "light"}
+                onSelect={() => setTheme("light")}
+              />
+              <ThemeCard
+                theme="dark"
+                isSelected={theme === "dark"}
+                onSelect={() => setTheme("dark")}
+              />
+            </View>
+
+            {/* Divider */}
+            <View className="h-px bg-gray-200 mt-6 mb-4" />
+
+            {/* Colour scheme label */}
+            <Text className="text-base font-semibold text-gray-900">
+              Colour scheme
+            </Text>
+          </View>
         </View>
       </ScrollView>
 
