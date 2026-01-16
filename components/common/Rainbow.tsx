@@ -11,6 +11,7 @@ interface RainbowGradientProps {
 
 /**
  * A component that wraps children with a balanced 7-color rainbow background.
+ * Uses react-native-svg for reliable cross-platform rendering.
  */
 export const RainbowGradient = ({ children, className, style }: RainbowGradientProps) => {
     return (
@@ -49,6 +50,7 @@ interface RainbowBorderProps {
 /**
  * A component that creates a 7-color rainbow border around its children.
  * Works by layering an inner solid container over a slightly larger rainbow gradient container.
+ * Uses react-native-svg for reliable cross-platform rendering.
  */
 export const RainbowBorder = ({
     children,

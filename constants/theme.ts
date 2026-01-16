@@ -33,7 +33,7 @@ export const Colors = {
     '#487DE7', // Blue
     '#4B369D', // Indigo
     '#70369D', // Violet
-  ],
+  ] as const,
 };
 
 export const Fonts = Platform.select({

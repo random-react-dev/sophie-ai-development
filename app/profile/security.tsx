@@ -1,6 +1,7 @@
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { Lock, Shield } from "lucide-react-native";
 import React, { useState } from "react";
@@ -43,8 +44,8 @@ export default function SecurityScreen() {
           <ProfileSettingCard
             title="Change Password"
             subtitle="Update your password regularly"
-            icon={<Lock size={20} color="#6366f1" />}
-            iconBgColor="bg-indigo-50"
+            icon={<Lock size={20} color={getRainbowColorScheme(0).iconColor} />}
+            colorScheme={getRainbowColorScheme(0)}
             onPress={() => setShowPasswordModal(true)}
           />
 
@@ -52,8 +53,8 @@ export default function SecurityScreen() {
           <View className="opacity-60">
             <ProfileSettingCard
               title="Two-Factor Authentication"
-              icon={<Shield size={20} color="#9ca3af" />}
-              iconBgColor="bg-gray-100"
+              icon={<Shield size={20} color={getRainbowColorScheme(1).iconColor} />}
+              colorScheme={getRainbowColorScheme(1)}
               showArrow={false}
               rightElement={
                 <Text className="text-xs text-gray-400 font-medium">

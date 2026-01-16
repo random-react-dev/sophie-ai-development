@@ -203,7 +203,7 @@ export default function LanguageScreen() {
             >
               {profile.is_active && (
                 <View className="absolute inset-0">
-                  <RainbowGradient className="flex-1 opacity-[0.15]" />
+                  <RainbowGradient className="flex-1 opacity-20" />
                 </View>
               )}
               <View className="flex-row items-center gap-4 flex-1 p-5">
