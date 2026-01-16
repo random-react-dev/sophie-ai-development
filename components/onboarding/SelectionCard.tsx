@@ -67,12 +67,94 @@ function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
   );
 }
 
+// Dot Pattern Component - shows intensity level with dots
+function DotPattern({ level }: { level: number }) {
+  // Common dot style
+  const containerStyle =
+    "size-12 items-center justify-center rounded-full bg-blue-50";
+
+  // Helper component to ensure perfect circles
+  // Fixed size-2 for all dots as requested
+  const Dot = () => (
+    <View className="bg-blue-600 size-2" style={{ borderRadius: 100 }} />
+  );
+
+  const renderDots = () => {
+    switch (level) {
+      case 1:
+        // Single dot in center
+        return (
+          <View className={containerStyle}>
+            <Dot />
+          </View>
+        );
+      case 2:
+        // Two dots horizontal
+        return (
+          <View className={`${containerStyle} flex-row gap-1`}>
+            <Dot />
+            <Dot />
+          </View>
+        );
+      case 3:
+        // Three dots - 1 on top, 2 on bottom (triangle)
+        return (
+          <View className={containerStyle}>
+            <View className="mb-0.5">
+              <Dot />
+            </View>
+            <View className="flex-row gap-0.5">
+              <Dot />
+              <Dot />
+            </View>
+          </View>
+        );
+      case 4:
+        // Four dots - square pattern
+        return (
+          <View className={containerStyle}>
+            <View className="flex-row gap-0.5">
+              <Dot />
+              <Dot />
+            </View>
+            <View className="flex-row gap-0.5 mt-0.5">
+              <Dot />
+              <Dot />
+            </View>
+          </View>
+        );
+      case 5:
+        // Five dots - dice pattern (2-1-2)
+        return (
+          <View className={containerStyle}>
+            <View className="flex-row gap-0.5">
+              <Dot />
+              <Dot />
+            </View>
+            <View className="my-0.5">
+              <Dot />
+            </View>
+            <View className="flex-row gap-0.5">
+              <Dot />
+              <Dot />
+            </View>
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return renderDots();
+}
+
 interface SelectionCardProps {
   title: string;
   selected: boolean;
   onSelect: () => void;
   emoji?: string;
   description?: string;
+  dotLevel?: number;
 }
 
 export const SelectionCard: React.FC<SelectionCardProps> = ({
@@ -81,6 +163,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
   onSelect,
   emoji,
   description,
+  dotLevel,
 }) => {
   const progress = useSharedValue(selected ? 1 : 0);
 
@@ -124,8 +207,13 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
         ]}
         className="flex-row items-center"
       >
-        {emoji && <Text className="text-3xl mr-4">{emoji}</Text>}
-        <View className="flex-1">
+        {dotLevel && (
+          <View className="mr-4">
+            <DotPattern level={dotLevel} />
+          </View>
+        )}
+        {emoji && !dotLevel && <Text className="text-3xl mr-4">{emoji}</Text>}
+        <View className="flex-1 justify-center py-1">
           <Text
             className={`font-bold text-base ${
               selected ? "text-blue-500" : "text-gray-900"
@@ -134,10 +222,12 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
             {title}
           </Text>
           {description && (
-            <Text className="text-gray-500 text-sm">{description}</Text>
+            <Text className="text-gray-500 text-sm mt-0.5">{description}</Text>
           )}
         </View>
-        <AnimatedCheckbox isChecked={selected} />
+        <View className="ml-4">
+          <AnimatedCheckbox isChecked={selected} />
+        </View>
       </Animated.View>
     </Pressable>
   );

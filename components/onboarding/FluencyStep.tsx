@@ -8,22 +8,29 @@ export const FluencyStep = () => {
 
   const speeds = [
     {
-      id: "casual",
-      title: "Casual",
-      description: "Take it slow and steady",
-      emoji: "🐢",
+      id: "norush",
+      title: "No rush, I can take my time",
+      level: 1,
     },
     {
-      id: "regular",
-      title: "Regular",
-      description: "Standard learning pace",
-      emoji: "🚶",
+      id: "consistent",
+      title: "I want to be consistent and practice daily",
+      level: 2,
     },
     {
-      id: "intense",
-      title: "Intense",
-      description: "Fast-track to fluency",
-      emoji: "🚀",
+      id: "phrases",
+      title: "I just need a couple of phrases",
+      level: 3,
+    },
+    {
+      id: "conversations",
+      title: "I need to have general conversations",
+      level: 4,
+    },
+    {
+      id: "desperate",
+      title: "I am desperate to be fluent, now.",
+      level: 5,
     },
   ];
 
@@ -33,17 +40,13 @@ export const FluencyStep = () => {
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           How quickly do you want to become fluent?
         </Text>
-        <Text className="text-gray-500 text-base">
-          There&apos;s no right or wrong answer.
-        </Text>
       </View>
 
       {speeds.map((speed) => (
         <SelectionCard
           key={speed.id}
           title={speed.title}
-          description={speed.description}
-          emoji={speed.emoji}
+          dotLevel={speed.level}
           selected={data.fluencySpeed === speed.id}
           onSelect={() => updateData({ fluencySpeed: speed.id })}
         />
