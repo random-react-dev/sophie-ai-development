@@ -7,10 +7,11 @@ export const DiscoveryStep = () => {
   const { data, updateData } = useOnboardingStore();
 
   const sources = [
-    { id: "youtube", title: "YouTube", emoji: "📺" },
-    { id: "instagram", title: "Social Media", emoji: "📱" },
-    { id: "search", title: "Search Engine", emoji: "🔍" },
-    { id: "friend", title: "Friend or Colleague", emoji: "👥" },
+    { id: "tiktok", title: "TikTok", emoji: "🎵" },
+    { id: "instagram", title: "Instagram", emoji: "📸" },
+    { id: "linkedin", title: "LinkedIn", emoji: "💼" },
+    { id: "youtube", title: "YouTube", emoji: "🎬" },
+    { id: "friend", title: "Family/Friend", emoji: "👨‍👩‍👧‍" },
     { id: "other", title: "Other", emoji: "💬" },
   ];
 
@@ -19,9 +20,6 @@ export const DiscoveryStep = () => {
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           How did you find us?
-        </Text>
-        <Text className="text-gray-500 text-base">
-          This helps us reach more learners like you.
         </Text>
       </View>
 

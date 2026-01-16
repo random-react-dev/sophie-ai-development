@@ -11,7 +11,7 @@ export const GoalStep = () => {
     { id: "traveler", title: "I am a traveler", emoji: "✈️" },
     { id: "abroad", title: "I will / am abroad", emoji: "🌍" },
     { id: "job", title: "I need it for my job", emoji: "💼" },
-    { id: "other", title: "Other", emoji: "✨" },
+    { id: "other", title: "Other", emoji: "💬" },
   ];
 
   return (

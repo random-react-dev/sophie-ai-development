@@ -28,7 +28,7 @@ export const BarrierStep = () => {
     {
       id: "other",
       title: "Other",
-      emoji: "💭",
+      emoji: "💬",
       description: "Something else is holding me back",
     },
   ];

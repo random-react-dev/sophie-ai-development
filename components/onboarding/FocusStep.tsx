@@ -35,8 +35,8 @@ const FocusTag: React.FC<FocusTagProps> = ({
       style={[
         animatedStyle,
         {
-          paddingHorizontal: 16,
-          paddingVertical: 14,
+          paddingHorizontal: 14,
+          paddingVertical: 10,
           borderRadius: 100,
           borderWidth: 2,
           marginRight: 8,
