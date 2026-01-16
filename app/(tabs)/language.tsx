@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import AccentPickerModal from "@/components/language/AccentPickerModal";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
@@ -38,7 +39,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 export default function LanguageScreen() {
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -63,7 +63,7 @@ export default function LanguageScreen() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newNativeLang, setNewNativeLang] = useState<Language>(
     SUPPORTED_LANGUAGES.find((l) => l.name === "Hindi") ||
-      SUPPORTED_LANGUAGES[0]
+    SUPPORTED_LANGUAGES[0]
   );
   const [newTargetLang, setNewTargetLang] =
     useState<Language>(DEFAULT_TARGET_LANG);
@@ -88,8 +88,7 @@ export default function LanguageScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     showAlert(
       "Play Sound",
-      `Speaking "${testPhrase}" with ${
-        activeProfile?.preferred_accent || "American"
+      `Speaking "${testPhrase}" with ${activeProfile?.preferred_accent || "American"
       } accent at ${speechRate.toFixed(1)}x speed`,
       undefined,
       "info"
@@ -197,70 +196,20 @@ export default function LanguageScreen() {
               activeOpacity={0.7}
               key={profile.id}
               onPress={() => handleSwitchProfile(profile.id)}
-              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${
-                profile.is_active
-                  ? "border-transparent"
-                  : "bg-white border-gray-100"
-              }`}
+              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${profile.is_active
+                ? "bg-white border-transparent"
+                : "bg-white border-gray-100"
+                }`}
             >
               {profile.is_active && (
                 <View className="absolute inset-0">
-                  <Svg height="100%" width="100%">
-                    <Defs>
-                      <LinearGradient
-                        id="activeRainbow"
-                        x1="0%"
-                        y1="100%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <Stop
-                          offset="0%"
-                          stopColor="#f472b6"
-                          stopOpacity="0.15"
-                        />
-                        <Stop
-                          offset="20%"
-                          stopColor="#fb7185"
-                          stopOpacity="0.15"
-                        />
-                        <Stop
-                          offset="40%"
-                          stopColor="#fbbf24"
-                          stopOpacity="0.15"
-                        />
-                        <Stop
-                          offset="60%"
-                          stopColor="#a3e635"
-                          stopOpacity="0.15"
-                        />
-                        <Stop
-                          offset="80%"
-                          stopColor="#2dd4bf"
-                          stopOpacity="0.15"
-                        />
-                        <Stop
-                          offset="100%"
-                          stopColor="#38bdf8"
-                          stopOpacity="0.15"
-                        />
-                      </LinearGradient>
-                    </Defs>
-                    <Rect
-                      x="0"
-                      y="0"
-                      width="100%"
-                      height="100%"
-                      fill="url(#activeRainbow)"
-                    />
-                  </Svg>
+                  <RainbowGradient className="flex-1 opacity-[0.15]" />
                 </View>
               )}
               <View className="flex-row items-center gap-4 flex-1 p-5">
                 <View
-                  className={`w-12 h-12 rounded-full items-center justify-center ${
-                    profile.is_active ? "bg-white" : "bg-blue-50"
-                  }`}
+                  className={`w-12 h-12 rounded-full items-center justify-center ${profile.is_active ? "bg-white" : "bg-blue-50"
+                    }`}
                 >
                   <Folder
                     size={24}
@@ -361,7 +310,7 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        I want to learn (language)
+                        I want to learn
                       </Text>
                       <Text className="text-gray-900 font-semibold text-base">
                         {newTargetLang.name}
@@ -371,7 +320,7 @@ export default function LanguageScreen() {
                   </TouchableOpacity>
                   <View className="h-[1px] bg-gray-200" />
 
-                  {/* Base Language Row (Instruction Language) */}
+                  {/* Sophie teaches in (Instruction Language) */}
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={() => setPickerType("medium")}
@@ -383,7 +332,7 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        Base Language (Instruction)
+                        Sophie teaches in
                       </Text>
                       <Text className="text-gray-900 font-semibold text-base">
                         {newMediumLang?.name || "Same as Native"}
@@ -504,11 +453,18 @@ export default function LanguageScreen() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleCreateProfile}
-                className="w-full h-16 bg-blue-500 rounded-full items-center justify-center shadow-lg"
+                className="w-full h-16 rounded-full overflow-hidden shadow-lg"
               >
-                <Text className="text-white font-bold text-lg">
-                  Create Profile
-                </Text>
+                <RainbowBorder
+                  borderWidth={2}
+                  borderRadius={9999}
+                  className="flex-1"
+                  containerClassName="items-center justify-center"
+                >
+                  <Text className="text-black font-bold text-lg">
+                    Create Profile
+                  </Text>
+                </RainbowBorder>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -529,16 +485,15 @@ export default function LanguageScreen() {
           pickerType === "native"
             ? newNativeLang.code
             : pickerType === "target"
-            ? newTargetLang.code
-            : newMediumLang?.code
+              ? newTargetLang.code
+              : newMediumLang?.code
         }
-        title={`Select ${
-          pickerType === "native"
-            ? "Your Native"
-            : pickerType === "target"
+        title={`Select ${pickerType === "native"
+          ? "Your Native"
+          : pickerType === "target"
             ? "Target"
             : "Instruction"
-        } Language`}
+          } Language`}
       />
 
       {/* Accent Picker Modal */}

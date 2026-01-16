@@ -1,4 +1,5 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import {
   CATEGORIES,
   CEFRLevel,
@@ -588,11 +589,18 @@ function CreateScenarioModal({
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleCreate}
-                className="w-full h-16 bg-blue-500 rounded-full items-center justify-center shadow-lg"
+                className="w-full h-16 rounded-full overflow-hidden shadow-lg"
               >
-                <Text className="text-white font-bold text-lg">
-                  Start Scenario
-                </Text>
+                <RainbowBorder
+                  borderWidth={2}
+                  borderRadius={9999}
+                  className="flex-1"
+                  containerClassName="items-center justify-center"
+                >
+                  <Text className="text-black font-bold text-lg">
+                    Start Scenario
+                  </Text>
+                </RainbowBorder>
               </TouchableOpacity>
             </View>
           </SafeAreaView>

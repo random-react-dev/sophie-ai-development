@@ -25,6 +25,15 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+  rainbow: [
+    '#E81416', // Red
+    '#FFA500', // Orange
+    '#FAEB36', // Yellow
+    '#79C314', // Green
+    '#487DE7', // Blue
+    '#4B369D', // Indigo
+    '#70369D', // Violet
+  ],
 };
 
 export const Fonts = Platform.select({

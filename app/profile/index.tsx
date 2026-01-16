@@ -180,11 +180,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Main Settings Cards */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Settings
-          </Text>
-
+        <View className="mx-4 mt-3">
           {/* Preferences Card */}
           <ProfileSettingCard
             title="Preferences"
@@ -232,11 +228,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Actions Section */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Actions
-          </Text>
-
+        <View className="mx-4">
           {/* Log Out Card */}
           <ProfileSettingCard
             title="Log Out"
@@ -249,11 +241,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Danger Zone Section */}
-        <View className="mx-4 mt-6 mb-4">
-          <Text className="text-xs font-bold text-red-500 uppercase tracking-wider mb-3 ml-1">
-            Danger Zone
-          </Text>
-
+        <View className="mx-4 mb-4">
           {/* Delete Account Card */}
           <TouchableOpacity
             activeOpacity={0.7}
