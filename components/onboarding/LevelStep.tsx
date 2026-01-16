@@ -8,22 +8,29 @@ export const LevelStep = () => {
 
   const levels = [
     {
-      id: "beginner",
-      title: "Beginner",
-      description: "I can say hello and basic phrases",
-      emoji: "🌱",
+      id: "zero",
+      title: "I know not a single word",
+      level: 1,
     },
     {
-      id: "intermediate",
-      title: "Intermediate",
-      description: "I can have simple conversations",
-      emoji: "🌿",
+      id: "words",
+      title: "I can only speak a few words",
+      level: 2,
     },
     {
-      id: "advanced",
-      title: "Advanced",
-      description: "I can speak comfortably about most topics",
-      emoji: "🌳",
+      id: "phrases",
+      title: "I can only speak a few phrases",
+      level: 3,
+    },
+    {
+      id: "basic_idea",
+      title: "I have the idea but not the vocabulary",
+      level: 4,
+    },
+    {
+      id: "fluent",
+      title: "I am fluent, but need more practice",
+      level: 5,
     },
   ];
 
@@ -31,10 +38,7 @@ export const LevelStep = () => {
     <View className="flex-1 px-4">
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
-          What&apos;s your speaking level?
-        </Text>
-        <Text className="text-gray-500 text-base">
-          Don&apos;t worry, you can always change this later.
+          Which best describes you?
         </Text>
       </View>
 
@@ -42,8 +46,7 @@ export const LevelStep = () => {
         <SelectionCard
           key={level.id}
           title={level.title}
-          description={level.description}
-          emoji={level.emoji}
+          proficiencyLevel={level.level}
           selected={data.speakingLevel === level.id}
           onSelect={() => updateData({ speakingLevel: level.id })}
         />

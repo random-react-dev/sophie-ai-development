@@ -128,6 +128,41 @@ function DurationRing({ level }: { level: number }) {
   );
 }
 
+// Signal Bars Component - shows proficiency level (cellular strength style)
+function SignalBars({ level }: { level: number }) {
+  const bars = [1, 2, 3, 4, 5];
+
+  return (
+    <View className="size-12 rounded-full bg-blue-50 items-center justify-center">
+      {/* Container for bars: linear height growth (4px steps) and tight spacing (2px) */}
+      <View className="flex-row items-end gap-0.5 h-6">
+        {bars.map((barLevel) => {
+          // Linear height progression: 6, 10, 14, 18, 22px
+          // Using arbitrary values h-[Xpx] because h-4.5 and h-5.5 are not standard Tailwind classes
+          const heightClass: Record<number, string> = {
+            1: "h-[6px]",
+            2: "h-[10px]",
+            3: "h-[14px]",
+            4: "h-[18px]",
+            5: "h-[22px]",
+          };
+
+          const isActive = level >= barLevel;
+          // Using gray-200 for inactive to be subtle but visible
+          return (
+            <View
+              key={barLevel}
+              className={`w-1 rounded-full ${heightClass[barLevel]} ${
+                isActive ? "bg-blue-600" : "bg-gray-200"
+              }`}
+            />
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 // Dot Pattern Component - shows intensity level with dots
 function DotPattern({ level }: { level: number }) {
   // Common dot style
@@ -217,6 +252,7 @@ interface SelectionCardProps {
   description?: string;
   dotLevel?: number;
   durationLevel?: number;
+  proficiencyLevel?: number;
 }
 
 export const SelectionCard: React.FC<SelectionCardProps> = ({
@@ -227,6 +263,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
   description,
   dotLevel,
   durationLevel,
+  proficiencyLevel,
 }) => {
   const progress = useSharedValue(selected ? 1 : 0);
 
@@ -275,12 +312,17 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
             <DurationRing level={durationLevel} />
           </View>
         )}
-        {dotLevel && !durationLevel && (
+        {proficiencyLevel && (
+          <View className="mr-4">
+            <SignalBars level={proficiencyLevel} />
+          </View>
+        )}
+        {dotLevel && !durationLevel && !proficiencyLevel && (
           <View className="mr-4">
             <DotPattern level={dotLevel} />
           </View>
         )}
-        {emoji && !dotLevel && !durationLevel && (
+        {emoji && !dotLevel && !durationLevel && !proficiencyLevel && (
           <Text className="text-3xl mr-4">{emoji}</Text>
         )}
         <View className="flex-1 justify-center py-1">
