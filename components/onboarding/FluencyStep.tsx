@@ -1,5 +1,4 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import { Activity, Flame, Zap } from "lucide-react-native";
 import React from "react";
 import { Text, View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
@@ -12,24 +11,24 @@ export const FluencyStep = () => {
       id: "casual",
       title: "Casual",
       description: "Take it slow and steady",
-      icon: Zap,
+      emoji: "🐢",
     },
     {
       id: "regular",
       title: "Regular",
       description: "Standard learning pace",
-      icon: Activity,
+      emoji: "🚶",
     },
     {
       id: "intense",
       title: "Intense",
       description: "Fast-track to fluency",
-      icon: Flame,
+      emoji: "🚀",
     },
   ];
 
   return (
-    <View className="flex-1 px-6">
+    <View className="flex-1 px-4">
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           How quickly do you want to become fluent?
@@ -44,7 +43,7 @@ export const FluencyStep = () => {
           key={speed.id}
           title={speed.title}
           description={speed.description}
-          icon={speed.icon}
+          emoji={speed.emoji}
           selected={data.fluencySpeed === speed.id}
           onSelect={() => updateData({ fluencySpeed: speed.id })}
         />

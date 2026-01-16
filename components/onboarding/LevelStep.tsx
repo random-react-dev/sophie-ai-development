@@ -1,5 +1,4 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import { Baby, User, UserCheck } from "lucide-react-native";
 import React from "react";
 import { Text, View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
@@ -12,24 +11,24 @@ export const LevelStep = () => {
       id: "beginner",
       title: "Beginner",
       description: "I can say hello and basic phrases",
-      icon: Baby,
+      emoji: "🌱",
     },
     {
       id: "intermediate",
       title: "Intermediate",
       description: "I can have simple conversations",
-      icon: User,
+      emoji: "🌿",
     },
     {
       id: "advanced",
       title: "Advanced",
       description: "I can speak comfortably about most topics",
-      icon: UserCheck,
+      emoji: "🌳",
     },
   ];
 
   return (
-    <View className="flex-1 px-6">
+    <View className="flex-1 px-4">
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           What&apos;s your speaking level?
@@ -44,7 +43,7 @@ export const LevelStep = () => {
           key={level.id}
           title={level.title}
           description={level.description}
-          icon={level.icon}
+          emoji={level.emoji}
           selected={data.speakingLevel === level.id}
           onSelect={() => updateData({ speakingLevel: level.id })}
         />
