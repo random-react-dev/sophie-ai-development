@@ -21,7 +21,7 @@ export const ConfidenceStep = () => {
   const { emoji, label } = confidenceMap[currentLevel] || confidenceMap[3];
 
   return (
-    <View className=" px-4 justify-center">
+    <View className="px-4 justify-center">
       <View className="mb-16">
         <Text className="text-3xl font-bold text-gray-900 mb-4">
           How confident are you?

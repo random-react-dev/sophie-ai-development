@@ -43,7 +43,7 @@ export const BarrierStep = () => {
   };
 
   return (
-    <View className="flex-1 px-6">
+    <View className="flex-1 px-4">
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           Why are you not confident?
