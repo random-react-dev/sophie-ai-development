@@ -9,9 +9,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Circle, Path } from "react-native-svg";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 // Animated Checkbox with smooth "drawing" animation
 function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
@@ -64,6 +65,66 @@ function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
         />
       </Svg>
     </Animated.View>
+  );
+}
+
+// Duration Ring Component - shows progress for time duration
+// Duration Ring Component - shows progress for time duration
+function DurationRing({ level }: { level: number }) {
+  const radius = 16;
+  const strokeWidth = 3;
+  const center = 22; // 44px container / 2
+  const circumference = 2 * Math.PI * radius;
+
+  const percentages = [0.15, 0.3, 0.5, 0.65, 0.85, 1];
+  const targetPercentage = percentages[Math.min(level - 1, 5)];
+
+  // Animation state
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    // Start animation on mount with a slight delay for better visual effect
+    progress.value = withTiming(targetPercentage, {
+      duration: 1000,
+    });
+  }, [targetPercentage]);
+
+  const animatedProps = useAnimatedProps(() => {
+    const strokeDashoffset = circumference * (1 - progress.value);
+    return {
+      strokeDashoffset,
+    };
+  });
+
+  return (
+    <View className="size-12 items-center justify-center rounded-full bg-blue-50">
+      <Svg width="44" height="44" viewBox="0 0 44 44">
+        {/* Background Track */}
+        <Circle
+          cx={center}
+          cy={center}
+          r={radius}
+          stroke="#dbeafe" // blue-100
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        {/* Progress Ring */}
+        <AnimatedCircle
+          cx={center}
+          cy={center}
+          r={radius}
+          stroke="#2563eb" // blue-600
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={`${circumference} ${circumference}`}
+          animatedProps={animatedProps}
+          strokeLinecap="round"
+          originX={center}
+          originY={center}
+          rotation="-90"
+        />
+      </Svg>
+    </View>
   );
 }
 
@@ -155,6 +216,7 @@ interface SelectionCardProps {
   emoji?: string;
   description?: string;
   dotLevel?: number;
+  durationLevel?: number;
 }
 
 export const SelectionCard: React.FC<SelectionCardProps> = ({
@@ -164,6 +226,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
   emoji,
   description,
   dotLevel,
+  durationLevel,
 }) => {
   const progress = useSharedValue(selected ? 1 : 0);
 
@@ -207,12 +270,19 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
         ]}
         className="flex-row items-center"
       >
-        {dotLevel && (
+        {durationLevel && (
+          <View className="mr-4">
+            <DurationRing level={durationLevel} />
+          </View>
+        )}
+        {dotLevel && !durationLevel && (
           <View className="mr-4">
             <DotPattern level={dotLevel} />
           </View>
         )}
-        {emoji && !dotLevel && <Text className="text-3xl mr-4">{emoji}</Text>}
+        {emoji && !dotLevel && !durationLevel && (
+          <Text className="text-3xl mr-4">{emoji}</Text>
+        )}
         <View className="flex-1 justify-center py-1">
           <Text
             className={`font-bold text-base ${

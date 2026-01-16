@@ -303,9 +303,6 @@ export const ProfileStep = forwardRef<ProfileStepRef>((_, ref) => {
           <Text className="text-3xl font-bold text-gray-900 mb-2">
             Choose Your App Language
           </Text>
-          <Text className="text-gray-500 text-base leading-6">
-            Select your preferred language for Sophie's interface.
-          </Text>
         </View>
 
         <FlatList

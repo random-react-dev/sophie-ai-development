@@ -20,9 +20,6 @@ export const GoalStep = () => {
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           What&apos;s your main goal in life?
         </Text>
-        <Text className="text-gray-500 text-base">
-          We&apos;ll customize your practice content based on your goal.
-        </Text>
       </View>
 
       {goals.map((goal) => (
