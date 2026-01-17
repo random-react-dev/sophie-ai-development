@@ -1,5 +1,4 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import { Calendar, Clock, History, Hourglass } from "lucide-react-native";
 import React from "react";
 import { Text, View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
@@ -8,20 +7,19 @@ export const DurationStep = () => {
   const { data, updateData } = useOnboardingStore();
 
   const durations = [
-    { id: "zero", title: "I am just starting", icon: Clock },
-    { id: "months", title: "For a few months", icon: Calendar },
-    { id: "yearplus", title: "For over a year", icon: History },
-    { id: "offon", title: "On and off for years", icon: Hourglass },
+    { id: "less_1_month", title: "Less than 1 month", level: 1 },
+    { id: "less_6_months", title: "Less than 6 months", level: 2 },
+    { id: "less_2_years", title: "Less than 2 years", level: 3 },
+    { id: "less_5_years", title: "Less than 5 years", level: 4 },
+    { id: "less_10_years", title: "Less than 10 years", level: 5 },
+    { id: "more", title: "More", level: 6 },
   ];
 
   return (
-    <View className="flex-1 px-6">
+    <View className="flex-1 px-4">
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
-          How long have you been studying?
-        </Text>
-        <Text className="text-gray-500 text-base">
-          Knowing your history helps us set the right pace.
+          How long have you been studying this language?
         </Text>
       </View>
 
@@ -29,7 +27,7 @@ export const DurationStep = () => {
         <SelectionCard
           key={duration.id}
           title={duration.title}
-          icon={duration.icon}
+          durationLevel={duration.level}
           selected={data.learningDuration === duration.id}
           onSelect={() => updateData({ learningDuration: duration.id })}
         />

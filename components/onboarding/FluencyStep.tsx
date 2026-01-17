@@ -1,5 +1,4 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import { Activity, Flame, Zap } from "lucide-react-native";
 import React from "react";
 import { Text, View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
@@ -9,33 +8,37 @@ export const FluencyStep = () => {
 
   const speeds = [
     {
-      id: "casual",
-      title: "Casual",
-      description: "Take it slow and steady",
-      icon: Zap,
+      id: "norush",
+      title: "No rush, I can take my time",
+      level: 1,
     },
     {
-      id: "regular",
-      title: "Regular",
-      description: "Standard learning pace",
-      icon: Activity,
+      id: "consistent",
+      title: "I want to be consistent and practice daily",
+      level: 2,
     },
     {
-      id: "intense",
-      title: "Intense",
-      description: "Fast-track to fluency",
-      icon: Flame,
+      id: "phrases",
+      title: "I just need a couple of phrases",
+      level: 3,
+    },
+    {
+      id: "conversations",
+      title: "I need to have general conversations",
+      level: 4,
+    },
+    {
+      id: "desperate",
+      title: "I am desperate to be fluent, now.",
+      level: 5,
     },
   ];
 
   return (
-    <View className="flex-1 px-6">
+    <View className="flex-1 px-4">
       <View className="mb-8">
         <Text className="text-3xl font-bold text-gray-900 mb-2">
           How quickly do you want to become fluent?
-        </Text>
-        <Text className="text-gray-500 text-base">
-          There&apos;s no right or wrong answer.
         </Text>
       </View>
 
@@ -43,8 +46,7 @@ export const FluencyStep = () => {
         <SelectionCard
           key={speed.id}
           title={speed.title}
-          description={speed.description}
-          icon={speed.icon}
+          dotLevel={speed.level}
           selected={data.fluencySpeed === speed.id}
           onSelect={() => updateData({ fluencySpeed: speed.id })}
         />

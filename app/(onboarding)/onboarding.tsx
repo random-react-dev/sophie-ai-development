@@ -3,10 +3,9 @@ import { useAuthStore } from "@/stores/authStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import React from "react";
+import React, { useRef } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { BarrierStep } from "@/components/onboarding/BarrierStep";
 import { CompletionStep } from "@/components/onboarding/CompletionStep";
 import { ConfidenceStep } from "@/components/onboarding/ConfidenceStep";
@@ -16,13 +15,19 @@ import { FluencyStep } from "@/components/onboarding/FluencyStep";
 import { FocusStep } from "@/components/onboarding/FocusStep";
 import { GoalStep } from "@/components/onboarding/GoalStep";
 import { LevelStep } from "@/components/onboarding/LevelStep";
-import { ProfileStep } from "@/components/onboarding/ProfileStep";
+import {
+  ProfileStep,
+  ProfileStepRef,
+} from "@/components/onboarding/ProfileStep";
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const { updateProfile, isLoading: isSaving } = useAuthStore();
   const { currentStep, nextStep, prevStep, data, resetOnboarding } =
     useOnboardingStore();
+
+  // Ref for ProfileStep sub-step control
+  const profileStepRef = useRef<ProfileStepRef>(null);
 
   const handleContinue = async () => {
     if (currentStep === 10) {
@@ -55,22 +60,52 @@ export default function OnboardingScreen() {
           "Failed to save your preferences. Please try again."
         );
       }
-    } else {
-      if (currentStep === 1 && (!data.name || !data.country)) {
+    } else if (currentStep === 1) {
+      // Handle ProfileStep sub-steps
+      if (profileStepRef.current) {
+        // Try to advance sub-step first
+        const advancedSubStep = profileStepRef.current.goToNextSubStep();
+        if (advancedSubStep) {
+          return; // Stay on step 1, sub-step changed
+        }
+      }
+
+      // Sub-step 2 validation: check name and country
+      if (!data.name || !data.country) {
         Alert.alert(
           "Incomplete",
           "Please enter your name and select a country."
         );
         return;
       }
+
+      // All sub-steps complete, advance to next main step
       nextStep();
+    } else {
+      nextStep();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep === 1) {
+      // Handle ProfileStep sub-step back navigation
+      if (profileStepRef.current) {
+        const wentBackSubStep = profileStepRef.current.goToPrevSubStep();
+        if (wentBackSubStep) {
+          return; // Stay on step 1, went back to previous sub-step
+        }
+      }
+      // If on sub-step 1, go back to previous screen
+      router.back();
+    } else {
+      prevStep();
     }
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <ProfileStep />;
+        return <ProfileStep ref={profileStepRef} />;
       case 2:
         return <GoalStep />;
       case 3:
@@ -98,7 +133,7 @@ export default function OnboardingScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-row items-center justify-between px-4 py-2">
         <TouchableOpacity
-          onPress={currentStep === 1 ? () => router.back() : prevStep}
+          onPress={handleBack}
           className="p-2"
           disabled={isSaving}
         >
@@ -116,19 +151,25 @@ export default function OnboardingScreen() {
         {[...Array(10)].map((_, i) => (
           <View
             key={i}
-            className={`flex-1 h-full mx-0.5 rounded-full ${i < currentStep ? "bg-blue-500" : "bg-gray-200"
-              }`}
+            className={`flex-1 h-full mx-0.5 rounded-full ${
+              i < currentStep ? "bg-blue-500" : "bg-gray-200"
+            }`}
           />
         ))}
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-        className="flex-1"
-      >
-        {renderStep()}
-      </ScrollView>
+      {currentStep === 1 ? (
+        // ProfileStep uses FlatList internally, so we use View instead of ScrollView
+        <View className="flex-1">{renderStep()}</View>
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          className="flex-1"
+        >
+          {renderStep()}
+        </ScrollView>
+      )}
 
       <View className="p-6 border-t border-gray-50 bg-white">
         <Button
@@ -136,8 +177,8 @@ export default function OnboardingScreen() {
             isSaving
               ? "Saving..."
               : currentStep === 10
-                ? "Start Learning"
-                : "Continue"
+              ? "Start Learning"
+              : "Continue"
           }
           onPress={handleContinue}
           disabled={isSaving}
