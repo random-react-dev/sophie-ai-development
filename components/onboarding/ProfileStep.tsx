@@ -1,6 +1,8 @@
 import { AuthInput } from "@/components/auth/AuthInput";
 import CircleFlag from "@/components/common/CircleFlag";
+import { RainbowGradient } from "@/components/common/Rainbow";
 import { APP_LANGUAGES, Language } from "@/constants/languages";
+import { Colors } from "@/constants/theme";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { Ionicons } from "@expo/vector-icons";
 import { ChevronDown } from "lucide-react-native";
@@ -29,11 +31,17 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
+import Svg, {
+  Circle,
+  Defs,
+  LinearGradient,
+  Path,
+  Stop,
+} from "react-native-svg";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-// Animated Checkbox with smooth "drawing" animation (same design as Profile LanguagePicker)
+// Animated Checkbox with full Rainbow gradient when checked (same as SelectionCard)
 function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
   const progress = useSharedValue(isChecked ? 1 : 0);
   const pathLength = 22;
@@ -50,44 +58,65 @@ function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
     };
   });
 
-  const bgAnimatedStyle = useAnimatedStyle(() => {
+  const scaleStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["transparent", "#3b82f6"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#d1d5db", "#3b82f6"]
-      ),
-      borderWidth: 2,
+      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
     };
   });
 
   return (
     <Animated.View
-      style={bgAnimatedStyle}
-      className="w-6 h-6 rounded-full items-center justify-center shadow-sm"
+      style={scaleStyle}
+      className="w-6 h-6 rounded-full items-center justify-center overflow-hidden"
     >
-      <Svg width="14" height="14" viewBox="0 0 24 24">
-        <AnimatedPath
-          d="M5 12l5 5L20 7"
-          fill="none"
-          stroke="white"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={pathLength}
-          animatedProps={animatedProps}
-        />
-      </Svg>
+      {isChecked ? (
+        // Full rainbow gradient circle when checked
+        <Svg width="24" height="24" viewBox="0 0 24 24">
+          <Defs>
+            <LinearGradient
+              id="checkGradProfile"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              {Colors.rainbow.map((color, index) => (
+                <Stop
+                  key={color}
+                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
+                  stopColor={color}
+                />
+              ))}
+            </LinearGradient>
+          </Defs>
+          <Circle cx="12" cy="12" r="12" fill="url(#checkGradProfile)" />
+        </Svg>
+      ) : (
+        // Gray border circle when unchecked
+        <View className="w-6 h-6 rounded-full border-2 border-gray-300" />
+      )}
+      {/* Checkmark - always visible when checked */}
+      {isChecked && (
+        <View className="absolute">
+          <Svg width="14" height="14" viewBox="0 0 24 24">
+            <AnimatedPath
+              d="M5 12l5 5L20 7"
+              fill="none"
+              stroke="white"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={pathLength}
+              animatedProps={animatedProps}
+            />
+          </Svg>
+        </View>
+      )}
     </Animated.View>
   );
 }
 
-// Animated Language Item Component (same design as Profile LanguagePicker)
+// Animated Language Item Component (same design as SelectionCard with rainbow border)
 function LanguageItem({
   lang,
   isSelected,
@@ -109,24 +138,6 @@ function LanguageItem({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#ffffff", "#f8fbff"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#e5e7eb", "#3b82f6"]
-      ),
-      shadowColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#000000", "#3b82f6"]
-      ),
-      shadowOpacity: interpolate(progress.value, [0, 1], [0.05, 0.08]),
-      shadowRadius: interpolate(progress.value, [0, 1], [4, 8]),
-      elevation: interpolate(progress.value, [0, 1], [1, 2]),
     };
   });
 
@@ -135,22 +146,38 @@ function LanguageItem({
       <Animated.View
         style={[
           animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 16 },
+          {
+            borderRadius: 20,
+            overflow: "hidden",
+          },
         ]}
-        className="flex-row items-center"
       >
-        <CircleFlag countryCode={lang.countryCode} size={40} />
-        <View className="flex-1 ml-4">
-          <Text
-            className={`font-bold text-base ${
-              isSelected ? "text-blue-500" : "text-gray-900"
-            }`}
-          >
-            {lang.name}
-          </Text>
-          <Text className="text-gray-500 text-sm">{lang.nativeName}</Text>
+        {/* Layer 1: Rainbow Background (Only visible when selected) */}
+        {isSelected && (
+          <View className="absolute inset-0">
+            <RainbowGradient className="flex-1" />
+          </View>
+        )}
+
+        {/* Layer 2: Main Content Container */}
+        <View
+          style={{
+            margin: isSelected ? 2 : 0,
+            borderRadius: isSelected ? 18 : 20,
+            backgroundColor: "#ffffff",
+            borderWidth: isSelected ? 0 : 1.5,
+            borderColor: "#e5e7eb",
+          }}
+          className="flex-row items-center p-4"
+        >
+          <CircleFlag countryCode={lang.countryCode} size={40} />
+          <View className="flex-1 ml-4">
+            <Text className="font-bold text-base text-gray-900">
+              {lang.name}
+            </Text>
+            <Text className="text-gray-500 text-sm">{lang.nativeName}</Text>
+          </View>
         </View>
-        <AnimatedCheckbox isChecked={isSelected} />
       </Animated.View>
     </Pressable>
   );

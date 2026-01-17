@@ -291,20 +291,14 @@ function DotPattern({
 
     return (
       <Animated.View style={dotStyle}>
-        <Svg width="8" height="8" viewBox="0 0 8 8">
-          <Defs>
-            <LinearGradient id="dotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              {Colors.rainbow.map((color, index) => (
-                <Stop
-                  key={color}
-                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
-                  stopColor={color}
-                />
-              ))}
-            </LinearGradient>
-          </Defs>
-          <Circle cx="4" cy="4" r="4" fill="url(#dotGrad)" />
-        </Svg>
+        <View
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: 9999,
+            backgroundColor: "#1f2937", // gray-800
+          }}
+        />
       </Animated.View>
     );
   };
@@ -320,7 +314,7 @@ function DotPattern({
       case 2:
         return (
           <View className={containerStyle}>
-            <View className="flex-row gap-1.5">
+            <View className="flex-row gap-0.5">
               <Dot index={0} />
               <Dot index={1} />
             </View>
@@ -329,24 +323,24 @@ function DotPattern({
       case 3:
         return (
           <View className={containerStyle}>
-            <View className="flex-col items-center gap-1">
-              <View className="flex-row gap-1">
-                <Dot index={0} />
+            <View className="flex-col items-center gap-0.5">
+              <Dot index={0} />
+              <View className="flex-row gap-0.5">
                 <Dot index={1} />
+                <Dot index={2} />
               </View>
-              <Dot index={2} />
             </View>
           </View>
         );
       case 4:
         return (
           <View className={containerStyle}>
-            <View className="flex-col gap-1">
-              <View className="flex-row gap-1">
+            <View className="flex-col gap-0.5">
+              <View className="flex-row gap-0.5">
                 <Dot index={0} />
                 <Dot index={1} />
               </View>
-              <View className="flex-row gap-1">
+              <View className="flex-row gap-0.5">
                 <Dot index={2} />
                 <Dot index={3} />
               </View>
@@ -356,13 +350,13 @@ function DotPattern({
       case 5:
         return (
           <View className={containerStyle}>
-            <View className="flex-col items-center gap-1">
-              <View className="flex-row gap-1">
-                <Dot index={0} />
+            <View className="flex-col items-center gap-0.5">
+              <Dot index={0} />
+              <View className="flex-row gap-0.5">
                 <Dot index={1} />
+                <Dot index={2} />
               </View>
-              <Dot index={2} />
-              <View className="flex-row gap-1">
+              <View className="flex-row gap-0.5">
                 <Dot index={3} />
                 <Dot index={4} />
               </View>
@@ -448,9 +442,6 @@ export function SelectionCard({
         {description && (
           <Text className="text-gray-500 text-sm mt-0.5">{description}</Text>
         )}
-      </View>
-      <View className="ml-4">
-        <AnimatedCheckbox isChecked={selected} />
       </View>
     </View>
   );
