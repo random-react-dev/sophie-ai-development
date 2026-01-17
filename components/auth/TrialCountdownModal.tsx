@@ -1,3 +1,4 @@
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Check, Crown } from "lucide-react-native";
@@ -10,13 +11,13 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-// Benefit item component with checkmark
+// Benefit item component with rainbow checkmark
 function BenefitItem({ text }: { text: string }) {
   return (
     <View className="flex-row items-center gap-3 mb-3">
-      <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
+      <RainbowGradient className="w-6 h-6 rounded-full items-center justify-center">
         <Check size={14} color="white" strokeWidth={3} />
-      </View>
+      </RainbowGradient>
       <Text className="text-gray-700 font-medium text-base flex-1">{text}</Text>
     </View>
   );
@@ -102,12 +103,9 @@ export const TrialCountdownModal = () => {
 
           {/* Header with Icon */}
           <View className="items-center mb-5">
-            <View className="w-20 h-20 bg-blue-500 rounded-3xl items-center justify-center mb-4 shadow-lg shadow-blue-200">
+            <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4 shadow-lg shadow-gray-200">
               <Crown size={36} color="white" />
-              {/* <View className="absolute -top-1 -right-1">
-                <Sparkles size={18} color="#fbbf24" />
-              </View> */}
-            </View>
+            </RainbowGradient>
             <Text className="text-3xl font-black text-gray-900 text-center">
               {isLastDay ? "Last Day!" : `${remainingDays} Days Left`}
             </Text>
@@ -131,7 +129,7 @@ export const TrialCountdownModal = () => {
 
           {/* Discount Section */}
           {!isLastDay && (
-            <View className="bg-blue-500 rounded-2xl p-5 mb-5 items-center shadow-lg shadow-blue-200">
+            <RainbowGradient className="rounded-2xl p-5 mb-5 items-center shadow-lg shadow-gray-200">
               <View className="bg-white/20 px-3 py-1 rounded-full mb-2">
                 <Text className="text-white font-bold uppercase tracking-wider text-xs">
                   Limited Time Offer
@@ -140,23 +138,31 @@ export const TrialCountdownModal = () => {
               <Text className="text-5xl font-black text-white">
                 {discount}% OFF
               </Text>
-              <Text className="text-blue-100 text-sm mt-1 font-medium">
+              <Text className="text-white/80 text-sm mt-1 font-medium">
                 Claim your discount today
               </Text>
-            </View>
+            </RainbowGradient>
           )}
 
           {/* CTA Buttons */}
           <View>
             <TouchableOpacity
-              activeOpacity={0.8}
+              activeOpacity={0.7}
               onPress={handleUpgrade}
-              className="h-16 rounded-full bg-blue-500 items-center justify-center shadow-lg shadow-blue-200"
+              className="h-16 shadow-lg shadow-gray-200"
             >
-              <Text className="text-white font-bold text-lg">
-                {isLastDay ? "Upgrade Now" : "Claim My Discount"}
-              </Text>
+              <RainbowBorder
+                borderWidth={2}
+                borderRadius={9999}
+                className="flex-1"
+                containerClassName="items-center justify-center"
+              >
+                <Text className="text-black font-bold text-lg">
+                  {isLastDay ? "Upgrade Now" : "Claim My Discount"}
+                </Text>
+              </RainbowBorder>
             </TouchableOpacity>
+
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={handleClose}

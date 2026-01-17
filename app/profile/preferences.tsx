@@ -8,6 +8,7 @@ import { getLanguageByCode } from "@/constants/languages";
 import { setAppLanguage } from "@/services/i18n";
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
+import { getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { Globe, Languages, Mail, MapPin, User } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -89,8 +90,8 @@ export default function PreferencesScreen() {
           <ProfileSettingCard
             title="Name"
             subtitle={user?.user_metadata?.full_name || "Not set"}
-            icon={<User size={20} color="#3b82f6" />}
-            iconBgColor="bg-blue-50"
+            icon={<User size={20} color={getRainbowColorScheme(0).iconColor} />}
+            colorScheme={getRainbowColorScheme(0)}
             showArrow={false}
           />
 
@@ -98,8 +99,8 @@ export default function PreferencesScreen() {
           <ProfileSettingCard
             title="Email"
             subtitle={user?.email || "Not set"}
-            icon={<Mail size={20} color="#6366f1" />}
-            iconBgColor="bg-indigo-50"
+            icon={<Mail size={20} color={getRainbowColorScheme(1).iconColor} />}
+            colorScheme={getRainbowColorScheme(1)}
             showArrow={false}
           />
         </View>
@@ -114,8 +115,8 @@ export default function PreferencesScreen() {
           <ProfileSettingCard
             title="Country"
             subtitle={user?.user_metadata?.country || "Not set"}
-            icon={<MapPin size={20} color="#10b981" />}
-            iconBgColor="bg-emerald-50"
+            icon={<MapPin size={20} color={getRainbowColorScheme(2).iconColor} />}
+            colorScheme={getRainbowColorScheme(2)}
             onPress={() => setShowCountryPicker(true)}
           />
 
@@ -126,8 +127,8 @@ export default function PreferencesScreen() {
               getLanguageByCode(user?.user_metadata?.native_language)?.name ||
               "Select Language"
             }
-            icon={<Globe size={20} color="#f59e0b" />}
-            iconBgColor="bg-amber-50"
+            icon={<Globe size={20} color={getRainbowColorScheme(3).iconColor} />}
+            colorScheme={getRainbowColorScheme(3)}
             onPress={() => setShowNativePicker(true)}
           />
 
@@ -138,11 +139,11 @@ export default function PreferencesScreen() {
               user?.user_metadata?.app_language === "hi"
                 ? "Hindi"
                 : user?.user_metadata?.app_language === "es"
-                ? "Spanish"
-                : "English"
+                  ? "Spanish"
+                  : "English"
             }
-            icon={<Languages size={20} color="#8b5cf6" />}
-            iconBgColor="bg-violet-50"
+            icon={<Languages size={20} color={getRainbowColorScheme(4).iconColor} />}
+            colorScheme={getRainbowColorScheme(4)}
             onPress={() => setShowPreferredPicker(true)}
           />
         </View>

@@ -292,11 +292,10 @@ export default function TranslateScreen() {
                 activeOpacity={0.7}
                 onPress={handleTranslate}
                 disabled={isTranslating || !inputText.trim()}
-                className={`px-5 py-4 rounded-full flex-row items-center gap-2 ${
-                  isTranslating || !inputText.trim()
+                className={`px-5 py-4 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
                     ? "bg-gray-200"
                     : "bg-blue-500"
-                }`}
+                  }`}
               >
                 {isTranslating ? (
                   <ActivityIndicator color="#9ca3af" size="small" />
@@ -307,9 +306,8 @@ export default function TranslateScreen() {
                       color={!inputText.trim() ? "#9ca3af" : "white"}
                     />
                     <Text
-                      className={`font-bold ${
-                        !inputText.trim() ? "text-gray-400" : "text-white"
-                      }`}
+                      className={`font-bold ${!inputText.trim() ? "text-gray-400" : "text-white"
+                        }`}
                     >
                       Translate
                     </Text>

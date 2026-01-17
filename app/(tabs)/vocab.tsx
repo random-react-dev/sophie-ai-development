@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
@@ -326,10 +327,17 @@ export default function VocabScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setIsAddModalVisible(true)}
-          className="h-12 px-4 bg-blue-500 rounded-full flex-row items-center gap-2"
+          className="h-12 rounded-full overflow-hidden"
         >
-          <Plus size={20} color="white" />
-          <Text className="text-white font-bold text-base">Add</Text>
+          <RainbowBorder
+            borderWidth={2}
+            borderRadius={9999}
+            className="flex-1"
+            containerClassName="flex-row items-center justify-center px-4 gap-2"
+          >
+            <Plus size={20} color="black" />
+            <Text className="text-black font-bold text-base">Add</Text>
+          </RainbowBorder>
         </TouchableOpacity>
       </View>
 
@@ -345,16 +353,14 @@ export default function VocabScreen() {
               key={lang}
               activeOpacity={0.7}
               onPress={() => setSelectedLanguage(lang)}
-              className={`px-5 py-2 rounded-full border ${
-                selectedLanguage === lang
+              className={`px-5 py-2 rounded-full border ${selectedLanguage === lang
                   ? "bg-blue-100 border-blue-300"
                   : "bg-white border-gray-300"
-              }`}
+                }`}
             >
               <Text
-                className={`font-bold text-[13px] ${
-                  selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
-                }`}
+                className={`font-bold text-[13px] ${selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
+                  }`}
               >
                 {lang}
               </Text>
@@ -514,14 +520,28 @@ export default function VocabScreen() {
             <View className="px-6 py-8 border-t border-gray-100">
               <TouchableOpacity
                 onPress={handleAddItem}
-                className={`w-full h-16 rounded-full items-center justify-center shadow-lg ${
-                  !newPhrase.trim() ? "bg-gray-200" : "bg-blue-500"
-                }`}
                 disabled={!newPhrase.trim()}
+                activeOpacity={0.7}
+                className="w-full h-16 rounded-full overflow-hidden shadow-lg"
               >
-                <Text className="text-white font-bold text-lg">
-                  Save Phrase
-                </Text>
+                {!newPhrase.trim() ? (
+                  <View className="flex-1 bg-gray-200 items-center justify-center rounded-full">
+                    <Text className="text-gray-400 font-bold text-lg">
+                      Save Phrase
+                    </Text>
+                  </View>
+                ) : (
+                  <RainbowBorder
+                    borderWidth={2}
+                    borderRadius={9999}
+                    className="flex-1"
+                    containerClassName="items-center justify-center"
+                  >
+                    <Text className="text-black font-bold text-lg">
+                      Save Phrase
+                    </Text>
+                  </RainbowBorder>
+                )}
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -593,18 +613,16 @@ export default function VocabScreen() {
               onPress={startPracticeSession}
               disabled={selectedForPractice.size === 0}
               activeOpacity={0.8}
-              className={`h-16 rounded-full items-center justify-center flex-row gap-3 shadow-lg shadow-blue-200 ${
-                selectedForPractice.size > 0 ? "bg-blue-500" : "bg-gray-200"
-              }`}
+              className={`h-16 rounded-full items-center justify-center flex-row gap-3 shadow-lg shadow-blue-200 ${selectedForPractice.size > 0 ? "bg-blue-500" : "bg-gray-200"
+                }`}
             >
               <MessageSquare
                 size={22}
                 color={selectedForPractice.size > 0 ? "white" : "#9ca3af"}
               />
               <Text
-                className={`font-bold text-lg ${
-                  selectedForPractice.size > 0 ? "text-white" : "text-gray-400"
-                }`}
+                className={`font-bold text-lg ${selectedForPractice.size > 0 ? "text-white" : "text-gray-400"
+                  }`}
               >
                 Start with {selectedForPractice.size} Phrase
                 {selectedForPractice.size === 1 ? "" : "s"}
@@ -777,7 +795,7 @@ function ActionModalContent({
               </Pressable>
               {/*Temporarily removed Edit button*/}
               <Pressable
-                onPress={() => {}}
+                onPress={() => { }}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
               >
                 <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
@@ -932,9 +950,8 @@ function SelectablePhraseItem({
           </View>
           {item.translation && (
             <Text
-              className={`text-sm ${
-                isActive ? "text-blue-600/70" : "text-gray-500"
-              }`}
+              className={`text-sm ${isActive ? "text-blue-600/70" : "text-gray-500"
+                }`}
               numberOfLines={2}
             >
               {item.translation}

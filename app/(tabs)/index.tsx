@@ -1,4 +1,5 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import {
   CATEGORIES,
   CEFRLevel,
@@ -132,10 +133,18 @@ export default function RoleplayScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setCreateModalVisible(true)}
-          className="h-12 px-4 bg-blue-500 rounded-full flex-row items-center gap-2"
+          className="h-12 rounded-full overflow-hidden"
         >
-          <Plus size={20} color="white" />
-          <Text className="text-white font-bold text-base">Create</Text>
+          <RainbowBorder
+            borderWidth={2}
+            borderRadius={9999}
+            className="flex-1"
+            containerClassName="flex-row items-center gap-2 px-4 justify-center"
+            innerBackgroundClassName="bg-white"
+          >
+            <Plus size={20} color="black" />
+            <Text className="text-black font-bold text-base">Create</Text>
+          </RainbowBorder>
         </TouchableOpacity>
       </View>
 
@@ -151,16 +160,19 @@ export default function RoleplayScreen() {
               activeOpacity={0.7}
               key={cat}
               onPress={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-full border ${
-                selectedCategory === cat
-                  ? "bg-blue-100 border-blue-300"
-                  : "bg-white border-gray-300"
-              }`}
-            >
-              <Text
-                className={`font-bold text-[13px] ${
-                  selectedCategory === cat ? "text-blue-500" : "text-gray-600"
+              className={`px-5 py-2 rounded-full border overflow-hidden relative ${selectedCategory === cat
+                ? "border-slate-200"
+                : "bg-white border-gray-300"
                 }`}
+            >
+              {selectedCategory === cat && (
+                <View className="absolute inset-0">
+                  <RainbowGradient className="flex-1 opacity-60" />
+                </View>
+              )}
+              <Text
+                className={`font-bold text-[13px] ${selectedCategory === cat ? "text-black" : "text-gray-600"
+                  }`}
               >
                 {cat}
               </Text>
@@ -373,16 +385,14 @@ function CreateScenarioModal({
                       key={l}
                       activeOpacity={0.7}
                       onPress={() => setLevel(l)}
-                      className={`px-4 py-2 rounded-full border ${
-                        level === l
-                          ? "bg-blue-100 border-blue-300"
-                          : "bg-surface border-gray-300"
-                      }`}
+                      className={`px-4 py-2 rounded-full border ${level === l
+                        ? "bg-blue-100 border-blue-300"
+                        : "bg-surface border-gray-300"
+                        }`}
                     >
                       <Text
-                        className={`font-bold text-xs ${
-                          level === l ? "text-blue-500" : "text-gray-600"
-                        }`}
+                        className={`font-bold text-xs ${level === l ? "text-blue-500" : "text-gray-600"
+                          }`}
                       >
                         {l}
                       </Text>
@@ -401,11 +411,10 @@ function CreateScenarioModal({
                   onPress={() =>
                     setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
                   }
-                  className={`bg-surface rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${
-                    isCategoryDropdownOpen
-                      ? "border-2 border-blue-400"
-                      : "border border-gray-200"
-                  }`}
+                  className={`bg-surface rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${isCategoryDropdownOpen
+                    ? "border-2 border-blue-400"
+                    : "border border-gray-200"
+                    }`}
                 >
                   <View className="flex-row items-center gap-3">
                     {category ? (
@@ -435,17 +444,15 @@ function CreateScenarioModal({
                       </View>
                     )}
                     <Text
-                      className={`font-bold text-base ${
-                        category ? "text-gray-900" : "text-gray-400"
-                      }`}
+                      className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"
+                        }`}
                     >
                       {category || "Select a category"}
                     </Text>
                   </View>
                   <View
-                    className={`w-8 h-8 rounded-full items-center justify-center ${
-                      isCategoryDropdownOpen ? "bg-blue-100" : "bg-gray-100"
-                    }`}
+                    className={`w-8 h-8 rounded-full items-center justify-center ${isCategoryDropdownOpen ? "bg-blue-100" : "bg-gray-100"
+                      }`}
                   >
                     <ChevronDown
                       size={18}
@@ -532,22 +539,19 @@ function CreateScenarioModal({
                               setCategory(cat);
                               setIsCategoryDropdownOpen(false);
                             }}
-                            className={`px-4 py-3.5 flex-row items-center justify-between ${
-                              isSelected ? "bg-blue-50" : "bg-surface"
-                            } ${!isLast ? "border-b border-gray-200" : ""}`}
+                            className={`px-4 py-3.5 flex-row items-center justify-between ${isSelected ? "bg-blue-50" : "bg-surface"
+                              } ${!isLast ? "border-b border-gray-200" : ""}`}
                           >
                             <View className="flex-row items-center gap-3">
                               <View
-                                className={`w-9 h-9 rounded-full items-center justify-center ${
-                                  isSelected ? "bg-blue-100" : "bg-gray-100"
-                                }`}
+                                className={`w-9 h-9 rounded-full items-center justify-center ${isSelected ? "bg-blue-100" : "bg-gray-100"
+                                  }`}
                               >
                                 {getCategoryIcon()}
                               </View>
                               <Text
-                                className={`font-semibold text-[15px] ${
-                                  isSelected ? "text-blue-600" : "text-gray-700"
-                                }`}
+                                className={`font-semibold text-[15px] ${isSelected ? "text-blue-600" : "text-gray-700"
+                                  }`}
                               >
                                 {cat}
                               </Text>
@@ -588,11 +592,18 @@ function CreateScenarioModal({
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleCreate}
-                className="w-full h-16 bg-blue-500 rounded-full items-center justify-center shadow-lg"
+                className="w-full h-16 rounded-full overflow-hidden shadow-lg"
               >
-                <Text className="text-white font-bold text-lg">
-                  Start Scenario
-                </Text>
+                <RainbowBorder
+                  borderWidth={2}
+                  borderRadius={9999}
+                  className="flex-1"
+                  containerClassName="items-center justify-center"
+                >
+                  <Text className="text-black font-bold text-lg">
+                    Start Scenario
+                  </Text>
+                </RainbowBorder>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
