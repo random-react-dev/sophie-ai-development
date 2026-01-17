@@ -1,6 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
-import { RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
   DEFAULT_SOURCE_LANG,
@@ -274,9 +274,9 @@ export default function TranslateScreen() {
               <View className="flex-row gap-2">
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  className="w-10 h-10 items-center justify-center rounded-full bg-blue-500"
+                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
                 >
-                  <FontAwesome name="microphone" size={18} color="white" />
+                  <FontAwesome name="microphone" size={18} color="black" />
                 </TouchableOpacity>
                 {inputText.length > 0 && (
                   <TouchableOpacity
@@ -307,10 +307,15 @@ export default function TranslateScreen() {
                     )}
                   </View>
                 ) : (
-                  <RainbowGradient className="px-5 py-4 flex-row items-center gap-2">
-                    <Sparkles size={18} color="white" />
-                    <Text className="font-bold text-white">Translate</Text>
-                  </RainbowGradient>
+                  <RainbowBorder
+                    borderRadius={999}
+                    borderWidth={2}
+                    containerClassName="flex-row items-center gap-2 px-5 py-4"
+                    className="bg-white"
+                  >
+                    <Sparkles size={18} color="black" />
+                    <Text className="font-bold text-black">Translate</Text>
+                  </RainbowBorder>
                 )}
               </TouchableOpacity>
             </View>

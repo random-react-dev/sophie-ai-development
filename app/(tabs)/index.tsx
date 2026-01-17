@@ -139,7 +139,7 @@ export default function RoleplayScreen() {
             borderWidth={2}
             borderRadius={9999}
             className="flex-1"
-            containerClassName="flex-row items-center gap-2 px-4 justify-center"
+            containerClassName="flex-row items-center gap-2 px-4 justify-center flex-1"
             innerBackgroundClassName="bg-white"
           >
             <Plus size={20} color="black" />
@@ -155,29 +155,43 @@ export default function RoleplayScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
         >
-          {CATEGORIES.map((cat) => (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              key={cat}
-              onPress={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-full border overflow-hidden relative ${selectedCategory === cat
-                ? "border-slate-200"
-                : "bg-white border-gray-300"
-                }`}
-            >
-              {selectedCategory === cat && (
-                <View className="absolute inset-0">
-                  <RainbowGradient className="flex-1 opacity-60" />
-                </View>
-              )}
-              <Text
-                className={`font-bold text-[13px] ${selectedCategory === cat ? "text-black" : "text-gray-600"
-                  }`}
+          {CATEGORIES.map((cat) => {
+            const isSelected = selectedCategory === cat;
+
+            if (isSelected) {
+              return (
+                <TouchableOpacity
+                  key={cat}
+                  activeOpacity={0.7}
+                  onPress={() => setSelectedCategory(cat)}
+                >
+                  <RainbowBorder
+                    borderRadius={9999}
+                    borderWidth={1}
+                    className="flex-1"
+                    containerClassName="px-5 py-2"
+                  >
+                    <Text className="font-bold text-sm text-black">
+                      {cat}
+                    </Text>
+                  </RainbowBorder>
+                </TouchableOpacity>
+              );
+            }
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={cat}
+                onPress={() => setSelectedCategory(cat)}
+                className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text className="font-bold text-sm text-gray-600">
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       </View>
 
@@ -380,29 +394,42 @@ function CreateScenarioModal({
                   Level
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
-                  {CEFR_LEVELS.map((l) => (
-                    <TouchableOpacity
-                      key={l}
-                      activeOpacity={0.7}
-                      onPress={() => setLevel(l)}
-                      className={`px-4 py-2 rounded-full border overflow-hidden relative ${level === l
-                        ? "border-transparent"
-                        : "bg-surface border-gray-300"
-                        }`}
-                    >
-                      {level === l && (
-                        <View className="absolute inset-0">
-                          <RainbowGradient className="flex-1 opacity-60" />
-                        </View>
-                      )}
-                      <Text
-                        className={`font-bold text-xs ${level === l ? "text-black" : "text-gray-600"
-                          }`}
+                  {CEFR_LEVELS.map((l) => {
+                    const isSelected = level === l;
+
+                    if (isSelected) {
+                      return (
+                        <TouchableOpacity
+                          key={l}
+                          activeOpacity={0.7}
+                          onPress={() => setLevel(l)}
+                        >
+                          <RainbowBorder
+                            borderRadius={9999}
+                            borderWidth={1}
+                            containerClassName="px-5 py-2"
+                          >
+                            <Text className="font-bold text-sm text-black">
+                              {l}
+                            </Text>
+                          </RainbowBorder>
+                        </TouchableOpacity>
+                      );
+                    }
+
+                    return (
+                      <TouchableOpacity
+                        key={l}
+                        activeOpacity={0.7}
+                        onPress={() => setLevel(l)}
+                        className="px-5 py-2 rounded-full border border-gray-300"
                       >
-                        {l}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text className="font-bold text-sm text-gray-600">
+                          {l}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </View>
 
@@ -625,7 +652,7 @@ function CreateScenarioModal({
                   borderWidth={2}
                   borderRadius={9999}
                   className="flex-1"
-                  containerClassName="items-center justify-center"
+                  containerClassName="items-center justify-center flex-1"
                 >
                   <Text className="text-black font-bold text-lg">
                     Start Scenario

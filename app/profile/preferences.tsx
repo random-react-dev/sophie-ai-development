@@ -108,7 +108,7 @@ export default function PreferencesScreen() {
         {/* Localization Section */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Localization
+            Languages
           </Text>
 
           {/* Country Card */}
