@@ -1,6 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
-import { RainbowBorder } from "@/components/common/Rainbow";
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
@@ -353,13 +353,18 @@ export default function VocabScreen() {
               key={lang}
               activeOpacity={0.7}
               onPress={() => setSelectedLanguage(lang)}
-              className={`px-5 py-2 rounded-full border ${selectedLanguage === lang
-                  ? "bg-blue-100 border-blue-300"
-                  : "bg-white border-gray-300"
+              className={`px-5 py-2 rounded-full border overflow-hidden relative ${selectedLanguage === lang
+                ? "border-slate-200"
+                : "bg-white border-gray-300"
                 }`}
             >
+              {selectedLanguage === lang && (
+                <View className="absolute inset-0">
+                  <RainbowGradient className="flex-1 opacity-60" />
+                </View>
+              )}
               <Text
-                className={`font-bold text-[13px] ${selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
+                className={`font-bold text-[13px] ${selectedLanguage === lang ? "text-black" : "text-gray-600"
                   }`}
               >
                 {lang}

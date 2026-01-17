@@ -119,7 +119,7 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         {/* Profile Card */}
-        <View className="bg-surface mx-4 mt-6 rounded-2xl p-4 shadow-sm">
+        <View className="bg-surface mx-4 mt-2 rounded-2xl p-4 shadow-sm">
           <View className="items-center">
             {/* Avatar */}
             <TouchableOpacity

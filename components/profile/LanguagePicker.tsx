@@ -1,3 +1,4 @@
+import CircleFlag from "@/components/common/CircleFlag";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect } from "react";
 import { FlatList, Modal, Pressable, Text, View } from "react-native";
@@ -125,14 +126,13 @@ function LanguageItem({
         className="flex-row items-center justify-between"
       >
         <View className="flex-row items-center gap-4">
-          <View className="w-10 h-10 rounded-xl bg-gray-50 items-center justify-center">
-            <Text className="text-xl">{lang.flag}</Text>
+          <View className="w-10 h-10 rounded-full items-center justify-center">
+            <CircleFlag countryCode={lang.countryCode} size={40} />
           </View>
           <View>
             <Text
-              className={`text-base font-bold ${
-                isSelected ? "text-blue-500" : "text-gray-900"
-              }`}
+              className={`text-base font-bold ${isSelected ? "text-blue-500" : "text-gray-900"
+                }`}
             >
               {lang.name}
             </Text>

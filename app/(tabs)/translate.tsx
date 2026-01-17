@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
+import { RainbowGradient } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
   DEFAULT_SOURCE_LANG,
@@ -292,26 +293,24 @@ export default function TranslateScreen() {
                 activeOpacity={0.7}
                 onPress={handleTranslate}
                 disabled={isTranslating || !inputText.trim()}
-                className={`px-5 py-4 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
-                    ? "bg-gray-200"
-                    : "bg-blue-500"
-                  }`}
+                className="rounded-full overflow-hidden"
               >
-                {isTranslating ? (
-                  <ActivityIndicator color="#9ca3af" size="small" />
+                {isTranslating || !inputText.trim() ? (
+                  <View className="px-5 py-4 bg-gray-200 flex-row items-center gap-2">
+                    {isTranslating ? (
+                      <ActivityIndicator color="#9ca3af" size="small" />
+                    ) : (
+                      <>
+                        <Sparkles size={18} color="#9ca3af" />
+                        <Text className="font-bold text-gray-400">Translate</Text>
+                      </>
+                    )}
+                  </View>
                 ) : (
-                  <>
-                    <Sparkles
-                      size={18}
-                      color={!inputText.trim() ? "#9ca3af" : "white"}
-                    />
-                    <Text
-                      className={`font-bold ${!inputText.trim() ? "text-gray-400" : "text-white"
-                        }`}
-                    >
-                      Translate
-                    </Text>
-                  </>
+                  <RainbowGradient className="px-5 py-4 flex-row items-center gap-2">
+                    <Sparkles size={18} color="white" />
+                    <Text className="font-bold text-white">Translate</Text>
+                  </RainbowGradient>
                 )}
               </TouchableOpacity>
             </View>

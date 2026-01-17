@@ -86,7 +86,7 @@ export default function RoleplayScreen() {
         <View className="items-center">
           <Text className="text-black text-2xl font-bold">Sophie AI</Text>
           <Text className="text-gray-500 text-base font-medium">
-            Native speaker in your pocket
+            Any Language. Anytime. Anywhere
           </Text>
         </View>
         <Link href="/profile" asChild>
@@ -385,13 +385,18 @@ function CreateScenarioModal({
                       key={l}
                       activeOpacity={0.7}
                       onPress={() => setLevel(l)}
-                      className={`px-4 py-2 rounded-full border ${level === l
-                        ? "bg-blue-100 border-blue-300"
+                      className={`px-4 py-2 rounded-full border overflow-hidden relative ${level === l
+                        ? "border-transparent"
                         : "bg-surface border-gray-300"
                         }`}
                     >
+                      {level === l && (
+                        <View className="absolute inset-0">
+                          <RainbowGradient className="flex-1 opacity-60" />
+                        </View>
+                      )}
                       <Text
-                        className={`font-bold text-xs ${level === l ? "text-blue-500" : "text-gray-600"
+                        className={`font-bold text-xs ${level === l ? "text-black" : "text-gray-600"
                           }`}
                       >
                         {l}
@@ -411,61 +416,70 @@ function CreateScenarioModal({
                   onPress={() =>
                     setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
                   }
-                  className={`bg-surface rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${isCategoryDropdownOpen
-                    ? "border-2 border-blue-400"
-                    : "border border-gray-200"
-                    }`}
+                  className="rounded-2xl overflow-hidden shadow-sm"
                 >
-                  <View className="flex-row items-center gap-3">
-                    {category ? (
-                      <View className="w-8 h-8 rounded-full bg-blue-100 items-center justify-center">
-                        {category === "Food & Drink" && (
-                          <Utensils size={16} color="#3b82f6" />
-                        )}
-                        {category === "Business" && (
-                          <Briefcase size={16} color="#3b82f6" />
-                        )}
-                        {category === "Social" && (
-                          <Users size={16} color="#3b82f6" />
-                        )}
-                        {category === "Travel" && (
-                          <Plane size={16} color="#3b82f6" />
-                        )}
-                        {category === "Customer Service" && (
-                          <Headphones size={16} color="#3b82f6" />
-                        )}
-                        {category === "Education" && (
-                          <GraduationCap size={16} color="#3b82f6" />
-                        )}
-                      </View>
-                    ) : (
-                      <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
-                        <Sparkles size={16} color="#9ca3af" />
-                      </View>
-                    )}
-                    <Text
-                      className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"
+                  <RainbowBorder
+                    borderWidth={2}
+                    borderRadius={16}
+                    innerBackgroundClassName="bg-surface"
+                    containerClassName="px-4 py-4 flex-row justify-between items-center"
+                    className=""
+                  >
+                    <View className="flex-row items-center gap-3">
+                      {category ? (
+                        <View className="w-8 h-8 rounded-full overflow-hidden items-center justify-center relative">
+                          <RainbowGradient className="absolute inset-0 opacity-60" />
+                          {category === "Food & Drink" && (
+                            <Utensils size={16} color="black" />
+                          )}
+                          {category === "Business" && (
+                            <Briefcase size={16} color="black" />
+                          )}
+                          {category === "Social" && (
+                            <Users size={16} color="black" />
+                          )}
+                          {category === "Travel" && (
+                            <Plane size={16} color="black" />
+                          )}
+                          {category === "Customer Service" && (
+                            <Headphones size={16} color="black" />
+                          )}
+                          {category === "Education" && (
+                            <GraduationCap size={16} color="black" />
+                          )}
+                        </View>
+                      ) : (
+                        <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
+                          <Sparkles size={16} color="#9ca3af" />
+                        </View>
+                      )}
+                      <Text
+                        className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"
+                          }`}
+                      >
+                        {category || "Select a category"}
+                      </Text>
+                    </View>
+                    <View
+                      className={`w-8 h-8 rounded-full items-center justify-center relative overflow-hidden ${isCategoryDropdownOpen ? "" : "bg-gray-100"
                         }`}
                     >
-                      {category || "Select a category"}
-                    </Text>
-                  </View>
-                  <View
-                    className={`w-8 h-8 rounded-full items-center justify-center ${isCategoryDropdownOpen ? "bg-blue-100" : "bg-gray-100"
-                      }`}
-                  >
-                    <ChevronDown
-                      size={18}
-                      color={isCategoryDropdownOpen ? "#3b82f6" : "#6b7280"}
-                      style={{
-                        transform: [
-                          {
-                            rotate: isCategoryDropdownOpen ? "180deg" : "0deg",
-                          },
-                        ],
-                      }}
-                    />
-                  </View>
+                      {isCategoryDropdownOpen && (
+                        <RainbowGradient className="absolute inset-0 opacity-10" />
+                      )}
+                      <ChevronDown
+                        size={18}
+                        color={isCategoryDropdownOpen ? "black" : "#6b7280"}
+                        style={{
+                          transform: [
+                            {
+                              rotate: isCategoryDropdownOpen ? "180deg" : "0deg",
+                            },
+                          ],
+                        }}
+                      />
+                    </View>
+                  </RainbowBorder>
                 </TouchableOpacity>
 
                 {/* Premium Dropdown Options */}
@@ -482,50 +496,50 @@ function CreateScenarioModal({
                             case "Food & Drink":
                               return (
                                 <Utensils
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                             case "Business":
                               return (
                                 <Briefcase
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                             case "Social":
                               return (
                                 <Users
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                             case "Travel":
                               return (
                                 <Plane
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                             case "Customer Service":
                               return (
                                 <Headphones
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                             case "Education":
                               return (
                                 <GraduationCap
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                             default:
                               return (
                                 <Sparkles
-                                  size={18}
-                                  color={isSelected ? "#3b82f6" : "#6b7280"}
+                                  size={16}
+                                  color={isSelected ? "black" : "#6b7280"}
                                 />
                               );
                           }
@@ -539,28 +553,41 @@ function CreateScenarioModal({
                               setCategory(cat);
                               setIsCategoryDropdownOpen(false);
                             }}
-                            className={`px-4 py-3.5 flex-row items-center justify-between ${isSelected ? "bg-blue-50" : "bg-surface"
+                            className={`px-4 py-3.5 flex-row items-center justify-between overflow-hidden relative ${isSelected ? "" : "bg-surface"
                               } ${!isLast ? "border-b border-gray-200" : ""}`}
                           >
+                            {isSelected && (
+                              <View className="absolute inset-0">
+                                <RainbowGradient className="flex-1 opacity-20" />
+                              </View>
+                            )}
                             <View className="flex-row items-center gap-3">
                               <View
-                                className={`w-9 h-9 rounded-full items-center justify-center ${isSelected ? "bg-blue-100" : "bg-gray-100"
+                                className={`w-9 h-9 rounded-full items-center justify-center relative overflow-hidden ${isSelected ? "" : "bg-gray-100"
                                   }`}
                               >
+                                {isSelected && (
+                                  <>
+                                    <RainbowGradient className="absolute inset-0 opacity-60" />
+                                    <View className="absolute inset-0 bg-white opacity-20" />
+                                  </>
+                                )}
                                 {getCategoryIcon()}
                               </View>
                               <Text
-                                className={`font-semibold text-[15px] ${isSelected ? "text-blue-600" : "text-gray-700"
+                                className={`font-semibold text-[15px] ${isSelected ? "text-black" : "text-gray-700"
                                   }`}
+                                style={{ includeFontPadding: false, textAlignVertical: "center" }}
                               >
                                 {cat}
                               </Text>
                             </View>
                             {isSelected && (
-                              <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
+                              <View className="w-6 h-6 rounded-full items-center justify-center relative overflow-hidden">
+                                <View className="absolute inset-0 bg-white opacity-20" />
                                 <Check
                                   size={14}
-                                  color="white"
+                                  color="black"
                                   strokeWidth={3}
                                 />
                               </View>
