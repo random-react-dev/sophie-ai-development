@@ -13,7 +13,6 @@ import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
 import {
   Bookmark,
@@ -28,6 +27,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Logger } from "@/services/common/Logger";
 import { Feather } from "@expo/vector-icons";
+import { PageHeader } from "@/components/common/PageHeader";
 
 const TAG = "TalkTab";
 
@@ -73,14 +73,11 @@ const buildTutorPrompt = (
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${
-    nativeLang.name
-  }), then introduce the lesson:
-"Welcome to your ${
-    targetLang.name
-  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
-    targetLang.name
-  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Start by greeting the user in their native language (${nativeLang.name
+    }), then introduce the lesson:
+"Welcome to your ${targetLang.name
+    } lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name
+    } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -91,9 +88,8 @@ Start by greeting the user in their native language (${
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${
-    targetLang.name
-  } for the words being taught
+- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name
+    } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress`;
 };
@@ -372,11 +368,10 @@ Stay in character while teaching.`;
       className={`mb-6 ${msg.role === "user" ? "items-end" : "items-start"}`}
     >
       <View
-        className={`p-4 rounded-3xl max-w-[85%] ${
-          msg.role === "user"
+        className={`p-4 rounded-3xl max-w-[85%] ${msg.role === "user"
             ? "bg-gray-100"
             : "bg-white border border-gray-100 shadow-sm"
-        }`}
+          }`}
       >
         {msg.role === "model" && (
           <View className="flex-row items-center gap-1 mb-1">
@@ -415,30 +410,7 @@ Stay in character while teaching.`;
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
-        <View className="items-center">
-          <Text className="text-black text-2xl font-bold">Sophie AI</Text>
-          <Text className="text-gray-500 text-base font-medium">
-            Native speaker in your pocket
-          </Text>
-        </View>
-        <Link href="/profile" asChild>
-          <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
-            {user?.user_metadata?.avatar_url ? (
-              <Image
-                source={{ uri: user.user_metadata.avatar_url }}
-                className="w-full h-full"
-              />
-            ) : (
-              <View className="w-full h-full items-center justify-center bg-blue-50">
-                <Text className="text-blue-500 font-bold">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </Link>
-      </View>
+      <PageHeader />
 
       {/* Language Selection */}
       <View className="px-6 py-2 flex-row justify-center items-center gap-4">

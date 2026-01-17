@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
+import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
@@ -14,8 +15,7 @@ import { useScenarioStore } from "@/stores/scenarioStore";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-import { Image } from "expo-image";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   ArrowRightLeft,
   Bookmark,
@@ -142,33 +142,7 @@ export default function TranslateScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
-        <View className="items-center">
-          <Text className="text-black text-2xl font-bold">Sophie AI</Text>
-          <Text className="text-gray-500 text-base font-medium">
-            Native speaker in your pocket
-          </Text>
-        </View>
-        <Link href="/profile" asChild>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6"
-          >
-            {user?.user_metadata?.avatar_url ? (
-              <Image
-                source={{ uri: user.user_metadata.avatar_url }}
-                className="w-full h-full"
-              />
-            ) : (
-              <View className="w-full h-full items-center justify-center bg-blue-50">
-                <Text className="text-blue-500 font-bold">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </Link>
-      </View>
+      <PageHeader />
 
       <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">
