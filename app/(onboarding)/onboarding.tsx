@@ -1,11 +1,4 @@
-import { Button } from "@/components/common/Button";
-import { useAuthStore } from "@/stores/authStore";
-import { useOnboardingStore } from "@/stores/onboardingStore";
-import { useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import React, { useRef } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { BarrierStep } from "@/components/onboarding/BarrierStep";
 import { CompletionStep } from "@/components/onboarding/CompletionStep";
 import { ConfidenceStep } from "@/components/onboarding/ConfidenceStep";
@@ -19,6 +12,13 @@ import {
   ProfileStep,
   ProfileStepRef,
 } from "@/components/onboarding/ProfileStep";
+import { useAuthStore } from "@/stores/authStore";
+import { useOnboardingStore } from "@/stores/onboardingStore";
+import { useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
+import React, { useRef } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -172,18 +172,29 @@ export default function OnboardingScreen() {
       )}
 
       <View className="p-6 border-t border-gray-50 bg-white">
-        <Button
-          title={
-            isSaving
-              ? "Saving..."
-              : currentStep === 10
-              ? "Start Learning"
-              : "Continue"
-          }
+        {/* Continue Button with RainbowBorder */}
+        <TouchableOpacity
+          activeOpacity={0.7}
           onPress={handleContinue}
           disabled={isSaving}
-          className="h-14 rounded-2xl"
-        />
+          className="w-full h-16 rounded-full overflow-hidden shadow-lg"
+        >
+          <RainbowBorder
+            borderWidth={2}
+            borderRadius={9999}
+            className="flex-1"
+            containerClassName="items-center justify-center"
+            innerBackgroundClassName="bg-white"
+          >
+            <Text className="text-black font-bold text-lg">
+              {isSaving
+                ? "Saving..."
+                : currentStep === 10
+                ? "Start Learning"
+                : "Continue"}
+            </Text>
+          </RainbowBorder>
+        </TouchableOpacity>
         {currentStep === 9 && (
           <TouchableOpacity
             onPress={nextStep}

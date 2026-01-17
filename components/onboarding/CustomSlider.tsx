@@ -1,15 +1,16 @@
+import { RainbowGradient } from "@/components/common/Rainbow";
+import { Colors } from "@/constants/theme";
 import * as Haptics from "expo-haptics";
 import React, { useEffect, useState } from "react";
-import { LayoutChangeEvent, Text, View } from "react-native";
+import { LayoutChangeEvent, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  Extrapolation,
-  interpolate,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 interface CustomSliderProps {
   min: number;
@@ -17,7 +18,6 @@ interface CustomSliderProps {
   step: number;
   value: number;
   onValueChange: (value: number) => void;
-  emoji: string;
 }
 
 export const CustomSlider: React.FC<CustomSliderProps> = ({
@@ -26,11 +26,11 @@ export const CustomSlider: React.FC<CustomSliderProps> = ({
   step,
   value,
   onValueChange,
-  emoji,
 }) => {
   const [sliderWidth, setSliderWidth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
   const thumbSize = 80; // Large thumb (w-20)
-  const padding = thumbSize / 2;
+  const trackHeight = 64; // h-16
 
   // Shared value for thumb position (0 to sliderWidth)
   const translateX = useSharedValue(0);
@@ -89,31 +89,69 @@ export const CustomSlider: React.FC<CustomSliderProps> = ({
   });
 
   const animatedFillStyle = useAnimatedStyle(() => {
-    // Interpolate width: start at center of thumb, end at full container width
-    const width = interpolate(
-      translateX.value,
-      [0, sliderWidth],
-      [thumbSize / 2, sliderWidth + thumbSize],
-      Extrapolation.CLAMP
-    );
-    return { width };
+    // Fill width tracks to the CENTER of the thumb
+    // When translateX = 0, thumb center is at thumbSize/2, so fill width = thumbSize/2
+    // When translateX = sliderWidth, thumb center is at sliderWidth + thumbSize/2
+    const fillWidth = translateX.value + thumbSize / 2;
+
+    return {
+      width: Math.max(0, fillWidth),
+      height: trackHeight,
+      position: "absolute" as const,
+      left: 0,
+      top: 0,
+      borderRadius: trackHeight / 2,
+      overflow: "hidden" as const,
+    };
   });
 
   return (
     <View
       className="h-24 justify-center" // Increased container height
       onLayout={(e: LayoutChangeEvent) => {
+        const fullWidth = e.nativeEvent.layout.width;
+        setContainerWidth(fullWidth);
         // We subtract thumb size from width to keep thumb inside
-        setSliderWidth(e.nativeEvent.layout.width - thumbSize);
+        setSliderWidth(fullWidth - thumbSize);
       }}
     >
-      {/* Background Track - Removed Border */}
+      {/* Background Track */}
       <View className="absolute w-full h-16 bg-gray-100 rounded-full overflow-hidden">
-        {/* Active Fill */}
-        <Animated.View
-          className="h-full bg-blue-500 rounded-full"
-          style={animatedFillStyle}
-        />
+        {/* Active Fill with Rainbow Gradient - using fixed width SVG */}
+        <Animated.View style={animatedFillStyle}>
+          {containerWidth > 0 && (
+            <Svg
+              width={containerWidth}
+              height={trackHeight}
+              style={{ position: "absolute", left: 0, top: 0 }}
+            >
+              <Defs>
+                <LinearGradient
+                  id="sliderFillGrad"
+                  x1="0%"
+                  y1="50%"
+                  x2="100%"
+                  y2="50%"
+                >
+                  {Colors.rainbow.map((color, index) => (
+                    <Stop
+                      key={color}
+                      offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
+                      stopColor={color}
+                    />
+                  ))}
+                </LinearGradient>
+              </Defs>
+              <Rect
+                x="0"
+                y="0"
+                width={containerWidth}
+                height={trackHeight}
+                fill="url(#sliderFillGrad)"
+              />
+            </Svg>
+          )}
+        </Animated.View>
       </View>
 
       {/* Draggable Thumb Area */}
@@ -121,9 +159,9 @@ export const CustomSlider: React.FC<CustomSliderProps> = ({
         <Animated.View
           style={[animatedThumbStyle, { position: "absolute", left: 0 }]}
         >
-          {/* Large Emoji Thumb - refined shadow */}
+          {/* Large Rainbow Thumb - refined shadow */}
           <View
-            className="w-20 h-20 bg-white rounded-full shadow-lg border-4 border-white items-center justify-center"
+            className="w-20 h-20 rounded-full shadow-lg items-center justify-center overflow-hidden"
             style={{
               elevation: 5,
               shadowColor: "#000",
@@ -132,7 +170,11 @@ export const CustomSlider: React.FC<CustomSliderProps> = ({
               shadowOffset: { width: 0, height: 3 },
             }}
           >
-            <Text style={{ fontSize: 40 }}>{emoji}</Text>
+            <RainbowGradient
+              style={{ width: "100%", height: "100%", position: "absolute" }}
+            />
+            {/* White inner circle for depth effect */}
+            <View className="w-16 h-16 bg-white rounded-full" />
           </View>
         </Animated.View>
       </GestureDetector>

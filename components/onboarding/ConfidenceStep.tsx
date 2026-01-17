@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/theme";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { Text, View } from "react-native";
@@ -18,7 +19,13 @@ export const ConfidenceStep = () => {
   };
 
   const currentLevel = data.confidenceLevel || 3;
-  const { emoji, label } = confidenceMap[currentLevel] || confidenceMap[3];
+  const { label } = confidenceMap[currentLevel] || confidenceMap[3];
+
+  // Calculate the rainbow color based on confidence level (1-8)
+  const rainbow = Colors.rainbow;
+  const percentage = (currentLevel - 1) / 7; // 1-8 range, so 7 steps
+  const colorIndex = Math.round(percentage * (rainbow.length - 1));
+  const labelColor = rainbow[colorIndex] || rainbow[0];
 
   return (
     <View className="px-4 justify-center">
@@ -26,20 +33,24 @@ export const ConfidenceStep = () => {
         <Text className="text-3xl font-bold text-gray-900 mb-4">
           How confident are you?
         </Text>
-
-        {/* Dynamic Label that updates with slider */}
-        <Text className="text-xl font-bold text-blue-600">{label}</Text>
       </View>
 
       <View className="px-2">
-        {/* Custom Premium Slider with Emoji Thumb */}
+        {/* Dynamic Label with Rainbow Color based on slider position */}
+        <Text
+          className="text-2xl text-center font-bold mb-2"
+          style={{ color: labelColor }}
+        >
+          {label}
+        </Text>
+
+        {/* Custom Premium Slider with Rainbow Gradient Thumb */}
         <CustomSlider
           min={1}
           max={8}
           step={1}
           value={currentLevel}
           onValueChange={(val) => updateData({ confidenceLevel: val })}
-          emoji={emoji} // Pass current emoji to render inside thumb
         />
 
         <View className="flex-row justify-between mt-4 px-2">

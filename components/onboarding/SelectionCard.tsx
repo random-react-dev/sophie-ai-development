@@ -1,20 +1,28 @@
+import { Colors } from "@/constants/theme";
 import React, { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
   interpolate,
-  interpolateColor,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import Svg, { Circle, Path } from "react-native-svg";
+import Svg, {
+  Circle,
+  Defs,
+  LinearGradient,
+  Path,
+  Stop,
+} from "react-native-svg";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-// Animated Checkbox with smooth "drawing" animation
+import { RainbowGradient } from "@/components/common/Rainbow";
+
+// Animated Checkbox with full Rainbow gradient when checked (no border)
 function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
   const progress = useSharedValue(isChecked ? 1 : 0);
   const pathLength = 22;
@@ -31,63 +39,97 @@ function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
     };
   });
 
-  const bgAnimatedStyle = useAnimatedStyle(() => {
+  const scaleStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["transparent", "#3b82f6"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#d1d5db", "#3b82f6"]
-      ),
-      borderWidth: 2,
+      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
     };
   });
 
   return (
     <Animated.View
-      style={bgAnimatedStyle}
-      className="w-6 h-6 rounded-full items-center justify-center"
+      style={scaleStyle}
+      className="w-6 h-6 rounded-full items-center justify-center overflow-hidden"
     >
-      <Svg width="14" height="14" viewBox="0 0 24 24">
-        <AnimatedPath
-          d="M5 12l5 5L20 7"
-          fill="none"
-          stroke="white"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={pathLength}
-          animatedProps={animatedProps}
-        />
-      </Svg>
+      {isChecked ? (
+        // Full rainbow gradient circle when checked
+        <Svg width="24" height="24" viewBox="0 0 24 24">
+          <Defs>
+            <LinearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              {Colors.rainbow.map((color, index) => (
+                <Stop
+                  key={color}
+                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
+                  stopColor={color}
+                />
+              ))}
+            </LinearGradient>
+          </Defs>
+          <Circle cx="12" cy="12" r="12" fill="url(#checkGrad)" />
+        </Svg>
+      ) : (
+        // Gray border circle when unchecked
+        <View className="w-6 h-6 rounded-full border-2 border-gray-300" />
+      )}
+      {/* Checkmark - always visible when checked */}
+      {isChecked && (
+        <View className="absolute">
+          <Svg width="14" height="14" viewBox="0 0 24 24">
+            <AnimatedPath
+              d="M5 12l5 5L20 7"
+              fill="none"
+              stroke="white"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={pathLength}
+              animatedProps={animatedProps}
+            />
+          </Svg>
+        </View>
+      )}
     </Animated.View>
   );
 }
 
-// Duration Ring Component - shows progress for time duration
-// Duration Ring Component - shows progress for time duration
-function DurationRing({ level }: { level: number }) {
+// Duration Ring Component with Rainbow gradient
+// Fixed behavior:
+// 1. On mount: ALL rings animate to their respective levels
+// 2. After any selection: selected ring shows animated, others show STATIC at their level
+function DurationRing({
+  level,
+  selected,
+}: {
+  level: number;
+  selected?: boolean;
+}) {
   const radius = 16;
   const strokeWidth = 3;
-  const center = 22; // 44px container / 2
+  const center = 22;
   const circumference = 2 * Math.PI * radius;
 
   const percentages = [0.15, 0.3, 0.5, 0.65, 0.85, 1];
   const targetPercentage = percentages[Math.min(level - 1, 5)];
 
-  // Animation state
   const progress = useSharedValue(0);
+  const isMounted = React.useRef(false);
 
   useEffect(() => {
-    // Start animation on mount with a slight delay for better visual effect
-    progress.value = withTiming(targetPercentage, {
-      duration: 1000,
-    });
-  }, [targetPercentage]);
+    if (selected || !isMounted.current) {
+      // INITIAL MOUNT or SELECTION - animate to target
+      isMounted.current = true;
+      progress.value = 0; // Reset progress to 0 to re-trigger animation
+      progress.value = withSpring(targetPercentage, {
+        damping: 15,
+        stiffness: 100,
+      });
+    } else {
+      // Stay at target level when unselected after first mount
+      progress.value = withSpring(targetPercentage, {
+        damping: 15,
+        stiffness: 100,
+      });
+    }
+  }, [targetPercentage, selected]);
 
   const animatedProps = useAnimatedProps(() => {
     const strokeDashoffset = circumference * (1 - progress.value);
@@ -97,23 +139,34 @@ function DurationRing({ level }: { level: number }) {
   });
 
   return (
-    <View className="size-12 items-center justify-center rounded-full bg-blue-50">
+    <View className="size-12 items-center justify-center rounded-full bg-gray-50">
       <Svg width="44" height="44" viewBox="0 0 44 44">
+        <Defs>
+          <LinearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            {Colors.rainbow.map((color, index) => (
+              <Stop
+                key={color}
+                offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
+                stopColor={color}
+              />
+            ))}
+          </LinearGradient>
+        </Defs>
         {/* Background Track */}
         <Circle
           cx={center}
           cy={center}
           r={radius}
-          stroke="#dbeafe" // blue-100
+          stroke="#e5e7eb"
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Progress Ring */}
+        {/* Progress Ring with Rainbow Gradient */}
         <AnimatedCircle
           cx={center}
           cy={center}
           r={radius}
-          stroke="#2563eb" // blue-600
+          stroke="url(#ringGrad)"
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={`${circumference} ${circumference}`}
@@ -128,17 +181,33 @@ function DurationRing({ level }: { level: number }) {
   );
 }
 
-// Signal Bars Component - shows proficiency level (cellular strength style)
-function SignalBars({ level }: { level: number }) {
+// Signal Bars Component with Rainbow colors
+function SignalBars({
+  level,
+  selected,
+}: {
+  level: number;
+  selected?: boolean;
+}) {
   const bars = [1, 2, 3, 4, 5];
+  // Use rainbow colors for active bars
+  const barColors = ["#E81416", "#FFA500", "#FAEB36", "#79C314", "#487DE7"];
+
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    if (selected) {
+      progress.value = 0;
+      progress.value = withSpring(1, { damping: 15, stiffness: 100 });
+    } else {
+      progress.value = withSpring(1, { damping: 15, stiffness: 100 });
+    }
+  }, [selected]);
 
   return (
-    <View className="size-12 rounded-full bg-blue-50 items-center justify-center">
-      {/* Container for bars: linear height growth (4px steps) and tight spacing (2px) */}
+    <View className="size-12 rounded-full bg-gray-50 items-center justify-center">
       <View className="flex-row items-end gap-0.5 h-6">
-        {bars.map((barLevel) => {
-          // Linear height progression: 6, 10, 14, 18, 22px
-          // Using arbitrary values h-[Xpx] because h-4.5 and h-5.5 are not standard Tailwind classes
+        {bars.map((barLevel, index) => {
           const heightClass: Record<number, string> = {
             1: "h-[6px]",
             2: "h-[10px]",
@@ -148,13 +217,32 @@ function SignalBars({ level }: { level: number }) {
           };
 
           const isActive = level >= barLevel;
-          // Using gray-200 for inactive to be subtle but visible
+
+          const barStyle = useAnimatedStyle(() => {
+            const scale = interpolate(
+              progress.value,
+              [index * 0.1, index * 0.1 + 0.5],
+              [0, 1],
+              "clamp"
+            );
+            return {
+              transform: [{ scaleY: scale }],
+              opacity: scale,
+            };
+          });
+
           return (
-            <View
+            <Animated.View
               key={barLevel}
-              className={`w-1 rounded-full ${heightClass[barLevel]} ${
-                isActive ? "bg-blue-600" : "bg-gray-200"
-              }`}
+              className={`w-1 rounded-full ${heightClass[barLevel]}`}
+              style={[
+                {
+                  backgroundColor: isActive
+                    ? barColors[barLevel - 1]
+                    : "#e5e7eb",
+                },
+                isActive ? barStyle : {},
+              ]}
             />
           );
         })}
@@ -163,81 +251,130 @@ function SignalBars({ level }: { level: number }) {
   );
 }
 
-// Dot Pattern Component - shows intensity level with dots
-function DotPattern({ level }: { level: number }) {
-  // Common dot style
+// Dot Pattern Component with Rainbow gradient
+function DotPattern({
+  level,
+  selected,
+}: {
+  level: number;
+  selected?: boolean;
+}) {
   const containerStyle =
-    "size-12 items-center justify-center rounded-full bg-blue-50";
+    "size-12 items-center justify-center rounded-full bg-gray-50";
+
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    if (selected) {
+      progress.value = 0;
+      progress.value = withSpring(1, { damping: 15, stiffness: 100 });
+    } else {
+      progress.value = withSpring(1, { damping: 15, stiffness: 100 });
+    }
+  }, [selected]);
 
   // Helper component to ensure perfect circles
   // Fixed size-2 for all dots as requested
-  const Dot = () => (
-    <View className="bg-blue-600 size-2" style={{ borderRadius: 100 }} />
-  );
+  const Dot = ({ index }: { index: number }) => {
+    const dotStyle = useAnimatedStyle(() => {
+      const scale = interpolate(
+        progress.value,
+        [index * 0.1, index * 0.1 + 0.5],
+        [0, 1],
+        "clamp"
+      );
+      return {
+        transform: [{ scale }],
+        opacity: scale,
+      };
+    });
+
+    return (
+      <Animated.View style={dotStyle}>
+        <Svg width="8" height="8" viewBox="0 0 8 8">
+          <Defs>
+            <LinearGradient id="dotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              {Colors.rainbow.map((color, index) => (
+                <Stop
+                  key={color}
+                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
+                  stopColor={color}
+                />
+              ))}
+            </LinearGradient>
+          </Defs>
+          <Circle cx="4" cy="4" r="4" fill="url(#dotGrad)" />
+        </Svg>
+      </Animated.View>
+    );
+  };
 
   const renderDots = () => {
     switch (level) {
       case 1:
-        // Single dot in center
         return (
           <View className={containerStyle}>
-            <Dot />
+            <Dot index={0} />
           </View>
         );
       case 2:
-        // Two dots horizontal
         return (
-          <View className={`${containerStyle} flex-row gap-1`}>
-            <Dot />
-            <Dot />
+          <View className={containerStyle}>
+            <View className="flex-row gap-1.5">
+              <Dot index={0} />
+              <Dot index={1} />
+            </View>
           </View>
         );
       case 3:
-        // Three dots - 1 on top, 2 on bottom (triangle)
         return (
           <View className={containerStyle}>
-            <View className="mb-0.5">
-              <Dot />
-            </View>
-            <View className="flex-row gap-0.5">
-              <Dot />
-              <Dot />
+            <View className="flex-col items-center gap-1">
+              <View className="flex-row gap-1">
+                <Dot index={0} />
+                <Dot index={1} />
+              </View>
+              <Dot index={2} />
             </View>
           </View>
         );
       case 4:
-        // Four dots - square pattern
         return (
           <View className={containerStyle}>
-            <View className="flex-row gap-0.5">
-              <Dot />
-              <Dot />
-            </View>
-            <View className="flex-row gap-0.5 mt-0.5">
-              <Dot />
-              <Dot />
+            <View className="flex-col gap-1">
+              <View className="flex-row gap-1">
+                <Dot index={0} />
+                <Dot index={1} />
+              </View>
+              <View className="flex-row gap-1">
+                <Dot index={2} />
+                <Dot index={3} />
+              </View>
             </View>
           </View>
         );
       case 5:
-        // Five dots - dice pattern (2-1-2)
         return (
           <View className={containerStyle}>
-            <View className="flex-row gap-0.5">
-              <Dot />
-              <Dot />
-            </View>
-            <View className="my-0.5">
-              <Dot />
-            </View>
-            <View className="flex-row gap-0.5">
-              <Dot />
-              <Dot />
+            <View className="flex-col items-center gap-1">
+              <View className="flex-row gap-1">
+                <Dot index={0} />
+                <Dot index={1} />
+              </View>
+              <Dot index={2} />
+              <View className="flex-row gap-1">
+                <Dot index={3} />
+                <Dot index={4} />
+              </View>
             </View>
           </View>
         );
       default:
-        return null;
+        return (
+          <View className={containerStyle}>
+            <Dot index={0} />
+          </View>
+        );
     }
   };
 
@@ -255,7 +392,7 @@ interface SelectionCardProps {
   proficiencyLevel?: number;
 }
 
-export const SelectionCard: React.FC<SelectionCardProps> = ({
+export function SelectionCard({
   title,
   selected,
   onSelect,
@@ -264,7 +401,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
   dotLevel,
   durationLevel,
   proficiencyLevel,
-}) => {
+}: SelectionCardProps) {
   const progress = useSharedValue(selected ? 1 : 0);
 
   useEffect(() => {
@@ -277,70 +414,79 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#ffffff", "#f8fbff"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#e5e7eb", "#3b82f6"]
-      ),
-      shadowColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#000000", "#3b82f6"]
-      ),
-      shadowOpacity: interpolate(progress.value, [0, 1], [0.05, 0.08]),
-      shadowRadius: interpolate(progress.value, [0, 1], [4, 8]),
-      elevation: interpolate(progress.value, [0, 1], [1, 2]),
     };
   });
+
+  const CardContent = () => (
+    <View className="flex-row items-center p-4">
+      {durationLevel && (
+        <View className="mr-4">
+          <DurationRing level={durationLevel} selected={selected} />
+        </View>
+      )}
+      {proficiencyLevel && (
+        <View className="mr-4">
+          <SignalBars level={proficiencyLevel} selected={selected} />
+        </View>
+      )}
+      {dotLevel && !durationLevel && !proficiencyLevel && (
+        <View className="mr-4">
+          <DotPattern level={dotLevel} selected={selected} />
+        </View>
+      )}
+      {emoji && !dotLevel && !durationLevel && !proficiencyLevel && (
+        <Text className="text-3xl mr-4">{emoji}</Text>
+      )}
+      <View className="flex-1 justify-center py-1">
+        <Text
+          className={`font-bold text-base ${
+            selected ? "text-gray-900" : "text-gray-900"
+          }`}
+        >
+          {title}
+        </Text>
+        {description && (
+          <Text className="text-gray-500 text-sm mt-0.5">{description}</Text>
+        )}
+      </View>
+      <View className="ml-4">
+        <AnimatedCheckbox isChecked={selected} />
+      </View>
+    </View>
+  );
 
   return (
     <Pressable onPress={onSelect}>
       <Animated.View
         style={[
           animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 16, marginBottom: 12 },
+          {
+            marginBottom: 12,
+            borderRadius: 20,
+            overflow: "hidden",
+          },
         ]}
-        className="flex-row items-center"
       >
-        {durationLevel && (
-          <View className="mr-4">
-            <DurationRing level={durationLevel} />
+        {/* Layer 1: Rainbow Background (Only visible when selected) */}
+        {selected && (
+          <View className="absolute inset-0">
+            <RainbowGradient className="flex-1" />
           </View>
         )}
-        {proficiencyLevel && (
-          <View className="mr-4">
-            <SignalBars level={proficiencyLevel} />
-          </View>
-        )}
-        {dotLevel && !durationLevel && !proficiencyLevel && (
-          <View className="mr-4">
-            <DotPattern level={dotLevel} />
-          </View>
-        )}
-        {emoji && !dotLevel && !durationLevel && !proficiencyLevel && (
-          <Text className="text-3xl mr-4">{emoji}</Text>
-        )}
-        <View className="flex-1 justify-center py-1">
-          <Text
-            className={`font-bold text-base ${
-              selected ? "text-blue-500" : "text-gray-900"
-            }`}
-          >
-            {title}
-          </Text>
-          {description && (
-            <Text className="text-gray-500 text-sm mt-0.5">{description}</Text>
-          )}
-        </View>
-        <View className="ml-4">
-          <AnimatedCheckbox isChecked={selected} />
+
+        {/* Layer 2: Main Content Container */}
+        <View
+          style={{
+            margin: selected ? 2 : 0,
+            borderRadius: selected ? 18 : 20,
+            backgroundColor: "#ffffff",
+            borderWidth: selected ? 0 : 1.5,
+            borderColor: "#e5e7eb",
+          }}
+        >
+          {CardContent()}
         </View>
       </Animated.View>
     </Pressable>
   );
-};
+}

@@ -1,3 +1,4 @@
+import { RainbowGradient } from "@/components/common/Rainbow";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -23,11 +24,41 @@ const FocusTag: React.FC<FocusTagProps> = ({
 }) => {
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: withSpring(selected ? "#2563eb" : "#ffffff"),
-      borderColor: withSpring(selected ? "#2563eb" : "#e5e7eb"),
       transform: [{ scale: withSpring(selected ? 1.02 : 1) }],
     };
   });
+
+  if (selected) {
+    return (
+      <Animated.View style={animatedStyle}>
+        <Pressable onPress={onPress}>
+          <RainbowGradient
+            className="rounded-full"
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              marginRight: 8,
+              marginBottom: 12,
+              borderRadius: 100,
+            }}
+          >
+            <View className="flex-row items-center">
+              <Text style={{ fontSize: 20, marginRight: 8 }}>{emoji}</Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: "#ffffff",
+                }}
+              >
+                {label}
+              </Text>
+            </View>
+          </RainbowGradient>
+        </Pressable>
+      </Animated.View>
+    );
+  }
 
   return (
     <AnimatedPressable
@@ -39,6 +70,8 @@ const FocusTag: React.FC<FocusTagProps> = ({
           paddingVertical: 10,
           borderRadius: 100,
           borderWidth: 2,
+          borderColor: "#e5e7eb",
+          backgroundColor: "#ffffff",
           marginRight: 8,
           marginBottom: 12,
           flexDirection: "row",
@@ -51,7 +84,7 @@ const FocusTag: React.FC<FocusTagProps> = ({
         style={{
           fontSize: 16,
           fontWeight: "600",
-          color: selected ? "#ffffff" : "#374151",
+          color: "#374151",
         }}
       >
         {label}

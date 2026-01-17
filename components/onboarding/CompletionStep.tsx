@@ -1,3 +1,4 @@
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React, { useEffect } from "react";
 import { Dimensions, Text, View } from "react-native";
@@ -199,32 +200,38 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <Animated.View
       entering={FadeInUp.delay(delay).springify()}
-      className="bg-white rounded-2xl mb-3 overflow-hidden"
+      className="mb-3"
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 2,
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        elevation: 3,
       }}
     >
-      <View className="flex-row items-center px-5 py-4">
-        {/* Emoji */}
-        <Text style={{ fontSize: 32 }}>{emoji}</Text>
+      <RainbowBorder
+        borderWidth={2}
+        borderRadius={16}
+        innerBackgroundClassName="bg-white"
+      >
+        <View className="flex-row items-center px-5 py-4">
+          {/* Emoji */}
+          <Text style={{ fontSize: 32 }}>{emoji}</Text>
 
-        {/* Divider */}
-        <View className="w-px h-10 bg-gray-200 mx-4" />
+          {/* Divider */}
+          <View className="w-px h-10 bg-gray-200 mx-4" />
 
-        {/* Content */}
-        <View className="flex-1">
-          <Text className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">
-            {label}
-          </Text>
-          <Text className="text-base font-semibold text-blue-600 capitalize">
-            {value || "Not set"}
-          </Text>
+          {/* Content */}
+          <View className="flex-1">
+            <Text className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">
+              {label}
+            </Text>
+            <Text className="text-base font-semibold text-gray-700 capitalize">
+              {value || "Not set"}
+            </Text>
+          </View>
         </View>
-      </View>
+      </RainbowBorder>
     </Animated.View>
   );
 };
@@ -246,7 +253,7 @@ export const CompletionStep = () => {
       {/* Celebration Header */}
       <View className="items-center mb-10">
         {/* Static Emoji */}
-        <View className="size-20 bg-blue-50 items-center justify-center rounded-full mb-6">
+        <View className="size-20 bg-gray-100 items-center justify-center rounded-full mb-6">
           <Text style={{ fontSize: 30 }}>🎉</Text>
         </View>
 

@@ -160,10 +160,11 @@ export default function RoleplayScreen() {
               activeOpacity={0.7}
               key={cat}
               onPress={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-full border overflow-hidden relative ${selectedCategory === cat
-                ? "border-slate-200"
-                : "bg-white border-gray-300"
-                }`}
+              className={`px-5 py-2 rounded-full border overflow-hidden relative ${
+                selectedCategory === cat
+                  ? "border-slate-200"
+                  : "bg-white border-gray-300"
+              }`}
             >
               {selectedCategory === cat && (
                 <View className="absolute inset-0">
@@ -171,8 +172,9 @@ export default function RoleplayScreen() {
                 </View>
               )}
               <Text
-                className={`font-bold text-[13px] ${selectedCategory === cat ? "text-black" : "text-gray-600"
-                  }`}
+                className={`font-bold text-[13px] ${
+                  selectedCategory === cat ? "text-black" : "text-gray-600"
+                }`}
               >
                 {cat}
               </Text>
@@ -385,14 +387,16 @@ function CreateScenarioModal({
                       key={l}
                       activeOpacity={0.7}
                       onPress={() => setLevel(l)}
-                      className={`px-4 py-2 rounded-full border ${level === l
-                        ? "bg-blue-100 border-blue-300"
-                        : "bg-surface border-gray-300"
-                        }`}
+                      className={`px-4 py-2 rounded-full border ${
+                        level === l
+                          ? "bg-blue-100 border-blue-300"
+                          : "bg-surface border-gray-300"
+                      }`}
                     >
                       <Text
-                        className={`font-bold text-xs ${level === l ? "text-blue-500" : "text-gray-600"
-                          }`}
+                        className={`font-bold text-xs ${
+                          level === l ? "text-blue-500" : "text-gray-600"
+                        }`}
                       >
                         {l}
                       </Text>
@@ -411,10 +415,11 @@ function CreateScenarioModal({
                   onPress={() =>
                     setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
                   }
-                  className={`bg-surface rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${isCategoryDropdownOpen
-                    ? "border-2 border-blue-400"
-                    : "border border-gray-200"
-                    }`}
+                  className={`bg-surface rounded-2xl px-4 py-4 flex-row justify-between items-center shadow-sm ${
+                    isCategoryDropdownOpen
+                      ? "border-2 border-blue-400"
+                      : "border border-gray-200"
+                  }`}
                 >
                   <View className="flex-row items-center gap-3">
                     {category ? (
@@ -444,15 +449,17 @@ function CreateScenarioModal({
                       </View>
                     )}
                     <Text
-                      className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"
-                        }`}
+                      className={`font-bold text-base ${
+                        category ? "text-gray-900" : "text-gray-400"
+                      }`}
                     >
                       {category || "Select a category"}
                     </Text>
                   </View>
                   <View
-                    className={`w-8 h-8 rounded-full items-center justify-center ${isCategoryDropdownOpen ? "bg-blue-100" : "bg-gray-100"
-                      }`}
+                    className={`w-8 h-8 rounded-full items-center justify-center ${
+                      isCategoryDropdownOpen ? "bg-blue-100" : "bg-gray-100"
+                    }`}
                   >
                     <ChevronDown
                       size={18}
@@ -539,19 +546,22 @@ function CreateScenarioModal({
                               setCategory(cat);
                               setIsCategoryDropdownOpen(false);
                             }}
-                            className={`px-4 py-3.5 flex-row items-center justify-between ${isSelected ? "bg-blue-50" : "bg-surface"
-                              } ${!isLast ? "border-b border-gray-200" : ""}`}
+                            className={`px-4 py-3.5 flex-row items-center justify-between ${
+                              isSelected ? "bg-blue-50" : "bg-surface"
+                            } ${!isLast ? "border-b border-gray-200" : ""}`}
                           >
                             <View className="flex-row items-center gap-3">
                               <View
-                                className={`w-9 h-9 rounded-full items-center justify-center ${isSelected ? "bg-blue-100" : "bg-gray-100"
-                                  }`}
+                                className={`w-9 h-9 rounded-full items-center justify-center ${
+                                  isSelected ? "bg-blue-100" : "bg-gray-100"
+                                }`}
                               >
                                 {getCategoryIcon()}
                               </View>
                               <Text
-                                className={`font-semibold text-[15px] ${isSelected ? "text-blue-600" : "text-gray-700"
-                                  }`}
+                                className={`font-semibold text-[15px] ${
+                                  isSelected ? "text-blue-600" : "text-gray-700"
+                                }`}
                               >
                                 {cat}
                               </Text>
@@ -594,6 +604,7 @@ function CreateScenarioModal({
                 onPress={handleCreate}
                 className="w-full h-16 rounded-full overflow-hidden shadow-lg"
               >
+                {/* Create Scenario */}
                 <RainbowBorder
                   borderWidth={2}
                   borderRadius={9999}
