@@ -6,7 +6,6 @@ import { ChevronLeft } from "lucide-react-native";
 import React, { useRef } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { BarrierStep } from "@/components/onboarding/BarrierStep";
 import { CompletionStep } from "@/components/onboarding/CompletionStep";
 import { ConfidenceStep } from "@/components/onboarding/ConfidenceStep";

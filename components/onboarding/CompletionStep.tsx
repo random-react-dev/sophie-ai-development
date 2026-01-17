@@ -7,79 +7,107 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
-  withRepeat,
-  withSequence,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-// Confetti piece component
+// Center of the screen
+const CENTER_X = SCREEN_WIDTH / 2;
+const CENTER_Y = SCREEN_HEIGHT * 0.35; // Position at top third for better visual
+
+// Individual confetti piece that bursts outward from center
 const ConfettiPiece: React.FC<{
   delay: number;
-  startX: number;
+  angle: number; // Radial angle in radians
+  distance: number; // How far it travels
   color: string;
   size: number;
-}> = ({ delay, startX, color, size }) => {
-  const translateY = useSharedValue(-50);
-  const translateX = useSharedValue(0);
-  const rotate = useSharedValue(0);
+  shape: "square" | "circle" | "rect";
+  rotationSpeed: number;
+}> = ({ delay, angle, distance, color, size, shape, rotationSpeed }) => {
+  const progress = useSharedValue(0);
   const opacity = useSharedValue(1);
+  const rotate = useSharedValue(0);
+  const scale = useSharedValue(0);
 
   useEffect(() => {
-    // Fall animation
-    translateY.value = withDelay(
+    // Initial pop-in scale
+    scale.value = withDelay(
       delay,
-      withTiming(SCREEN_HEIGHT + 100, {
-        duration: 3000 + Math.random() * 2000,
-        easing: Easing.linear,
+      withTiming(1, {
+        duration: 150,
+        easing: Easing.out(Easing.back(2)),
       })
     );
 
-    // Sway animation
-    translateX.value = withDelay(
+    // Burst outward from center
+    progress.value = withDelay(
       delay,
-      withRepeat(
-        withSequence(
-          withTiming(30, { duration: 500 }),
-          withTiming(-30, { duration: 500 })
-        ),
-        -1,
-        true
-      )
+      withTiming(1, {
+        duration: 800 + Math.random() * 400,
+        easing: Easing.out(Easing.cubic),
+      })
     );
 
     // Rotation
     rotate.value = withDelay(
       delay,
-      withRepeat(withTiming(360, { duration: 1000 }), -1, false)
+      withTiming(rotationSpeed * 360, {
+        duration: 1200,
+        easing: Easing.out(Easing.quad),
+      })
     );
 
-    // Fade out at bottom
-    opacity.value = withDelay(delay + 2500, withTiming(0, { duration: 500 }));
+    // Fade out
+    opacity.value = withDelay(
+      delay + 600,
+      withTiming(0, {
+        duration: 400,
+        easing: Easing.out(Easing.ease),
+      })
+    );
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: translateY.value },
-      { translateX: translateX.value },
-      { rotate: `${rotate.value}deg` },
-    ],
-    opacity: opacity.value,
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    // Calculate position based on angle and progress
+    const currentDistance = distance * progress.value;
+    const x = Math.cos(angle) * currentDistance;
+    const y = Math.sin(angle) * currentDistance;
+
+    return {
+      transform: [
+        { translateX: x },
+        { translateY: y },
+        { rotate: `${rotate.value}deg` },
+        { scale: scale.value * (1 - progress.value * 0.3) }, // Shrink as it moves
+      ],
+      opacity: opacity.value,
+    };
+  });
+
+  const getShapeStyle = () => {
+    switch (shape) {
+      case "circle":
+        return { borderRadius: size / 2 };
+      case "rect":
+        return { width: size * 1.5, height: size * 0.6, borderRadius: 2 };
+      default:
+        return { borderRadius: 3 };
+    }
+  };
 
   return (
     <Animated.View
       style={[
         {
           position: "absolute",
-          left: startX,
-          top: -20,
+          left: CENTER_X - size / 2,
+          top: CENTER_Y - size / 2,
           width: size,
-          height: size,
+          height: shape === "rect" ? size * 0.6 : size,
           backgroundColor: color,
-          borderRadius: size / 4,
+          ...getShapeStyle(),
         },
         animatedStyle,
       ]}
@@ -87,23 +115,44 @@ const ConfettiPiece: React.FC<{
   );
 };
 
-// Confetti burst component
-const ConfettiBurst: React.FC = () => {
+// Full center-burst explosion - Square Confetti Exploded style
+const CenterBurstConfetti: React.FC = () => {
+  // Premium colorful palette
   const colors = [
-    "#2563eb",
-    "#60a5fa",
-    "#fbbf24",
-    "#f87171",
-    "#34d399",
-    "#a78bfa",
+    "#2563eb", // Blue
+    "#3b82f6", // Light Blue
+    "#fbbf24", // Yellow/Gold
+    "#f97316", // Orange
+    "#ef4444", // Red
+    "#22c55e", // Green
+    "#a855f7", // Purple
+    "#ec4899", // Pink
+    "#06b6d4", // Cyan
   ];
-  const pieces = Array.from({ length: 30 }, (_, i) => ({
-    id: i,
-    delay: Math.random() * 500,
-    startX: Math.random() * SCREEN_WIDTH,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    size: 8 + Math.random() * 8,
-  }));
+
+  const shapes: ("square" | "circle" | "rect")[] = ["square", "circle", "rect"];
+
+  // Create 60 confetti pieces in a radial burst pattern
+  const pieces = [];
+  const particleCount = 60;
+
+  for (let i = 0; i < particleCount; i++) {
+    // Spread particles in all directions (360 degrees)
+    const baseAngle = (i / particleCount) * Math.PI * 2;
+    const angleVariation = (Math.random() - 0.5) * 0.5; // Add some randomness
+    const angle = baseAngle + angleVariation;
+
+    pieces.push({
+      id: i,
+      delay: Math.random() * 200, // Slight stagger for natural look
+      angle,
+      distance: 150 + Math.random() * 200, // Random distance 150-350px
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: 10 + Math.random() * 14, // Size 10-24px
+      shape: shapes[Math.floor(Math.random() * shapes.length)],
+      rotationSpeed: 1 + Math.random() * 3, // 1-4 rotations
+    });
+  }
 
   return (
     <View
@@ -115,15 +164,19 @@ const ConfettiBurst: React.FC = () => {
         bottom: 0,
         overflow: "hidden",
         pointerEvents: "none",
+        zIndex: 10,
       }}
     >
       {pieces.map((piece) => (
         <ConfettiPiece
           key={piece.id}
           delay={piece.delay}
-          startX={piece.startX}
+          angle={piece.angle}
+          distance={piece.distance}
           color={piece.color}
           size={piece.size}
+          shape={piece.shape}
+          rotationSpeed={piece.rotationSpeed}
         />
       ))}
     </View>
@@ -146,18 +199,31 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <Animated.View
       entering={FadeInUp.delay(delay).springify()}
-      className="bg-white p-4 rounded-3xl flex-row items-center border-2 border-blue-50 mb-3"
+      className="bg-white rounded-2xl mb-3 overflow-hidden"
+      style={{
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
+      }}
     >
-      <View className="w-14 h-14 bg-blue-50 items-center justify-center rounded-2xl mr-4">
-        <Text style={{ fontSize: 28 }}>{emoji}</Text>
-      </View>
-      <View className="flex-1">
-        <Text className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">
-          {label}
-        </Text>
-        <Text className="text-lg font-bold text-gray-900 capitalize">
-          {value || "Not set"}
-        </Text>
+      <View className="flex-row items-center px-5 py-4">
+        {/* Emoji */}
+        <Text style={{ fontSize: 32 }}>{emoji}</Text>
+
+        {/* Divider */}
+        <View className="w-px h-10 bg-gray-200 mx-4" />
+
+        {/* Content */}
+        <View className="flex-1">
+          <Text className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">
+            {label}
+          </Text>
+          <Text className="text-base font-semibold text-blue-600 capitalize">
+            {value || "Not set"}
+          </Text>
+        </View>
       </View>
     </Animated.View>
   );
@@ -165,33 +231,23 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
 export const CompletionStep = () => {
   const { data } = useOnboardingStore();
-  const scale = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withDelay(200, withSpring(1, { damping: 8, stiffness: 100 }));
-  }, []);
-
-  const animatedEmojiStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
 
   const summaries = [
     { label: "Primary Goal", value: data.mainGoal, emoji: "🎯" },
-    { label: "Learning Pace", value: data.fluencySpeed, emoji: "⚡" },
+    { label: "Learning Pace", value: data.fluencySpeed, emoji: "🏃" },
     { label: "Current Level", value: data.speakingLevel, emoji: "📊" },
   ];
 
   return (
     <View className="flex-1 px-4">
-      {/* Full-screen Confetti Animation */}
-      <ConfettiBurst />
+      {/* Center Burst Confetti Explosion - Square Confetti Exploded Style */}
+      <CenterBurstConfetti />
 
-      {/* Celebration Header - Fixed, no animation on wrapper */}
+      {/* Celebration Header */}
       <View className="items-center mb-10">
-        <View className="items-center justify-center mb-6">
-          <Text style={{ fontSize: 24 }}>🎉</Text>
+        {/* Static Emoji */}
+        <View className="size-20 bg-blue-50 items-center justify-center rounded-full mb-6">
+          <Text style={{ fontSize: 30 }}>🎉</Text>
         </View>
 
         <Text className="text-3xl font-bold text-gray-900 text-center mb-3">
