@@ -260,248 +260,276 @@ export interface ProfileStepRef {
   goToPrevSubStep: () => boolean; // Returns true if went back, false if should go back main step
 }
 
-export const ProfileStep = forwardRef<ProfileStepRef>((_, ref) => {
-  const { data, updateData } = useOnboardingStore();
-  const [subStep, setSubStep] = useState(1);
+// Props interface for scroll state callback
+interface ProfileStepProps {
+  onScrollStateChange?: (showBorder: boolean) => void;
+}
 
-  // State for Native Language modal (must be at top, before any returns)
-  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
+  ({ onScrollStateChange }, ref) => {
+    const { data, updateData } = useOnboardingStore();
+    const [subStep, setSubStep] = useState(1);
 
-  // State for Country modal
-  const [countryModalVisible, setCountryModalVisible] = useState(false);
+    // State for Native Language modal (must be at top, before any returns)
+    const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
-  // Get selected language display name
-  const getSelectedLanguageName = () => {
-    const lang = APP_LANGUAGES.find((l) => l.code === data.nativeLanguage);
-    return lang ? lang.name : "Select your native language";
-  };
+    // State for Country modal
+    const [countryModalVisible, setCountryModalVisible] = useState(false);
 
-  // Expose sub-step controls to parent
-  useImperativeHandle(ref, () => ({
-    subStep,
-    goToNextSubStep: () => {
-      if (subStep === 1 && data.preferredLanguage) {
-        setSubStep(2);
-        return true;
-      }
-      return false;
-    },
-    goToPrevSubStep: () => {
-      if (subStep === 2) {
-        setSubStep(1);
-        return true;
-      }
-      return false;
-    },
-  }));
+    // Scroll tracking refs
+    const contentHeightRef = React.useRef(0);
+    const containerHeightRef = React.useRef(0);
 
-  // Sub-step 1: App Language Selection
-  if (subStep === 1) {
+    // Get selected language display name
+    const getSelectedLanguageName = () => {
+      const lang = APP_LANGUAGES.find((l) => l.code === data.nativeLanguage);
+      return lang ? lang.name : "Select your native language";
+    };
+
+    // Expose sub-step controls to parent
+    useImperativeHandle(ref, () => ({
+      subStep,
+      goToNextSubStep: () => {
+        if (subStep === 1 && data.preferredLanguage) {
+          setSubStep(2);
+          return true;
+        }
+        return false;
+      },
+      goToPrevSubStep: () => {
+        if (subStep === 2) {
+          setSubStep(1);
+          return true;
+        }
+        return false;
+      },
+    }));
+
+    // Sub-step 1: App Language Selection
+    if (subStep === 1) {
+      return (
+        <View className="flex-1">
+          <View className="mb-6 px-4">
+            <Text className="text-3xl font-bold text-gray-900 mb-2">
+              Choose Your App Language
+            </Text>
+          </View>
+
+          <FlatList
+            data={APP_LANGUAGES}
+            keyExtractor={(item) => item.code}
+            contentContainerStyle={{
+              paddingTop: 4,
+              paddingBottom: 100,
+              paddingHorizontal: 16,
+            }}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            scrollEventThrottle={16}
+            onScroll={(event) => {
+              const scrollY = event.nativeEvent.contentOffset.y;
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              const isAtBottom =
+                scrollY + containerHeightRef.current >=
+                contentHeightRef.current - 10;
+              onScrollStateChange?.(isScrollable && !isAtBottom);
+            }}
+            onContentSizeChange={(width, height) => {
+              contentHeightRef.current = height;
+            }}
+            onLayout={(event) => {
+              containerHeightRef.current = event.nativeEvent.layout.height;
+              // Initial check
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              onScrollStateChange?.(isScrollable);
+            }}
+            renderItem={({ item }) => (
+              <LanguageItem
+                lang={item}
+                isSelected={data.preferredLanguage === item.code}
+                onPress={() => updateData({ preferredLanguage: item.code })}
+              />
+            )}
+          />
+        </View>
+      );
+    }
+
+    // Sub-step 2: Profile Details (Name, Country, Native Language)
     return (
       <View className="flex-1">
         <View className="mb-6 px-4">
           <Text className="text-3xl font-bold text-gray-900 mb-2">
-            Choose Your App Language
+            Almost there!
           </Text>
         </View>
 
-        <FlatList
-          data={APP_LANGUAGES}
-          keyExtractor={(item) => item.code}
-          contentContainerStyle={{
-            paddingTop: 4,
-            paddingBottom: 100,
-            paddingHorizontal: 16,
-          }}
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
-          ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => (
-            <LanguageItem
-              lang={item}
-              isSelected={data.preferredLanguage === item.code}
-              onPress={() => updateData({ preferredLanguage: item.code })}
+        >
+          {/* Name */}
+          <View className="mb-4">
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+              Your Name
+            </Text>
+            <AuthInput
+              placeholder="Enter your name"
+              value={data.name}
+              onChangeText={(text) => updateData({ name: text })}
+              autoCapitalize="words"
             />
-          )}
-        />
+          </View>
+
+          {/* Country */}
+          <View className="mb-4">
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+              Country
+            </Text>
+            <TouchableOpacity
+              className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
+              onPress={() => setCountryModalVisible(true)}
+            >
+              <Text
+                className={`flex-1 text-base ${
+                  data.country ? "text-gray-800" : "text-gray-400"
+                }`}
+                numberOfLines={1}
+              >
+                {data.country || "Select your country"}
+              </Text>
+              <ChevronDown size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Native Language */}
+          <View className="mb-4">
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+              Native Language
+            </Text>
+            <TouchableOpacity
+              className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
+              onPress={() => setLanguageModalVisible(true)}
+            >
+              <Text
+                className={`flex-1 text-base ${
+                  data.nativeLanguage ? "text-gray-800" : "text-gray-400"
+                }`}
+                numberOfLines={1}
+              >
+                {getSelectedLanguageName()}
+              </Text>
+              <ChevronDown size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+
+        {/* Country Modal */}
+        <Modal
+          visible={countryModalVisible}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setCountryModalVisible(false)}
+        >
+          <View className="flex-1 bg-white">
+            <SafeAreaView className="flex-1">
+              {/* Header */}
+              <View className="px-4 py-6 bg-white border-b border-gray-100">
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-1 pr-4">
+                    <Text className="text-2xl font-bold text-gray-900">
+                      Select Country
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setCountryModalVisible(false)}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                  >
+                    <Ionicons name="close" size={24} color="black" />
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Country List */}
+              <FlatList
+                data={COUNTRIES}
+                keyExtractor={(item) => item.name}
+                contentContainerStyle={{
+                  paddingTop: 16,
+                  paddingHorizontal: 16,
+                  paddingBottom: 100,
+                }}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View className="h-3" />}
+                renderItem={({ item }) => (
+                  <CountryItem
+                    country={item}
+                    isSelected={data.country === item.name}
+                    onPress={() => {
+                      updateData({ country: item.name });
+                      setCountryModalVisible(false);
+                    }}
+                  />
+                )}
+              />
+            </SafeAreaView>
+          </View>
+        </Modal>
+
+        {/* Native Language Modal */}
+        <Modal
+          visible={languageModalVisible}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setLanguageModalVisible(false)}
+        >
+          <View className="flex-1 bg-white">
+            <SafeAreaView className="flex-1">
+              {/* Header */}
+              <View className="px-4 py-6 bg-white border-b border-gray-100">
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-1 pr-4">
+                    <Text className="text-2xl font-bold text-gray-900">
+                      Native Language
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setLanguageModalVisible(false)}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                  >
+                    <Ionicons name="close" size={24} color="black" />
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Language List */}
+              <FlatList
+                data={APP_LANGUAGES}
+                keyExtractor={(item) => item.code}
+                contentContainerStyle={{
+                  paddingTop: 16,
+                  paddingHorizontal: 16,
+                  paddingBottom: 100,
+                }}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View className="h-3" />}
+                renderItem={({ item }) => (
+                  <LanguageItem
+                    lang={item}
+                    isSelected={data.nativeLanguage === item.code}
+                    onPress={() => {
+                      updateData({ nativeLanguage: item.code });
+                      setLanguageModalVisible(false);
+                    }}
+                  />
+                )}
+              />
+            </SafeAreaView>
+          </View>
+        </Modal>
       </View>
     );
   }
-
-  // Sub-step 2: Profile Details (Name, Country, Native Language)
-  return (
-    <View className="flex-1">
-      <View className="mb-6 px-4">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          Almost there!
-        </Text>
-        <Text className="text-gray-500 text-base leading-6">
-          Just a few more details to personalize your learning experience.
-        </Text>
-      </View>
-
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Name */}
-        <View className="mb-4">
-          <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-            Your Name
-          </Text>
-          <AuthInput
-            placeholder="Enter your name"
-            value={data.name}
-            onChangeText={(text) => updateData({ name: text })}
-            autoCapitalize="words"
-          />
-        </View>
-
-        {/* Country */}
-        <View className="mb-4">
-          <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-            Country
-          </Text>
-          <TouchableOpacity
-            className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
-            onPress={() => setCountryModalVisible(true)}
-          >
-            <Text
-              className={`flex-1 text-base ${
-                data.country ? "text-gray-800" : "text-gray-400"
-              }`}
-              numberOfLines={1}
-            >
-              {data.country || "Select your country"}
-            </Text>
-            <ChevronDown size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Native Language */}
-        <View className="mb-4">
-          <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-            Native Language
-          </Text>
-          <TouchableOpacity
-            className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
-            onPress={() => setLanguageModalVisible(true)}
-          >
-            <Text
-              className={`flex-1 text-base ${
-                data.nativeLanguage ? "text-gray-800" : "text-gray-400"
-              }`}
-              numberOfLines={1}
-            >
-              {getSelectedLanguageName()}
-            </Text>
-            <ChevronDown size={20} color="#9CA3AF" />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      {/* Country Modal */}
-      <Modal
-        visible={countryModalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setCountryModalVisible(false)}
-      >
-        <View className="flex-1 bg-white">
-          <SafeAreaView className="flex-1">
-            {/* Header */}
-            <View className="px-4 py-6 bg-white border-b border-gray-100">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1 pr-4">
-                  <Text className="text-2xl font-bold text-gray-900">
-                    Select Country
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={() => setCountryModalVisible(false)}
-                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-                >
-                  <Ionicons name="close" size={24} color="black" />
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Country List */}
-            <FlatList
-              data={COUNTRIES}
-              keyExtractor={(item) => item.name}
-              contentContainerStyle={{
-                paddingTop: 16,
-                paddingHorizontal: 16,
-                paddingBottom: 100,
-              }}
-              showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View className="h-3" />}
-              renderItem={({ item }) => (
-                <CountryItem
-                  country={item}
-                  isSelected={data.country === item.name}
-                  onPress={() => {
-                    updateData({ country: item.name });
-                    setCountryModalVisible(false);
-                  }}
-                />
-              )}
-            />
-          </SafeAreaView>
-        </View>
-      </Modal>
-
-      {/* Native Language Modal */}
-      <Modal
-        visible={languageModalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setLanguageModalVisible(false)}
-      >
-        <View className="flex-1 bg-white">
-          <SafeAreaView className="flex-1">
-            {/* Header */}
-            <View className="px-4 py-6 bg-white border-b border-gray-100">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1 pr-4">
-                  <Text className="text-2xl font-bold text-gray-900">
-                    Native Language
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={() => setLanguageModalVisible(false)}
-                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-                >
-                  <Ionicons name="close" size={24} color="black" />
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Language List */}
-            <FlatList
-              data={APP_LANGUAGES}
-              keyExtractor={(item) => item.code}
-              contentContainerStyle={{
-                paddingTop: 16,
-                paddingHorizontal: 16,
-                paddingBottom: 100,
-              }}
-              showsVerticalScrollIndicator={false}
-              ItemSeparatorComponent={() => <View className="h-3" />}
-              renderItem={({ item }) => (
-                <LanguageItem
-                  lang={item}
-                  isSelected={data.nativeLanguage === item.code}
-                  onPress={() => {
-                    updateData({ nativeLanguage: item.code });
-                    setLanguageModalVisible(false);
-                  }}
-                />
-              )}
-            />
-          </SafeAreaView>
-        </View>
-      </Modal>
-    </View>
-  );
-});
+);

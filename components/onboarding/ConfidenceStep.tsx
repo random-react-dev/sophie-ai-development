@@ -29,12 +29,6 @@ export const ConfidenceStep = () => {
 
   return (
     <View className="px-4 justify-center">
-      <View className="mb-16">
-        <Text className="text-3xl font-bold text-gray-900 mb-4">
-          How confident are you?
-        </Text>
-      </View>
-
       <View className="px-2">
         {/* Dynamic Label with Rainbow Color based on slider position */}
         <Text

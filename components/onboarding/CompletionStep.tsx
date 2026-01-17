@@ -1,4 +1,4 @@
-import { RainbowBorder } from "@/components/common/Rainbow";
+import { Colors } from "@/constants/theme";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React, { useEffect } from "react";
 import { Dimensions, Text, View } from "react-native";
@@ -189,6 +189,7 @@ interface SummaryCardProps {
   value: string;
   emoji: string;
   delay: number;
+  accentColor: string;
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({
@@ -196,42 +197,47 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   value,
   emoji,
   delay,
+  accentColor,
 }) => {
   return (
     <Animated.View
       entering={FadeInUp.delay(delay).springify()}
       className="mb-3"
-      style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        elevation: 3,
-      }}
     >
-      <RainbowBorder
-        borderWidth={2}
-        borderRadius={16}
-        innerBackgroundClassName="bg-white"
+      <View
+        className="flex-row bg-white rounded-2xl overflow-hidden"
+        style={{
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 6,
+          elevation: 2,
+        }}
       >
-        <View className="flex-row items-center px-5 py-4">
+        {/* Left Accent Strip */}
+        <View
+          style={{
+            width: 5,
+            backgroundColor: accentColor,
+          }}
+        />
+
+        {/* Card Content */}
+        <View className="flex-1 flex-row items-center px-5 py-4">
           {/* Emoji */}
           <Text style={{ fontSize: 32 }}>{emoji}</Text>
 
-          {/* Divider */}
-          <View className="w-px h-10 bg-gray-200 mx-4" />
-
           {/* Content */}
-          <View className="flex-1">
-            <Text className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">
+          <View className="flex-1 ml-4">
+            <Text className="text-xs text-gray-400 uppercase tracking-wider mb-1">
               {label}
             </Text>
-            <Text className="text-base font-semibold text-gray-700 capitalize">
+            <Text className="text-lg font-semibold text-gray-800 capitalize">
               {value || "Not set"}
             </Text>
           </View>
         </View>
-      </RainbowBorder>
+      </View>
     </Animated.View>
   );
 };
@@ -274,6 +280,7 @@ export const CompletionStep = () => {
             value={item.value}
             emoji={item.emoji}
             delay={400 + i * 150}
+            accentColor={Colors.rainbow[i % Colors.rainbow.length]}
           />
         ))}
       </View>

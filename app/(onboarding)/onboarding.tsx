@@ -8,6 +8,7 @@ import { FluencyStep } from "@/components/onboarding/FluencyStep";
 import { FocusStep } from "@/components/onboarding/FocusStep";
 import { GoalStep } from "@/components/onboarding/GoalStep";
 import { LevelStep } from "@/components/onboarding/LevelStep";
+import { OnboardingHeader } from "@/components/onboarding/OnboardingHeader";
 import {
   ProfileStep,
   ProfileStepRef,
@@ -16,9 +17,65 @@ import { useAuthStore } from "@/stores/authStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import React, { useRef } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+// Animated border line with smooth fade animation
+const AnimatedBorderLine: React.FC<{ visible: boolean }> = ({ visible }) => {
+  const opacity = useSharedValue(visible ? 1 : 0);
+
+  useEffect(() => {
+    opacity.value = withTiming(visible ? 1 : 0, { duration: 200 });
+  }, [visible]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        animatedStyle,
+        {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+          backgroundColor: "#e5e7eb", // gray-200
+        },
+      ]}
+    />
+  );
+};
+
+// Step configuration with titles for OnboardingHeader
+const stepConfig: Record<number, { title: string; subtitle?: string }> = {
+  1: { title: "" }, // ProfileStep handles its own header
+  2: { title: "What's your main goal in life?" },
+  3: { title: "How quickly do you want to become fluent?" },
+  4: { title: "How long have you been studying this language?" },
+  5: { title: "Which best describes you?" },
+  6: { title: "How confident are you?" },
+  7: { title: "Why are you not confident?" },
+  8: { title: "What do you want to focus on first?" },
+  9: { title: "How did you find us?" },
+  10: { title: "" }, // CompletionStep has its own centered header
+};
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -28,6 +85,43 @@ export default function OnboardingScreen() {
 
   // Ref for ProfileStep sub-step control
   const profileStepRef = useRef<ProfileStepRef>(null);
+
+  // Dynamic border state - shows when content is scrollable and not at bottom
+  const [showBorder, setShowBorder] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const contentHeight = useRef(0);
+  const containerHeight = useRef(0);
+
+  const updateBorderVisibility = useCallback((scrollY: number = 0) => {
+    const isScrollable = contentHeight.current > containerHeight.current;
+    const isAtBottom =
+      scrollY + containerHeight.current >= contentHeight.current - 10; // 10px threshold
+    setShowBorder(isScrollable && !isAtBottom);
+  }, []);
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const scrollY = event.nativeEvent.contentOffset.y;
+      updateBorderVisibility(scrollY);
+    },
+    [updateBorderVisibility]
+  );
+
+  const handleContentSizeChange = useCallback(
+    (width: number, height: number) => {
+      contentHeight.current = height;
+      updateBorderVisibility();
+    },
+    [updateBorderVisibility]
+  );
+
+  const handleLayout = useCallback(
+    (event: { nativeEvent: { layout: { height: number } } }) => {
+      containerHeight.current = event.nativeEvent.layout.height;
+      updateBorderVisibility();
+    },
+    [updateBorderVisibility]
+  );
 
   const handleContinue = async () => {
     if (currentStep === 10) {
@@ -105,7 +199,12 @@ export default function OnboardingScreen() {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <ProfileStep ref={profileStepRef} />;
+        return (
+          <ProfileStep
+            ref={profileStepRef}
+            onScrollStateChange={(shouldShow) => setShowBorder(shouldShow)}
+          />
+        );
       case 2:
         return <GoalStep />;
       case 3:
@@ -147,6 +246,7 @@ export default function OnboardingScreen() {
         <View className="w-10" />
       </View>
 
+      {/* Progress Bar */}
       <View className="h-1 bg-gray-100 flex-row px-8 mb-8 mt-2">
         {[...Array(10)].map((_, i) => (
           <View
@@ -163,21 +263,42 @@ export default function OnboardingScreen() {
         <View className="flex-1">{renderStep()}</View>
       ) : (
         <ScrollView
+          ref={scrollViewRef}
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           className="flex-1"
+          onScroll={handleScroll}
+          onContentSizeChange={handleContentSizeChange}
+          onLayout={handleLayout}
+          scrollEventThrottle={16}
         >
+          {/* Render OnboardingHeader for steps with titles */}
+          {stepConfig[currentStep]?.title && (
+            <OnboardingHeader
+              title={stepConfig[currentStep].title}
+              subtitle={stepConfig[currentStep].subtitle}
+            />
+          )}
           {renderStep()}
         </ScrollView>
       )}
 
-      <View className="p-6 border-t border-gray-50 bg-white">
-        {/* Continue Button with RainbowBorder */}
+      {/* Continue Button */}
+      <View className="p-4 bg-white">
+        {/* Animated Border Line */}
+        <AnimatedBorderLine visible={showBorder} />
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleContinue}
           disabled={isSaving}
-          className="w-full h-16 rounded-full overflow-hidden shadow-lg"
+          className="w-full h-16 rounded-full overflow-hidden"
+          style={{
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 3,
+          }}
         >
           <RainbowBorder
             borderWidth={2}
@@ -186,7 +307,7 @@ export default function OnboardingScreen() {
             containerClassName="items-center justify-center"
             innerBackgroundClassName="bg-white"
           >
-            <Text className="text-black font-bold text-lg">
+            <Text className="text-gray-900 font-bold text-lg">
               {isSaving
                 ? "Saving..."
                 : currentStep === 10

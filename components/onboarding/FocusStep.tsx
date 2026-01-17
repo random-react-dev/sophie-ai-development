@@ -1,4 +1,4 @@
-import { RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -32,29 +32,33 @@ const FocusTag: React.FC<FocusTagProps> = ({
     return (
       <Animated.View style={animatedStyle}>
         <Pressable onPress={onPress}>
-          <RainbowGradient
-            className="rounded-full"
+          <RainbowBorder
+            borderRadius={100}
+            borderWidth={2}
             style={{
-              paddingHorizontal: 16,
-              paddingVertical: 12,
               marginRight: 8,
               marginBottom: 12,
-              borderRadius: 100,
             }}
           >
-            <View className="flex-row items-center">
+            <View
+              className="flex-row items-center"
+              style={{
+                paddingHorizontal: 14,
+                paddingVertical: 10,
+              }}
+            >
               <Text style={{ fontSize: 20, marginRight: 8 }}>{emoji}</Text>
               <Text
                 style={{
                   fontSize: 16,
                   fontWeight: "600",
-                  color: "#ffffff",
+                  color: "#374151",
                 }}
               >
                 {label}
               </Text>
             </View>
-          </RainbowGradient>
+          </RainbowBorder>
         </Pressable>
       </Animated.View>
     );
@@ -117,12 +121,6 @@ export const FocusStep = () => {
 
   return (
     <View className="flex-1 px-4">
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          What do you want to focus on first?
-        </Text>
-      </View>
-
       <View className="flex-row flex-wrap">
         {areas.map((area) => (
           <FocusTag
