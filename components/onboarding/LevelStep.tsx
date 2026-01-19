@@ -1,6 +1,6 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
 
 export const LevelStep = () => {
@@ -36,12 +36,6 @@ export const LevelStep = () => {
 
   return (
     <View className="flex-1 px-4">
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          Which best describes you?
-        </Text>
-      </View>
-
       {levels.map((level) => (
         <SelectionCard
           key={level.id}

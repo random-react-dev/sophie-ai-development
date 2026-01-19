@@ -1,4 +1,4 @@
-import { RainbowBorder } from "@/components/common/Rainbow";
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
@@ -17,7 +17,13 @@ const voiceAvailable = isVoiceModeAvailable();
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  const { startPTTRecording, stopPTTRecording, isPTTActive, isProcessing, connectionState } = useConversationStore();
+  const {
+    startPTTRecording,
+    stopPTTRecording,
+    isPTTActive,
+    isProcessing,
+    connectionState,
+  } = useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -30,7 +36,22 @@ export default function TabLayout() {
     }
   }, [user]);
 
-  // Pulsing animation when recording
+  // Determine if Talk tab is focused
+  const isTalkFocused = pathname === "/talk";
+
+  // Scale animation for active state (subtle lift when focused)
+  const activeScaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.spring(activeScaleAnim, {
+      toValue: isTalkFocused ? 1.08 : 1, // Slightly larger when focused
+      useNativeDriver: true,
+      damping: 15,
+      stiffness: 150,
+    }).start();
+  }, [isTalkFocused]);
+
+  // Pulsing animation ONLY when recording
   useEffect(() => {
     if (!isPTTActive) {
       pulseAnim.setValue(1);
@@ -49,7 +70,7 @@ export default function TabLayout() {
           duration: 600,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
 
     animation.start();
@@ -59,7 +80,7 @@ export default function TabLayout() {
   // Find flag for active profile target language
   const activeFlag = activeProfile
     ? SUPPORTED_LANGUAGES.find((l) => l.name === activeProfile.target_language)
-      ?.flag
+        ?.flag
     : null;
 
   return (
@@ -120,95 +141,118 @@ export default function TabLayout() {
           href: voiceAvailable ? undefined : null,
           tabBarButton: voiceAvailable
             ? () => {
-              const isFocused = pathname === "/talk";
-              const isConnected = connectionState === "connected";
+                const isFocused = pathname === "/talk";
+                const isConnected = connectionState === "connected";
 
-              const handlePressIn = () => {
-                if (!isFocused) return;
+                const handlePressIn = () => {
+                  if (!isFocused) return;
 
-                setIsPressing(true);
+                  setIsPressing(true);
 
-                Animated.spring(scaleAnim, {
-                  toValue: 1.1,
-                  useNativeDriver: true,
-                }).start();
+                  Animated.spring(scaleAnim, {
+                    toValue: 1.1,
+                    useNativeDriver: true,
+                  }).start();
 
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              };
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                };
 
-              const handlePressOut = () => {
-                setIsPressing(false);
+                const handlePressOut = () => {
+                  setIsPressing(false);
 
-                Animated.spring(scaleAnim, {
-                  toValue: 1,
-                  useNativeDriver: true,
-                }).start();
+                  Animated.spring(scaleAnim, {
+                    toValue: 1,
+                    useNativeDriver: true,
+                  }).start();
 
-                if (isPTTActive) {
-                  stopPTTRecording();
-                }
-              };
+                  if (isPTTActive) {
+                    stopPTTRecording();
+                  }
+                };
 
-              const handleLongPress = () => {
-                if (!isFocused || !isConnected) return;
+                const handleLongPress = () => {
+                  if (!isFocused || !isConnected) return;
 
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                startPTTRecording();
-              };
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  startPTTRecording();
+                };
 
-              const handlePress = () => {
-                if (!isFocused) {
-                  router.push("/(tabs)/talk");
-                }
-              };
+                const handlePress = () => {
+                  if (!isFocused) {
+                    router.push("/(tabs)/talk");
+                  }
+                };
 
-              const getButtonColor = (): string => {
-                if (isPTTActive) return "bg-red-500 shadow-red-200";
-                if (isProcessing) return "bg-orange-500 shadow-orange-200";
-                if (!isFocused) return "bg-gray-900 shadow-gray-400";
-                if (!isConnected) return "bg-gray-600 shadow-gray-400";
-                return isPressing
-                  ? "bg-blue-400 shadow-blue-200"
-                  : "bg-blue-500 shadow-blue-200";
-              };
+                const getButtonColor = (): string => {
+                  if (isPTTActive) return "bg-red-500 shadow-red-200";
+                  if (isProcessing) return "bg-orange-500 shadow-orange-200";
+                  if (!isFocused) return "bg-gray-900 shadow-gray-400";
+                  if (!isConnected) return "bg-gray-600 shadow-gray-400";
+                  return isPressing
+                    ? "bg-blue-400 shadow-blue-200"
+                    : "bg-blue-500 shadow-blue-200";
+                };
 
-              return (
-                <Animated.View
-                  style={{ transform: [{ scale: scaleAnim }] }}
-                  className="items-center justify-center -top-8"
-                >
-                  {/* Pulsing ring when recording */}
-                  {isPTTActive && (
-                    <Animated.View
-                      style={{
-                        position: "absolute",
-                        width: 80,
-                        height: 80,
-                        borderRadius: 24,
-                        backgroundColor: "rgba(239, 68, 68, 0.3)",
-                        transform: [{ scale: pulseAnim }],
-                      }}
-                    />
-                  )}
-                  <Pressable
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    onLongPress={handleLongPress}
-                    delayLongPress={400}
-                    onPress={handlePress}
+                return (
+                  <Animated.View
+                    style={{
+                      transform: [
+                        {
+                          scale: Animated.multiply(activeScaleAnim, scaleAnim),
+                        },
+                      ],
+                    }}
+                    className="items-center justify-center -top-8"
                   >
-                    <RainbowBorder
-                      borderRadius={20}
-                      borderWidth={3}
-                      className="size-20 shadow-2xl"
-                      containerClassName={`items-center justify-center ${getButtonColor()}`}
+                    {/* Pulsing ring when recording ONLY */}
+                    {isPTTActive && (
+                      <Animated.View
+                        style={{
+                          position: "absolute",
+                          width: 80,
+                          height: 80,
+                          borderRadius: 24,
+                          backgroundColor: "rgba(239, 68, 68, 0.3)",
+                          transform: [{ scale: pulseAnim }],
+                        }}
+                      />
+                    )}
+                    <Pressable
+                      onPressIn={handlePressIn}
+                      onPressOut={handlePressOut}
+                      onLongPress={handleLongPress}
+                      delayLongPress={400}
+                      onPress={handlePress}
                     >
-                      <Feather name="mic" size={26} color="black" />
-                    </RainbowBorder>
-                  </Pressable>
-                </Animated.View>
-              );
-            }
+                      <RainbowBorder
+                        borderRadius={20}
+                        borderWidth={3}
+                        className="size-20 shadow-2xl"
+                        containerClassName={`items-center justify-center ${getButtonColor()}`}
+                      >
+                        {/* Rainbow gradient bg inside button when focused */}
+                        {isFocused && !isPTTActive && (
+                          <View
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              borderRadius: 17,
+                              overflow: "hidden",
+                              opacity: 0.4,
+                            }}
+                          >
+                            <RainbowGradient style={{ flex: 1 }} />
+                          </View>
+                        )}
+                        <Feather name="mic" size={26} color="black" />
+                      </RainbowBorder>
+                    </Pressable>
+                  </Animated.View>
+                );
+              }
             : undefined,
         }}
       />

@@ -1,3 +1,4 @@
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -23,11 +24,45 @@ const FocusTag: React.FC<FocusTagProps> = ({
 }) => {
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: withSpring(selected ? "#2563eb" : "#ffffff"),
-      borderColor: withSpring(selected ? "#2563eb" : "#e5e7eb"),
       transform: [{ scale: withSpring(selected ? 1.02 : 1) }],
     };
   });
+
+  if (selected) {
+    return (
+      <Animated.View style={animatedStyle}>
+        <Pressable onPress={onPress}>
+          <RainbowBorder
+            borderRadius={100}
+            borderWidth={2}
+            style={{
+              marginRight: 8,
+              marginBottom: 12,
+            }}
+          >
+            <View
+              className="flex-row items-center"
+              style={{
+                paddingHorizontal: 14,
+                paddingVertical: 10,
+              }}
+            >
+              <Text style={{ fontSize: 20, marginRight: 8 }}>{emoji}</Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: "#374151",
+                }}
+              >
+                {label}
+              </Text>
+            </View>
+          </RainbowBorder>
+        </Pressable>
+      </Animated.View>
+    );
+  }
 
   return (
     <AnimatedPressable
@@ -39,6 +74,8 @@ const FocusTag: React.FC<FocusTagProps> = ({
           paddingVertical: 10,
           borderRadius: 100,
           borderWidth: 2,
+          borderColor: "#e5e7eb",
+          backgroundColor: "#ffffff",
           marginRight: 8,
           marginBottom: 12,
           flexDirection: "row",
@@ -51,7 +88,7 @@ const FocusTag: React.FC<FocusTagProps> = ({
         style={{
           fontSize: 16,
           fontWeight: "600",
-          color: selected ? "#ffffff" : "#374151",
+          color: "#374151",
         }}
       >
         {label}
@@ -84,12 +121,6 @@ export const FocusStep = () => {
 
   return (
     <View className="flex-1 px-4">
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          What do you want to focus on first?
-        </Text>
-      </View>
-
       <View className="flex-row flex-wrap">
         {areas.map((area) => (
           <FocusTag

@@ -1,6 +1,6 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
 
 export const FluencyStep = () => {
@@ -36,12 +36,6 @@ export const FluencyStep = () => {
 
   return (
     <View className="flex-1 px-4">
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          How quickly do you want to become fluent?
-        </Text>
-      </View>
-
       {speeds.map((speed) => (
         <SelectionCard
           key={speed.id}

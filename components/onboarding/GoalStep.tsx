@@ -1,6 +1,6 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
 
 export const GoalStep = () => {
@@ -16,12 +16,6 @@ export const GoalStep = () => {
 
   return (
     <View className="flex-1 px-4">
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          What&apos;s your main goal in life?
-        </Text>
-      </View>
-
       {goals.map((goal) => (
         <SelectionCard
           key={goal.id}

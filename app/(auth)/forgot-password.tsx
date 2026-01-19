@@ -1,5 +1,7 @@
+import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthInput } from "@/components/auth/AuthInput";
 import { AlertModal } from "@/components/common/AlertModal";
+import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
 import { Link, router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
@@ -8,7 +10,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -73,14 +74,7 @@ export default function ForgotPasswordScreen() {
               {/* Top Section */}
               <View>
                 {/* Logo & Brand (Outside Card) */}
-                <View className="items-center py-12">
-                  <Text className="text-4xl font-bold text-gray-900">
-                    Sophie AI
-                  </Text>
-                  <Text className="text-gray-500 text-base mt-1 w-full text-center">
-                    Native speaker in your pocket
-                  </Text>
-                </View>
+                <AuthHeader />
 
                 {/* White Card */}
                 <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
@@ -103,16 +97,14 @@ export default function ForgotPasswordScreen() {
                     autoCapitalize="none"
                   />
 
-                  {/* Reset Button - Blue */}
-                  <Pressable
+                  {/* Reset Button - Rainbow */}
+                  <Button
+                    title={isLoading ? "Sending..." : "Send Reset Link"}
                     onPress={handleReset}
                     disabled={isLoading}
-                    className="bg-blue-500 py-4 rounded-full items-center mt-6 active:opacity-80"
-                  >
-                    <Text className="text-white font-bold text-base">
-                      {isLoading ? "Sending..." : "Send Reset Link"}
-                    </Text>
-                  </Pressable>
+                    variant="rainbow"
+                    className="mt-6 h-14"
+                  />
                 </View>
               </View>
 

@@ -625,6 +625,7 @@ function CreateScenarioModal({
                 onPress={handleCreate}
                 className="w-full h-16 rounded-full overflow-hidden shadow-lg"
               >
+                {/* Create Scenario */}
                 <RainbowBorder
                   borderWidth={2}
                   borderRadius={9999}
