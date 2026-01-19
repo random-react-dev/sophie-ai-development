@@ -102,6 +102,7 @@ export default function TalkScreen() {
     isProcessing,
     isPTTActive,
     volumeLevel,
+    bufferProgress,
     messages,
     showTranscript,
     setShowTranscript,
@@ -250,6 +251,10 @@ Stay in character while teaching.`;
 
   const getStatusText = (): string => {
     if (isSpeaking) return "Sophie Speaking...";
+    // Show buffering progress during processing
+    if (isProcessing && bufferProgress > 0 && bufferProgress < 100) {
+      return `Preparing response... ${bufferProgress}%`;
+    }
     if (isProcessing) return "Sophie is thinking...";
     if (isListening) return "Listening...";
 
@@ -477,8 +482,17 @@ Stay in character while teaching.`;
             <RainbowWave
               isListening={isListening}
               isSpeaking={isSpeaking}
+              isProcessing={isProcessing}
               volumeLevel={volumeLevel}
             />
+            {/* Status Text - shows buffering progress, thinking state, etc */}
+            {(isProcessing || isSpeaking || isListening) && (
+              <View className="absolute bottom-4">
+                <Text className="text-gray-600 text-sm font-medium">
+                  {getStatusText()}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 

@@ -5,14 +5,16 @@ import { Logger } from '../common/Logger';
 const TAG = 'AudioStreamer';
 const SAMPLE_RATE = 24000; // Gemini output rate
 
-// Accumulate chunks into 2s buffers before sending to native (increased for iOS stability)
-const ACCUMULATION_TARGET = 48000; // 2.0s of audio at 24kHz
-const MIN_INITIAL_BUFFER = 72000; // 3s of audio before starting playback
+// Accumulate chunks into 1s buffers before sending to native
+const ACCUMULATION_TARGET = 24000; // 1.0s of audio at 24kHz
+const MIN_INITIAL_BUFFER = 48000; // 2s of audio before starting playback
+const FADE_IN_DURATION = 0.2; // 200ms fade-in to prevent pops
 
 // Periodic reset to prevent memory buildup
-const RESET_AFTER_RESPONSES = 10;
+const RESET_AFTER_RESPONSES = 5;
 
 type SpeakingStateCallback = (isSpeaking: boolean) => void;
+type BufferProgressCallback = (progress: number) => void; // 0-100
 
 class AudioStreamer {
     private audioContext: AudioContext | null = null;
@@ -24,6 +26,7 @@ class AudioStreamer {
     private hasStartedPlayback = false;
     private chunkCount = 0;
     private speakingStateCallback: SpeakingStateCallback | null = null;
+    private bufferProgressCallback: BufferProgressCallback | null = null;
     private finishTimeout: ReturnType<typeof setTimeout> | null = null;
     private responseId = 0;
     private responsesSinceReset = 0;
@@ -46,6 +49,10 @@ class AudioStreamer {
 
     setSpeakingStateCallback(callback: SpeakingStateCallback): void {
         this.speakingStateCallback = callback;
+    }
+
+    setBufferProgressCallback(callback: BufferProgressCallback): void {
+        this.bufferProgressCallback = callback;
     }
 
     isReady(): boolean {
@@ -180,12 +187,17 @@ class AudioStreamer {
                 this.queueSource.clearBuffers();
                 this.queueSource.stop();
                 this.queueSource.disconnect();
-            } catch { }
-            this.queueSource = null;
+            } catch { /* ignore errors from already-stopped sources */ }
+            this.queueSource = null; // Explicit null to help GC
         }
 
         const wasPlaying = this.isPlaying;
         this.isPlaying = false;
+
+        // Clear any accumulated samples immediately
+        this.accumulatedSamples.length = 0;
+        this.accumulatedSamples = [];
+        this.accumulatedLength = 0;
 
         if (wasPlaying) {
             this.speakingStateCallback?.(false);
@@ -195,17 +207,21 @@ class AudioStreamer {
     private createFreshQueueSource(): void {
         if (!this.audioContext || !this.gainNode) return;
 
-        // Cleanup old queue source if exists
+        // CRITICAL: Fully cleanup old queue source to prevent degradation
+        // AudioBufferQueueSourceNode is single-use after stop()
         if (this.queueSource) {
             try {
+                this.queueSource.clearBuffers();
+                this.queueSource.stop();
                 this.queueSource.disconnect();
-            } catch { }
-            this.queueSource = null;
+            } catch { /* ignore errors from already-stopped sources */ }
+            this.queueSource = null; // Explicit null to help GC
         }
 
         // Create fresh queue source and connect through GainNode
         this.queueSource = this.audioContext.createBufferQueueSource();
         this.queueSource.connect(this.gainNode);
+        Logger.debug(TAG, 'Created fresh AudioBufferQueueSourceNode');
     }
 
     /**
@@ -236,7 +252,13 @@ class AudioStreamer {
                 this.flushAccumulatedBuffer();
             }
 
-            // Start playback once we have enough initial buffer (2.5s)
+            // Report buffer progress for UI feedback
+            if (!this.hasStartedPlayback) {
+                const progress = Math.min(100, Math.round((this.totalQueuedSamples / MIN_INITIAL_BUFFER) * 100));
+                this.bufferProgressCallback?.(progress);
+            }
+
+            // Start playback once we have enough initial buffer (1.5s)
             if (!this.hasStartedPlayback && this.totalQueuedSamples >= MIN_INITIAL_BUFFER) {
                 this.startSpeaking();
             }
@@ -274,14 +296,20 @@ class AudioStreamer {
     }
 
     private startSpeaking(): void {
-        if (this.isPlaying || !this.queueSource) return;
+        if (this.isPlaying || !this.queueSource || !this.gainNode) return;
+
+        // Apply fade-in to prevent audio pops
+        this.gainNode.gain.value = 0;
+        const currentTime = this.audioContext?.currentTime ?? 0;
+        this.gainNode.gain.linearRampToValueAtTime(1.0, currentTime + FADE_IN_DURATION);
 
         // Start the queue source playback
-        Logger.info(TAG, `Starting playback (${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(1)}s buffered)`);
+        Logger.info(TAG, `Starting playback (${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(1)}s buffered, ${FADE_IN_DURATION * 1000}ms fade-in)`);
         this.queueSource.start();
 
         this.isPlaying = true;
         this.hasStartedPlayback = true;
+        this.bufferProgressCallback?.(100); // Clear progress
         Logger.info(TAG, 'Sophie started speaking');
         this.speakingStateCallback?.(true);
     }
