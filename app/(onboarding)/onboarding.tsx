@@ -149,7 +149,7 @@ export default function OnboardingScreen() {
 
         await updateProfile(onboardingMetadata);
         resetOnboarding();
-        router.replace("/(tabs)");
+        router.replace("/(tabs)/talk");
       } catch (error) {
         showAlert(
           "Error",
