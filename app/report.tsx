@@ -1,8 +1,9 @@
+import { RainbowBorder } from '@/components/common/Rainbow';
+import { saveToVocabulary } from '@/services/supabase/vocabulary';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
-import { saveToVocabulary } from '@/services/supabase/vocabulary';
-import { useRouter } from 'expo-router';
-import { Bookmark, MessageSquare, Sparkles, X } from 'lucide-react-native';
+import { Stack, useRouter } from 'expo-router';
+import { AlignLeft, Bookmark, Clock, MessageSquare, Sparkles, X } from 'lucide-react-native';
 import React from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,71 +27,116 @@ export default function ReportScreen() {
 
     return (
         <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-            <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-50">
-                <Text className="text-xl font-bold text-gray-900">Session Report</Text>
-                <TouchableOpacity onPress={handleClose} className="w-10 h-10 items-center justify-center rounded-full bg-gray-50">
-                    <X size={20} color="#64748b" />
+            <Stack.Screen options={{ headerShown: false }} />
+
+            {/* Header: Centered Title matching Profile Header style */}
+            <View className="px-6 py-4 flex-row justify-center items-center relative border-b border-gray-50 bg-white z-10">
+                <View className="items-center">
+                    <Text className="text-xl font-bold text-black">Session Report</Text>
+                    <Text className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-0.5">
+                        {selectedScenario?.title || 'Conversation'}
+                    </Text>
+                </View>
+
+                <TouchableOpacity
+                    onPress={handleClose}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-50 absolute right-6"
+                >
+                    <X size={20} color="#1f2937" />
                 </TouchableOpacity>
             </View>
 
             <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
-                {/* Summary Card */}
-                <View className="bg-blue-50 rounded-[32px] p-6 mb-8 border border-blue-100/50">
-                    <View className="flex-row items-center gap-3 mb-4">
-                        <View className="w-10 h-10 rounded-2xl bg-blue-500 items-center justify-center">
-                            <Sparkles size={20} color="white" />
+
+                {/* Summary Card with Rainbow Border */}
+                <RainbowBorder
+                    borderRadius={32}
+                    borderWidth={2}
+                    className="mb-8"
+                    containerClassName="p-6 bg-white"
+                >
+                    <View className="flex-row items-center gap-4 mb-4">
+                        <View className="w-12 h-12 rounded-2xl bg-gray-50 items-center justify-center">
+                            <Sparkles size={24} color="#1f2937" />
                         </View>
                         <View>
-                            <Text className="text-blue-900 font-bold">Practice Summary</Text>
-                            <Text className="text-blue-600 text-xs">Great job practicing your {selectedScenario?.level || 'skills'}!</Text>
+                            <Text className="text-gray-900 font-bold text-lg">Practice Summary</Text>
+                            <Text className="text-gray-500 text-xs font-medium uppercase tracking-widest">
+                                {selectedScenario?.level || 'Intermediate'} Level
+                            </Text>
                         </View>
                     </View>
-                    <Text className="text-blue-800 text-base leading-relaxed">
-                        You practiced {selectedScenario?.title || 'General Conversation'}. You successfully managed {messages.length} turns of conversation. Your fluency is improving!
+                    <Text className="text-gray-600 text-base leading-relaxed">
+                        Great job! You successfully managed <Text className="font-bold text-gray-900">{messages.length} turns</Text> of conversation in this session.
+                        Keep practicing to improve your fluency and confidence!
                     </Text>
-                </View>
+                </RainbowBorder>
 
                 {/* Statistics Row */}
                 <View className="flex-row gap-4 mb-8">
-                    <View className="flex-1 bg-gray-50 rounded-[24px] p-4 border border-gray-100">
-                        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Messages</Text>
+                    <View className="flex-1 bg-gray-50 rounded-[24px] p-5 border border-gray-100 items-center">
+                        <MessageSquare size={20} color="#9ca3af" className="mb-2" />
                         <Text className="text-2xl font-bold text-gray-900">{messages.length}</Text>
+                        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Messages</Text>
                     </View>
-                    <View className="flex-1 bg-gray-50 rounded-[24px] p-4 border border-gray-100">
-                        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Duration</Text>
+                    <View className="flex-1 bg-gray-50 rounded-[24px] p-5 border border-gray-100 items-center">
+                        <Clock size={20} color="#9ca3af" className="mb-2" />
                         <Text className="text-2xl font-bold text-gray-900">~2m</Text>
+                        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Duration</Text>
                     </View>
                 </View>
 
-                {/* Transcript Section */}
-                <View className="flex-row items-center gap-2 mb-4">
-                    <MessageSquare size={18} color="#94a3b8" />
-                    <Text className="text-gray-400 font-bold text-xs uppercase tracking-widest">Full Transcript</Text>
+                {/* Transcript Header */}
+                <View className="flex-row items-center gap-2 mb-6 ml-1">
+                    <AlignLeft size={18} color="#9ca3af" />
+                    <Text className="text-gray-900 font-bold text-sm uppercase tracking-widest">Full Transcript</Text>
                 </View>
 
-                {messages.map((msg) => (
-                    <View key={msg.id} className="mb-6 pb-6 border-b border-gray-50">
-                        <View className="flex-row justify-between items-start mb-2">
-                            <Text className={`text-[10px] font-black uppercase tracking-widest ${msg.role === 'user' ? 'text-gray-400' : 'text-blue-500'}`}>
-                                {msg.role === 'user' ? 'You' : 'Sophie'}
+                {/* Transcript List */}
+                <View className="bg-gray-50/50 rounded-[32px] p-2">
+                    {messages.map((msg, index) => (
+                        <View
+                            key={msg.id}
+                            className={`p-4 rounded-2xl mb-2 ${msg.role === 'user' ? 'bg-white border border-gray-100' : 'bg-transparent'}`}
+                        >
+                            <View className="flex-row justify-between items-center mb-2">
+                                <View className="flex-row items-center gap-2">
+                                    <View className={`w-2 h-2 rounded-full ${msg.role === 'user' ? 'bg-gray-300' : 'bg-black'}`} />
+                                    <Text className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                        {msg.role === 'user' ? 'You' : 'Sophie'}
+                                    </Text>
+                                </View>
+                                {msg.role !== 'user' && (
+                                    <TouchableOpacity onPress={() => handleSave(msg.text)}>
+                                        <Bookmark size={14} color="#9ca3af" />
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                            <Text className={`text-base leading-relaxed ${msg.role === 'user' ? 'text-gray-600' : 'text-gray-900 font-medium'}`}>
+                                {msg.text}
                             </Text>
-                            <TouchableOpacity onPress={() => handleSave(msg.text)}>
-                                <Bookmark size={14} color="#94a3b8" />
-                            </TouchableOpacity>
                         </View>
-                        <Text className="text-gray-900 text-base font-medium leading-relaxed">{msg.text}</Text>
-                    </View>
-                ))}
+                    ))}
+                </View>
 
-                <View className="h-20" />
+                <View className="h-28" />
             </ScrollView>
 
-            <View className="px-6 py-8">
-                <TouchableOpacity 
+            {/* Bottom Action - Sticky Footer */}
+            <View className="px-4 py-8 border-t border-gray-100 bg-white">
+                <TouchableOpacity
                     onPress={handleClose}
-                    className="w-full h-16 bg-gray-900 rounded-3xl items-center justify-center shadow-xl shadow-gray-200"
+                    activeOpacity={0.7}
+                    className="w-full h-16 rounded-full overflow-hidden shadow-lg"
                 >
-                    <Text className="text-white font-bold text-lg">Continue to Library</Text>
+                    <RainbowBorder
+                        borderRadius={9999}
+                        borderWidth={2}
+                        className="flex-1"
+                        containerClassName="items-center justify-center flex-1"
+                    >
+                        <Text className="text-black font-bold text-lg">Continue to Library</Text>
+                    </RainbowBorder>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

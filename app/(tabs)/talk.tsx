@@ -295,14 +295,18 @@ Stay in character while teaching.`;
 
   const handleFinish = () => {
     if (messages.length === 0) {
-      Alert.alert("End Session", "Go back to scenario library?", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Yes", onPress: () => router.push("/(tabs)") },
-      ]);
+      showAlert(
+        "End Session",
+        "Go back to scenario library?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Yes", onPress: () => router.push("/(tabs)") },
+        ]
+      );
       return;
     }
 
-    Alert.alert(
+    showAlert(
       "Finish Conversation",
       "Are you done with this practice session?",
       [
@@ -313,7 +317,8 @@ Stay in character while teaching.`;
             router.push("/report" as any);
           },
         },
-      ]
+      ],
+      "info"
     );
   };
 
