@@ -94,11 +94,16 @@ export function AlertModal({
               onPress={() => handleButtonPress(displayButtons[0])}
               className="rounded-full overflow-hidden active:opacity-80"
             >
-              <RainbowGradient className="py-4 items-center">
-                <Text className="text-white font-semibold text-base">
-                  {displayButtons[0].text}
-                </Text>
-              </RainbowGradient>
+              {/* Layered Rainbow Border Effect */}
+              <View className="rounded-full overflow-hidden">
+                <RainbowGradient className="p-[2px] rounded-full">
+                  <View className="bg-white py-4 items-center rounded-full">
+                    <Text className="text-gray-900 font-semibold text-base">
+                      {displayButtons[0].text}
+                    </Text>
+                  </View>
+                </RainbowGradient>
+              </View>
             </Pressable>
           ) : (
             <View className="flex-row gap-3">
@@ -123,11 +128,15 @@ export function AlertModal({
                       </Text>
                     </View>
                   ) : (
-                    <RainbowGradient className="py-4 items-center">
-                      <Text className="text-white font-semibold text-base">
-                        {button.text}
-                      </Text>
-                    </RainbowGradient>
+                    <View className="rounded-full overflow-hidden">
+                      <RainbowGradient className="p-[2px] rounded-full">
+                        <View className="bg-white py-4 items-center rounded-full">
+                          <Text className="text-gray-900 font-semibold text-base">
+                            {button.text}
+                          </Text>
+                        </View>
+                      </RainbowGradient>
+                    </View>
                   )}
                 </Pressable>
               ))}
@@ -158,7 +167,7 @@ export function useAlertModal() {
     title: string,
     message: string,
     buttons?: AlertButton[],
-    type: "error" | "success" | "warning" | "info" = "info"
+    type: "error" | "success" | "warning" | "info" = "info",
   ) => {
     setAlertState({
       visible: true,
