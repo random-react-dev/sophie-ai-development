@@ -13,21 +13,20 @@ import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
-  Bookmark,
   CheckCircle2,
   Globe,
-  RotateCcw,
-  Wand2,
+  RotateCcw
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { MessageBubble } from "@/components/common/MessageBubble";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Logger } from "@/services/common/Logger";
 import { Feather } from "@expo/vector-icons";
-import { PageHeader } from "@/components/common/PageHeader";
 
 const TAG = "TalkTab";
 
@@ -363,50 +362,16 @@ Stay in character while teaching.`;
   }
 
   // Memoized render function for FlatList performance
-  const renderMessage = useCallback(({ item: msg }: { item: Message }) => (
-    <View
-      className={`mb-6 ${msg.role === "user" ? "items-end" : "items-start"}`}
-    >
-      <View
-        className={`p-4 rounded-3xl max-w-[85%] ${msg.role === "user"
-            ? "bg-gray-100"
-            : "bg-white border border-gray-100 shadow-sm"
-          }`}
-      >
-        {msg.role === "model" && (
-          <View className="flex-row items-center gap-1 mb-1">
-            <Wand2 size={10} color="#3b82f6" />
-            <Text className="text-blue-500 text-[8px] font-black uppercase tracking-widest">
-              Natural Correction
-            </Text>
-          </View>
-        )}
-        <Text className="text-gray-900 text-base font-medium leading-relaxed">
-          {msg.text}
-        </Text>
-        <View className="flex-row mt-2 gap-4 border-t border-gray-50 pt-2">
-          <TouchableOpacity
-            className="flex-row items-center gap-1"
-            onPress={() => handleTranslate(msg.text)}
-          >
-            <Globe size={12} color="#94a3b8" />
-            <Text className="text-[10px] text-gray-400 font-bold">
-              Translate
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row items-center gap-1"
-            onPress={() => handleSaveVocabulary(msg.text)}
-          >
-            <Bookmark size={12} color="#94a3b8" />
-            <Text className="text-[10px] text-gray-400 font-bold">
-              Save
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  ), []);
+  const renderMessage = useCallback(
+    ({ item: msg }: { item: Message }) => (
+      <MessageBubble
+        message={msg}
+        onTranslate={handleTranslate}
+        onSave={handleSaveVocabulary}
+      />
+    ),
+    [handleTranslate, handleSaveVocabulary]
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
@@ -459,12 +424,12 @@ Stay in character while teaching.`;
       </View>
 
       {/* Main Interaction Area */}
-      <View className="flex-1 px-6 mt-2">
+      <View className="flex-1 px-4 mt-2">
         {/* Conversation Area */}
-        <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[320px] overflow-hidden">
+        <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[200px] overflow-hidden">
           {/* Status Bar inside the card */}
           <View className="flex items-end px-4 pt-4">
-            <View className="flex-row items-center gap-4">
+            <View className="flex-row items-center gap-3">
               {/* Reset Button */}
               <TouchableOpacity
                 onPress={handleReset}
@@ -473,8 +438,21 @@ Stay in character while teaching.`;
                 <RotateCcw size={16} color="gray" />
               </TouchableOpacity>
 
+              {/* Finish Button - Only show when messages exist */}
+              {messages.length > 0 && (
+                <TouchableOpacity
+                  onPress={handleFinish}
+                  className="px-3 py-2 bg-gray-900 rounded-full flex-row items-center gap-2"
+                >
+                  <CheckCircle2 size={14} color="white" />
+                  <Text className="text-white font-bold text-xs">
+                    Finish & Get Report
+                  </Text>
+                </TouchableOpacity>
+              )}
+
               <View className="flex-row items-center gap-2">
-                <Text className="text-blue-500 text-sm font-bold">
+                <Text className="text-black text-sm font-bold">
                   Transcript
                 </Text>
                 <CustomToggle
@@ -540,23 +518,10 @@ Stay in character while teaching.`;
         </View>
       </View>
 
-      {/* Floating Action Button for Finish */}
-      {messages.length > 0 && (
-        <View className="px-6 pb-10 items-center">
-          <TouchableOpacity
-            onPress={handleFinish}
-            className="px-8 py-4 bg-gray-900 rounded-3xl flex-row items-center gap-3 shadow-xl"
-          >
-            <CheckCircle2 size={20} color="white" />
-            <Text className="text-white font-bold text-base">
-              Finish & Get Report
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+
 
       {/* Pad for the Tab Bar Mic Button */}
-      <View className="h-20" />
+      {/* <View className="h-20" /> */}
 
       {/* Language Selector Modal */}
       <LanguageSelectorModal
