@@ -1,6 +1,8 @@
+import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthInput } from "@/components/auth/AuthInput";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { AlertModal } from "@/components/common/AlertModal";
+import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "expo-router";
 import React, { useState } from "react";
@@ -8,7 +10,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -26,16 +27,24 @@ export default function LoginScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<
+    "error" | "success" | "warning" | "info"
+  >("info");
 
-  const showAlert = (title: string, message: string) => {
+  const showAlert = (
+    title: string,
+    message: string,
+    type: "error" | "success" | "warning" | "info" = "info",
+  ) => {
     setModalTitle(title);
     setModalMessage(message);
+    setModalType(type);
     setModalVisible(true);
   };
 
   const handleLogin = async () => {
     if (!email || !password) {
-      showAlert("Error", "Please fill in all fields");
+      showAlert("Error", "Please fill in all fields", "error");
       return;
     }
     try {
@@ -43,7 +52,7 @@ export default function LoginScreen() {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Something went wrong";
-      showAlert("Login Failed", errorMessage);
+      showAlert("Login Failed", errorMessage, "error");
     }
   };
 
@@ -61,15 +70,7 @@ export default function LoginScreen() {
           >
             <View className="flex-1 px-6 justify-between">
               {/* Top Section - Brand (outside card) */}
-              <View className="items-center mt-12 mb-6">
-                <Text className="text-4xl font-bold text-gray-900">
-                  Sophie AI
-                </Text>
-                <Text className="text-gray-500 text-base mt-1 w-full text-center">
-                  Native speaker in your pocket
-                </Text>
-              </View>
-
+              <AuthHeader />
               {/* White Card */}
               <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                 {/* Welcome */}
@@ -106,29 +107,26 @@ export default function LoginScreen() {
                       <Link href="/forgot-password" asChild>
                         <TouchableOpacity>
                           <Text className="text-blue-500 text-sm font-bold">
-                            Forgot password?
+                            Forgot Password?
                           </Text>
                         </TouchableOpacity>
                       </Link>
                     </View>
                   </View>
 
-                  {/* Login Button - Black */}
-                  <Pressable
+                  {/* Login Button - Rainbow */}
+                  <Button
+                    title={isLoading ? "Logging in..." : "Login"}
                     onPress={handleLogin}
                     disabled={isLoading}
-                    className="bg-blue-500 py-4 rounded-full items-center mt-6 active:opacity-80"
-                  >
-                    <Text className="text-white font-bold text-base">
-                      {isLoading ? "Logging in..." : "Login"}
-                    </Text>
-                  </Pressable>
+                    variant="rainbow"
+                    className="mt-6 h-14"
+                  />
 
                   {/* Social Login */}
                   <SocialLoginButtons />
                 </View>
               </View>
-
               {/* Bottom Section - Sign Up */}
               <View className="items-center mb-6">
                 <Text className="text-gray-500 w-full text-center">
@@ -142,7 +140,6 @@ export default function LoginScreen() {
                   </TouchableOpacity>
                 </Link>
               </View>
-
               {/* Terms */}
               <View className="items-center pb-6">
                 <Text className="text-gray-400 text-sm text-center w-full">
@@ -166,6 +163,7 @@ export default function LoginScreen() {
         visible={modalVisible}
         title={modalTitle}
         message={modalMessage}
+        type={modalType}
         onClose={() => setModalVisible(false)}
       />
     </SafeAreaView>

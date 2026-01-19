@@ -1,18 +1,39 @@
+import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthInput } from "@/components/auth/AuthInput";
 import { CountryPicker } from "@/components/auth/CountryPicker";
 import { LanguagePicker } from "@/components/auth/LanguagePicker";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
+import { AlertModal } from "@/components/common/AlertModal";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
 import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignupScreen() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const { signUp, updateProfile, isLoading } = useAuthStore();
+
+  // Modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<
+    "error" | "success" | "warning" | "info"
+  >("info");
+
+  const showAlert = (
+    title: string,
+    message: string,
+    type: "error" | "success" | "warning" | "info" = "info",
+  ) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setModalType(type);
+    setModalVisible(true);
+  };
 
   // Step 1: Account
   const [email, setEmail] = useState("");
@@ -28,11 +49,11 @@ export default function SignupScreen() {
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      showAlert("Error", "Please fill in all fields", "error");
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      showAlert("Error", "Passwords do not match", "error");
       return;
     }
     try {
@@ -42,17 +63,17 @@ export default function SignupScreen() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong";
-      Alert.alert("Signup Failed", message);
+      showAlert("Signup Failed", message, "error");
     }
   };
 
   const handleUpdateProfile = async () => {
     if (!fullName || !country || !appLanguage || !learnLanguage) {
-      Alert.alert("Error", "Please complete all profile details");
+      showAlert("Error", "Please complete all profile details", "error");
       return;
     }
     if (!termsAccepted) {
-      Alert.alert("Error", "You must accept the Terms and Conditions");
+      showAlert("Error", "You must accept the Terms and Conditions", "error");
       return;
     }
     try {
@@ -66,7 +87,7 @@ export default function SignupScreen() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to save profile";
-      Alert.alert("Error", message);
+      showAlert("Error", message, "error");
     }
   };
 
@@ -115,11 +136,13 @@ export default function SignupScreen() {
           />
         </View>
 
+        {/* Create Account Button */}
         <Button
           title={isLoading ? "Creating account..." : "Create Account"}
           onPress={handleSignup}
           disabled={isLoading}
           className="mt-6 h-14"
+          variant="rainbow"
         />
 
         <SocialLoginButtons />
@@ -192,6 +215,7 @@ export default function SignupScreen() {
           onPress={handleUpdateProfile}
           disabled={isLoading}
           className="mt-8 h-14"
+          variant="rainbow"
         />
       </View>
     </View>
@@ -200,14 +224,7 @@ export default function SignupScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-6 py-6">
-        <View className="items-center mt-6 mb-10">
-          <Text className="text-4xl font-bold text-gray-900 mb-2">
-            Sophie AI
-          </Text>
-          <Text className="text-gray-500 text-lg w-full text-center px-4">
-            Native speaker in your pocket
-          </Text>
-        </View>
+        <AuthHeader />
 
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
@@ -236,6 +253,13 @@ export default function SignupScreen() {
           </Text>
         </View>
       </ScrollView>
+      <AlertModal
+        visible={modalVisible}
+        title={modalTitle}
+        message={modalMessage}
+        type={modalType}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
