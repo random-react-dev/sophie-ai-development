@@ -53,6 +53,7 @@ interface ConversationState {
     isPTTActive: boolean; // Whether currently holding to speak (PTT mode)
     pttStartTime: number | null; // Timestamp when PTT recording started
     volumeLevel: number;
+    bufferProgress: number; // 0-100 audio buffer fill progress
 
     // UI state
     showTranscript: boolean;
@@ -66,6 +67,7 @@ interface ConversationState {
     setSpeaking: (isSpeaking: boolean) => void;
     setProcessing: (isProcessing: boolean) => void;
     setVolumeLevel: (level: number) => void;
+    setBufferProgress: (progress: number) => void;
     setShowTranscript: (show: boolean) => void;
     setHasGreeted: (hasGreeted: boolean) => void;
     addMessage: (role: 'user' | 'model', text: string) => void;
@@ -98,6 +100,7 @@ const initialState = {
     isPTTActive: false,
     pttStartTime: null as number | null,
     volumeLevel: 0,
+    bufferProgress: 0,
     showTranscript: false,
     messages: [] as Message[],
     hasGreeted: false,
@@ -117,6 +120,8 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
     setProcessing: (isProcessing: boolean) => set({ isProcessing }),
 
     setVolumeLevel: (volumeLevel: number) => set({ volumeLevel }),
+
+    setBufferProgress: (bufferProgress: number) => set({ bufferProgress }),
 
     setShowTranscript: (showTranscript: boolean) => set({ showTranscript }),
 

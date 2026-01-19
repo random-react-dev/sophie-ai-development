@@ -1,27 +1,29 @@
 import React, { useEffect } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import Animated, {
+    Easing,
     useAnimatedProps,
     useSharedValue,
     withRepeat,
     withTiming,
-    Easing,
 } from 'react-native-reanimated';
-import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 interface RainbowWaveProps {
     isListening: boolean;
     isSpeaking: boolean;
+    isProcessing?: boolean;
     volumeLevel: number;
 }
 
-export const RainbowWave = React.memo(({ isListening, isSpeaking, volumeLevel }: RainbowWaveProps) => {
+export const RainbowWave = React.memo(({ isListening, isSpeaking, isProcessing = false, volumeLevel }: RainbowWaveProps) => {
     const { width } = useWindowDimensions();
     const height = 160;
     const phase = useSharedValue(0);
     const amplitude = useSharedValue(0);
+    const pulseScale = useSharedValue(1);
 
     useEffect(() => {
         phase.value = withRepeat(
@@ -31,21 +33,37 @@ export const RainbowWave = React.memo(({ isListening, isSpeaking, volumeLevel }:
         );
     }, [phase]); // Run once on mount
 
+    // Pulsing animation for processing state
+    useEffect(() => {
+        if (isProcessing) {
+            pulseScale.value = withRepeat(
+                withTiming(1.3, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+                -1,
+                true
+            );
+        } else {
+            pulseScale.value = withTiming(1, { duration: 200 });
+        }
+    }, [isProcessing, pulseScale]);
+
     useEffect(() => {
         let targetAmplitude = 0;
         if (isSpeaking) {
-            targetAmplitude = 45; 
+            targetAmplitude = 45;
+        } else if (isProcessing) {
+            // Gentle breathing animation during processing
+            targetAmplitude = 25;
         } else if (isListening) {
             targetAmplitude = Math.max(15, volumeLevel * 120);
         } else {
             targetAmplitude = 8;
         }
-        
+
         // Only update if it's a significant change to reduce bridge traffic
         if (Math.abs(amplitude.value - targetAmplitude) > 0.1) {
             amplitude.value = withTiming(targetAmplitude, { duration: 100 });
         }
-    }, [isListening, isSpeaking, volumeLevel, amplitude]);
+    }, [isListening, isSpeaking, isProcessing, volumeLevel, amplitude]);
 
     const animatedProps = useAnimatedProps(() => {
         const numPeaks = 6;
