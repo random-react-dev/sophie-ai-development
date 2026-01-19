@@ -99,7 +99,10 @@ export const getVocabulary = async () => {
         // Fetch items and join with folders
         const { data, error } = await supabase
             .from('vocabulary')
-            .select('*, folder:vocabulary_folders(*)')
+            .select(`
+                *,
+                folder:vocabulary_folders(*)
+            `)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
