@@ -1,8 +1,8 @@
-import { supabase } from '@/services/supabase/client';
-import * as Linking from 'expo-linking';
-import * as WebBrowser from 'expo-web-browser';
-import React, { useState } from 'react';
-import { Alert, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { supabase } from "@/services/supabase/client";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
+import React, { useState } from "react";
+import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 function GoogleLogo() {
@@ -39,12 +39,12 @@ function AppleLogo() {
 export function SocialLoginButtons() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
+  const handleOAuthSignIn = async (provider: "google" | "apple") => {
     try {
       setIsLoading(true);
 
       // Get the redirect URL for deep linking back to the app
-      const redirectUrl = Linking.createURL('auth/callback');
+      const redirectUrl = Linking.createURL("auth/callback");
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -55,20 +55,20 @@ export function SocialLoginButtons() {
       });
 
       if (error) throw error;
-      if (!data.url) throw new Error('No OAuth URL returned');
+      if (!data.url) throw new Error("No OAuth URL returned");
 
       // Open the OAuth URL in a web browser
       const result = await WebBrowser.openAuthSessionAsync(
         data.url,
-        redirectUrl
+        redirectUrl,
       );
 
-      if (result.type === 'success' && result.url) {
+      if (result.type === "success" && result.url) {
         // Extract the tokens from the URL and set the session
         const url = new URL(result.url);
         const params = new URLSearchParams(url.hash.substring(1));
-        const accessToken = params.get('access_token');
-        const refreshToken = params.get('refresh_token');
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
 
         if (accessToken && refreshToken) {
           await supabase.auth.setSession({
@@ -78,8 +78,8 @@ export function SocialLoginButtons() {
         }
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Sign in failed';
-      Alert.alert('Sign In Failed', message);
+      const message = error instanceof Error ? error.message : "Sign in failed";
+      Alert.alert("Sign In Failed", message);
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +94,8 @@ export function SocialLoginButtons() {
       </View>
 
       <TouchableOpacity
-        onPress={() => handleOAuthSignIn('google')}
+        activeOpacity={0.7}
+        onPress={() => handleOAuthSignIn("google")}
         disabled={isLoading}
         className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
       >
@@ -102,13 +103,13 @@ export function SocialLoginButtons() {
           <GoogleLogo />
         </View>
         <Text className="text-gray-700 font-semibold text-base">
-          {isLoading ? 'Signing in...' : 'Continue with Google'}
+          {isLoading ? "Signing in..." : "Continue with Google"}
         </Text>
       </TouchableOpacity>
 
-      {Platform.OS === 'ios' && (
+      {Platform.OS === "ios" && (
         <TouchableOpacity
-          onPress={() => handleOAuthSignIn('apple')}
+          onPress={() => handleOAuthSignIn("apple")}
           disabled={isLoading}
           className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
         >
@@ -116,7 +117,7 @@ export function SocialLoginButtons() {
             <AppleLogo />
           </View>
           <Text className="text-gray-700 font-semibold text-base">
-            {isLoading ? 'Signing in...' : 'Continue with Apple'}
+            {isLoading ? "Signing in..." : "Continue with Apple"}
           </Text>
         </TouchableOpacity>
       )}

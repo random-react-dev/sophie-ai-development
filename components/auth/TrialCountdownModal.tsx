@@ -53,6 +53,11 @@ export const TrialCountdownModal = () => {
 
   if (!user || !showTrialPopup) return null;
 
+  // Only show trial popup AFTER onboarding is complete
+  const onboardingCompleted =
+    user?.user_metadata?.onboarding_data?.completed_at;
+  if (!onboardingCompleted) return null;
+
   const calculateTrialStatus = (createdAt: string) => {
     const createdDate = new Date(createdAt);
     const now = new Date();
@@ -69,7 +74,7 @@ export const TrialCountdownModal = () => {
   };
 
   const { remainingDays, discount, isLastDay } = calculateTrialStatus(
-    user.created_at
+    user.created_at,
   );
 
   const handleClose = () => {
