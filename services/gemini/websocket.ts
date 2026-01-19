@@ -323,11 +323,14 @@ class GeminiWebSocket {
     private async initializeAndGreet(store: { hasGreeted: boolean; setHasGreeted: (v: boolean) => void }): Promise<void> {
         try {
             await audioStreamer.initialize();
-            // Wire up the speaking state callback to break circular dependency
+            // Wire up callbacks to break circular dependency
             audioStreamer.setSpeakingStateCallback((isSpeaking) => {
                 getConversationStore().getState().setSpeaking(isSpeaking);
             });
-            Logger.info(TAG, 'AudioStreamer initialized, sending greeting...');
+            audioStreamer.setBufferProgressCallback((progress) => {
+                getConversationStore().getState().setBufferProgress(progress);
+            });
+            Logger.info(TAG, 'AudioStreamer initialized with callbacks, sending greeting...');
             this.sendGreeting();
             store.setHasGreeted(true);
         } catch (err) {

@@ -73,14 +73,11 @@ const buildTutorPrompt = (
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${
-    nativeLang.name
-  }), then introduce the lesson:
-"Welcome to your ${
-    targetLang.name
-  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
-    targetLang.name
-  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Start by greeting the user in their native language (${nativeLang.name
+    }), then introduce the lesson:
+"Welcome to your ${targetLang.name
+    } lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name
+    } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -91,9 +88,8 @@ Start by greeting the user in their native language (${
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${
-    targetLang.name
-  } for the words being taught
+- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name
+    } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress`;
 };
@@ -107,6 +103,7 @@ export default function TalkScreen() {
     isProcessing,
     isPTTActive,
     volumeLevel,
+    bufferProgress,
     messages,
     showTranscript,
     setShowTranscript,
@@ -255,6 +252,10 @@ Stay in character while teaching.`;
 
   const getStatusText = (): string => {
     if (isSpeaking) return "Sophie Speaking...";
+    // Show buffering progress during processing
+    if (isProcessing && bufferProgress > 0 && bufferProgress < 100) {
+      return `Preparing response... ${bufferProgress}%`;
+    }
     if (isProcessing) return "Sophie is thinking...";
     if (isListening) return "Listening...";
 
@@ -372,11 +373,10 @@ Stay in character while teaching.`;
       className={`mb-6 ${msg.role === "user" ? "items-end" : "items-start"}`}
     >
       <View
-        className={`p-4 rounded-3xl max-w-[85%] ${
-          msg.role === "user"
-            ? "bg-gray-100"
-            : "bg-white border border-gray-100 shadow-sm"
-        }`}
+        className={`p-4 rounded-3xl max-w-[85%] ${msg.role === "user"
+          ? "bg-gray-100"
+          : "bg-white border border-gray-100 shadow-sm"
+          }`}
       >
         {msg.role === "model" && (
           <View className="flex-row items-center gap-1 mb-1">
@@ -527,8 +527,17 @@ Stay in character while teaching.`;
             <RainbowWave
               isListening={isListening}
               isSpeaking={isSpeaking}
+              isProcessing={isProcessing}
               volumeLevel={volumeLevel}
             />
+            {/* Status Text - shows buffering progress, thinking state, etc */}
+            {(isProcessing || isSpeaking || isListening) && (
+              <View className="absolute bottom-4">
+                <Text className="text-gray-600 text-sm font-medium">
+                  {getStatusText()}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
