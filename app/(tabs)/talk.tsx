@@ -342,21 +342,21 @@ Stay in character while teaching.`;
     );
   };
 
-  const handleTranslate = async (text: string) => {
+  const handleTranslate = useCallback(async (text: string) => {
     try {
       const translated = await translateText(text, "English");
       Alert.alert("Translation", translated);
     } catch {
       Alert.alert("Error", "Failed to translate. Please try again.");
     }
-  };
+  }, []);
 
-  const handleSaveVocabulary = async (text: string) => {
+  const handleSaveVocabulary = useCallback(async (text: string) => {
     const success = await saveToVocabulary({ phrase: text });
     if (success) {
       Alert.alert("Success", "Added to your vocabulary!");
     }
-  };
+  }, []);
 
   // Message type for FlatList
   interface Message {
@@ -373,9 +373,11 @@ Stay in character while teaching.`;
         message={msg}
         onTranslate={handleTranslate}
         onSave={handleSaveVocabulary}
+        userAvatarUri={user?.user_metadata?.avatar_url}
+        userName={user?.user_metadata?.full_name || user?.email}
       />
     ),
-    [handleTranslate, handleSaveVocabulary]
+    [handleTranslate, handleSaveVocabulary, user]
   );
 
   return (
@@ -497,7 +499,11 @@ Stay in character while teaching.`;
         </View>
 
         <View className="flex-1 mt-6">
-          {messages.length === 0 ? (
+          {!showTranscript ? (
+            <View className="flex-1 items-center justify-center">
+              <Text className="text-gray-400 font-medium">Transcript Hidden</Text>
+            </View>
+          ) : messages.length === 0 ? (
             <View className="items-center mt-10">
               <View className="w-16 h-16 rounded-3xl bg-blue-500 items-center justify-center mb-4">
                 <Feather name="mic" size={26} color="white" />
@@ -523,7 +529,7 @@ Stay in character while teaching.`;
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 20 }}
-              onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+              // onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
               initialNumToRender={10}
               maxToRenderPerBatch={5}
               windowSize={7}
