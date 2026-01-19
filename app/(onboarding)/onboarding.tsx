@@ -1,3 +1,4 @@
+import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { BarrierStep } from "@/components/onboarding/BarrierStep";
 import { CompletionStep } from "@/components/onboarding/CompletionStep";
@@ -13,13 +14,13 @@ import {
   ProfileStep,
   ProfileStepRef,
 } from "@/components/onboarding/ProfileStep";
+import { RainbowProgressBar } from "@/components/onboarding/RainbowProgressBar";
 import { useAuthStore } from "@/stores/authStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Alert,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -79,6 +80,7 @@ const stepConfig: Record<number, { title: string; subtitle?: string }> = {
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { alertState, showAlert, hideAlert } = useAlertModal();
   const { updateProfile, isLoading: isSaving } = useAuthStore();
   const { currentStep, nextStep, prevStep, data, resetOnboarding } =
     useOnboardingStore();
@@ -149,9 +151,11 @@ export default function OnboardingScreen() {
         resetOnboarding();
         router.replace("/(tabs)");
       } catch (error) {
-        Alert.alert(
+        showAlert(
           "Error",
-          "Failed to save your preferences. Please try again."
+          "Failed to save your preferences. Please try again.",
+          undefined,
+          "error"
         );
       }
     } else if (currentStep === 1) {
@@ -166,9 +170,11 @@ export default function OnboardingScreen() {
 
       // Sub-step 2 validation: check name and country
       if (!data.name || !data.country) {
-        Alert.alert(
+        showAlert(
           "Incomplete",
-          "Please enter your name and select a country."
+          "Please enter your name and select a country.",
+          undefined,
+          "warning"
         );
         return;
       }
@@ -223,39 +229,34 @@ export default function OnboardingScreen() {
         return <DiscoveryStep />;
       case 10:
         return <CompletionStep />;
-      default:
+      default: 
         return null;
     }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 py-2">
+      <View className="flex-row items-center justify-between px-4 py-2 pt-4 gap-3">
+        {/* Back Button */}
         <TouchableOpacity
           onPress={handleBack}
-          className="p-2"
+          className="p-2 -ml-2 rounded-full active:bg-gray-100"
           disabled={isSaving}
         >
-          <ChevronLeft size={24} color="#111827" />
+          <ChevronLeft size={28} color="#1f2937" />
         </TouchableOpacity>
-        <View className="flex-row items-center">
-          <Text className="text-sm font-medium text-gray-400">
-            Step {currentStep} <Text className="text-gray-200">of 10</Text>
+
+        {/* Inline Rainbow Progress Bar */}
+        <View className="flex-1">
+          <RainbowProgressBar currentStep={currentStep} totalSteps={10} />
+        </View>
+
+        {/* Step Counter */}
+        <View className="min-w-[40px] items-end">
+          <Text className="text-sm font-bold text-gray-400">
+            <Text className="text-gray-900">{currentStep}</Text>/10
           </Text>
         </View>
-        <View className="w-10" />
-      </View>
-
-      {/* Progress Bar */}
-      <View className="h-1 bg-gray-100 flex-row px-8 mb-8 mt-2">
-        {[...Array(10)].map((_, i) => (
-          <View
-            key={i}
-            className={`flex-1 h-full mx-0.5 rounded-full ${
-              i < currentStep ? "bg-blue-500" : "bg-gray-200"
-            }`}
-          />
-        ))}
       </View>
 
       {currentStep === 1 ? (
@@ -326,6 +327,7 @@ export default function OnboardingScreen() {
           </TouchableOpacity>
         )}
       </View>
+      <AlertModal {...alertState} onClose={hideAlert} />
     </SafeAreaView>
   );
 }

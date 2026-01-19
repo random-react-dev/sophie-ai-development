@@ -23,7 +23,6 @@ import {
 } from "react-native";
 import Animated, {
   interpolate,
-  interpolateColor,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
@@ -234,24 +233,6 @@ function CountryItem({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#ffffff", "#f8fbff"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#e5e7eb", "#3b82f6"]
-      ),
-      shadowColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#000000", "#3b82f6"]
-      ),
-      shadowOpacity: interpolate(progress.value, [0, 1], [0.05, 0.08]),
-      shadowRadius: interpolate(progress.value, [0, 1], [4, 8]),
-      elevation: interpolate(progress.value, [0, 1], [1, 2]),
     };
   });
 
@@ -260,21 +241,37 @@ function CountryItem({
       <Animated.View
         style={[
           animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 16 },
+          {
+            borderRadius: 20,
+            overflow: "hidden",
+          },
         ]}
-        className="flex-row items-center"
       >
-        <CircleFlag countryCode={country.countryCode} size={40} />
-        <View className="flex-1 ml-4">
-          <Text
-            className={`font-bold text-base ${
-              isSelected ? "text-blue-500" : "text-gray-900"
-            }`}
-          >
-            {country.name}
-          </Text>
+        {/* Layer 1: Rainbow Background (Only visible when selected) */}
+        {isSelected && (
+          <View className="absolute inset-0">
+            <RainbowGradient className="flex-1" />
+          </View>
+        )}
+
+        {/* Layer 2: Main Content Container */}
+        <View
+          style={{
+            margin: isSelected ? 2 : 0,
+            borderRadius: isSelected ? 18 : 20,
+            backgroundColor: "#ffffff",
+            borderWidth: isSelected ? 0 : 1.5,
+            borderColor: "#e5e7eb",
+          }}
+          className="flex-row items-center p-4"
+        >
+          <CircleFlag countryCode={country.countryCode} size={40} />
+          <View className="flex-1 ml-4">
+            <Text className="font-bold text-base text-gray-900">
+              {country.name}
+            </Text>
+          </View>
         </View>
-        <AnimatedCheckbox isChecked={isSelected} />
       </Animated.View>
     </Pressable>
   );
