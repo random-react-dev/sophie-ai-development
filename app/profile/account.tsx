@@ -1,7 +1,7 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { useAuthStore } from "@/stores/authStore";
-import { getRainbowColorScheme } from "@/utils/rainbowColors";
+import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { Crown, Receipt, Sparkles, Wallet } from "lucide-react-native";
 import React from "react";
@@ -35,7 +35,7 @@ export default function AccountScreen() {
                 </View> */}
 
         {/* Account Items */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             Subscription
           </Text>
@@ -74,35 +74,31 @@ export default function AccountScreen() {
           </Text>
 
           {/* Payment Methods Card */}
-          <View className="opacity-60">
-            <ProfileSettingCard
-              title="Payment Methods"
-              subtitle="Coming Soon"
-              icon={<Wallet size={20} color={getRainbowColorScheme(2).iconColor} />}
-              colorScheme={getRainbowColorScheme(2)}
-              showArrow={false}
-              rightElement={
-                <Text className="text-xs text-gray-400 font-medium">
-                  Coming Soon
-                </Text>
-              }
-            />
-          </View>
+          <ProfileSettingCard
+            title="Payment Methods"
+            subtitle="Coming Soon"
+            icon={<Wallet size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
+            showArrow={false}
+            rightElement={
+              <Text className="text-xs text-gray-400 font-medium">
+                Coming Soon
+              </Text>
+            }
+          />
 
           {/* Billing History Card */}
-          <View className="opacity-60">
-            <ProfileSettingCard
-              title="Billing History"
-              icon={<Receipt size={20} color={getRainbowColorScheme(3).iconColor} />}
-              colorScheme={getRainbowColorScheme(3)}
-              showArrow={false}
-              rightElement={
-                <Text className="text-xs text-gray-400 font-medium">
-                  Coming Soon
-                </Text>
-              }
-            />
-          </View>
+          <ProfileSettingCard
+            title="Billing History"
+            icon={<Receipt size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
+            showArrow={false}
+            rightElement={
+              <Text className="text-xs text-gray-400 font-medium">
+                Coming Soon
+              </Text>
+            }
+          />
         </View>
 
         {/* Account Info */}

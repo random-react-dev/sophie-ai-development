@@ -1,3 +1,4 @@
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
@@ -58,7 +59,7 @@ export default function TabLayout() {
   // Find flag for active profile target language
   const activeFlag = activeProfile
     ? SUPPORTED_LANGUAGES.find((l) => l.name === activeProfile.target_language)
-        ?.flag
+      ?.flag
     : null;
 
   return (
@@ -119,92 +120,95 @@ export default function TabLayout() {
           href: voiceAvailable ? undefined : null,
           tabBarButton: voiceAvailable
             ? () => {
-                const isFocused = pathname === "/talk";
-                const isConnected = connectionState === "connected";
+              const isFocused = pathname === "/talk";
+              const isConnected = connectionState === "connected";
 
-                const handlePressIn = () => {
-                  if (!isFocused) return;
+              const handlePressIn = () => {
+                if (!isFocused) return;
 
-                  setIsPressing(true);
+                setIsPressing(true);
 
-                  Animated.spring(scaleAnim, {
-                    toValue: 1.1,
-                    useNativeDriver: true,
-                  }).start();
+                Animated.spring(scaleAnim, {
+                  toValue: 1.1,
+                  useNativeDriver: true,
+                }).start();
 
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                };
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              };
 
-                const handlePressOut = () => {
-                  setIsPressing(false);
+              const handlePressOut = () => {
+                setIsPressing(false);
 
-                  Animated.spring(scaleAnim, {
-                    toValue: 1,
-                    useNativeDriver: true,
-                  }).start();
+                Animated.spring(scaleAnim, {
+                  toValue: 1,
+                  useNativeDriver: true,
+                }).start();
 
-                  if (isPTTActive) {
-                    stopPTTRecording();
-                  }
-                };
+                if (isPTTActive) {
+                  stopPTTRecording();
+                }
+              };
 
-                const handleLongPress = () => {
-                  if (!isFocused || !isConnected) return;
+              const handleLongPress = () => {
+                if (!isFocused || !isConnected) return;
 
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  startPTTRecording();
-                };
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                startPTTRecording();
+              };
 
-                const handlePress = () => {
-                  if (!isFocused) {
-                    router.push("/(tabs)/talk");
-                  }
-                };
+              const handlePress = () => {
+                if (!isFocused) {
+                  router.push("/(tabs)/talk");
+                }
+              };
 
-                const getButtonColor = (): string => {
-                  if (isPTTActive) return "bg-red-500 shadow-red-200";
-                  if (isProcessing) return "bg-orange-500 shadow-orange-200";
-                  if (!isFocused) return "bg-gray-900 shadow-gray-400";
-                  if (!isConnected) return "bg-gray-600 shadow-gray-400";
-                  return isPressing
-                    ? "bg-blue-400 shadow-blue-200"
-                    : "bg-blue-500 shadow-blue-200";
-                };
+              const getButtonColor = (): string => {
+                if (isPTTActive) return "bg-red-500 shadow-red-200";
+                if (isProcessing) return "bg-orange-500 shadow-orange-200";
+                if (!isFocused) return "bg-gray-900 shadow-gray-400";
+                if (!isConnected) return "bg-gray-600 shadow-gray-400";
+                return isPressing
+                  ? "bg-blue-400 shadow-blue-200"
+                  : "bg-blue-500 shadow-blue-200";
+              };
 
-                return (
-                  <Animated.View
-                    style={{ transform: [{ scale: scaleAnim }] }}
-                    className="items-center justify-center -top-8"
+              return (
+                <Animated.View
+                  style={{ transform: [{ scale: scaleAnim }] }}
+                  className="items-center justify-center -top-8"
+                >
+                  {/* Pulsing ring when recording */}
+                  {isPTTActive && (
+                    <Animated.View
+                      style={{
+                        position: "absolute",
+                        width: 80,
+                        height: 80,
+                        borderRadius: 24,
+                        backgroundColor: "rgba(239, 68, 68, 0.3)",
+                        transform: [{ scale: pulseAnim }],
+                      }}
+                    />
+                  )}
+                  <Pressable
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    onLongPress={handleLongPress}
+                    delayLongPress={400}
+                    onPress={handlePress}
                   >
-                    {/* Pulsing ring when recording */}
-                    {isPTTActive && (
-                      <Animated.View
-                        style={{
-                          position: "absolute",
-                          width: 80,
-                          height: 80,
-                          borderRadius: 24,
-                          backgroundColor: "rgba(239, 68, 68, 0.3)",
-                          transform: [{ scale: pulseAnim }],
-                        }}
-                      />
-                    )}
-                    <Pressable
-                      onPressIn={handlePressIn}
-                      onPressOut={handlePressOut}
-                      onLongPress={handleLongPress}
-                      delayLongPress={400}
-                      onPress={handlePress}
+                    <RainbowBorder
+                      borderRadius={20}
+                      borderWidth={3}
+                      className="size-20 shadow-2xl"
+                      containerClassName={`items-center justify-center ${getButtonColor()}`}
                     >
-                      <View
-                        className={`size-20 rounded-3xl items-center justify-center shadow-2xl ${getButtonColor()} border-4 border-white`}
-                      >
-                        <Feather name="mic" size={26} color="white" />
-                      </View>
-                    </Pressable>
-                  </Animated.View>
-                );
-              }
+                      <Feather name="mic" size={26} color="black" />
+                    </RainbowBorder>
+                  </Pressable>
+                </Animated.View>
+              );
+            }
             : undefined,
         }}
       />

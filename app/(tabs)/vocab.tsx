@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
+import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
@@ -14,7 +15,6 @@ import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
 import {
   BookOpen,
@@ -277,30 +277,7 @@ export default function VocabScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
-        <View className="items-center">
-          <Text className="text-black text-2xl font-bold">Sophie AI</Text>
-          <Text className="text-gray-500 text-base font-medium">
-            Native speaker in your pocket
-          </Text>
-        </View>
-        <Link href="/profile" asChild>
-          <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
-            {user?.user_metadata?.avatar_url ? (
-              <Image
-                source={{ uri: user.user_metadata.avatar_url }}
-                className="w-full h-full"
-              />
-            ) : (
-              <View className="w-full h-full items-center justify-center bg-blue-50">
-                <Text className="text-blue-500 font-bold">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </Link>
-      </View>
+      <PageHeader />
 
       <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">Vocab</Text>
@@ -348,24 +325,43 @@ export default function VocabScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
         >
-          {languages.map((lang) => (
-            <TouchableOpacity
-              key={lang}
-              activeOpacity={0.7}
-              onPress={() => setSelectedLanguage(lang)}
-              className={`px-5 py-2 rounded-full border ${selectedLanguage === lang
-                  ? "bg-blue-100 border-blue-300"
-                  : "bg-white border-gray-300"
-                }`}
-            >
-              <Text
-                className={`font-bold text-[13px] ${selectedLanguage === lang ? "text-blue-500" : "text-gray-600"
-                  }`}
+          {languages.map((lang) => {
+            const isSelected = selectedLanguage === lang;
+
+            if (isSelected) {
+              return (
+                <TouchableOpacity
+                  key={lang}
+                  activeOpacity={0.7}
+                  onPress={() => setSelectedLanguage(lang)}
+                >
+                  <RainbowBorder
+                    borderRadius={9999}
+                    borderWidth={1}
+                    className="flex-1"
+                    containerClassName="px-5 py-2"
+                  >
+                    <Text className="font-bold text-sm text-black">
+                      {lang}
+                    </Text>
+                  </RainbowBorder>
+                </TouchableOpacity>
+              );
+            }
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={lang}
+                onPress={() => setSelectedLanguage(lang)}
+                className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                {lang}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text className="font-bold text-sm text-gray-600">
+                  {lang}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       </View>
 
@@ -414,9 +410,9 @@ export default function VocabScreen() {
                   {/* Mic Icon */}
                   <TouchableOpacity
                     onPress={() => handlePlay(item.phrase)}
-                    className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center"
+                    className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
                   >
-                    <FontAwesome name="microphone" size={14} color="white" />
+                    <FontAwesome name="microphone" size={14} color="black" />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => showActionMenu(item)}

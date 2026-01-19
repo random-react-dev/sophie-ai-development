@@ -81,7 +81,7 @@ export default function PreferencesScreen() {
                 </View> */}
 
         {/* Identity Section */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             Account Info
           </Text>
@@ -108,7 +108,7 @@ export default function PreferencesScreen() {
         {/* Localization Section */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Localization
+            Languages
           </Text>
 
           {/* Country Card */}
@@ -134,7 +134,7 @@ export default function PreferencesScreen() {
 
           {/* Preferred Language Card */}
           <ProfileSettingCard
-            title="Preferred Language"
+            title="App Language"
             subtitle={
               user?.user_metadata?.app_language === "hi"
                 ? "Hindi"

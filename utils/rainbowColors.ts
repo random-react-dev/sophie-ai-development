@@ -81,3 +81,13 @@ export function getRainbowColorScheme(index: number): RainbowColorScheme {
     const safeIndex = index % rainbowColorSchemes.length;
     return rainbowColorSchemes[safeIndex];
 }
+
+/**
+ * Color scheme for disabled/inactive cards
+ * Uses neutral grays to indicate non-interactive state
+ */
+export const disabledColorScheme: RainbowColorScheme = {
+    iconBgColor: 'bg-gray-100',
+    borderColor: 'border-gray-200',
+    iconColor: '#9ca3af', // gray-400
+};

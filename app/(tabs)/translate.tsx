@@ -1,5 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
+import { PageHeader } from "@/components/common/PageHeader";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
   DEFAULT_SOURCE_LANG,
@@ -13,8 +15,7 @@ import { useScenarioStore } from "@/stores/scenarioStore";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-import { Image } from "expo-image";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   ArrowRightLeft,
   Bookmark,
@@ -141,33 +142,7 @@ export default function TranslateScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
-        <View className="items-center">
-          <Text className="text-black text-2xl font-bold">Sophie AI</Text>
-          <Text className="text-gray-500 text-base font-medium">
-            Native speaker in your pocket
-          </Text>
-        </View>
-        <Link href="/profile" asChild>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6"
-          >
-            {user?.user_metadata?.avatar_url ? (
-              <Image
-                source={{ uri: user.user_metadata.avatar_url }}
-                className="w-full h-full"
-              />
-            ) : (
-              <View className="w-full h-full items-center justify-center bg-blue-50">
-                <Text className="text-blue-500 font-bold">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </Link>
-      </View>
+      <PageHeader />
 
       <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">
@@ -273,9 +248,9 @@ export default function TranslateScreen() {
               <View className="flex-row gap-2">
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  className="w-10 h-10 items-center justify-center rounded-full bg-blue-500"
+                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
                 >
-                  <FontAwesome name="microphone" size={18} color="white" />
+                  <FontAwesome name="microphone" size={18} color="black" />
                 </TouchableOpacity>
                 {inputText.length > 0 && (
                   <TouchableOpacity
@@ -292,26 +267,29 @@ export default function TranslateScreen() {
                 activeOpacity={0.7}
                 onPress={handleTranslate}
                 disabled={isTranslating || !inputText.trim()}
-                className={`px-5 py-4 rounded-full flex-row items-center gap-2 ${isTranslating || !inputText.trim()
-                    ? "bg-gray-200"
-                    : "bg-blue-500"
-                  }`}
+                className="rounded-full overflow-hidden"
               >
-                {isTranslating ? (
-                  <ActivityIndicator color="#9ca3af" size="small" />
+                {isTranslating || !inputText.trim() ? (
+                  <View className="px-5 py-4 bg-gray-200 flex-row items-center gap-2">
+                    {isTranslating ? (
+                      <ActivityIndicator color="#9ca3af" size="small" />
+                    ) : (
+                      <>
+                        <Sparkles size={18} color="#9ca3af" />
+                        <Text className="font-bold text-gray-400">Translate</Text>
+                      </>
+                    )}
+                  </View>
                 ) : (
-                  <>
-                    <Sparkles
-                      size={18}
-                      color={!inputText.trim() ? "#9ca3af" : "white"}
-                    />
-                    <Text
-                      className={`font-bold ${!inputText.trim() ? "text-gray-400" : "text-white"
-                        }`}
-                    >
-                      Translate
-                    </Text>
-                  </>
+                  <RainbowBorder
+                    borderRadius={999}
+                    borderWidth={2}
+                    containerClassName="flex-row items-center gap-2 px-5 py-4"
+                    className="bg-white"
+                  >
+                    <Sparkles size={18} color="black" />
+                    <Text className="font-bold text-black">Translate</Text>
+                  </RainbowBorder>
                 )}
               </TouchableOpacity>
             </View>

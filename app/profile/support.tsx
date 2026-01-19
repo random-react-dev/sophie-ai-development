@@ -1,7 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
-import { getRainbowColorScheme } from "@/utils/rainbowColors";
+import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { FileText, Mail, MessageCircle, Scale } from "lucide-react-native";
 import React from "react";
@@ -35,7 +35,7 @@ export default function SupportScreen() {
         </View> */}
 
         {/* Legal Section */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             Legal
           </Text>
@@ -83,8 +83,8 @@ export default function SupportScreen() {
           <ProfileSettingCard
             title="Send Feedback"
             subtitle="Help us improve"
-            icon={<MessageCircle size={20} color={getRainbowColorScheme(3).iconColor} />}
-            colorScheme={getRainbowColorScheme(3)}
+            icon={<MessageCircle size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
             onPress={() =>
               showAlert(
                 "Coming Soon",
