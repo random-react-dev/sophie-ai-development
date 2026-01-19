@@ -1,5 +1,12 @@
 import { supabase } from '../supabase/client';
 
+export interface VocabularyFolder {
+    id: string;
+    user_id: string;
+    name: string;
+    created_at: string;
+}
+
 export interface VocabularyItem {
     id?: string;
     user_id: string;
@@ -8,17 +15,59 @@ export interface VocabularyItem {
     context?: string;
     created_at?: string;
     language?: string;
+    folder_id?: string | null;
+    folder?: VocabularyFolder; // Joined data
 }
+
+export const getFolders = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('vocabulary_folders')
+            .select('*')
+            .order('name', { ascending: true });
+
+        if (error) throw error;
+        return data as VocabularyFolder[];
+    } catch (error) {
+        console.error('Error fetching folders:', error);
+        return [];
+    }
+};
+
+export const createFolder = async (name: string) => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+            .from('vocabulary_folders')
+            .insert({
+                name,
+                user_id: user.id
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data as VocabularyFolder;
+    } catch (error) {
+        console.error('Error creating folder:', error);
+        return null;
+    }
+};
 
 export const saveToVocabulary = async (item: Omit<VocabularyItem, 'user_id'>) => {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("User not authenticated");
 
+        // Remove 'folder' object if present, only save folder_id
+        const { folder, ...itemData } = item;
+
         const { error } = await supabase
             .from('vocabulary')
             .insert({
-                ...item,
+                ...itemData,
                 user_id: user.id
             });
 
@@ -47,13 +96,14 @@ export const deleteFromVocabulary = async (id: string) => {
 
 export const getVocabulary = async () => {
     try {
+        // Fetch items and join with folders
         const { data, error } = await supabase
             .from('vocabulary')
-            .select('*')
+            .select('*, folder:vocabulary_folders(*)')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return data;
+        return data as VocabularyItem[];
     } catch (error) {
         console.error('Error fetching vocabulary:', error);
         return [];
