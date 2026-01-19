@@ -1,15 +1,21 @@
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { Colors } from "@/constants/theme";
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import React, { useEffect } from "react";
-import { Dimensions, Text, View } from "react-native";
+import { ResizeMode, Video } from "expo-av";
+import React, { useEffect, useRef } from "react";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Easing,
   FadeInUp,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
+  withSpring,
   withTiming,
 } from "react-native-reanimated";
+
+// Sophie intro video source
+const videoSource = require("@/assets/videos/sophieintro.mp4");
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -39,7 +45,7 @@ const ConfettiPiece: React.FC<{
       withTiming(1, {
         duration: 150,
         easing: Easing.out(Easing.back(2)),
-      })
+      }),
     );
 
     // Burst outward from center
@@ -48,7 +54,7 @@ const ConfettiPiece: React.FC<{
       withTiming(1, {
         duration: 800 + Math.random() * 400,
         easing: Easing.out(Easing.cubic),
-      })
+      }),
     );
 
     // Rotation
@@ -57,7 +63,7 @@ const ConfettiPiece: React.FC<{
       withTiming(rotationSpeed * 360, {
         duration: 1200,
         easing: Easing.out(Easing.quad),
-      })
+      }),
     );
 
     // Fade out
@@ -66,7 +72,7 @@ const ConfettiPiece: React.FC<{
       withTiming(0, {
         duration: 400,
         easing: Easing.out(Easing.ease),
-      })
+      }),
     );
   }, []);
 
@@ -241,6 +247,263 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     </Animated.View>
   );
 };
+// Premium Custom Video Player Component
+const SophieIntroVideo: React.FC = () => {
+  const videoRef = useRef<Video>(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [showControls, setShowControls] = React.useState(false);
+  const [isVideoComplete, setIsVideoComplete] = React.useState(false);
+  const hideControlsTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Animated values
+  const controlsOpacity = useSharedValue(0);
+  const buttonScale = useSharedValue(1);
+
+  // Auto-play video when component mounts
+  useEffect(() => {
+    const playVideo = async () => {
+      if (videoRef.current) {
+        await videoRef.current.playAsync();
+        setIsPlaying(true);
+      }
+    };
+    const timeout = setTimeout(playVideo, 500);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Handle controls visibility with fade animation
+  useEffect(() => {
+    if (showControls) {
+      controlsOpacity.value = withTiming(1, { duration: 200 });
+
+      // Auto-hide controls after 2 seconds if playing
+      if (isPlaying && !isVideoComplete) {
+        hideControlsTimeout.current = setTimeout(() => {
+          setShowControls(false);
+        }, 1000);
+      }
+    } else {
+      controlsOpacity.value = withTiming(0, { duration: 200 });
+    }
+
+    return () => {
+      if (hideControlsTimeout.current) {
+        clearTimeout(hideControlsTimeout.current);
+      }
+    };
+  }, [showControls, isPlaying, isVideoComplete]);
+
+  // Handle tap on video - toggle play/pause AND show controls with instant feedback
+  const handleVideoTap = async () => {
+    // Clear any pending hide timeout
+    if (hideControlsTimeout.current) {
+      clearTimeout(hideControlsTimeout.current);
+    }
+
+    // Always show controls on tap
+    setShowControls(true);
+
+    // Toggle play/pause with instant visual feedback
+    if (videoRef.current) {
+      if (isPlaying) {
+        // Set state FIRST for instant icon update
+        setIsPlaying(false);
+        await videoRef.current.pauseAsync();
+      } else {
+        // If video completed, replay from start
+        if (isVideoComplete) {
+          await videoRef.current.setPositionAsync(0);
+          setIsVideoComplete(false);
+        }
+        // Set state FIRST for instant icon update
+        setIsPlaying(true);
+        await videoRef.current.playAsync();
+      }
+    }
+  };
+
+  // Handle play/pause button with animation (when tapping the button directly)
+  const handlePlayPause = async () => {
+    // Animate button press
+    buttonScale.value = withSpring(0.85, { damping: 15, stiffness: 400 });
+    setTimeout(() => {
+      buttonScale.value = withSpring(1, { damping: 12, stiffness: 300 });
+    }, 100);
+
+    if (videoRef.current) {
+      if (isPlaying) {
+        setIsPlaying(false);
+        await videoRef.current.pauseAsync();
+      } else {
+        if (isVideoComplete) {
+          await videoRef.current.setPositionAsync(0);
+          setIsVideoComplete(false);
+        }
+        setIsPlaying(true);
+        await videoRef.current.playAsync();
+      }
+    }
+  };
+
+  // Animated styles
+  const controlsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: controlsOpacity.value,
+  }));
+
+  const buttonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: buttonScale.value }],
+  }));
+
+  return (
+    <Animated.View
+      entering={FadeInUp.delay(200).springify()}
+      className="w-full mb-4"
+    >
+      {/* Premium Video Container */}
+      <View
+        style={[
+          styles.videoContainer,
+          {
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.15,
+            shadowRadius: 12,
+            elevation: 8,
+          },
+        ]}
+      >
+        {/* Video Player */}
+        <Video
+          ref={videoRef}
+          source={videoSource}
+          style={styles.video}
+          resizeMode={ResizeMode.CONTAIN}
+          useNativeControls={false}
+          isLooping={false}
+          onPlaybackStatusUpdate={(status) => {
+            if (status.isLoaded) {
+              setIsPlaying(status.isPlaying);
+              // Detect video completion
+              if (status.didJustFinish) {
+                setIsVideoComplete(true);
+                setShowControls(true);
+              }
+            }
+          }}
+        />
+
+        {/* Tap Overlay to Show Controls */}
+        <Pressable style={styles.tapOverlay} onPress={handleVideoTap}>
+          {/* Controls Overlay with Fade Animation */}
+          <Animated.View
+            style={[styles.controlsOverlay, controlsAnimatedStyle]}
+          >
+            {/* Rainbow Border Play/Pause Button */}
+            <Pressable onPress={handlePlayPause} style={styles.playPauseButton}>
+              <Animated.View style={buttonAnimatedStyle}>
+                {/* Rainbow Border from system-design */}
+                <RainbowBorder
+                  borderWidth={2}
+                  borderRadius={28}
+                  style={{ width: 56, height: 56 }}
+                  innerBackgroundClassName="bg-white"
+                >
+                  {/* Play/Pause Icon */}
+                  <View style={styles.playPauseInner}>
+                    {isPlaying ? (
+                      <View style={styles.pauseIcon}>
+                        <View style={styles.pauseBar} />
+                        <View style={styles.pauseBar} />
+                      </View>
+                    ) : (
+                      <View style={styles.playIcon} />
+                    )}
+                  </View>
+                </RainbowBorder>
+              </Animated.View>
+            </Pressable>
+          </Animated.View>
+        </Pressable>
+      </View>
+
+      {/* Video Label */}
+      <Text className="text-center text-gray-500 text-sm mt-3 font-medium">
+        Meet Your AI Language Coach
+      </Text>
+    </Animated.View>
+  );
+};
+
+// Styles for video component
+const styles = StyleSheet.create({
+  videoContainer: {
+    width: "100%",
+    aspectRatio: 16 / 9,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "#000",
+  },
+  video: {
+    width: "100%",
+    height: "100%",
+  },
+  tapOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  controlsOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  playPauseButton: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  playPauseInner: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  playPauseCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  pauseIcon: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+  },
+  pauseBar: {
+    width: 6,
+    height: 22,
+    backgroundColor: "#1a1a1a",
+    borderRadius: 2,
+  },
+  playIcon: {
+    width: 0,
+    height: 0,
+    marginLeft: 4,
+    borderLeftWidth: 18,
+    borderTopWidth: 12,
+    borderBottomWidth: 12,
+    borderLeftColor: "#1a1a1a",
+    borderTopColor: "transparent",
+    borderBottomColor: "transparent",
+  },
+});
 
 export const CompletionStep = () => {
   const { data } = useOnboardingStore();
@@ -257,19 +520,22 @@ export const CompletionStep = () => {
       <CenterBurstConfetti />
 
       {/* Celebration Header */}
-      <View className="items-center mb-10">
+      <View className="items-center mb-5">
         {/* Static Emoji */}
-        <View className="size-20 bg-gray-100 items-center justify-center rounded-full mb-6">
-          <Text style={{ fontSize: 30 }}>🎉</Text>
+        <View className="size-16 bg-gray-100 items-center justify-center rounded-full mb-2">
+          <Text style={{ fontSize: 24 }}>🎉</Text>
         </View>
 
-        <Text className="text-3xl font-bold text-gray-900 text-center mb-3">
+        <Text className="text-3xl font-bold text-gray-900 text-center mb-2">
           You're all set!
         </Text>
-        <Text className="text-gray-500 text-base text-center px-4 leading-6">
+        <Text className="text-gray-500 text-base text-center px-4 leading-6 w-full">
           Your personalized learning path is ready
         </Text>
       </View>
+
+      {/* Sophie Intro Video */}
+      <SophieIntroVideo />
 
       {/* Summary Cards */}
       <View className="w-full">

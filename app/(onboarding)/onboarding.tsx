@@ -106,7 +106,7 @@ export default function OnboardingScreen() {
       const scrollY = event.nativeEvent.contentOffset.y;
       updateBorderVisibility(scrollY);
     },
-    [updateBorderVisibility]
+    [updateBorderVisibility],
   );
 
   const handleContentSizeChange = useCallback(
@@ -114,7 +114,7 @@ export default function OnboardingScreen() {
       contentHeight.current = height;
       updateBorderVisibility();
     },
-    [updateBorderVisibility]
+    [updateBorderVisibility],
   );
 
   const handleLayout = useCallback(
@@ -122,7 +122,7 @@ export default function OnboardingScreen() {
       containerHeight.current = event.nativeEvent.layout.height;
       updateBorderVisibility();
     },
-    [updateBorderVisibility]
+    [updateBorderVisibility],
   );
 
   const handleContinue = async () => {
@@ -155,7 +155,7 @@ export default function OnboardingScreen() {
           "Error",
           "Failed to save your preferences. Please try again.",
           undefined,
-          "error"
+          "error",
         );
       }
     } else if (currentStep === 1) {
@@ -174,7 +174,7 @@ export default function OnboardingScreen() {
           "Incomplete",
           "Please enter your name and select a country.",
           undefined,
-          "warning"
+          "warning",
         );
         return;
       }
@@ -229,7 +229,7 @@ export default function OnboardingScreen() {
         return <DiscoveryStep />;
       case 10:
         return <CompletionStep />;
-      default: 
+      default:
         return null;
     }
   };
@@ -312,8 +312,8 @@ export default function OnboardingScreen() {
               {isSaving
                 ? "Saving..."
                 : currentStep === 10
-                ? "Start Learning"
-                : "Continue"}
+                  ? "Start Learning"
+                  : "Continue"}
             </Text>
           </RainbowBorder>
         </TouchableOpacity>
