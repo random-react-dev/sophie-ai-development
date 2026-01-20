@@ -1,23 +1,27 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
-import { RainbowBorder } from "@/components/common/Rainbow";
+import { RainbowBorder, RainbowText } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
 import {
+  createFolder,
   deleteFromVocabulary,
+  getFolders,
   getVocabulary,
   saveToVocabulary,
+  VocabularyFolder,
   VocabularyItem,
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   BookOpen,
+  Folder,
   Languages,
   MessageSquare,
   MoreVertical,
@@ -46,17 +50,13 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-  interpolate,
-  interpolateColor,
   runOnJS,
-  useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
+  withTiming
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
 
 export default function VocabScreen() {
   const { user } = useAuthStore();
@@ -79,6 +79,14 @@ export default function VocabScreen() {
   const [newTranslation, setNewTranslation] = useState("");
   const [newLanguage, setNewLanguage] = useState<Language>(DEFAULT_TARGET_LANG);
   const [showLangPicker, setShowLangPicker] = useState(false);
+  const [newFolderId, setNewFolderId] = useState<string | null>(null);
+  const [isFolderPickerVisible, setIsFolderPickerVisible] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+
+  // Folders Data
+  const [folders, setFolders] = useState<VocabularyFolder[]>([]);
+  const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>("All");
 
   // Multi-select Modal
   const [isMultiSelectVisible, setIsMultiSelectVisible] = useState(false);
@@ -95,8 +103,12 @@ export default function VocabScreen() {
 
   const fetchVocab = async () => {
     try {
-      const data = await getVocabulary();
-      setItems(data);
+      const [vocabData, foldersData] = await Promise.all([
+        getVocabulary(),
+        getFolders(),
+      ]);
+      setItems(vocabData);
+      setFolders(foldersData);
     } catch (error) {
       console.error("Error fetching vocab:", error);
     } finally {
@@ -122,9 +134,12 @@ export default function VocabScreen() {
           item.translation.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesLang =
         selectedLanguage === "All" || item.language === selectedLanguage;
-      return matchesSearch && matchesLang;
+      const matchesFolder =
+        selectedFolderFilter === "All" || item.folder_id === selectedFolderFilter;
+
+      return matchesSearch && matchesLang && matchesFolder;
     });
-  }, [items, searchQuery, selectedLanguage]);
+  }, [items, searchQuery, selectedLanguage, selectedFolderFilter]);
 
   const handlePlay = (text: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -246,11 +261,13 @@ export default function VocabScreen() {
       translation: newTranslation,
       language: newLanguage.name,
       context: "Manual Entry",
+      folder_id: newFolderId,
     });
 
     if (success) {
       setNewPhrase("");
       setNewTranslation("");
+      setNewFolderId(null);
       setIsAddModalVisible(false);
       fetchVocab();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -365,6 +382,56 @@ export default function VocabScreen() {
         </ScrollView>
       </View>
 
+      {/* Folder Filter Chips */}
+      <View className="mb-4">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+        >
+          {["All", ...folders].map((folder) => {
+            const isAll = typeof folder === "string";
+            const id = isAll ? "All" : (folder as VocabularyFolder).id;
+            const name = isAll ? "All Folders" : (folder as VocabularyFolder).name;
+            const isSelected = selectedFolderFilter === id;
+
+            if (isSelected) {
+              return (
+                <TouchableOpacity
+                  key={id}
+                  activeOpacity={0.7}
+                  onPress={() => setSelectedFolderFilter(id)}
+                >
+                  <RainbowBorder
+                    borderRadius={9999}
+                    borderWidth={1}
+                    className="flex-1"
+                    containerClassName="px-4 py-1.5"
+                  >
+                    <View className="flex-row items-center gap-2">
+                      {!isAll && <Folder size={12} color="black" />}
+                      <Text className="font-bold text-xs text-black">{name}</Text>
+                    </View>
+                  </RainbowBorder>
+                </TouchableOpacity>
+              );
+            }
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={id}
+                onPress={() => setSelectedFolderFilter(id)}
+                className="px-4 py-1.5 rounded-full border border-gray-300 bg-white flex-row items-center gap-2"
+              >
+                {!isAll && <Folder size={12} color="gray" />}
+                <Text className="font-bold text-xs text-gray-600">{name}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+
       {/* Content */}
       {isLoading && !isRefreshing ? (
         <View className="flex-1 items-center justify-center">
@@ -403,6 +470,14 @@ export default function VocabScreen() {
                     <Text className="text-gray-500 font-medium italic mt-1">
                       &quot;{item.translation}&quot;
                     </Text>
+                  )}
+                  {item.folder && (
+                    <View className="flex-row items-center gap-1.5 mt-2 bg-purple-50 self-start px-2 py-1 rounded-md">
+                      <Folder size={10} color="#a855f7" />
+                      <Text className="text-purple-600 text-[10px] font-bold">
+                        {item.folder.name}
+                      </Text>
+                    </View>
                   )}
                 </View>
 
@@ -473,10 +548,31 @@ export default function VocabScreen() {
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
                   <CircleFlag countryCode={newLanguage.countryCode} size={28} />
-                  <Text className="text-lg font-semibold text-gray-900 flex-1">
+                  <Text className="text-lg font-semibold text-black flex-1">
                     {newLanguage.name}
                   </Text>
-                  <Text className="text-blue-500 font-bold text-sm">
+                  <Text className="text-gray-700 font-bold text-sm">
+                    Change
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Folder (Optional)
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setIsFolderPickerVisible(true)}
+                  className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
+                >
+                  <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
+                    <Folder size={16} color="#6b7280" />
+                  </View>
+                  <Text className={`text-lg font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}>
+                    {newFolderId ? folders.find(f => f.id === newFolderId)?.name || "Selected Folder" : "Select a folder"}
+                  </Text>
+                  <Text className="text-black font-bold text-sm">
                     Change
                   </Text>
                 </TouchableOpacity>
@@ -487,7 +583,7 @@ export default function VocabScreen() {
                   Phrase <Text className="text-red-500">*</Text>
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium"
+                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
                   placeholder="Enter word or phrase..."
                   placeholderTextColor="gray"
                   value={newPhrase}
@@ -502,7 +598,7 @@ export default function VocabScreen() {
                   Translation (Optional)
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium h-32 text-start align-top"
+                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
                   placeholder="Enter meaning..."
                   placeholderTextColor="gray"
                   value={newTranslation}
@@ -542,6 +638,132 @@ export default function VocabScreen() {
             </View>
           </SafeAreaView>
         </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Folder Picker Modal */}
+      <Modal
+        visible={isFolderPickerVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsFolderPickerVisible(false)}
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+            <Text className="text-2xl font-bold text-black">Select Folder</Text>
+            <TouchableOpacity
+              onPress={() => setIsFolderPickerVisible(false)}
+              className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-1">
+            <View className="px-4 py-4">
+              {/* Create New Folder Input */}
+              {isCreatingFolder ? (
+                <View className="flex-row items-center gap-2 mb-4">
+                  <TextInput
+                    className="flex-1 bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                    placeholder="Folder name..."
+                    placeholderTextColor="gray"
+                    value={newFolderName}
+                    onChangeText={setNewFolderName}
+                    style={{ includeFontPadding: false }}
+                  />
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    className="h-12 rounded-full overflow-hidden"
+                    onPress={async () => {
+                      if (!newFolderName.trim()) return;
+                      const newFolder = await createFolder(newFolderName);
+                      if (newFolder) {
+                        setFolders(prev => [...prev, newFolder]);
+                        setNewFolderId(newFolder.id);
+                        setIsCreatingFolder(false);
+                        setNewFolderName("");
+                        setIsFolderPickerVisible(false);
+                      }
+                    }}
+                  >
+                    <RainbowBorder
+                      borderRadius={9999}
+                      borderWidth={2}
+                      className="flex-1"
+                      containerClassName="flex-row items-center justify-center px-4 gap-2"
+                    >
+                      <Plus size={20} color="black" />
+                      <Text className="text-black font-bold text-base">Create</Text>
+                    </RainbowBorder>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  className="flex-row items-center gap-3 py-3 px-2 mb-2"
+                  onPress={() => setIsCreatingFolder(true)}
+                >
+                  <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                    <Plus size={20} color="black" />
+                  </View>
+                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
+                </TouchableOpacity>
+              )}
+
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+            </View>
+
+            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+              {folders.map(folder => {
+                const isSelected = newFolderId === folder.id;
+                const Content = () => (
+                  <>
+                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                      <Folder size={20} color="gray" />
+                    </View>
+                    <View className="flex-1 ml-4">
+                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                    </View>
+                  </>
+                );
+
+                return (
+                  <TouchableOpacity
+                    key={folder.id}
+                    onPress={() => {
+                      setNewFolderId(folder.id);
+                      setIsFolderPickerVisible(false);
+                    }}
+                    className="mb-3"
+                    activeOpacity={0.7}
+                  >
+                    {isSelected ? (
+                      <RainbowBorder
+                        borderRadius={20}
+                        borderWidth={2}
+                        containerClassName="flex-row items-center px-4 py-4"
+                        className="bg-white"
+                      >
+                        <Content />
+                      </RainbowBorder>
+                    ) : (
+                      <View
+                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        className="flex-row items-center border-gray-200 bg-white"
+                      >
+                        <Content />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+              {folders.length === 0 && (
+                <Text className="text-gray-400 text-center mt-10 italic">No folders yet</Text>
+              )}
+              {/* Padding for bottom */}
+              <View className="h-20" />
+            </ScrollView>
+          </View>
+        </SafeAreaView>
       </Modal>
 
       <LanguagePickerModal
@@ -609,20 +831,28 @@ export default function VocabScreen() {
               onPress={startPracticeSession}
               disabled={selectedForPractice.size === 0}
               activeOpacity={0.8}
-              className={`h-16 rounded-full items-center justify-center flex-row gap-3 shadow-lg shadow-blue-200 ${selectedForPractice.size > 0 ? "bg-blue-500" : "bg-gray-200"
-                }`}
+              className="shadow-lg shadow-blue-100"
             >
-              <MessageSquare
-                size={22}
-                color={selectedForPractice.size > 0 ? "white" : "#9ca3af"}
-              />
-              <Text
-                className={`font-bold text-lg ${selectedForPractice.size > 0 ? "text-white" : "text-gray-400"
-                  }`}
-              >
-                Start with {selectedForPractice.size} Phrase
-                {selectedForPractice.size === 1 ? "" : "s"}
-              </Text>
+              {selectedForPractice.size > 0 ? (
+                <RainbowBorder
+                  borderRadius={9999}
+                  borderWidth={2}
+                  className="bg-white"
+                  containerClassName="h-16 flex-row items-center justify-center"
+                >
+                  <Text className="font-bold text-lg text-black">
+                    Start with {selectedForPractice.size} Phrase
+                    {selectedForPractice.size === 1 ? "" : "s"}
+                  </Text>
+                </RainbowBorder>
+              ) : (
+                <View className="h-16 rounded-full bg-gray-200 items-center justify-center flex-row">
+                  <Text className="font-bold text-lg text-gray-400">
+                    Start with {selectedForPractice.size} Phrase
+                    {selectedForPractice.size === 1 ? "" : "s"}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -771,8 +1001,8 @@ function ActionModalContent({
                 onPress={() => onAction("translate")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
               >
-                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
-                  <Languages size={20} color="#3b82f6" />
+                <View className="w-10 h-10 bg-gray-200 rounded-full items-center justify-center mr-4">
+                  <Languages size={20} color="#1f2937" />
                 </View>
                 <Text className="text-base font-semibold text-gray-900">
                   Translate
@@ -782,8 +1012,8 @@ function ActionModalContent({
                 onPress={() => onAction("conversation")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
               >
-                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
-                  <MessageSquare size={20} color="#3b82f6" />
+                <View className="w-10 h-10 bg-gray-200 rounded-full items-center justify-center mr-4">
+                  <MessageSquare size={20} color="#1f2937" />
                 </View>
                 <Text className="text-base font-semibold text-gray-900">
                   Start Conversation
@@ -794,8 +1024,8 @@ function ActionModalContent({
                 onPress={() => { }}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
               >
-                <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
-                  <Pencil size={20} color="#3b82f6" />
+                <View className="w-10 h-10 bg-gray-200 rounded-full items-center justify-center mr-4">
+                  <Pencil size={20} color="#1f2937" />
                 </View>
                 <Text className="text-base font-semibold text-gray-900">
                   Edit Vocabulary
@@ -820,63 +1050,9 @@ function ActionModalContent({
   );
 }
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-// Animated Checkbox with smooth "drawing" animation
-function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
-  const progress = useSharedValue(isChecked ? 1 : 0);
-  const pathLength = 22;
 
-  // Sync prop to shared value for animation
-  useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, {
-      duration: 300,
-    });
-  }, [isChecked]);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
-    };
-  });
-
-  const bgAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["transparent", "#3b82f6"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#d1d5db", "#3b82f6"]
-      ),
-      borderWidth: 2,
-    };
-  });
-
-  return (
-    <Animated.View
-      style={bgAnimatedStyle}
-      className="w-6 h-6 rounded-full items-center justify-center shadow-sm"
-    >
-      <Svg width="14" height="14" viewBox="0 0 24 24">
-        <AnimatedPath
-          d="M5 12l5 5L20 7"
-          fill="none"
-          stroke="white"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={pathLength}
-          animatedProps={animatedProps}
-        />
-      </Svg>
-    </Animated.View>
-  );
-}
-
+// Premium Selectable Phrase Item
 // Premium Selectable Phrase Item
 function SelectablePhraseItem({
   item,
@@ -889,74 +1065,54 @@ function SelectablePhraseItem({
   isPrimary: boolean;
   onPress: () => void;
 }) {
-  const progress = useSharedValue(isActive ? 1 : 0);
-
-  useEffect(() => {
-    progress.value = withSpring(isActive ? 1 : 0, {
-      damping: 20,
-      stiffness: 90,
-    });
-  }, [isActive]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#ffffff", "#f8fbff"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#e5e7eb", "#3b82f6"]
-      ),
-      shadowColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#000000", "#3b82f6"]
-      ),
-      shadowOpacity: interpolate(progress.value, [0, 1], [0.05, 0.08]),
-      shadowRadius: interpolate(progress.value, [0, 1], [4, 8]),
-      elevation: interpolate(progress.value, [0, 1], [1, 2]),
-    };
-  });
+  const Content = () => (
+    <>
+      <View className="flex-1 pr-4">
+        <View className="flex-row items-center flex-wrap gap-2 mb-1">
+          <Text className="font-bold text-lg text-gray-900" numberOfLines={2}>
+            {item.phrase}
+          </Text>
+          {isPrimary && (
+            <View className="bg-white px-2 py-0.5 rounded-2xl border border-gray-300">
+              <RainbowText
+                text="PRIMARY"
+                fontSize={10}
+                fontWeight="900"
+              />
+            </View>
+          )}
+        </View>
+        {item.translation && (
+          <Text
+            className="text-sm text-gray-500"
+            numberOfLines={2}
+          >
+            {item.translation}
+          </Text>
+        )}
+      </View>
+    </>
+  );
 
   return (
     <Pressable onPress={onPress}>
-      <Animated.View
-        style={[
-          animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 20 },
-        ]}
-        className="flex-row items-center"
-      >
-        <View className="flex-1 pr-4">
-          <View className="flex-row items-center flex-wrap gap-2 mb-1">
-            <Text className="font-bold text-lg text-gray-900" numberOfLines={2}>
-              {item.phrase}
-            </Text>
-            {isPrimary && (
-              <View className="bg-white px-2 py-0.5 rounded-2xl border border-gray-300">
-                <Text className="text-blue-500 text-[10px] font-black uppercase tracking-widest">
-                  Primary
-                </Text>
-              </View>
-            )}
-          </View>
-          {item.translation && (
-            <Text
-              className={`text-sm ${isActive ? "text-blue-600/70" : "text-gray-500"
-                }`}
-              numberOfLines={2}
-            >
-              {item.translation}
-            </Text>
-          )}
+      {isActive ? (
+        <RainbowBorder
+          borderRadius={20}
+          borderWidth={2}
+          containerClassName="flex-row items-center p-4"
+          className="bg-white"
+        >
+          <Content />
+        </RainbowBorder>
+      ) : (
+        <View
+          style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+          className="flex-row items-center border-gray-200 bg-white"
+        >
+          <Content />
         </View>
-
-        <AnimatedCheckbox isChecked={isActive} />
-      </Animated.View>
+      )}
     </Pressable>
   );
 }
