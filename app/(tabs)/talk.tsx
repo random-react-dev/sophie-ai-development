@@ -1,5 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
+import { RainbowGradient } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
 import LanguageSelectorModal from "@/components/tutor/LanguageSelectorModal";
 import { Language } from "@/constants/languages";
@@ -14,11 +15,7 @@ import { useConversationStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useRouter } from "expo-router";
-import {
-  CheckCircle2,
-  Globe,
-  RotateCcw
-} from "lucide-react-native";
+import { Globe, RotateCcw } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -57,7 +54,7 @@ const getHelloWord = (code: string): string => HELLO_WORDS[code] || "Hello";
 // Build tutor prompt with language context
 const buildTutorPrompt = (
   targetLang: Language,
-  nativeLang: Language
+  nativeLang: Language,
 ): string => {
   return `You are Sophie, a warm and encouraging AI language tutor.
 
@@ -72,11 +69,14 @@ const buildTutorPrompt = (
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${nativeLang.name
-    }), then introduce the lesson:
-"Welcome to your ${targetLang.name
-    } lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name
-    } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Start by greeting the user in their native language (${
+    nativeLang.name
+  }), then introduce the lesson:
+"Welcome to your ${
+    targetLang.name
+  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
+    targetLang.name
+  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -87,8 +87,9 @@ Start by greeting the user in their native language (${nativeLang.name
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name
-    } for the words being taught
+- Always respond in ${nativeLang.name} when explaining, but use ${
+    targetLang.name
+  } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress`;
 };
@@ -166,7 +167,7 @@ export default function TalkScreen() {
       if (!targetLanguage || !nativeLanguage) {
         Logger.info(
           TAG,
-          "Waiting for language selection before initializing..."
+          "Waiting for language selection before initializing...",
         );
         return;
       }
@@ -178,9 +179,8 @@ export default function TalkScreen() {
         let token = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
 
         if (!token) {
-          const { data, error } = await supabase.functions.invoke(
-            "get-gemini-session"
-          );
+          const { data, error } =
+            await supabase.functions.invoke("get-gemini-session");
           if (error || !data?.token)
             throw new Error(error?.message || "No token returned");
           token = data.token;
@@ -215,7 +215,7 @@ Stay in character while teaching.`;
 
         Logger.info(
           TAG,
-          `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`
+          `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`,
         );
         geminiWebSocket.connect(token, instruction);
       } catch (err) {
@@ -295,14 +295,10 @@ Stay in character while teaching.`;
 
   const handleFinish = () => {
     if (messages.length === 0) {
-      showAlert(
-        "End Session",
-        "Go back to scenario library?",
-        [
-          { text: "Cancel", style: "cancel" },
-          { text: "Yes", onPress: () => router.push("/(tabs)") },
-        ]
-      );
+      showAlert("End Session", "Go back to scenario library?", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Yes", onPress: () => router.push("/(tabs)") },
+      ]);
       return;
     }
 
@@ -318,7 +314,7 @@ Stay in character while teaching.`;
           },
         },
       ],
-      "info"
+      "info",
     );
   };
 
@@ -343,30 +339,41 @@ Stay in character while teaching.`;
           },
         },
       ],
-      "warning"
+      "warning",
     );
   };
 
-  const handleTranslate = useCallback(async (text: string) => {
-    try {
-      const translated = await translateText(text, "English");
-      Alert.alert("Translation", translated);
-    } catch {
-      Alert.alert("Error", "Failed to translate. Please try again.");
-    }
-  }, []);
+  const handleTranslate = useCallback(
+    async (text: string) => {
+      try {
+        const translated = await translateText(text, "English");
+        showAlert("Translation", translated, undefined, "info");
+      } catch {
+        showAlert(
+          "Error",
+          "Failed to translate. Please try again.",
+          undefined,
+          "error",
+        );
+      }
+    },
+    [showAlert],
+  );
 
-  const handleSaveVocabulary = useCallback(async (text: string) => {
-    const success = await saveToVocabulary({ phrase: text });
-    if (success) {
-      Alert.alert("Success", "Added to your vocabulary!");
-    }
-  }, []);
+  const handleSaveVocabulary = useCallback(
+    async (text: string) => {
+      const success = await saveToVocabulary({ phrase: text });
+      if (success) {
+        showAlert("Success", "Added to your vocabulary!", undefined, "success");
+      }
+    },
+    [showAlert],
+  );
 
   // Message type for FlatList
   interface Message {
     id: string;
-    role: 'user' | 'model';
+    role: "user" | "model";
     text: string;
     timestamp: number;
   }
@@ -382,7 +389,7 @@ Stay in character while teaching.`;
         userName={user?.user_metadata?.full_name || user?.email}
       />
     ),
-    [handleTranslate, handleSaveVocabulary, user]
+    [handleTranslate, handleSaveVocabulary, user],
   );
 
   return (
@@ -439,32 +446,22 @@ Stay in character while teaching.`;
       <View className="flex-1 px-4 mt-2">
         {/* Conversation Area */}
         <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[200px] overflow-hidden">
-          {/* Status Bar inside the card */}
-          <View className="flex items-end px-4 pt-4">
-            <View className="flex-row items-center gap-3">
-              {/* Reset Button */}
+          {/* Premium Status Bar */}
+          <View className="flex-row items-center justify-end p-4 bg-gray-50/50 border-b border-gray-100">
+            {/* Actions Bar */}
+            <View className="flex-row items-center gap-2">
+              {/* Reset Control */}
               <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={handleReset}
-                className="p-2 bg-gray-100 rounded-full"
+                className="w-8 h-8 items-center justify-center bg-white rounded-full border border-gray-100 shadow-sm"
               >
-                <RotateCcw size={16} color="gray" />
+                <RotateCcw size={14} color="#64748b" />
               </TouchableOpacity>
 
-              {/* Finish Button - Only show when messages exist */}
-              {messages.length > 0 && (
-                <TouchableOpacity
-                  onPress={handleFinish}
-                  className="px-3 py-2 bg-gray-900 rounded-full flex-row items-center gap-2"
-                >
-                  <CheckCircle2 size={14} color="white" />
-                  <Text className="text-white font-bold text-xs">
-                    Finish & Get Report
-                  </Text>
-                </TouchableOpacity>
-              )}
-
-              <View className="flex-row items-center gap-2">
-                <Text className="text-black text-sm font-bold">
+              {/* Transcript Toggle */}
+              <View className="flex-row items-center bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
+                <Text className="text-black text-xs font-bold mr-2">
                   Transcript
                 </Text>
                 <CustomToggle
@@ -472,6 +469,23 @@ Stay in character while teaching.`;
                   onValueChange={setShowTranscript}
                 />
               </View>
+
+              {/* Finish Button */}
+              {messages.length > 0 && (
+                <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
+                  <View className="bg-white rounded-full border border-gray-100 overflow-hidden">
+                    <View className="absolute inset-0 opacity-20">
+                      <RainbowGradient className="flex-1" />
+                    </View>
+                    <View className="px-4 py-2 flex-row items-center gap-1.5">
+                      <Feather name="check-circle" size={12} color="black" />
+                      <Text className="text-black font-bold text-xs">
+                        Finish & Get Report
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -506,7 +520,9 @@ Stay in character while teaching.`;
         <View className="flex-1 mt-6">
           {!showTranscript ? (
             <View className="flex-1 items-center justify-center">
-              <Text className="text-gray-400 font-medium">Transcript Hidden</Text>
+              <Text className="text-gray-400 font-medium">
+                Transcript Hidden
+              </Text>
             </View>
           ) : messages.length === 0 ? (
             <View className="items-center mt-10">
@@ -515,14 +531,12 @@ Stay in character while teaching.`;
               </View>
               {!canStartConversation ? (
                 <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                  Select both languages above to start your lesson with
-                  Sophie.
+                  Select both languages above to start your lesson with Sophie.
                 </Text>
               ) : (
                 <Text className="text-black/60 font-medium text-center px-10 leading-5">
                   Hold the mic button below to start your{" "}
-                  {selectedScenario ? "roleplay" : targetLanguage?.name}{" "}
-                  lesson.
+                  {selectedScenario ? "roleplay" : targetLanguage?.name} lesson.
                 </Text>
               )}
             </View>
@@ -542,8 +556,6 @@ Stay in character while teaching.`;
           )}
         </View>
       </View>
-
-
 
       {/* Pad for the Tab Bar Mic Button */}
       {/* <View className="h-20" /> */}
