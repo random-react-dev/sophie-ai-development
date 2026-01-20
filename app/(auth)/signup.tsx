@@ -97,12 +97,12 @@ export default function SignupScreen() {
         <Text className="text-3xl font-bold text-gray-900">
           Create your account
         </Text>
-        <Text className="text-gray-500 mt-2 w-full text-center">
+        {/* <Text className="text-gray-500 mt-2 w-full text-center">
           Step 1 of 2 — Enter your details
-        </Text>
+        </Text> */}
       </View>
 
-      <View className="space-y-5">
+      <View>
         <AuthInput
           placeholder="Email address"
           value={email}
@@ -116,15 +116,6 @@ export default function SignupScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            rightElement={
-              <Link href="/forgot-password" asChild>
-                <TouchableOpacity>
-                  <Text className="text-blue-500 font-semibold text-sm">
-                    Forgot?
-                  </Text>
-                </TouchableOpacity>
-              </Link>
-            }
           />
         </View>
         <View className="mt-4">
@@ -223,34 +214,40 @@ export default function SignupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="px-6 py-6">
-        <AuthHeader />
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-1 px-6 justify-between">
+          {/* Top Section - Brand (outside card) */}
+          <AuthHeader />
 
-        {step === 1 && renderStep1()}
-        {step === 2 && renderStep2()}
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
 
-        <View className="items-center mb-6">
-          <Text className="text-gray-500 w-full text-center">
-            Already have an account?
-          </Text>
-          <Link href="/login" asChild>
-            <TouchableOpacity>
-              <Text className="text-blue-600 font-bold text-lg">Log in</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
+          <View className="items-center mb-6">
+            <Text className="text-gray-400 w-full text-center">
+              Already have an account?
+            </Text>
+            <Link href="/login" asChild>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Text className="text-black font-medium underline text-lg">
+                  Log in
+                </Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
 
-        {/* Spacer to push Terms to bottom */}
-        <View className="flex-1" />
-
-        {/* Terms */}
-        <View className="items-center">
-          <Text className="text-gray-400 text-sm w-full text-center">
-            By continuing, you agree to our{" "}
-            <Text className="text-gray-600 font-bold">Terms to Service</Text>
-            {"\n"}and{" "}
-            <Text className="text-gray-600 font-bold">Privacy Policy</Text>
-          </Text>
+          {/* Terms */}
+          <View className="items-center pb-6">
+            <Text className="text-gray-400 text-sm w-full text-center">
+              By continuing, you agree to our{" "}
+              <Text className="text-gray-600 font-bold">Terms to Service</Text>
+              {"\n"}and{" "}
+              <Text className="text-gray-600 font-bold">Privacy Policy</Text>
+            </Text>
+          </View>
         </View>
       </ScrollView>
       <AlertModal

@@ -6,16 +6,7 @@ import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "expo-router";
 import React, { useState } from "react";
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
@@ -58,105 +49,97 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <View className="flex-1 px-6 justify-between">
-              {/* Top Section - Brand (outside card) */}
-              <AuthHeader />
-              {/* White Card */}
-              <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                {/* Welcome */}
-                <View className="items-center mb-8">
-                  <Text className="text-3xl font-bold text-gray-900">
-                    Welcome back
-                  </Text>
-                  <Text className="text-gray-500 mt-1 w-full text-center">
-                    Log in to continue learning
-                  </Text>
-                </View>
+        <View className="flex-1 px-6 justify-between">
+          {/* Top Section - Brand (outside card) */}
+          <AuthHeader />
 
-                {/* Form */}
-                <View>
-                  {/* Email Input */}
-                  <AuthInput
-                    placeholder="Email address"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                  />
-
-                  {/* Password Input */}
-                  <View className="mt-3">
-                    <AuthInput
-                      placeholder="Password"
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry
-                    />
-                    {/* Forgot Password - below and right-aligned */}
-                    <View className="items-end mt-2">
-                      <Link href="/forgot-password" asChild>
-                        <TouchableOpacity>
-                          <Text className="text-blue-500 text-sm font-bold">
-                            Forgot Password?
-                          </Text>
-                        </TouchableOpacity>
-                      </Link>
-                    </View>
-                  </View>
-
-                  {/* Login Button - Rainbow */}
-                  <Button
-                    title={isLoading ? "Logging in..." : "Login"}
-                    onPress={handleLogin}
-                    disabled={isLoading}
-                    variant="rainbow"
-                    className="mt-6 h-14"
-                  />
-
-                  {/* Social Login */}
-                  <SocialLoginButtons />
-                </View>
-              </View>
-              {/* Bottom Section - Sign Up */}
-              <View className="items-center mb-6">
-                <Text className="text-gray-500 w-full text-center">
-                  Don&apos;t have an account?{" "}
-                </Text>
-                <Link href="/signup" asChild>
-                  <TouchableOpacity>
-                    <Text className="text-blue-600 font-bold text-lg">
-                      Sign up
-                    </Text>
-                  </TouchableOpacity>
-                </Link>
-              </View>
-              {/* Terms */}
-              <View className="items-center pb-6">
-                <Text className="text-gray-400 text-sm text-center w-full">
-                  By continuing, you agree to our{" "}
-                  <Text className="text-gray-600 font-bold">
-                    Terms to Service
-                  </Text>
-                  {"\n"}and{" "}
-                  <Text className="text-gray-600 font-bold">
-                    Privacy Policy
-                  </Text>
-                </Text>
-              </View>
+          {/* White Card */}
+          <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8">
+            {/* Welcome */}
+            <View className="items-center mb-8">
+              <Text className="text-3xl font-bold text-gray-900">
+                Welcome back
+              </Text>
+              <Text className="text-gray-500 mt-1 w-full text-center">
+                Log in to continue learning
+              </Text>
             </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+
+            {/* Form */}
+            <View>
+              {/* Email Input */}
+              <AuthInput
+                placeholder="Email address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+
+              {/* Password Input */}
+              <View className="mt-3">
+                <AuthInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                />
+                {/* Forgot Password - below and right-aligned */}
+                <View className="items-end mt-2">
+                  <Link href="/forgot-password" asChild>
+                    <TouchableOpacity activeOpacity={0.7}>
+                      <Text className="text-black text-sm font-medium">
+                        Forgot Password?
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+                </View>
+              </View>
+
+              {/* Login Button - Rainbow */}
+              <Button
+                title={isLoading ? "Logging in..." : "Login"}
+                onPress={handleLogin}
+                disabled={isLoading}
+                variant="rainbow"
+                className="mt-6 h-14"
+              />
+
+              {/* Social Login */}
+              <SocialLoginButtons />
+            </View>
+          </View>
+
+          {/* Bottom Section - Sign Up */}
+          <View className="items-center mb-6">
+            <Text className="text-gray-400 w-full text-center">
+              Don&apos;t have an account?{" "}
+            </Text>
+            <Link href="/signup" asChild>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Text className="text-black underline font-medium text-lg">
+                  Sign up
+                </Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+
+          {/* Terms */}
+          <View className="items-center pb-6">
+            <Text className="text-gray-400 text-sm text-center w-full">
+              By continuing, you agree to our{" "}
+              <Text className="text-gray-600 font-bold">Terms of Service</Text>
+              {"\n"}and{" "}
+              <Text className="text-gray-600 font-bold">Privacy Policy</Text>
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
 
       {/* Alert Modal */}
       <AlertModal
