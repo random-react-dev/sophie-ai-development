@@ -9,7 +9,25 @@ import * as Haptics from "expo-haptics";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Platform, Pressable, Text, View } from "react-native";
+import {
+  Animated,
+  Dimensions,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+
+// Get screen width for responsive sizing
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+// Base design width (iPhone SE/8)
+const BASE_WIDTH = 375;
+// Responsive font size calculator
+const responsiveFontSize = (size: number) => {
+  const scale = SCREEN_WIDTH / BASE_WIDTH;
+  const newSize = size * Math.min(scale, 1.2); // Cap at 1.2x to prevent too large on tablets
+  return Math.max(newSize, size * 0.85); // Min 85% of original to stay readable
+};
 
 // Check if voice mode is available (not available in Expo Go)
 const voiceAvailable = isVoiceModeAvailable();
@@ -100,10 +118,11 @@ export default function TabLayout() {
         tabBarLabel: ({ children, color }) => (
           <Text
             allowFontScaling={false}
+            numberOfLines={1}
             style={{
               color,
               fontFamily: "GoogleSans-Bold",
-              fontSize: 10,
+              fontSize: responsiveFontSize(10),
               fontWeight: "bold",
               textAlign: "center",
               includeFontPadding: false,
@@ -114,6 +133,7 @@ export default function TabLayout() {
         ),
         tabBarItemStyle: {
           paddingHorizontal: 0,
+          flex: 1,
         },
       }}
     >
