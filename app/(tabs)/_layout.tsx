@@ -1,4 +1,4 @@
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
@@ -227,27 +227,26 @@ export default function TabLayout() {
                       <RainbowBorder
                         borderRadius={20}
                         borderWidth={3}
-                        className="size-20 shadow-2xl"
+                        className="size-20"
+                        style={{
+                          // Subtle premium shadow when active
+                          shadowColor:
+                            isFocused && !isPTTActive ? "#70369D" : "#000",
+                          shadowOffset: { width: 0, height: isFocused ? 3 : 2 },
+                          shadowOpacity:
+                            isFocused && !isPTTActive ? 0.25 : 0.15,
+                          shadowRadius: isFocused && !isPTTActive ? 8 : 4,
+                          elevation: isFocused && !isPTTActive ? 8 : 4,
+                        }}
                         containerClassName={`items-center justify-center ${getButtonColor()}`}
                       >
-                        {/* Rainbow gradient bg inside button when focused */}
-                        {isFocused && !isPTTActive && (
-                          <View
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              borderRadius: 17,
-                              overflow: "hidden",
-                              opacity: 0.4,
-                            }}
-                          >
-                            <RainbowGradient style={{ flex: 1 }} />
-                          </View>
-                        )}
-                        <Feather name="mic" size={26} color="black" />
+                        <Feather
+                          name="mic"
+                          size={26}
+                          color={
+                            isFocused && !isPTTActive ? "#FFA500" : "black"
+                          }
+                        />
                       </RainbowBorder>
                     </Pressable>
                   </Animated.View>

@@ -7,7 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { LogBox } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
@@ -33,6 +33,7 @@ export default function RootLayout() {
   const { session, initialized, initialize } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+  const hasInitialRedirect = useRef(false);
 
   // Load custom fonts
   const [fontsLoaded] = useFonts({
@@ -59,6 +60,7 @@ export default function RootLayout() {
 
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "(onboarding)";
+    const inTabsGroup = segments[0] === "(tabs)";
 
     // Check if onboarding is completed from user metadata
     const onboardingCompleted =
@@ -74,6 +76,16 @@ export default function RootLayout() {
         // User is signed in and finished onboarding
         // Redirect to Talk tab as the main learning page
         if (inAuthGroup || inOnboardingGroup) {
+          router.replace("/(tabs)/talk");
+        }
+        // Also redirect to Talk when app reloads on default index page (only once)
+        else if (
+          inTabsGroup &&
+          segments[1] === undefined &&
+          !hasInitialRedirect.current
+        ) {
+          // User landed on tabs without specific route (default index)
+          hasInitialRedirect.current = true;
           router.replace("/(tabs)/talk");
         }
       }
