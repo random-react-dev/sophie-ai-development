@@ -1,158 +1,92 @@
-import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect } from "react";
-import { FlatList, Modal, Pressable, Text, View } from "react-native";
-import Animated, {
-  interpolate,
-  interpolateColor,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
+import CircleFlag from "@/components/common/CircleFlag";
+import { RainbowBorder } from "@/components/common/Rainbow";
+import { Feather, Ionicons } from "@expo/vector-icons";
+
+import React, { useMemo, useState } from "react";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
 
 interface CountryPickerProps {
   visible: boolean;
   onClose: () => void;
   onSelect: (country: string) => void;
   selectedCountry?: string;
+  title?: string;
 }
 
 const COUNTRIES = [
-  "United States",
-  "India",
-  "United Kingdom",
-  "Canada",
-  "Australia",
-  "Germany",
-  "France",
-  "Japan",
-  "Brazil",
-  "China",
-  "Italy",
-  "Spain",
-  "Mexico",
-  "Russia",
-  "South Korea",
-  "Indonesia",
-  "Netherlands",
-  "Turkey",
-  "Saudi Arabia",
-  "Switzerland",
-].sort();
+  { name: "Australia", code: "au" },
+  { name: "Brazil", code: "br" },
+  { name: "Canada", code: "ca" },
+  { name: "China", code: "cn" },
+  { name: "France", code: "fr" },
+  { name: "Germany", code: "de" },
+  { name: "India", code: "in" },
+  { name: "Indonesia", code: "id" },
+  { name: "Italy", code: "it" },
+  { name: "Japan", code: "jp" },
+  { name: "Mexico", code: "mx" },
+  { name: "Netherlands", code: "nl" },
+  { name: "Russia", code: "ru" },
+  { name: "Saudi Arabia", code: "sa" },
+  { name: "South Korea", code: "kr" },
+  { name: "Spain", code: "es" },
+  { name: "Switzerland", code: "ch" },
+  { name: "Turkey", code: "tr" },
+  { name: "United Kingdom", code: "gb" },
+  { name: "United States", code: "us" },
+];
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-// Animated Checkbox with smooth "drawing" animation
-function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
-  const progress = useSharedValue(isChecked ? 1 : 0);
-  const pathLength = 22;
 
-  useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, {
-      duration: 300,
-    });
-  }, [isChecked]);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
-    };
-  });
-
-  const bgAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["transparent", "#3b82f6"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#d1d5db", "#3b82f6"]
-      ),
-      borderWidth: 2,
-    };
-  });
-
-  return (
-    <Animated.View
-      style={bgAnimatedStyle}
-      className="w-6 h-6 rounded-full items-center justify-center shadow-sm"
-    >
-      <Svg width="14" height="14" viewBox="0 0 24 24">
-        <AnimatedPath
-          d="M5 12l5 5L20 7"
-          fill="none"
-          stroke="white"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={pathLength}
-          animatedProps={animatedProps}
-        />
-      </Svg>
-    </Animated.View>
-  );
-}
-
-// Animated Country Item Component
+// Country Item Component
 function CountryItem({
-  country,
+  item,
   isSelected,
   onPress,
 }: {
-  country: string;
+  item: { name: string; code: string };
   isSelected: boolean;
   onPress: () => void;
 }) {
-  const progress = useSharedValue(isSelected ? 1 : 0);
+  const Content = () => (
+    <>
+      <CircleFlag countryCode={item.code} size={40} />
+      <Text className="flex-1 ml-4 text-base font-bold text-gray-900">
+        {item.name}
+      </Text>
 
-  useEffect(() => {
-    progress.value = withSpring(isSelected ? 1 : 0, {
-      damping: 20,
-      stiffness: 90,
-    });
-  }, [isSelected]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#ffffff", "#f8fbff"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#e5e7eb", "#3b82f6"]
-      ),
-    };
-  });
+    </>
+  );
 
   return (
     <Pressable onPress={onPress}>
-      <Animated.View
-        style={[
-          animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 18 },
-        ]}
-        className="flex-row items-center justify-between"
-      >
-        <Text
-          className={`text-base font-bold ${
-            isSelected ? "text-blue-500" : "text-gray-900"
-          }`}
+      {isSelected ? (
+        <RainbowBorder
+          borderRadius={20}
+          borderWidth={2}
+          containerClassName="flex-row items-center px-4 py-4"
+          className="bg-white"
         >
-          {country}
-        </Text>
-
-        <AnimatedCheckbox isChecked={isSelected} />
-      </Animated.View>
+          <Content />
+        </RainbowBorder>
+      ) : (
+        <View
+          style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+          className="flex-row items-center border-gray-200 bg-white"
+        >
+          <Content />
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -162,47 +96,99 @@ export default function CountryPicker({
   onClose,
   onSelect,
   selectedCountry,
+  title = "Select Country",
 }: CountryPickerProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredCountries = useMemo(() => {
+    if (!searchQuery.trim()) return COUNTRIES;
+
+    const query = searchQuery.toLowerCase();
+    return COUNTRIES.filter(
+      (country) =>
+        country.name.toLowerCase().includes(query) ||
+        country.code.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
+  const handleSelect = (countryName: string) => {
+    onSelect(countryName);
+    setSearchQuery("");
+    onClose();
+  };
+
+  const handleClose = () => {
+    setSearchQuery("");
+    onClose();
+  };
+
   return (
-    <Modal visible={visible} animationType="slide" transparent>
-      {/* Background overlay */}
-      <View className="flex-1 bg-black/50">
-        {/* Modal Content */}
-        <SafeAreaView className="flex-1 bg-white mt-16 rounded-t-[32px] overflow-hidden">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={handleClose}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 bg-white"
+      >
+        <SafeAreaView className="flex-1">
           {/* Header */}
-          <View className="px-4 py-6 bg-white border-b border-gray-100">
-            <View className="flex-row justify-between items-center">
-              <View className="flex-1 pr-4">
-                <Text className="text-2xl font-bold text-gray-900">
-                  Select Country
-                </Text>
-              </View>
-              <Pressable
-                onPress={onClose}
-                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-              >
-                <Ionicons name="close" size={24} color="black" />
-              </Pressable>
+          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+            <Text className="text-2xl font-bold text-black">{title}</Text>
+            <Pressable
+              onPress={handleClose}
+              className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </Pressable>
+          </View>
+
+          {/* Search Bar */}
+          <View className="px-4 py-3">
+            <View className="h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
+              <Feather name="search" size={20} color="gray" />
+              <TextInput
+                placeholder="Search countries..."
+                className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholderTextColor="gray"
+                textAlignVertical="center"
+                style={{ includeFontPadding: false }}
+              />
             </View>
           </View>
 
           {/* Country List */}
           <FlatList
-            data={COUNTRIES}
-            keyExtractor={(item) => item}
-            contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+            data={filteredCountries}
+            keyExtractor={(item) => item.code}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingBottom: 40,
+              marginTop: 10,
+            }}
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View className="h-3" />}
             renderItem={({ item }) => (
               <CountryItem
-                country={item}
-                isSelected={selectedCountry === item}
-                onPress={() => onSelect(item)}
+                item={item}
+                isSelected={selectedCountry === item.name}
+                onPress={() => handleSelect(item.name)}
               />
             )}
+            ListEmptyComponent={
+              <View className="items-center py-10">
+                <Text className="text-gray-400 font-medium">
+                  No countries found
+                </Text>
+              </View>
+            }
           />
         </SafeAreaView>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

@@ -1,6 +1,7 @@
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { Lock, Shield } from "lucide-react-native";
 import React, { useState } from "react";
@@ -34,7 +35,7 @@ export default function SecurityScreen() {
                 </View> */}
 
         {/* Security Items */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             Authentication
           </Text>
@@ -43,25 +44,23 @@ export default function SecurityScreen() {
           <ProfileSettingCard
             title="Change Password"
             subtitle="Update your password regularly"
-            icon={<Lock size={20} color="#6366f1" />}
-            iconBgColor="bg-indigo-50"
+            icon={<Lock size={20} color={getRainbowColorScheme(0).iconColor} />}
+            colorScheme={getRainbowColorScheme(0)}
             onPress={() => setShowPasswordModal(true)}
           />
 
           {/* Two-Factor Auth Card */}
-          <View className="opacity-60">
-            <ProfileSettingCard
-              title="Two-Factor Authentication"
-              icon={<Shield size={20} color="#9ca3af" />}
-              iconBgColor="bg-gray-100"
-              showArrow={false}
-              rightElement={
-                <Text className="text-xs text-gray-400 font-medium">
-                  Not Enabled
-                </Text>
-              }
-            />
-          </View>
+          <ProfileSettingCard
+            title="Two-Factor Authentication"
+            icon={<Shield size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
+            showArrow={false}
+            rightElement={
+              <Text className="text-xs text-gray-400 font-medium">
+                Not Enabled
+              </Text>
+            }
+          />
         </View>
 
         {/* Security Tips */}

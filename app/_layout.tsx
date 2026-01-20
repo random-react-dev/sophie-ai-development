@@ -72,8 +72,9 @@ export default function RootLayout() {
         }
       } else {
         // User is signed in and finished onboarding
+        // Redirect to Talk tab as the main learning page
         if (inAuthGroup || inOnboardingGroup) {
-          router.replace("/(tabs)");
+          router.replace("/(tabs)/talk");
         }
       }
     } else if (!inAuthGroup) {

@@ -1,7 +1,9 @@
 import CircleFlag from "@/components/common/CircleFlag";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useMemo, useState } from "react";
+
+import React, { useMemo, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -12,76 +14,12 @@ import {
   TextInput,
   View,
 } from "react-native";
-import Animated, {
-  interpolate,
-  interpolateColor,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg";
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-// Animated Checkbox with smooth "drawing" animation
-function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
-  const progress = useSharedValue(isChecked ? 1 : 0);
-  const pathLength = 22;
 
-  useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, {
-      duration: 300,
-    });
-  }, [isChecked]);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
-    };
-  });
-
-  const bgAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["transparent", "#3b82f6"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#d1d5db", "#3b82f6"]
-      ),
-      borderWidth: 2,
-    };
-  });
-
-  return (
-    <Animated.View
-      style={bgAnimatedStyle}
-      className="w-6 h-6 rounded-full items-center justify-center shadow-sm"
-    >
-      <Svg width="14" height="14" viewBox="0 0 24 24">
-        <AnimatedPath
-          d="M5 12l5 5L20 7"
-          fill="none"
-          stroke="white"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={pathLength}
-          animatedProps={animatedProps}
-        />
-      </Svg>
-    </Animated.View>
-  );
-}
-
-// Animated Language Item Card
-function AnimatedLanguageItem({
+// Language Item Card
+function LanguageItem({
   item,
   isSelected,
   onPress,
@@ -90,61 +28,36 @@ function AnimatedLanguageItem({
   isSelected: boolean;
   onPress: () => void;
 }) {
-  const progress = useSharedValue(isSelected ? 1 : 0);
+  const Content = () => (
+    <>
+      <CircleFlag countryCode={item.countryCode} size={40} />
+      <View className="flex-1 ml-4">
+        <Text className="font-bold text-base text-gray-900">{item.name}</Text>
+        <Text className="text-gray-500 text-sm">{item.nativeName}</Text>
+      </View>
 
-  useEffect(() => {
-    progress.value = withSpring(isSelected ? 1 : 0, {
-      damping: 20,
-      stiffness: 90,
-    });
-  }, [isSelected]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-      backgroundColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#ffffff", "#f8fbff"]
-      ),
-      borderColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#e5e7eb", "#3b82f6"]
-      ),
-      shadowColor: interpolateColor(
-        progress.value,
-        [0, 1],
-        ["#000000", "#3b82f6"]
-      ),
-      shadowOpacity: interpolate(progress.value, [0, 1], [0.05, 0.08]),
-      shadowRadius: interpolate(progress.value, [0, 1], [4, 8]),
-      elevation: interpolate(progress.value, [0, 1], [1, 2]),
-    };
-  });
+    </>
+  );
 
   return (
     <Pressable onPress={onPress}>
-      <Animated.View
-        style={[
-          animatedStyle,
-          { borderWidth: 1.5, borderRadius: 20, padding: 16 },
-        ]}
-        className="flex-row items-center"
-      >
-        <CircleFlag countryCode={item.countryCode} size={40} />
-        <View className="flex-1 ml-4">
-          <Text
-            className={`font-bold text-base ${
-              isSelected ? "text-blue-500" : "text-gray-900"
-            }`}
-          >
-            {item.name}
-          </Text>
-          <Text className="text-gray-500 text-sm">{item.nativeName}</Text>
+      {isSelected ? (
+        <RainbowBorder
+          borderRadius={20}
+          borderWidth={2}
+          containerClassName="flex-row items-center px-4 py-4"
+          className="bg-white"
+        >
+          <Content />
+        </RainbowBorder>
+      ) : (
+        <View
+          style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+          className="flex-row items-center border-gray-200 bg-white"
+        >
+          <Content />
         </View>
-        <AnimatedCheckbox isChecked={isSelected} />
-      </Animated.View>
+      )}
     </Pressable>
   );
 }
@@ -240,7 +153,7 @@ export default function LanguagePickerModal({
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View className="h-3" />}
             renderItem={({ item }) => (
-              <AnimatedLanguageItem
+              <LanguageItem
                 item={item}
                 isSelected={item.code === selectedCode}
                 onPress={() => handleSelect(item)}

@@ -13,19 +13,18 @@ import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { Image } from "expo-image";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
-  Bookmark,
   CheckCircle2,
   Globe,
-  RotateCcw,
-  Wand2,
+  RotateCcw
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { MessageBubble } from "@/components/common/MessageBubble";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Logger } from "@/services/common/Logger";
 import { Feather } from "@expo/vector-icons";
 
@@ -296,14 +295,18 @@ Stay in character while teaching.`;
 
   const handleFinish = () => {
     if (messages.length === 0) {
-      Alert.alert("End Session", "Go back to scenario library?", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Yes", onPress: () => router.push("/(tabs)") },
-      ]);
+      showAlert(
+        "End Session",
+        "Go back to scenario library?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Yes", onPress: () => router.push("/(tabs)") },
+        ]
+      );
       return;
     }
 
-    Alert.alert(
+    showAlert(
       "Finish Conversation",
       "Are you done with this practice session?",
       [
@@ -314,7 +317,8 @@ Stay in character while teaching.`;
             router.push("/report" as any);
           },
         },
-      ]
+      ],
+      "info"
     );
   };
 
@@ -343,21 +347,21 @@ Stay in character while teaching.`;
     );
   };
 
-  const handleTranslate = async (text: string) => {
+  const handleTranslate = useCallback(async (text: string) => {
     try {
       const translated = await translateText(text, "English");
       Alert.alert("Translation", translated);
     } catch {
       Alert.alert("Error", "Failed to translate. Please try again.");
     }
-  };
+  }, []);
 
-  const handleSaveVocabulary = async (text: string) => {
+  const handleSaveVocabulary = useCallback(async (text: string) => {
     const success = await saveToVocabulary({ phrase: text });
     if (success) {
       Alert.alert("Success", "Added to your vocabulary!");
     }
-  };
+  }, []);
 
   // Message type for FlatList
   interface Message {
@@ -368,77 +372,22 @@ Stay in character while teaching.`;
   }
 
   // Memoized render function for FlatList performance
-  const renderMessage = useCallback(({ item: msg }: { item: Message }) => (
-    <View
-      className={`mb-6 ${msg.role === "user" ? "items-end" : "items-start"}`}
-    >
-      <View
-        className={`p-4 rounded-3xl max-w-[85%] ${msg.role === "user"
-          ? "bg-gray-100"
-          : "bg-white border border-gray-100 shadow-sm"
-          }`}
-      >
-        {msg.role === "model" && (
-          <View className="flex-row items-center gap-1 mb-1">
-            <Wand2 size={10} color="#3b82f6" />
-            <Text className="text-blue-500 text-[8px] font-black uppercase tracking-widest">
-              Natural Correction
-            </Text>
-          </View>
-        )}
-        <Text className="text-gray-900 text-base font-medium leading-relaxed">
-          {msg.text}
-        </Text>
-        <View className="flex-row mt-2 gap-4 border-t border-gray-50 pt-2">
-          <TouchableOpacity
-            className="flex-row items-center gap-1"
-            onPress={() => handleTranslate(msg.text)}
-          >
-            <Globe size={12} color="#94a3b8" />
-            <Text className="text-[10px] text-gray-400 font-bold">
-              Translate
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row items-center gap-1"
-            onPress={() => handleSaveVocabulary(msg.text)}
-          >
-            <Bookmark size={12} color="#94a3b8" />
-            <Text className="text-[10px] text-gray-400 font-bold">
-              Save
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  ), []);
+  const renderMessage = useCallback(
+    ({ item: msg }: { item: Message }) => (
+      <MessageBubble
+        message={msg}
+        onTranslate={handleTranslate}
+        onSave={handleSaveVocabulary}
+        userAvatarUri={user?.user_metadata?.avatar_url}
+        userName={user?.user_metadata?.full_name || user?.email}
+      />
+    ),
+    [handleTranslate, handleSaveVocabulary, user]
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
-      <View className="px-6 py-4 mb-2 flex-row justify-center items-center relative">
-        <View className="items-center">
-          <Text className="text-black text-2xl font-bold">Sophie AI</Text>
-          <Text className="text-gray-500 text-base font-medium">
-            Native speaker in your pocket
-          </Text>
-        </View>
-        <Link href="/profile" asChild>
-          <TouchableOpacity className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 absolute left-6">
-            {user?.user_metadata?.avatar_url ? (
-              <Image
-                source={{ uri: user.user_metadata.avatar_url }}
-                className="w-full h-full"
-              />
-            ) : (
-              <View className="w-full h-full items-center justify-center bg-blue-50">
-                <Text className="text-blue-500 font-bold">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </Link>
-      </View>
+      <PageHeader />
 
       {/* Language Selection */}
       <View className="px-6 py-2 flex-row justify-center items-center gap-4">
@@ -487,12 +436,12 @@ Stay in character while teaching.`;
       </View>
 
       {/* Main Interaction Area */}
-      <View className="flex-1 px-6 mt-2">
+      <View className="flex-1 px-4 mt-2">
         {/* Conversation Area */}
-        <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[320px] overflow-hidden">
+        <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[200px] overflow-hidden">
           {/* Status Bar inside the card */}
           <View className="flex items-end px-4 pt-4">
-            <View className="flex-row items-center gap-4">
+            <View className="flex-row items-center gap-3">
               {/* Reset Button */}
               <TouchableOpacity
                 onPress={handleReset}
@@ -501,8 +450,21 @@ Stay in character while teaching.`;
                 <RotateCcw size={16} color="gray" />
               </TouchableOpacity>
 
+              {/* Finish Button - Only show when messages exist */}
+              {messages.length > 0 && (
+                <TouchableOpacity
+                  onPress={handleFinish}
+                  className="px-3 py-2 bg-gray-900 rounded-full flex-row items-center gap-2"
+                >
+                  <CheckCircle2 size={14} color="white" />
+                  <Text className="text-white font-bold text-xs">
+                    Finish & Get Report
+                  </Text>
+                </TouchableOpacity>
+              )}
+
               <View className="flex-row items-center gap-2">
-                <Text className="text-blue-500 text-sm font-bold">
+                <Text className="text-black text-sm font-bold">
                   Transcript
                 </Text>
                 <CustomToggle
@@ -542,7 +504,11 @@ Stay in character while teaching.`;
         </View>
 
         <View className="flex-1 mt-6">
-          {messages.length === 0 ? (
+          {!showTranscript ? (
+            <View className="flex-1 items-center justify-center">
+              <Text className="text-gray-400 font-medium">Transcript Hidden</Text>
+            </View>
+          ) : messages.length === 0 ? (
             <View className="items-center mt-10">
               <View className="w-16 h-16 rounded-3xl bg-blue-500 items-center justify-center mb-4">
                 <Feather name="mic" size={26} color="white" />
@@ -568,7 +534,7 @@ Stay in character while teaching.`;
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 20 }}
-              onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+              // onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
               initialNumToRender={10}
               maxToRenderPerBatch={5}
               windowSize={7}
@@ -577,23 +543,10 @@ Stay in character while teaching.`;
         </View>
       </View>
 
-      {/* Floating Action Button for Finish */}
-      {messages.length > 0 && (
-        <View className="px-6 pb-10 items-center">
-          <TouchableOpacity
-            onPress={handleFinish}
-            className="px-8 py-4 bg-gray-900 rounded-3xl flex-row items-center gap-3 shadow-xl"
-          >
-            <CheckCircle2 size={20} color="white" />
-            <Text className="text-white font-bold text-base">
-              Finish & Get Report
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+
 
       {/* Pad for the Tab Bar Mic Button */}
-      <View className="h-20" />
+      {/* <View className="h-20" /> */}
 
       {/* Language Selector Modal */}
       <LanguageSelectorModal

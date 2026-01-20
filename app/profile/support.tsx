@@ -1,6 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { FileText, Mail, MessageCircle, Scale } from "lucide-react-native";
 import React from "react";
@@ -34,7 +35,7 @@ export default function SupportScreen() {
         </View> */}
 
         {/* Legal Section */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             Legal
           </Text>
@@ -42,16 +43,16 @@ export default function SupportScreen() {
           {/* Privacy Policy Card */}
           <ProfileSettingCard
             title="Privacy Policy"
-            icon={<FileText size={20} color="#64748b" />}
-            iconBgColor="bg-slate-100"
+            icon={<FileText size={20} color={getRainbowColorScheme(0).iconColor} />}
+            colorScheme={getRainbowColorScheme(0)}
             onPress={() => router.push("/profile/privacy")}
           />
 
           {/* Terms of Service Card */}
           <ProfileSettingCard
             title="Terms of Service"
-            icon={<Scale size={20} color="#64748b" />}
-            iconBgColor="bg-slate-100"
+            icon={<Scale size={20} color={getRainbowColorScheme(1).iconColor} />}
+            colorScheme={getRainbowColorScheme(1)}
             onPress={() => router.push("/profile/terms")}
           />
         </View>
@@ -66,8 +67,8 @@ export default function SupportScreen() {
           <ProfileSettingCard
             title="Email Support"
             subtitle="support@fluentai.com"
-            icon={<Mail size={20} color="#3b82f6" />}
-            iconBgColor="bg-blue-50"
+            icon={<Mail size={20} color={getRainbowColorScheme(2).iconColor} />}
+            colorScheme={getRainbowColorScheme(2)}
             onPress={() =>
               showAlert(
                 "Contact Us",
@@ -82,8 +83,8 @@ export default function SupportScreen() {
           <ProfileSettingCard
             title="Send Feedback"
             subtitle="Help us improve"
-            icon={<MessageCircle size={20} color="#22c55e" />}
-            iconBgColor="bg-green-50"
+            icon={<MessageCircle size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
             onPress={() =>
               showAlert(
                 "Coming Soon",

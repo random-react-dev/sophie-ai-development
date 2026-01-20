@@ -1,42 +1,26 @@
 import { useOnboardingStore } from "@/stores/onboardingStore";
-import {
-  Briefcase,
-  Globe,
-  GraduationCap,
-  Plane,
-  Plus,
-} from "lucide-react-native";
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
 
 export const GoalStep = () => {
   const { data, updateData } = useOnboardingStore();
 
   const goals = [
-    { id: "student", title: "I am a student", icon: GraduationCap },
-    { id: "traveler", title: "I am a traveler", icon: Plane },
-    { id: "abroad", title: "I will / am abroad", icon: Globe },
-    { id: "job", title: "I need it for my job", icon: Briefcase },
-    { id: "other", title: "Other", icon: Plus },
+    { id: "student", title: "I am a student", emoji: "🎓" },
+    { id: "traveler", title: "I am a traveler", emoji: "✈️" },
+    { id: "abroad", title: "I will / am abroad", emoji: "🌍" },
+    { id: "job", title: "I need it for my job", emoji: "💼" },
+    { id: "other", title: "Other", emoji: "💬" },
   ];
 
   return (
-    <View className="flex-1 px-6">
-      <View className="mb-8">
-        <Text className="text-3xl font-bold text-gray-900 mb-2">
-          What&apos;s your main goal?
-        </Text>
-        <Text className="text-gray-500 text-base">
-          We&apos;ll customize your practice content based on your goal.
-        </Text>
-      </View>
-
+    <View className="flex-1 px-4">
       {goals.map((goal) => (
         <SelectionCard
           key={goal.id}
           title={goal.title}
-          icon={goal.icon}
+          emoji={goal.emoji}
           selected={data.mainGoal === goal.id}
           onSelect={() => updateData({ mainGoal: goal.id })}
         />

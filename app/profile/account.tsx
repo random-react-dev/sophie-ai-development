@@ -1,6 +1,7 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { useAuthStore } from "@/stores/authStore";
+import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { Crown, Receipt, Sparkles, Wallet } from "lucide-react-native";
 import React from "react";
@@ -34,7 +35,7 @@ export default function AccountScreen() {
                 </View> */}
 
         {/* Account Items */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             Subscription
           </Text>
@@ -42,8 +43,8 @@ export default function AccountScreen() {
           {/* Status Card */}
           <ProfileSettingCard
             title="Status"
-            icon={<Sparkles size={20} color="#f59e0b" />}
-            iconBgColor="bg-amber-50"
+            icon={<Sparkles size={20} color={getRainbowColorScheme(0).iconColor} />}
+            colorScheme={getRainbowColorScheme(0)}
             showArrow={false}
             rightElement={
               <View className="bg-yellow-100 px-3 py-1 rounded-full">
@@ -57,8 +58,8 @@ export default function AccountScreen() {
           {/* Upgrade to Pro Card */}
           <ProfileSettingCard
             title="Upgrade to Pro"
-            icon={<Crown size={20} color="#3b82f6" />}
-            iconBgColor="bg-blue-50"
+            icon={<Crown size={20} color={getRainbowColorScheme(1).iconColor} />}
+            colorScheme={getRainbowColorScheme(1)}
             textColor="text-blue-500"
             onPress={() => {
               router.push("/profile/subscription");
@@ -73,35 +74,31 @@ export default function AccountScreen() {
           </Text>
 
           {/* Payment Methods Card */}
-          <View className="opacity-60">
-            <ProfileSettingCard
-              title="Payment Methods"
-              subtitle="Coming Soon"
-              icon={<Wallet size={20} color="#9ca3af" />}
-              iconBgColor="bg-gray-100"
-              showArrow={false}
-              rightElement={
-                <Text className="text-xs text-gray-400 font-medium">
-                  Coming Soon
-                </Text>
-              }
-            />
-          </View>
+          <ProfileSettingCard
+            title="Payment Methods"
+            subtitle="Coming Soon"
+            icon={<Wallet size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
+            showArrow={false}
+            rightElement={
+              <Text className="text-xs text-gray-400 font-medium">
+                Coming Soon
+              </Text>
+            }
+          />
 
           {/* Billing History Card */}
-          <View className="opacity-60">
-            <ProfileSettingCard
-              title="Billing History"
-              icon={<Receipt size={20} color="#9ca3af" />}
-              iconBgColor="bg-gray-100"
-              showArrow={false}
-              rightElement={
-                <Text className="text-xs text-gray-400 font-medium">
-                  Coming Soon
-                </Text>
-              }
-            />
-          </View>
+          <ProfileSettingCard
+            title="Billing History"
+            icon={<Receipt size={20} color={disabledColorScheme.iconColor} />}
+            colorScheme={disabledColorScheme}
+            showArrow={false}
+            rightElement={
+              <Text className="text-xs text-gray-400 font-medium">
+                Coming Soon
+              </Text>
+            }
+          />
         </View>
 
         {/* Account Info */}

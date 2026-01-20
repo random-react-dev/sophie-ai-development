@@ -3,6 +3,7 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { uploadAvatar } from "@/services/supabase/storage";
 import { useAuthStore } from "@/stores/authStore";
+import { getRainbowColorScheme } from "@/utils/rainbowColors";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -118,7 +119,7 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         {/* Profile Card */}
-        <View className="bg-surface mx-4 mt-6 rounded-2xl p-6 shadow-sm">
+        <View className="bg-surface mx-4 mt-2 rounded-2xl p-4 shadow-sm">
           <View className="items-center">
             {/* Avatar */}
             <TouchableOpacity
@@ -180,17 +181,13 @@ export default function ProfileScreen() {
         </View>
 
         {/* Main Settings Cards */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Settings
-          </Text>
-
+        <View className="mx-4 mt-3">
           {/* Preferences Card */}
           <ProfileSettingCard
             title="Preferences"
             subtitle="Language, country, and more"
-            icon={<Settings size={20} color="#3b82f6" />}
-            iconBgColor="bg-blue-50"
+            icon={<Settings size={20} color={getRainbowColorScheme(0).iconColor} />}
+            colorScheme={getRainbowColorScheme(0)}
             onPress={() => router.push("/profile/preferences")}
           />
 
@@ -198,8 +195,8 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Account"
             subtitle="Subscription and billing"
-            icon={<User size={20} color="#f59e0b" />}
-            iconBgColor="bg-amber-50"
+            icon={<User size={20} color={getRainbowColorScheme(1).iconColor} />}
+            colorScheme={getRainbowColorScheme(1)}
             onPress={() => router.push("/profile/account")}
           />
 
@@ -207,8 +204,8 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Security"
             subtitle="Password and authentication"
-            icon={<Shield size={20} color="#6366f1" />}
-            iconBgColor="bg-indigo-50"
+            icon={<Shield size={20} color={getRainbowColorScheme(2).iconColor} />}
+            colorScheme={getRainbowColorScheme(2)}
             onPress={() => router.push("/profile/security")}
           />
 
@@ -216,8 +213,8 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Progress"
             subtitle="Track your learning journey"
-            icon={<BarChart3 size={20} color="#22c55e" />}
-            iconBgColor="bg-green-50"
+            icon={<BarChart3 size={20} color={getRainbowColorScheme(3).iconColor} />}
+            colorScheme={getRainbowColorScheme(3)}
             onPress={() => router.push("/profile/progress")}
           />
 
@@ -225,18 +222,14 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Support"
             subtitle="Help, policies, and feedback"
-            icon={<HelpCircle size={20} color="#64748b" />}
-            iconBgColor="bg-slate-100"
+            icon={<HelpCircle size={20} color={getRainbowColorScheme(4).iconColor} />}
+            colorScheme={getRainbowColorScheme(4)}
             onPress={() => router.push("/profile/support")}
           />
         </View>
 
         {/* Actions Section */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Actions
-          </Text>
-
+        <View className="mx-4">
           {/* Log Out Card */}
           <ProfileSettingCard
             title="Log Out"
@@ -249,11 +242,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Danger Zone Section */}
-        <View className="mx-4 mt-6 mb-4">
-          <Text className="text-xs font-bold text-red-500 uppercase tracking-wider mb-3 ml-1">
-            Danger Zone
-          </Text>
-
+        <View className="mx-4">
           {/* Delete Account Card */}
           <TouchableOpacity
             activeOpacity={0.7}

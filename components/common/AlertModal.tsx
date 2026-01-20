@@ -1,3 +1,4 @@
+import { RainbowGradient } from "@/components/common/Rainbow";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, Pressable, Text, View } from "react-native";
@@ -91,11 +92,18 @@ export function AlertModal({
           {displayButtons.length === 1 ? (
             <Pressable
               onPress={() => handleButtonPress(displayButtons[0])}
-              className="bg-blue-500 py-4 rounded-full items-center active:opacity-80"
+              className="rounded-full overflow-hidden active:opacity-80"
             >
-              <Text className="text-white font-semibold text-base">
-                {displayButtons[0].text}
-              </Text>
+              {/* Layered Rainbow Border Effect */}
+              <View className="rounded-full overflow-hidden">
+                <RainbowGradient className="p-[2px] rounded-full">
+                  <View className="bg-white py-4 items-center rounded-full">
+                    <Text className="text-gray-900 font-semibold text-base">
+                      {displayButtons[0].text}
+                    </Text>
+                  </View>
+                </RainbowGradient>
+              </View>
             </Pressable>
           ) : (
             <View className="flex-row gap-3">
@@ -103,21 +111,33 @@ export function AlertModal({
                 <Pressable
                   key={index}
                   onPress={() => handleButtonPress(button)}
-                  className={`flex-1 py-4 rounded-full items-center active:opacity-80 ${
-                    button.style === "destructive"
-                      ? "bg-red-500"
-                      : button.style === "cancel"
-                      ? "bg-gray-200"
-                      : "bg-blue-500"
+                  className={`flex-1 rounded-full overflow-hidden active:opacity-80 ${
+                    button.style === "cancel" ? "bg-gray-200" : ""
                   }`}
                 >
-                  <Text
-                    className={`font-semibold text-base ${
-                      button.style === "cancel" ? "text-gray-700" : "text-white"
-                    }`}
-                  >
-                    {button.text}
-                  </Text>
+                  {button.style === "destructive" ? (
+                    <View className="bg-red-500 py-4 items-center">
+                      <Text className="text-white font-semibold text-base">
+                        {button.text}
+                      </Text>
+                    </View>
+                  ) : button.style === "cancel" ? (
+                    <View className="py-4 items-center">
+                      <Text className="text-gray-700 font-semibold text-base">
+                        {button.text}
+                      </Text>
+                    </View>
+                  ) : (
+                    <View className="rounded-full overflow-hidden">
+                      <RainbowGradient className="p-[2px] rounded-full">
+                        <View className="bg-white py-4 items-center rounded-full">
+                          <Text className="text-gray-900 font-semibold text-base">
+                            {button.text}
+                          </Text>
+                        </View>
+                      </RainbowGradient>
+                    </View>
+                  )}
                 </Pressable>
               ))}
             </View>
@@ -147,7 +167,7 @@ export function useAlertModal() {
     title: string,
     message: string,
     buttons?: AlertButton[],
-    type: "error" | "success" | "warning" | "info" = "info"
+    type: "error" | "success" | "warning" | "info" = "info",
   ) => {
     setAlertState({
       visible: true,

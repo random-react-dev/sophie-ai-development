@@ -1,3 +1,4 @@
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
@@ -16,7 +17,13 @@ const voiceAvailable = isVoiceModeAvailable();
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
-  const { startPTTRecording, stopPTTRecording, isPTTActive, isProcessing, connectionState } = useConversationStore();
+  const {
+    startPTTRecording,
+    stopPTTRecording,
+    isPTTActive,
+    isProcessing,
+    connectionState,
+  } = useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -29,7 +36,22 @@ export default function TabLayout() {
     }
   }, [user]);
 
-  // Pulsing animation when recording
+  // Determine if Talk tab is focused
+  const isTalkFocused = pathname === "/talk";
+
+  // Scale animation for active state (subtle lift when focused)
+  const activeScaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.spring(activeScaleAnim, {
+      toValue: isTalkFocused ? 1.08 : 1, // Slightly larger when focused
+      useNativeDriver: true,
+      damping: 15,
+      stiffness: 150,
+    }).start();
+  }, [isTalkFocused]);
+
+  // Pulsing animation ONLY when recording
   useEffect(() => {
     if (!isPTTActive) {
       pulseAnim.setValue(1);
@@ -48,7 +70,7 @@ export default function TabLayout() {
           duration: 600,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
 
     animation.start();
@@ -173,10 +195,16 @@ export default function TabLayout() {
 
                 return (
                   <Animated.View
-                    style={{ transform: [{ scale: scaleAnim }] }}
+                    style={{
+                      transform: [
+                        {
+                          scale: Animated.multiply(activeScaleAnim, scaleAnim),
+                        },
+                      ],
+                    }}
                     className="items-center justify-center -top-8"
                   >
-                    {/* Pulsing ring when recording */}
+                    {/* Pulsing ring when recording ONLY */}
                     {isPTTActive && (
                       <Animated.View
                         style={{
@@ -196,11 +224,31 @@ export default function TabLayout() {
                       delayLongPress={400}
                       onPress={handlePress}
                     >
-                      <View
-                        className={`size-20 rounded-3xl items-center justify-center shadow-2xl ${getButtonColor()} border-4 border-white`}
+                      <RainbowBorder
+                        borderRadius={20}
+                        borderWidth={3}
+                        className="size-20 shadow-2xl"
+                        containerClassName={`items-center justify-center ${getButtonColor()}`}
                       >
-                        <Feather name="mic" size={26} color="white" />
-                      </View>
+                        {/* Rainbow gradient bg inside button when focused */}
+                        {isFocused && !isPTTActive && (
+                          <View
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              borderRadius: 17,
+                              overflow: "hidden",
+                              opacity: 0.4,
+                            }}
+                          >
+                            <RainbowGradient style={{ flex: 1 }} />
+                          </View>
+                        )}
+                        <Feather name="mic" size={26} color="black" />
+                      </RainbowBorder>
                     </Pressable>
                   </Animated.View>
                 );
