@@ -14,7 +14,6 @@ import { useRouter } from "expo-router";
 import {
   Bed,
   Briefcase,
-  Check,
   ChevronDown,
   ChevronRight,
   Coffee,
@@ -33,12 +32,14 @@ import React, { useMemo, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
+  LayoutAnimation,
   Modal,
   Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
+  UIManager,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -50,6 +51,14 @@ const IconMap: Record<string, any> = {
   bed: Bed,
   mic: Mic,
 };
+
+// Enable LayoutAnimation for Android
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export default function RoleplayScreen() {
   const {
@@ -148,9 +157,7 @@ export default function RoleplayScreen() {
                     className="flex-1"
                     containerClassName="px-5 py-2"
                   >
-                    <Text className="font-bold text-sm text-black">
-                      {cat}
-                    </Text>
+                    <Text className="font-bold text-sm text-black">{cat}</Text>
                   </RainbowBorder>
                 </TouchableOpacity>
               );
@@ -163,9 +170,7 @@ export default function RoleplayScreen() {
                 onPress={() => setSelectedCategory(cat)}
                 className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                <Text className="font-bold text-sm text-gray-600">
-                  {cat}
-                </Text>
+                <Text className="font-bold text-sm text-gray-600">{cat}</Text>
               </TouchableOpacity>
             );
           })}
@@ -267,7 +272,7 @@ function CreateScenarioModal({
         "Required Fields Missing",
         "Sophie's Role and Topic are required!",
         [{ text: "OK", style: "default" }],
-        "warning"
+        "warning",
       );
       return;
     }
@@ -328,7 +333,7 @@ function CreateScenarioModal({
                 <TextInput
                   placeholder="e.g. A grumpy but helpful shopkeeper"
                   placeholderTextColor="gray"
-                  className="bg-gray-50 rounded-full px-4 text-gray-900 border border-gray-100 font-medium h-12 p-0"
+                  className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
                   value={sophieRole}
                   onChangeText={setSophieRole}
                   textAlignVertical="center"
@@ -343,7 +348,7 @@ function CreateScenarioModal({
                 <TextInput
                   placeholder="e.g. A customer in a hurry"
                   placeholderTextColor="gray"
-                  className="bg-gray-50 rounded-full px-4 text-gray-900 border border-gray-100 font-medium h-12 p-0"
+                  className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
                   value={userRole}
                   onChangeText={setUserRole}
                   textAlignVertical="center"
@@ -358,7 +363,7 @@ function CreateScenarioModal({
                 <TextInput
                   placeholder="e.g. Buying a vintage watch"
                   placeholderTextColor="gray"
-                  className="bg-gray-50 rounded-full px-4 text-gray-900 border border-gray-100 font-medium h-12 p-0"
+                  className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
                   value={topic}
                   onChangeText={setTopic}
                   textAlignVertical="center"
@@ -370,7 +375,7 @@ function CreateScenarioModal({
                 <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
                   Level
                 </Text>
-                <View className="flex-row flex-wrap gap-2">
+                <View className="flex-row flex-wrap gap-1.5">
                   {CEFR_LEVELS.map((l) => {
                     const isSelected = level === l;
 
@@ -416,189 +421,168 @@ function CreateScenarioModal({
                   Category
                 </Text>
                 <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    setIsCategoryDropdownOpen(!isCategoryDropdownOpen)
-                  }
-                  className="rounded-2xl overflow-hidden shadow-sm"
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    LayoutAnimation.configureNext(
+                      LayoutAnimation.Presets.easeInEaseOut,
+                    );
+                    setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
+                  }}
                 >
-                  <RainbowBorder
-                    borderWidth={2}
-                    borderRadius={16}
-                    innerBackgroundClassName="bg-surface"
-                    containerClassName="px-4 py-4 flex-row justify-between items-center"
-                    className=""
-                  >
-                    <View className="flex-row items-center gap-3">
-                      {category ? (
-                        <View className="w-8 h-8 rounded-full overflow-hidden items-center justify-center relative">
-                          <RainbowGradient className="absolute inset-0 opacity-60" />
-                          {category === "Food & Drink" && (
-                            <Utensils size={16} color="black" />
-                          )}
-                          {category === "Business" && (
-                            <Briefcase size={16} color="black" />
-                          )}
-                          {category === "Social" && (
-                            <Users size={16} color="black" />
-                          )}
-                          {category === "Travel" && (
-                            <Plane size={16} color="black" />
-                          )}
-                          {category === "Customer Service" && (
-                            <Headphones size={16} color="black" />
-                          )}
-                          {category === "Education" && (
-                            <GraduationCap size={16} color="black" />
-                          )}
-                        </View>
-                      ) : (
-                        <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
-                          <Sparkles size={16} color="#9ca3af" />
-                        </View>
-                      )}
-                      <Text
-                        className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"
-                          }`}
-                      >
-                        {category || "Select a category"}
-                      </Text>
-                    </View>
-                    <View
-                      className={`w-8 h-8 rounded-full items-center justify-center relative overflow-hidden ${isCategoryDropdownOpen ? "" : "bg-gray-100"
-                        }`}
+                  {isCategoryDropdownOpen ? (
+                    <RainbowBorder
+                      borderRadius={16}
+                      borderWidth={2}
+                      innerBackgroundClassName="bg-white"
+                      containerClassName="px-4 h-14 flex-row justify-between items-center"
                     >
-                      {isCategoryDropdownOpen && (
-                        <RainbowGradient className="absolute inset-0 opacity-10" />
-                      )}
+                      <View className="flex-row items-center gap-3">
+                        {category ? (
+                          <View className="w-8 h-8 rounded-full overflow-hidden items-center justify-center relative">
+                            <RainbowGradient className="absolute inset-0 opacity-60" />
+                            {category === "Food & Drink" && (
+                              <Utensils size={16} color="black" />
+                            )}
+                            {category === "Business" && (
+                              <Briefcase size={16} color="black" />
+                            )}
+                            {category === "Social" && (
+                              <Users size={16} color="black" />
+                            )}
+                            {category === "Travel" && (
+                              <Plane size={16} color="black" />
+                            )}
+                            {category === "Customer Service" && (
+                              <Headphones size={16} color="black" />
+                            )}
+                            {category === "Education" && (
+                              <GraduationCap size={16} color="black" />
+                            )}
+                          </View>
+                        ) : (
+                          <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
+                            <Sparkles size={16} color="#9ca3af" />
+                          </View>
+                        )}
+                        <Text
+                          className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"}`}
+                        >
+                          {category || "Select a category"}
+                        </Text>
+                      </View>
                       <ChevronDown
                         size={18}
-                        color={isCategoryDropdownOpen ? "black" : "#6b7280"}
-                        style={{
-                          transform: [
-                            {
-                              rotate: isCategoryDropdownOpen ? "180deg" : "0deg",
-                            },
-                          ],
-                        }}
+                        color="black"
+                        style={{ transform: [{ rotate: "180deg" }] }}
                       />
+                    </RainbowBorder>
+                  ) : (
+                    <View className="bg-white rounded-2xl px-4 h-14 flex-row justify-between items-center border border-gray-300">
+                      <View className="flex-row items-center gap-3">
+                        {category ? (
+                          <View className="size-8 rounded-full bg-gray-100 items-center justify-center">
+                            {category === "Food & Drink" && (
+                              <Utensils size={16} color="#6b7280" />
+                            )}
+                            {category === "Business" && (
+                              <Briefcase size={16} color="#6b7280" />
+                            )}
+                            {category === "Social" && (
+                              <Users size={16} color="#6b7280" />
+                            )}
+                            {category === "Travel" && (
+                              <Plane size={16} color="#6b7280" />
+                            )}
+                            {category === "Customer Service" && (
+                              <Headphones size={16} color="#6b7280" />
+                            )}
+                            {category === "Education" && (
+                              <GraduationCap size={16} color="#6b7280" />
+                            )}
+                          </View>
+                        ) : (
+                          <View className="size-8 rounded-full bg-gray-100 items-center justify-center">
+                            <Sparkles size={16} color="#9ca3af" />
+                          </View>
+                        )}
+                        <Text
+                          className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"}`}
+                        >
+                          {category || "Select a category"}
+                        </Text>
+                      </View>
+                      <ChevronDown size={18} color="#6b7280" />
                     </View>
-                  </RainbowBorder>
+                  )}
                 </TouchableOpacity>
 
-                {/* Premium Dropdown Options */}
+                {/* Dropdown Options */}
                 {isCategoryDropdownOpen && (
-                  <View className="mt-3 bg-surface rounded-2xl border border-gray-100 overflow-hidden shadow-xl">
+                  <View className="mt-2 bg-white rounded-2xl border border-gray-100 overflow-hidden">
                     {CATEGORIES.filter((cat) => cat !== "All").map(
                       (cat, index, arr) => {
                         const isSelected = category === cat;
                         const isLast = index === arr.length - 1;
 
-                        // Get icon for each category
                         const getCategoryIcon = () => {
+                          const iconColor = isSelected ? "black" : "#6b7280";
                           switch (cat) {
                             case "Food & Drink":
-                              return (
-                                <Utensils
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
-                              );
+                              return <Utensils size={16} color={iconColor} />;
                             case "Business":
-                              return (
-                                <Briefcase
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
-                              );
+                              return <Briefcase size={16} color={iconColor} />;
                             case "Social":
-                              return (
-                                <Users
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
-                              );
+                              return <Users size={16} color={iconColor} />;
                             case "Travel":
-                              return (
-                                <Plane
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
-                              );
+                              return <Plane size={16} color={iconColor} />;
                             case "Customer Service":
-                              return (
-                                <Headphones
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
-                              );
+                              return <Headphones size={16} color={iconColor} />;
                             case "Education":
                               return (
-                                <GraduationCap
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
+                                <GraduationCap size={16} color={iconColor} />
                               );
                             default:
-                              return (
-                                <Sparkles
-                                  size={16}
-                                  color={isSelected ? "black" : "#6b7280"}
-                                />
-                              );
+                              return <Sparkles size={16} color={iconColor} />;
                           }
                         };
 
                         return (
                           <TouchableOpacity
                             key={cat}
-                            activeOpacity={0.6}
+                            activeOpacity={0.7}
                             onPress={() => {
                               setCategory(cat);
                               setIsCategoryDropdownOpen(false);
                             }}
-                            className={`px-4 py-3.5 flex-row items-center justify-between overflow-hidden relative ${isSelected ? "" : "bg-surface"
-                              } ${!isLast ? "border-b border-gray-200" : ""}`}
+                            className={`px-4 py-3.5 flex-row items-center overflow-hidden relative ${
+                              !isLast ? "border-b border-gray-100" : ""
+                            }`}
                           >
                             {isSelected && (
                               <View className="absolute inset-0">
                                 <RainbowGradient className="flex-1 opacity-20" />
                               </View>
                             )}
-                            <View className="flex-row items-center gap-3">
+                            <View className="flex-row items-center gap-2.5">
                               <View
-                                className={`w-9 h-9 rounded-full items-center justify-center relative overflow-hidden ${isSelected ? "" : "bg-gray-100"
-                                  }`}
+                                className={`size-8 rounded-full items-center justify-center overflow-hidden ${isSelected ? "" : "bg-gray-100"}`}
                               >
                                 {isSelected && (
-                                  <>
-                                    <RainbowGradient className="absolute inset-0 opacity-60" />
-                                    <View className="absolute inset-0 bg-white opacity-20" />
-                                  </>
+                                  <View className="absolute inset-0">
+                                    <RainbowGradient className="w-full h-full opacity-60" />
+                                  </View>
                                 )}
                                 {getCategoryIcon()}
                               </View>
                               <Text
-                                className={`font-semibold text-[15px] ${isSelected ? "text-black" : "text-gray-700"
-                                  }`}
-                                style={{ includeFontPadding: false, textAlignVertical: "center" }}
+                                className={`font-semibold text-sm ${isSelected ? "text-gray-900" : "text-gray-700"}`}
                               >
                                 {cat}
                               </Text>
                             </View>
-                            {isSelected && (
-                              <View className="w-6 h-6 rounded-full items-center justify-center relative overflow-hidden">
-                                <View className="absolute inset-0 bg-white opacity-20" />
-                                <Check
-                                  size={14}
-                                  color="black"
-                                  strokeWidth={3}
-                                />
-                              </View>
-                            )}
                           </TouchableOpacity>
                         );
-                      }
+                      },
                     )}
                   </View>
                 )}

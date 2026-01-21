@@ -400,6 +400,7 @@ Stay in character while teaching.`;
       <View className="px-6 py-2 flex-row justify-center items-center gap-4">
         {/* Target Language (what to learn) */}
         <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() => {
             setPickerMode("target");
             setShowLanguagePicker(true);
@@ -423,6 +424,7 @@ Stay in character while teaching.`;
 
         {/* Native Language (explanations) */}
         <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() => {
             setPickerMode("native");
             setShowLanguagePicker(true);
@@ -445,11 +447,28 @@ Stay in character while teaching.`;
       {/* Main Interaction Area */}
       <View className="flex-1 px-4 mt-2">
         {/* Conversation Area */}
-        <View className="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 h-[200px] overflow-hidden">
+        <View className="bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-gray-100 h-[200px] overflow-hidden">
           {/* Premium Status Bar */}
           <View className="flex-row items-center justify-end p-4 bg-gray-50/50 border-b border-gray-100">
             {/* Actions Bar */}
-            <View className="flex-row items-center gap-2">
+            <View className="flex-row items-center gap-3">
+              {/* Finish Button */}
+              {messages.length > 0 && (
+                <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
+                  <View className="bg-white rounded-full border border-gray-100 overflow-hidden">
+                    <View className="absolute inset-0 opacity-20">
+                      <RainbowGradient className="flex-1" />
+                    </View>
+                    <View className="px-3 py-2 flex-row items-center gap-1.5">
+                      <Feather name="check-circle" size={12} color="black" />
+                      <Text className="text-black font-bold text-xs">
+                        Finish & Get Report
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+
               {/* Reset Control */}
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -460,7 +479,7 @@ Stay in character while teaching.`;
               </TouchableOpacity>
 
               {/* Transcript Toggle */}
-              <View className="flex-row items-center bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
+              <View className="flex-row items-center bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
                 <Text className="text-black text-xs font-bold mr-2">
                   Transcript
                 </Text>
@@ -469,23 +488,6 @@ Stay in character while teaching.`;
                   onValueChange={setShowTranscript}
                 />
               </View>
-
-              {/* Finish Button */}
-              {messages.length > 0 && (
-                <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
-                  <View className="bg-white rounded-full border border-gray-100 overflow-hidden">
-                    <View className="absolute inset-0 opacity-20">
-                      <RainbowGradient className="flex-1" />
-                    </View>
-                    <View className="px-4 py-2 flex-row items-center gap-1.5">
-                      <Feather name="check-circle" size={12} color="black" />
-                      <Text className="text-black font-bold text-xs">
-                        Finish & Get Report
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
             </View>
           </View>
 
