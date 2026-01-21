@@ -1,6 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
-import { RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
 import LanguageSelectorModal from "@/components/tutor/LanguageSelectorModal";
 import { Language } from "@/constants/languages";
@@ -527,20 +527,37 @@ Stay in character while teaching.`;
               </Text>
             </View>
           ) : messages.length === 0 ? (
+            /* Premium Mic Button - matches tab bar design */
             <View className="items-center mt-10">
-              <View className="w-16 h-16 rounded-3xl bg-blue-500 items-center justify-center mb-4">
-                <Feather name="mic" size={26} color="white" />
+              <RainbowBorder
+                borderRadius={20}
+                borderWidth={2}
+                className="w-16 h-16"
+                style={{
+                  shadowColor: "#70369D",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 8,
+                  elevation: 8,
+                }}
+                containerClassName="items-center justify-center bg-blue-500"
+              >
+                <Feather name="mic" size={26} color="#FFA500" />
+              </RainbowBorder>
+              <View className="mt-4">
+                {!canStartConversation ? (
+                  <Text className="text-black/60 font-medium text-center px-10 leading-5">
+                    Select both languages above to start your lesson with
+                    Sophie.
+                  </Text>
+                ) : (
+                  <Text className="text-black/60 font-medium text-center px-10 leading-5">
+                    Hold the mic button below to start your{" "}
+                    {selectedScenario ? "roleplay" : targetLanguage?.name}{" "}
+                    lesson.
+                  </Text>
+                )}
               </View>
-              {!canStartConversation ? (
-                <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                  Select both languages above to start your lesson with Sophie.
-                </Text>
-              ) : (
-                <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                  Hold the mic button below to start your{" "}
-                  {selectedScenario ? "roleplay" : targetLanguage?.name} lesson.
-                </Text>
-              )}
             </View>
           ) : (
             <FlatList

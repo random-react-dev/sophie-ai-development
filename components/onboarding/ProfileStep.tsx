@@ -1,6 +1,6 @@
 import { AuthInput } from "@/components/auth/AuthInput";
 import CircleFlag from "@/components/common/CircleFlag";
-import { RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { APP_LANGUAGES, Language } from "@/constants/languages";
 import { Colors } from "@/constants/theme";
 import { useOnboardingStore } from "@/stores/onboardingStore";
@@ -26,7 +26,6 @@ import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -115,7 +114,8 @@ function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
   );
 }
 
-// Animated Language Item Component (same design as SelectionCard with rainbow border)
+// Language Item Component (simplified to prevent jerky modal animation)
+// Uses RainbowBorder like CountryPicker.tsx for smooth modal transitions
 function LanguageItem({
   lang,
   isSelected,
@@ -125,59 +125,35 @@ function LanguageItem({
   isSelected: boolean;
   onPress: () => void;
 }) {
-  const progress = useSharedValue(isSelected ? 1 : 0);
-
-  useEffect(() => {
-    progress.value = withSpring(isSelected ? 1 : 0, {
-      damping: 20,
-      stiffness: 90,
-    });
-  }, [isSelected]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-    };
-  });
+  const Content = () => (
+    <>
+      <CircleFlag countryCode={lang.countryCode} size={40} />
+      <View className="flex-1 ml-4">
+        <Text className="font-bold text-base text-gray-900">{lang.name}</Text>
+        <Text className="text-gray-500 text-sm">{lang.nativeName}</Text>
+      </View>
+    </>
+  );
 
   return (
     <Pressable onPress={onPress}>
-      <Animated.View
-        style={[
-          animatedStyle,
-          {
-            borderRadius: 20,
-            overflow: "hidden",
-          },
-        ]}
-      >
-        {/* Layer 1: Rainbow Background (Only visible when selected) */}
-        {isSelected && (
-          <View className="absolute inset-0">
-            <RainbowGradient className="flex-1" />
-          </View>
-        )}
-
-        {/* Layer 2: Main Content Container */}
-        <View
-          style={{
-            margin: isSelected ? 2 : 0,
-            borderRadius: isSelected ? 18 : 20,
-            backgroundColor: "#ffffff",
-            borderWidth: isSelected ? 0 : 1.5,
-            borderColor: "#e5e7eb",
-          }}
-          className="flex-row items-center p-4"
+      {isSelected ? (
+        <RainbowBorder
+          borderRadius={20}
+          borderWidth={2}
+          containerClassName="flex-row items-center px-4 py-4"
+          className="bg-white"
         >
-          <CircleFlag countryCode={lang.countryCode} size={40} />
-          <View className="flex-1 ml-4">
-            <Text className="font-bold text-base text-gray-900">
-              {lang.name}
-            </Text>
-            <Text className="text-gray-500 text-sm">{lang.nativeName}</Text>
-          </View>
+          <Content />
+        </RainbowBorder>
+      ) : (
+        <View
+          style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+          className="flex-row items-center border-gray-200 bg-white"
+        >
+          <Content />
         </View>
-      </Animated.View>
+      )}
     </Pressable>
   );
 }
@@ -211,7 +187,8 @@ const COUNTRIES: Country[] = [
   { name: "United States", countryCode: "us" },
 ];
 
-// Animated Country Item Component (same design as LanguageItem)
+// Country Item Component (simplified to prevent jerky modal animation)
+// Uses RainbowBorder like CountryPicker.tsx for smooth modal transitions
 function CountryItem({
   country,
   isSelected,
@@ -221,58 +198,36 @@ function CountryItem({
   isSelected: boolean;
   onPress: () => void;
 }) {
-  const progress = useSharedValue(isSelected ? 1 : 0);
-
-  useEffect(() => {
-    progress.value = withSpring(isSelected ? 1 : 0, {
-      damping: 20,
-      stiffness: 90,
-    });
-  }, [isSelected]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.02]) }],
-    };
-  });
+  const Content = () => (
+    <>
+      <CircleFlag countryCode={country.countryCode} size={40} />
+      <View className="flex-1 ml-4">
+        <Text className="font-bold text-base text-gray-900">
+          {country.name}
+        </Text>
+      </View>
+    </>
+  );
 
   return (
     <Pressable onPress={onPress}>
-      <Animated.View
-        style={[
-          animatedStyle,
-          {
-            borderRadius: 20,
-            overflow: "hidden",
-          },
-        ]}
-      >
-        {/* Layer 1: Rainbow Background (Only visible when selected) */}
-        {isSelected && (
-          <View className="absolute inset-0">
-            <RainbowGradient className="flex-1" />
-          </View>
-        )}
-
-        {/* Layer 2: Main Content Container */}
-        <View
-          style={{
-            margin: isSelected ? 2 : 0,
-            borderRadius: isSelected ? 18 : 20,
-            backgroundColor: "#ffffff",
-            borderWidth: isSelected ? 0 : 1.5,
-            borderColor: "#e5e7eb",
-          }}
-          className="flex-row items-center p-4"
+      {isSelected ? (
+        <RainbowBorder
+          borderRadius={20}
+          borderWidth={2}
+          containerClassName="flex-row items-center px-4 py-4"
+          className="bg-white"
         >
-          <CircleFlag countryCode={country.countryCode} size={40} />
-          <View className="flex-1 ml-4">
-            <Text className="font-bold text-base text-gray-900">
-              {country.name}
-            </Text>
-          </View>
+          <Content />
+        </RainbowBorder>
+      ) : (
+        <View
+          style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+          className="flex-row items-center border-gray-200 bg-white"
+        >
+          <Content />
         </View>
-      </Animated.View>
+      )}
     </Pressable>
   );
 }
@@ -413,6 +368,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               Country
             </Text>
             <TouchableOpacity
+              activeOpacity={0.7}
               className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
               onPress={() => setCountryModalVisible(true)}
             >
@@ -434,6 +390,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               Native Language
             </Text>
             <TouchableOpacity
+              activeOpacity={0.7}
               className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
               onPress={() => setLanguageModalVisible(true)}
             >
@@ -555,5 +512,5 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
         </Modal>
       </View>
     );
-  }
+  },
 );

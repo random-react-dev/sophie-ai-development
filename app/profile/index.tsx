@@ -153,7 +153,7 @@ export default function ProfileScreen() {
                 <TextInput
                   value={name}
                   onChangeText={setName}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xl font-bold text-gray-900 min-w-[220px] text-center"
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xl font-bold text-gray-900 min-w-[100px] text-center"
                   autoFocus
                   onBlur={handleUpdateName}
                   onSubmitEditing={handleUpdateName}
@@ -172,7 +172,13 @@ export default function ProfileScreen() {
             </View>
 
             {/* Email */}
-            <Text className="text-gray-500 text-sm mt-1">{user?.email}</Text>
+            <Text
+              className="text-gray-500 text-sm mt-1 text-center w-full"
+              numberOfLines={2}
+              selectable
+            >
+              {user?.email}
+            </Text>
           </View>
         </View>
 
