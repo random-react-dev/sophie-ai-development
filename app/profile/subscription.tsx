@@ -27,9 +27,10 @@ function FeatureCheck({ text }: { text: string }) {
 const PLANS = [
   {
     id: "free",
-    name: "Free Trial",
+    name: "M&G",
     price: "$0",
     duration: "7 days",
+    description: "Perfect for casual practice.",
     features: [
       "All languages included",
       "5 min/day practice",
@@ -43,6 +44,7 @@ const PLANS = [
     name: "Launch Pack",
     price: "$4.99",
     duration: "month",
+    description: "For serious learners who want to speak confidently.",
     features: [
       "1 language of choice",
       "15 min/day practice",
@@ -55,9 +57,10 @@ const PLANS = [
   },
   {
     id: "pro",
-    name: "Unlimited",
+    name: "SBB",
     price: "$19",
     duration: "month",
+    description: "Advanced coaching for business & exams.",
     features: [
       "Unlimited languages",
       "Unlimited time",
@@ -117,6 +120,11 @@ export default function SubscriptionScreen() {
             </View>
           </View>
         </View>
+
+        {/* Description */}
+        <Text className="text-gray-500 text-sm font-medium mb-4">
+          {plan.description}
+        </Text>
 
         {/* Features */}
         <View className="mb-5">
