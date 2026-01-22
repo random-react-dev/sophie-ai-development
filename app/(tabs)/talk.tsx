@@ -447,7 +447,7 @@ Stay in character while teaching.`;
       {/* Main Interaction Area */}
       <View className="flex-1 px-4 mt-2">
         {/* Conversation Area */}
-        <View className="bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-gray-100 h-[200px] overflow-hidden">
+        <View className="bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-gray-100 h-[250px] overflow-hidden">
           {/* Premium Status Bar */}
           <View className="flex-row items-center justify-end p-4 bg-gray-50/50 border-b border-gray-100">
             {/* Actions Bar */}
@@ -491,17 +491,19 @@ Stay in character while teaching.`;
             </View>
           </View>
 
-          {/* Rainbow Wave */}
           <View className="flex-1 justify-center items-center relative">
             {/* Recording Timer */}
             {isPTTActive && (
-              <View className="absolute top-4 bg-red-500 px-4 py-2 rounded-full flex-row items-center z-10">
-                <View className="w-2 h-2 rounded-full bg-white mr-2" />
-                <Text className="text-white font-semibold">
-                  {formatTime(recordingTime)}
-                </Text>
+              <View className="absolute top-2 left-0 right-0 items-center z-10">
+                <View className="bg-red-500/90 px-4 py-2 rounded-full flex-row items-center shadow-lg shadow-red-500/30">
+                  <View className="w-2 h-2 rounded-full bg-white mr-2 animate-pulse" />
+                  <Text className="text-white font-bold tracking-wide">
+                    {formatTime(recordingTime)}
+                  </Text>
+                </View>
               </View>
             )}
+            {/* Rainbow Wave */}
             <RainbowWave
               isListening={isListening}
               isSpeaking={isSpeaking}
@@ -509,7 +511,7 @@ Stay in character while teaching.`;
               volumeLevel={volumeLevel}
             />
             {/* Status Text - shows buffering progress, thinking state, etc */}
-            {(isProcessing || isSpeaking || isListening) && (
+            {(!!isProcessing || isSpeaking || isListening) && (
               <View className="absolute bottom-4">
                 <Text className="text-gray-600 text-sm font-medium">
                   {getStatusText()}
