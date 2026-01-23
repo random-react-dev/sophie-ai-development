@@ -64,3 +64,13 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
     set((state) => ({ data: { ...state.data, ...updates } })),
   resetOnboarding: () => set({ currentStep: 1, data: initialData }),
 }));
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const currentStep = useCurrentStep();
+// ============================================
+
+export const useCurrentStep = (): number =>
+  useOnboardingStore((s) => s.currentStep);
+export const useOnboardingData = (): OnboardingData =>
+  useOnboardingStore((s) => s.data);

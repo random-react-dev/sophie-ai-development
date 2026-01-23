@@ -107,3 +107,15 @@ export const useProfileStore = create<ProfileState>()(
         }
     )
 );
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const profiles = useProfiles();
+// ============================================
+
+export const useProfiles = (): LearningProfile[] =>
+    useProfileStore((s) => s.profiles);
+export const useActiveProfile = (): LearningProfile | null =>
+    useProfileStore((s) => s.activeProfile);
+export const useProfileIsLoading = (): boolean =>
+    useProfileStore((s) => s.isLoading);

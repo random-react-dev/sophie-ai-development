@@ -39,3 +39,13 @@ export const useThemeStore = create<ThemeState>((set) => ({
     }
   },
 }));
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const theme = useTheme();
+// ============================================
+
+export const useTheme = (): ThemeType =>
+  useThemeStore((s) => s.theme);
+export const useThemeIsLoading = (): boolean =>
+  useThemeStore((s) => s.isLoading);

@@ -17,3 +17,15 @@ export const useGameStore = create<GameState>((set) => ({
     updateStreak: () => set((state: GameState) => ({ streakCount: state.streakCount + 1, lastLessonDate: new Date().toISOString() })),
     resetStreak: () => set({ streakCount: 0 }),
 }));
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const totalXp = useTotalXp();
+// ============================================
+
+export const useTotalXp = (): number =>
+    useGameStore((s) => s.totalXp);
+export const useStreakCount = (): number =>
+    useGameStore((s) => s.streakCount);
+export const useLastLessonDate = (): string | null =>
+    useGameStore((s) => s.lastLessonDate);
