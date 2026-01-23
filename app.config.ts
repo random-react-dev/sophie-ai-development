@@ -77,6 +77,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         ],
       },
     ],
+    [
+      "expo-speech-recognition",
+      {
+        microphonePermission: "Allow Sophie to use the microphone for voice input.",
+        speechRecognitionPermission: "Allow Sophie to use speech recognition.",
+      },
+    ],
   ],
 
   experiments: {

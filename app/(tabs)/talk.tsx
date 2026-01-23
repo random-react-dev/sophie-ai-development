@@ -325,8 +325,11 @@ Stay in character while teaching.`;
   const handleTranslate = useCallback(
     async (text: string) => {
       try {
-        const translated = await translateText(text, "English");
-        showAlert("Translation", translated, undefined, "info");
+        const result = await translateText(text, "English");
+        const displayText = result.romanization 
+          ? `${result.translation}\n\n${result.romanization}` 
+          : result.translation;
+        showAlert("Translation", displayText, undefined, "info");
       } catch {
         showAlert(
           "Error",

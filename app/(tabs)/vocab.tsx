@@ -180,12 +180,14 @@ export default function VocabScreen() {
 
     try {
       // Defaulting target to English if unknown, or infer from context
-      const translated = await translateText(item.phrase, "English");
+      const result = await translateText(item.phrase, "English");
 
       // Ask to save the translation
       showAlert(
         "Translation",
-        translated,
+        result.romanization 
+          ? `${result.translation}\n\n${result.romanization}` 
+          : result.translation,
         [
           { text: "Close", style: "cancel" },
           {

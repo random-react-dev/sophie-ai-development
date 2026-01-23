@@ -3,6 +3,7 @@ import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
+import { TranslationHistory } from "@/components/translate/TranslationHistory";
 import {
   DEFAULT_SOURCE_LANG,
   DEFAULT_TARGET_LANG,
@@ -12,10 +13,15 @@ import { translateText } from "@/services/gemini/translate";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
+import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
 import {
   ArrowRightLeft,
   Bookmark,
@@ -49,10 +55,13 @@ export default function TranslateScreen() {
   useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
+  const { addEntry } = useTranslationHistoryStore();
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
+  const [romanization, setRomanization] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const [sourceLang, setSourceLang] = useState<Language>(DEFAULT_SOURCE_LANG);
   const [targetLang, setTargetLang] = useState<Language>(DEFAULT_TARGET_LANG);
@@ -66,6 +75,46 @@ export default function TranslateScreen() {
 
   // Animation for swap button - horizontal flip
   const flipX = useSharedValue(1);
+
+  // Speech Recognition Events
+  useSpeechRecognitionEvent("start", () => setIsListening(true));
+  useSpeechRecognitionEvent("end", () => setIsListening(false));
+  useSpeechRecognitionEvent("result", (event) => {
+    if (event.results[0]?.transcript) {
+      setInputText(event.results[0].transcript);
+      // Clear translation when new speech input comes in
+      if (translatedText) {
+        setTranslatedText("");
+        setRomanization("");
+      }
+    }
+  });
+
+  const handleMicPress = async () => {
+    if (isListening) {
+      ExpoSpeechRecognitionModule.stop();
+    } else {
+      Haptics.selectionAsync();
+      const perms = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!perms.granted) {
+        showAlert(
+          "Permission Required",
+          "Please enable microphone access to use voice input.",
+          undefined,
+          "error",
+        );
+        return;
+      }
+
+      // Construct locale code (e.g., "en-US", "hi-IN")
+      const locale = `${sourceLang.code}-${sourceLang.countryCode.toUpperCase()}`;
+      
+      ExpoSpeechRecognitionModule.start({
+        lang: locale,
+        interimResults: true,
+      });
+    }
+  };
 
   const handleSwap = useCallback(() => {
     Haptics.selectionAsync();
@@ -84,6 +133,9 @@ export default function TranslateScreen() {
     if (translatedText) {
       setInputText(translatedText);
       setTranslatedText(inputText);
+      // We don't have romanization for the reverse easily without re-translating, 
+      // but we can clear it or leave it empty
+      setRomanization(""); 
     }
   }, [sourceLang, targetLang, inputText, translatedText, flipX]);
 
@@ -103,7 +155,18 @@ export default function TranslateScreen() {
         targetLang.name,
         sourceLang.name,
       );
-      setTranslatedText(result);
+      setTranslatedText(result.translation);
+      setRomanization(result.romanization);
+
+      // Save to history
+      addEntry({
+        sourceText: inputText,
+        translatedText: result.translation,
+        romanization: result.romanization,
+        sourceLang: sourceLang.code,
+        targetLang: targetLang.code,
+      });
+
     } catch (error) {
       console.error("Translation error:", error);
       showAlert(
@@ -157,14 +220,23 @@ export default function TranslateScreen() {
   const clearAll = () => {
     setInputText("");
     setTranslatedText("");
+    setRomanization("");
     Haptics.selectionAsync();
+  };
+
+  const handleHistorySelect = (item: any) => {
+    setInputText(item.sourceText);
+    setTranslatedText(item.translatedText);
+    setRomanization(item.romanization);
+    // Note: We don't automatically switch languages to match history item 
+    // because that might be confusing if user just wants to see the result
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <PageHeader />
 
-      <View className="px-4 mb-8">
+      <View className="px-4 mb-4">
         <Text className="text-3xl font-bold text-black text-left">
           Translate
         </Text>
@@ -264,7 +336,10 @@ export default function TranslateScreen() {
                 value={inputText}
                 onChangeText={(text) => {
                   setInputText(text);
-                  if (!text) setTranslatedText("");
+                  if (!text) {
+                    setTranslatedText("");
+                    setRomanization("");
+                  }
                 }}
                 placeholderTextColor="gray"
                 scrollEnabled={false}
@@ -276,9 +351,16 @@ export default function TranslateScreen() {
               <View className="flex-row gap-2">
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                  onPress={handleMicPress}
+                  className={`w-10 h-10 items-center justify-center rounded-full ${
+                    isListening ? "bg-red-100" : "bg-gray-100"
+                  }`}
                 >
-                  <FontAwesome name="microphone" size={18} color="black" />
+                  <FontAwesome 
+                    name="microphone" 
+                    size={18} 
+                    color={isListening ? "#ef4444" : "black"} 
+                  />
                 </TouchableOpacity>
                 {inputText.length > 0 && (
                   <TouchableOpacity
@@ -348,6 +430,11 @@ export default function TranslateScreen() {
                   <Text className="text-gray-900 text-xl leading-normal">
                     {translatedText}
                   </Text>
+                  {romanization ? (
+                    <Text className="text-gray-500 text-lg italic mt-1 font-medium">
+                      {romanization}
+                    </Text>
+                  ) : null}
 
                   {/* Actions Row */}
                   <View className="mt-8 flex-row items-center justify-between">
@@ -393,7 +480,7 @@ export default function TranslateScreen() {
                 </View>
               </>
             ) : (
-              <View className="flex-1 items-center justify-center gap-4">
+              <View className="flex-1 items-center justify-center gap-4 py-10">
                 <View className="w-16 h-16 bg-gray-200 rounded-full items-center justify-center">
                   <MessageSquare size={28} color="#9ca3af" />
                 </View>
@@ -402,6 +489,9 @@ export default function TranslateScreen() {
                 </Text>
               </View>
             )}
+
+            {/* Translation History */}
+            <TranslationHistory onSelect={handleHistorySelect} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
