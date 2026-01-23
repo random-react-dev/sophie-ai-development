@@ -1,3 +1,4 @@
+import { safeGoBack } from "@/utils/navigation";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import React from "react";
@@ -15,7 +16,7 @@ export default function ProfileHeader({ title }: ProfileHeaderProps) {
       {/* Left - Back Button */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.back()}
+        onPress={() => safeGoBack(router, "/(tabs)/language")}
         className="p-2 -ml-2 w-10"
       >
         <ArrowLeft size={24} color="#1e293b" />

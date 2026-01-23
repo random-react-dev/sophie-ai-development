@@ -21,6 +21,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { useProfileStore } from "@/stores/profileStore";
+import { safeGoBack } from "@/utils/navigation";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -231,7 +232,7 @@ export default function OnboardingScreen() {
         }
       }
       // If on sub-step 1, go back to previous screen
-      router.back();
+      safeGoBack(router, "/(auth)/login");
     } else {
       prevStep();
     }
