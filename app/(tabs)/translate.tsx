@@ -37,6 +37,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TranslateScreen() {
@@ -58,8 +64,18 @@ export default function TranslateScreen() {
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
+  // Animation for swap button - horizontal flip
+  const flipX = useSharedValue(1);
+
   const handleSwap = useCallback(() => {
     Haptics.selectionAsync();
+
+    // Animate horizontal flip - smooth
+    flipX.value = withTiming(flipX.value * -1, {
+      duration: 200,
+      easing: Easing.out(Easing.ease),
+    });
+
     const temp = sourceLang;
     setSourceLang(targetLang);
     setTargetLang(temp);
@@ -69,7 +85,11 @@ export default function TranslateScreen() {
       setInputText(translatedText);
       setTranslatedText(inputText);
     }
-  }, [sourceLang, targetLang, inputText, translatedText]);
+  }, [sourceLang, targetLang, inputText, translatedText, flipX]);
+
+  const animatedIconStyle = useAnimatedStyle(() => ({
+    transform: [{ scaleX: flipX.value }],
+  }));
 
   const handleTranslate = async () => {
     if (!inputText.trim()) return;
@@ -81,7 +101,7 @@ export default function TranslateScreen() {
       const result = await translateText(
         inputText,
         targetLang.name,
-        sourceLang.name
+        sourceLang.name,
       );
       setTranslatedText(result);
     } catch (error) {
@@ -90,7 +110,7 @@ export default function TranslateScreen() {
         "Error",
         "Failed to translate. Please try again.",
         undefined,
-        "error"
+        "error",
       );
     } finally {
       setIsTranslating(false);
@@ -116,7 +136,7 @@ export default function TranslateScreen() {
         "Error",
         "Failed to save. Please try again.",
         undefined,
-        "error"
+        "error",
       );
     }
   };
@@ -188,9 +208,17 @@ export default function TranslateScreen() {
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleSwap}
-                  className="w-10 h-10 bg-blue-50 rounded-full items-center justify-center mx-4"
+                  className="mx-4"
                 >
-                  <ArrowRightLeft size={18} color="#3b82f6" />
+                  <RainbowBorder
+                    borderRadius={9999}
+                    borderWidth={2}
+                    containerClassName="size-10 items-center justify-center"
+                  >
+                    <Animated.View style={animatedIconStyle}>
+                      <ArrowRightLeft size={18} color="black" />
+                    </Animated.View>
+                  </RainbowBorder>
                 </TouchableOpacity>
 
                 {/* Target Language */}
@@ -224,8 +252,8 @@ export default function TranslateScreen() {
           <View className="px-4">
             <View className="min-h-[140px]">
               <View className="flex-row items-center gap-2 mb-2">
-                <View className="w-2 h-2 rounded-full bg-blue-500" />
-                <Text className="text-blue-500 text-xs font-bold uppercase tracking-wider">
+                <View className="w-2 h-2 rounded-full bg-gray-400" />
+                <Text className="text-gray-500 text-xs font-bold uppercase tracking-wider">
                   {sourceLang.name}
                 </Text>
               </View>
@@ -276,7 +304,9 @@ export default function TranslateScreen() {
                     ) : (
                       <>
                         <Sparkles size={18} color="#9ca3af" />
-                        <Text className="font-bold text-gray-400">Translate</Text>
+                        <Text className="font-bold text-gray-400">
+                          Translate
+                        </Text>
                       </>
                     )}
                   </View>
@@ -308,59 +338,58 @@ export default function TranslateScreen() {
           >
             {translatedText ? (
               <>
-                <View className="flex-row items-center gap-2 mb-3">
-                  <View className="w-2 h-2 rounded-full bg-blue-500" />
-                  <Text className="text-blue-500 text-xs font-bold uppercase tracking-wider">
-                    {targetLang.name}
+                <View className="min-h-[140px]">
+                  <View className="flex-row items-center gap-2 mb-3">
+                    <View className="w-2 h-2 rounded-full bg-gray-400" />
+                    <Text className="text-gray-500 text-xs font-bold uppercase tracking-wider">
+                      {targetLang.name}
+                    </Text>
+                  </View>
+                  <Text className="text-gray-900 text-xl leading-normal">
+                    {translatedText}
                   </Text>
-                </View>
-                <Text className="text-gray-900 text-xl leading-normal">
-                  {translatedText}
-                </Text>
 
-                <View className="mt-6 flex-row items-center gap-4 flex-wrap">
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => copyToClipboard(translatedText)}
-                    className="flex-row items-center gap-2 bg-gray-50 px-4 py-3 rounded-full"
-                  >
-                    <Copy size={16} color="black" />
-                    <Text className="text-gray-600 font-medium text-sm">
-                      Copy
-                    </Text>
-                  </TouchableOpacity>
+                  {/* Actions Row */}
+                  <View className="mt-8 flex-row items-center justify-between">
+                    {/* Icon Buttons */}
+                    <View className="flex-row items-center gap-3">
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => copyToClipboard(translatedText)}
+                        className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+                      >
+                        <Copy size={18} color="#374151" />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+                      >
+                        <Volume2 size={18} color="#374151" />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={handleSave}
+                        className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+                      >
+                        <Bookmark size={18} color="#374151" />
+                      </TouchableOpacity>
+                    </View>
 
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    className="flex-row items-center gap-2 bg-gray-50 px-4 py-3 rounded-full"
-                  >
-                    <Volume2 size={16} color="black" />
-                    <Text className="text-gray-600 font-medium text-sm">
-                      Listen
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={handleSave}
-                    className="flex-row items-center gap-2 bg-blue-100 px-4 py-3 rounded-full"
-                  >
-                    <Bookmark size={16} color="#3b82f6" />
-                    <Text className="text-blue-500 font-medium text-sm">
-                      Save
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={handlePractice}
-                    className="flex-row items-center gap-2 bg-blue-500 px-4 py-3 rounded-full"
-                  >
-                    <MessageSquare size={16} color="white" />
-                    <Text className="text-white font-medium text-sm">
-                      Practice
-                    </Text>
-                  </TouchableOpacity>
+                    {/* Primary Action */}
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={handlePractice}
+                    >
+                      <RainbowBorder
+                        borderRadius={999}
+                        borderWidth={2}
+                        containerClassName="px-5 py-4 flex-row items-center gap-2"
+                      >
+                        <MessageSquare size={16} color="black" />
+                        <Text className="font-bold text-black">Practice</Text>
+                      </RainbowBorder>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </>
             ) : (

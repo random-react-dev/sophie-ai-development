@@ -1,7 +1,10 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
-import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
+import {
+  disabledColorScheme,
+  getRainbowColorScheme,
+} from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { FileText, Mail, MessageCircle, Scale } from "lucide-react-native";
 import React from "react";
@@ -43,7 +46,9 @@ export default function SupportScreen() {
           {/* Privacy Policy Card */}
           <ProfileSettingCard
             title="Privacy Policy"
-            icon={<FileText size={20} color={getRainbowColorScheme(0).iconColor} />}
+            icon={
+              <FileText size={20} color={getRainbowColorScheme(0).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(0)}
             onPress={() => router.push("/profile/privacy")}
           />
@@ -51,7 +56,9 @@ export default function SupportScreen() {
           {/* Terms of Service Card */}
           <ProfileSettingCard
             title="Terms of Service"
-            icon={<Scale size={20} color={getRainbowColorScheme(1).iconColor} />}
+            icon={
+              <Scale size={20} color={getRainbowColorScheme(1).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(1)}
             onPress={() => router.push("/profile/terms")}
           />
@@ -74,7 +81,7 @@ export default function SupportScreen() {
                 "Contact Us",
                 "Email us at support@fluentai.com for any questions or feedback.",
                 undefined,
-                "info"
+                "info",
               )
             }
           />
@@ -83,14 +90,16 @@ export default function SupportScreen() {
           <ProfileSettingCard
             title="Send Feedback"
             subtitle="Help us improve"
-            icon={<MessageCircle size={20} color={disabledColorScheme.iconColor} />}
+            icon={
+              <MessageCircle size={20} color={disabledColorScheme.iconColor} />
+            }
             colorScheme={disabledColorScheme}
             onPress={() =>
               showAlert(
                 "Coming Soon",
                 "In-app feedback feature will be available soon.",
                 undefined,
-                "info"
+                "info",
               )
             }
           />
@@ -102,14 +111,16 @@ export default function SupportScreen() {
             App Info
           </Text>
 
-          <View className="bg-surface rounded-2xl p-4 shadow-sm">
-            <View className="flex-row justify-between py-2">
-              <Text className="text-gray-500">Version</Text>
-              <Text className="text-gray-900 font-medium">1.0.0</Text>
+          <View className="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
+            <View className="flex-row items-center justify-between py-2">
+              <Text className="text-gray-500 flex-1">Version</Text>
+              <Text className="text-gray-900 font-bold text-right">1.0.0</Text>
             </View>
-            <View className="flex-row justify-between py-2 border-t border-gray-100">
-              <Text className="text-gray-500">Build</Text>
-              <Text className="text-gray-900 font-medium">Prototype</Text>
+            <View className="flex-row items-center justify-between py-2 border-t border-gray-200">
+              <Text className="text-gray-500 flex-1">Build</Text>
+              <Text className="text-gray-900 font-bold text-right">
+                Prototype
+              </Text>
             </View>
           </View>
         </View>

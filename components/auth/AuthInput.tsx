@@ -48,8 +48,8 @@ export function AuthInput({
           {isPassword && (
             <TouchableOpacity
               onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-              className="p-2"
-              activeOpacity={0.5}
+              className="p-0"
+              activeOpacity={0.7}
             >
               {isPasswordVisible ? (
                 <EyeOff size={22} color="#9CA3AF" />

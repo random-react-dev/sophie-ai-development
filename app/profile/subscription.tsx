@@ -1,66 +1,191 @@
+import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import { useRouter } from "expo-router";
-import { Check, Crown, Sparkles, Star, Zap } from "lucide-react-native";
+import { Check, Crown } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Feature check item with rainbow border
+function FeatureCheck({ text }: { text: string }) {
+  return (
+    <View className="flex-row items-center gap-3 mb-3">
+      {/* Checkmark with rainbow border */}
+      <RainbowBorder
+        borderRadius={9999}
+        borderWidth={1.5}
+        className="w-5 h-5"
+        containerClassName="items-center justify-center"
+      >
+        <Check size={10} color="black" strokeWidth={3} />
+      </RainbowBorder>
+      <Text className="text-gray-700 text-sm font-medium flex-1">{text}</Text>
+    </View>
+  );
+}
+
 const PLANS = [
   {
     id: "free",
-    name: "Free Trial",
+    name: "M&G",
     price: "$0",
     duration: "7 days",
+    description: "Perfect for casual practice.",
     features: [
       "All languages included",
       "5 min/day practice",
       "Basic AI tutor feedback",
     ],
-    icon: <Sparkles size={24} color="#6b7280" />,
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-100",
-    accentColor: "bg-gray-200",
-    textColor: "text-gray-600",
+    emoji: "🎁",
+    isFeatured: false,
   },
   {
     id: "launch",
     name: "Launch Pack",
     price: "$4.99",
     duration: "month",
+    description: "For serious learners who want to speak confidently.",
     features: [
       "1 language of choice",
       "15 min/day practice",
       "Priority AI feedback",
       "No ads",
     ],
-    icon: <Zap size={24} color="#3b82f6" />,
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
-    accentColor: "bg-blue-500",
-    textColor: "text-blue-600",
-    special: "Most Popular",
+    emoji: "🚀",
+    isFeatured: true,
+    badge: "Most Popular",
   },
   {
     id: "pro",
-    name: "Unlimited",
+    name: "SBB",
     price: "$19",
     duration: "month",
+    description: "Advanced coaching for business & exams.",
     features: [
       "Unlimited languages",
       "Unlimited time",
       "Advanced AI analytics",
       "Personalized paths",
     ],
-    icon: <Crown size={24} color="#f59e0b" />,
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
-    accentColor: "bg-amber-500",
-    textColor: "text-amber-600",
+    emoji: "👑",
+    isFeatured: false,
   },
 ];
 
 export default function SubscriptionScreen() {
   const router = useRouter();
+
+  const renderPlanCard = (plan: (typeof PLANS)[0]) => {
+    const cardContent = (
+      <View className="p-6">
+        {/* Badge for featured plan */}
+        {plan.badge && (
+          <View className="absolute top-0 right-0 overflow-hidden rounded-bl-2xl">
+            <View className="px-4 py-2 relative overflow-hidden">
+              {/* Subtle rainbow gradient background */}
+              <View className="absolute inset-0">
+                <RainbowGradient className="flex-1 opacity-20" />
+              </View>
+              <Text className="text-black text-[10px] font-bold uppercase tracking-wider">
+                {plan.badge}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Plan Header - Emoji + Name + Price */}
+        <View className="flex-row items-center gap-4 mb-6">
+          {/* Emoji */}
+          <RainbowBorder
+            borderRadius={16}
+            borderWidth={1.5}
+            className="size-12"
+            containerClassName="items-center justify-center"
+          >
+            <Text className="text-2xl">{plan.emoji}</Text>
+          </RainbowBorder>
+
+          {/* Plan Name & Price */}
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-gray-900 mb-0.5">
+              {plan.name}
+            </Text>
+            <View className="flex-row items-baseline">
+              <Text className="text-2xl font-black text-gray-900">
+                {plan.price}
+              </Text>
+              <Text className="text-gray-500 text-sm font-medium ml-1">
+                /{plan.duration}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Description */}
+        <Text className="text-gray-500 text-sm font-medium mb-4">
+          {plan.description}
+        </Text>
+
+        {/* Features */}
+        <View className="mb-5">
+          {plan.features.map((feature, idx) => (
+            <FeatureCheck key={idx} text={feature} />
+          ))}
+        </View>
+
+        {/* CTA Button */}
+        {plan.isFeatured ? (
+          <RainbowBorder
+            borderRadius={9999}
+            borderWidth={2}
+            className="h-14"
+            containerClassName="items-center justify-center"
+          >
+            <Text className="text-black font-bold text-base">
+              Subscribe Now
+            </Text>
+          </RainbowBorder>
+        ) : (
+          <View className="h-14 rounded-full items-center justify-center bg-gray-100">
+            <Text className="text-gray-700 font-bold text-base">
+              {plan.id === "free" ? "Get Started" : "Subscribe Now"}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+
+    // Wrap featured plan with RainbowBorder
+    if (plan.isFeatured) {
+      return (
+        <TouchableOpacity
+          key={plan.id}
+          activeOpacity={1}
+          className="mb-4 rounded-3xl overflow-hidden shadow-lg"
+        >
+          <RainbowBorder
+            borderRadius={24}
+            borderWidth={2}
+            className="w-full"
+            containerClassName="bg-white"
+          >
+            {cardContent}
+          </RainbowBorder>
+        </TouchableOpacity>
+      );
+    }
+
+    // Regular plan card
+    return (
+      <TouchableOpacity
+        key={plan.id}
+        activeOpacity={1}
+        className="mb-4 rounded-3xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden"
+      >
+        {cardContent}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
@@ -71,10 +196,11 @@ export default function SubscriptionScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
+        {/* Header Section */}
         <View className="px-6 py-8 items-center">
-          <View className="w-20 h-20 rounded-3xl bg-blue-50 items-center justify-center mb-4">
-            <Star size={40} color="#3b82f6" fill="#3b82f6" />
-          </View>
+          <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4">
+            <Crown size={36} color="white" />
+          </RainbowGradient>
           <Text className="text-3xl font-bold text-gray-900 text-center">
             Choose Your Plan
           </Text>
@@ -83,78 +209,14 @@ export default function SubscriptionScreen() {
           </Text>
         </View>
 
-        <View className="px-4 gap-6">
-          {PLANS.map((plan) => (
-            <TouchableOpacity
-              key={plan.id}
-              activeOpacity={0.9}
-              className={`relative rounded-3xl border-2 p-6 ${plan.bgColor} ${plan.borderColor} shadow-sm overflow-hidden`}
-            >
-              {!!plan.special && (
-                <View className="absolute top-0 right-0 bg-blue-500 px-4 py-1.5 rounded-bl-2xl">
-                  <Text className="text-white text-[10px] font-bold uppercase tracking-wider">
-                    {plan.special}
-                  </Text>
-                </View>
-              )}
-
-              <View className="flex-row items-center gap-4 mb-4">
-                <View className="w-12 h-12 rounded-2xl items-center justify-center bg-white/50">
-                  {plan.icon}
-                </View>
-                <View>
-                  <Text className="text-lg font-bold text-gray-900">
-                    {plan.name}
-                  </Text>
-                  <View className="flex-row items-baseline">
-                    <Text className="text-2xl font-black text-gray-900">
-                      {plan.price}
-                    </Text>
-                    <Text className="text-gray-500 text-sm font-medium">
-                      /{plan.duration}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="gap-3 mb-6">
-                {plan.features.map((feature, idx) => (
-                  <View key={idx} className="flex-row items-center gap-3">
-                    <View
-                      className={`w-5 h-5 rounded-full items-center justify-center ${plan.accentColor} bg-opacity-10`}
-                    >
-                      <Check
-                        size={12}
-                        color={
-                          plan.id === "free"
-                            ? "#6b7280"
-                            : plan.id === "launch"
-                            ? "#3b82f6"
-                            : "#f59e0b"
-                        }
-                        strokeWidth={3}
-                      />
-                    </View>
-                    <Text className="text-gray-700 text-sm font-medium">
-                      {feature}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-
-              <View
-                className={`w-full py-4 rounded-2xl items-center ${plan.accentColor}`}
-              >
-                <Text className="text-white font-bold text-base">
-                  {plan.id === "free" ? "Get Started" : "Subscribe Now"}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+        {/* Plan Cards */}
+        <View className="px-4">
+          {PLANS.map((plan) => renderPlanCard(plan))}
         </View>
 
-        <View className="px-6 mt-8 items-center italic">
-          <Text className="text-gray-400 text-xs text-center">
+        {/* Footer Note */}
+        <View className="px-6 mt-4 items-center">
+          <Text className="text-gray-400 text-xs text-center italic">
             All plans include 24/7 AI tutor access and Progress Tracking. Cancel
             anytime from your settings.
           </Text>
