@@ -10,10 +10,10 @@ import {
   Language,
 } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
-import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
+import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
@@ -56,6 +56,7 @@ export default function TranslateScreen() {
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
   const { addEntry } = useTranslationHistoryStore();
+  const { addItem } = useVocabularyStore();
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
@@ -185,10 +186,11 @@ export default function TranslateScreen() {
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const success = await saveToVocabulary({
+    const success = await addItem({
       phrase: inputText,
       translation: translatedText,
       context: `${sourceLang.name} → ${targetLang.name}`,
+      language: targetLang.name,
     });
 
     if (success) {

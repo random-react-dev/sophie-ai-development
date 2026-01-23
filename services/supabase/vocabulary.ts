@@ -64,18 +64,23 @@ export const saveToVocabulary = async (item: Omit<VocabularyItem, 'user_id'>) =>
         // Remove 'folder' object if present, only save folder_id
         const { folder, ...itemData } = item;
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('vocabulary')
             .insert({
                 ...itemData,
                 user_id: user.id
-            });
+            })
+            .select(`
+                *,
+                folder:vocabulary_folders(*)
+            `)
+            .single();
 
         if (error) throw error;
-        return true;
+        return data as VocabularyItem;
     } catch (error) {
         console.error('Error saving to vocabulary:', error);
-        return false;
+        return null;
     }
 };
 

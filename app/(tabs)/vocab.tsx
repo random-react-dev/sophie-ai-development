@@ -6,17 +6,14 @@ import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
 import {
-  createFolder,
-  deleteFromVocabulary,
-  getFolders,
-  getVocabulary,
-  saveToVocabulary,
   VocabularyFolder,
   VocabularyItem,
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
+import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import {
@@ -61,12 +58,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function VocabScreen() {
   useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
+  const { 
+    items, 
+    folders, 
+    isLoading, 
+    fetchVocabulary, 
+    addItem, 
+    removeItem, 
+    // fetchFolders, // unused
+    addFolder 
+  } = useVocabularyStore();
   const router = useRouter();
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
   // Data
-  const [items, setItems] = useState<VocabularyItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [items, setItems] = useState<VocabularyItem[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Filter & Search
@@ -85,7 +92,7 @@ export default function VocabScreen() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
   // Folders Data
-  const [folders, setFolders] = useState<VocabularyFolder[]>([]);
+  // const [folders, setFolders] = useState<VocabularyFolder[]>([]);
   const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>("All");
 
   // Multi-select Modal
@@ -101,25 +108,13 @@ export default function VocabScreen() {
   const [selectedActionItem, setSelectedActionItem] =
     useState<VocabularyItem | null>(null);
 
-  const fetchVocab = async () => {
-    try {
-      const [vocabData, foldersData] = await Promise.all([
-        getVocabulary(),
-        getFolders(),
-      ]);
-      setItems(vocabData);
-      setFolders(foldersData);
-    } catch (error) {
-      console.error("Error fetching vocab:", error);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchVocab();
-  }, []);
+  // Use useFocusEffect to refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchVocabulary();
+      // fetchFolders is called within fetchVocabulary now, but keeping distinct functions in store is good
+    }, [fetchVocabulary])
+  );
 
   const languages = useMemo(() => {
     const langs = new Set(items.map((i) => i.language).filter(Boolean));
@@ -156,9 +151,8 @@ export default function VocabScreen() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            const success = await deleteFromVocabulary(id);
+            const success = await removeItem(id);
             if (success) {
-              setItems((prev) => prev.filter((i) => i.id !== id));
               Haptics.notificationAsync(
                 Haptics.NotificationFeedbackType.Success
               );
@@ -258,7 +252,7 @@ export default function VocabScreen() {
       return;
     }
 
-    const success = await saveToVocabulary({
+    const success = await addItem({
       phrase: newPhrase,
       translation: newTranslation,
       language: newLanguage.name,
@@ -271,7 +265,6 @@ export default function VocabScreen() {
       setNewTranslation("");
       setNewFolderId(null);
       setIsAddModalVisible(false);
-      fetchVocab();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
       showAlert("Error", "Failed to save phrase", undefined, "error");
@@ -289,9 +282,10 @@ export default function VocabScreen() {
     Haptics.selectionAsync();
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setIsRefreshing(true);
-    fetchVocab();
+    await fetchVocabulary();
+    setIsRefreshing(false);
   };
 
   return (
@@ -678,9 +672,8 @@ export default function VocabScreen() {
                     className="h-12 rounded-full overflow-hidden"
                     onPress={async () => {
                       if (!newFolderName.trim()) return;
-                      const newFolder = await createFolder(newFolderName);
+                      const newFolder = await addFolder(newFolderName);
                       if (newFolder) {
-                        setFolders(prev => [...prev, newFolder]);
                         setNewFolderId(newFolder.id);
                         setIsCreatingFolder(false);
                         setNewFolderName("");
