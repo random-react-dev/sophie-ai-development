@@ -15,9 +15,12 @@ import {
   ProfileStepRef,
 } from "@/components/onboarding/ProfileStep";
 import { RainbowProgressBar } from "@/components/onboarding/RainbowProgressBar";
+import { getLanguageByCode } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
+import { useLearningStore } from "@/stores/learningStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -85,6 +88,8 @@ export default function OnboardingScreen() {
   const { updateProfile, isLoading: isSaving } = useAuthStore();
   const { currentStep, nextStep, prevStep, data, resetOnboarding } =
     useOnboardingStore();
+  const { addProfile } = useProfileStore();
+  const { setTargetLanguage, setNativeLanguage } = useLearningStore();
   const { t } = useTranslation();
 
   // Ref for ProfileStep sub-step control
@@ -149,9 +154,37 @@ export default function OnboardingScreen() {
           },
         };
 
+        // 1. Update User Profile Metadata
         await updateProfile(onboardingMetadata);
+
+        // 2. Create Language Profile
+        try {
+          const nativeLangObj = getLanguageByCode(data.nativeLanguage);
+          const targetLangObj = getLanguageByCode(data.preferredLanguage);
+
+          const nativeLangName = nativeLangObj?.name || "English";
+          const targetLangName = targetLangObj?.name || "Hindi";
+
+          // Auto-create profile
+          await addProfile({
+            name: `Learning ${targetLangName}`,
+            native_language: nativeLangName,
+            target_language: targetLangName,
+            medium_language: nativeLangName, // Teach in native language
+            preferred_accent: "American", // Default accent
+          });
+
+          // 3. Set Learning Store Languages (so app is ready to use)
+          if (targetLangObj) setTargetLanguage(targetLangObj);
+          if (nativeLangObj) setNativeLanguage(nativeLangObj);
+        } catch (profileError) {
+          console.error("Failed to auto-create profile:", profileError);
+          // Continue anyway, user can create profile manually
+        }
+
         resetOnboarding();
-        router.replace("/(tabs)/talk");
+        // 4. Navigate to Language Tab to show the new profile
+        router.replace("/(tabs)/language");
       } catch {
         showAlert(
           t("common.error"),
