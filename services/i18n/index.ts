@@ -2,38 +2,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
 import { I18n } from 'i18n-js';
 
-// basic translations for testing
-const en = {
-    welcome: 'Welcome',
-    profile: 'Profile',
-    learning: 'Learning',
-    loading: 'Loading...',
-    save: 'Save',
-    cancel: 'Cancel',
-};
-
-const hi = {
-    welcome: 'नमस्ते',
-    profile: 'प्रोफ़ाइल',
-    learning: 'सीख रहे हैं',
-    loading: 'लोड हो रहा है...',
-    save: 'सहेजें',
-    cancel: 'रद्द करें',
-};
-
-const es = {
-    welcome: 'Bienvenido',
-    profile: 'Perfil',
-    learning: 'Aprendiendo',
-    loading: 'Cargando...',
-    save: 'Guardar',
-    cancel: 'Cancelar',
-};
+import de from './locales/de.json';
+import en from './locales/en.json';
+import es from './locales/es.json';
+import fr from './locales/fr.json';
+import hi from './locales/hi.json';
 
 const i18n = new I18n({
     en,
     hi,
     es,
+    fr,
+    de,
 });
 
 // Set the locale once at the beginning of your app.
@@ -41,14 +21,22 @@ i18n.locale = getLocales()[0].languageCode ?? 'en';
 
 // When a value is missing from a language it'll fall back to another language with the key present.
 i18n.enableFallback = true;
+i18n.defaultLocale = 'en';
 
-const STORAGE_KEY = 'app_language';
+const STORAGE_KEY = 'app-language'; // Matches Zustand persist key if we want to share, but here we just read specifically
 
 export const loadLanguage = async () => {
     try {
-        const savedLanguage = await AsyncStorage.getItem(STORAGE_KEY);
-        if (savedLanguage) {
-            i18n.locale = savedLanguage;
+        // We need to read the ZUSTAND persist state, because that's where the source of truth is now.
+        // Zustand persist stores data as a JSON string: { state: { currentLanguage: "..." }, version: 0 }
+        const savedState = await AsyncStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+            const parsed = JSON.parse(savedState);
+            const lang = parsed.state?.currentLanguage;
+            if (lang) {
+                i18n.locale = lang;
+                return lang;
+            }
         }
     } catch (error) {
         console.warn('Failed to load language', error);
@@ -56,13 +44,5 @@ export const loadLanguage = async () => {
     return i18n.locale;
 };
 
-export const setAppLanguage = async (lang: string) => {
-    i18n.locale = lang;
-    try {
-        await AsyncStorage.setItem(STORAGE_KEY, lang);
-    } catch (error) {
-        console.warn('Failed to save language', error);
-    }
-};
 
 export default i18n;

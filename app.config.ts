@@ -47,7 +47,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-secure-store",
-    "expo-localization",
+    [
+      "expo-localization",
+      {
+        supportedLocales: {
+          ios: ["en", "hi", "es", "fr", "de", "ja", "zh"],
+          android: ["en", "hi", "es", "fr", "de", "ja", "zh"],
+        },
+      },
+    ],
     "expo-audio",
     "expo-asset",
     [

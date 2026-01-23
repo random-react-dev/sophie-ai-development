@@ -15,6 +15,7 @@ import {
   ProfileStepRef,
 } from "@/components/onboarding/ProfileStep";
 import { RainbowProgressBar } from "@/components/onboarding/RainbowProgressBar";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { useRouter } from "expo-router";
@@ -84,6 +85,7 @@ export default function OnboardingScreen() {
   const { updateProfile, isLoading: isSaving } = useAuthStore();
   const { currentStep, nextStep, prevStep, data, resetOnboarding } =
     useOnboardingStore();
+  const { t } = useTranslation();
 
   // Ref for ProfileStep sub-step control
   const profileStepRef = useRef<ProfileStepRef>(null);
@@ -150,10 +152,10 @@ export default function OnboardingScreen() {
         await updateProfile(onboardingMetadata);
         resetOnboarding();
         router.replace("/(tabs)/talk");
-      } catch (error) {
+      } catch {
         showAlert(
-          "Error",
-          "Failed to save your preferences. Please try again.",
+          t("common.error"),
+          t("common.errorMessage"),
           undefined,
           "error",
         );
@@ -171,8 +173,8 @@ export default function OnboardingScreen() {
       // Sub-step 2 validation: check name and country
       if (!data.name || !data.country) {
         showAlert(
-          "Incomplete",
-          "Please enter your name and select a country.",
+          t("common.incomplete"),
+          t("common.incompleteMessage"),
           undefined,
           "warning",
         );
@@ -310,10 +312,10 @@ export default function OnboardingScreen() {
           >
             <Text className="text-gray-900 font-bold text-lg">
               {isSaving
-                ? "Saving..."
+                ? t("onboarding.saving")
                 : currentStep === 10
-                  ? "Start Learning"
-                  : "Continue"}
+                  ? t("onboarding.startLearning")
+                  : t("onboarding.continue")}
             </Text>
           </RainbowBorder>
         </TouchableOpacity>
@@ -323,7 +325,7 @@ export default function OnboardingScreen() {
             className="items-center mt-4"
             disabled={isSaving}
           >
-            <Text className="text-gray-400 font-medium">Skip for now</Text>
+            <Text className="text-gray-400 font-medium">{t("onboarding.skip")}</Text>
           </TouchableOpacity>
         )}
       </View>

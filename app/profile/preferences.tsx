@@ -5,8 +5,8 @@ import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import ThemeCard from "@/components/profile/ThemeCard";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { getLanguageByCode } from "@/constants/languages";
-import { setAppLanguage } from "@/services/i18n";
 import { useAuthStore } from "@/stores/authStore";
+import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getRainbowColorScheme } from "@/utils/rainbowColors";
 import { Globe, Languages, Mail, MapPin, User } from "lucide-react-native";
@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function PreferencesScreen() {
   const { user, updateProfile } = useAuthStore();
   const { theme, setTheme, loadTheme } = useThemeStore();
+  const { setLanguage } = useLanguageStore();
 
   // Load saved theme on mount
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function PreferencesScreen() {
 
   const handleUpdatePreferredLanguage = async (langCode: string) => {
     try {
-      await setAppLanguage(langCode);
+      setLanguage(langCode);
       await updateProfile({ app_language: langCode });
       setShowPreferredPicker(false);
     } catch {

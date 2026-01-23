@@ -1,0 +1,45 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Choisissez la langue de l'application",
+    "continue": "Continuer",
+    "saving": "Enregistrement...",
+    "startLearning": "Commencer à apprendre",
+    "skip": "Passer pour l'instant",
+    "profileStep": {
+      "almostThere": "Presque terminé !",
+      "nameLabel": "Votre nom",
+      "namePlaceholder": "Entrez votre nom",
+      "countryLabel": "Pays",
+      "countryPlaceholder": "Sélectionnez votre pays",
+      "nativeLanguageLabel": "Langue maternelle",
+      "nativeLanguagePlaceholder": "Sélectionnez votre langue maternelle",
+      "selectCountry": "Sélectionner un pays",
+      "selectNativeLanguage": "Langue maternelle"
+    },
+    "titles": {
+      "goal": "Quel est votre objectif principal dans la vie ?",
+      "fluency": "À quelle vitesse voulez-vous devenir courant ?",
+      "duration": "Depuis combien de temps étudiez-vous cette langue ?",
+      "level": "Lequel vous décrit le mieux ?",
+      "confidence": "À quel point êtes-vous confiant ?",
+      "barriers": "Pourquoi n'êtes-vous pas confiant ?",
+      "focus": "Sur quoi voulez-vous vous concentrer en premier ?",
+      "discovery": "Comment nous avez-vous trouvés ?"
+    }
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "error": "Erreur",
+    "warning": "Attention",
+    "incomplete": "Incomplet",
+    "incompleteMessage": "Veuillez entrer votre nom et sélectionner un pays.",
+    "errorMessage": "Échec de l'enregistrement de vos préférences. Veuillez réessayer."
+  },
+  "tabs": {
+    "talk": "Parler",
+    "vocab": "Vocabulaire",
+    "scenarios": "Scénarios",
+    "profile": "Profil"
+  }
+}
