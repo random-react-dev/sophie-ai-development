@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "nativewind";
 import { useEffect, useRef } from "react";
 import { LogBox } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -16,8 +17,8 @@ import "../global.css";
 
 import { TrialCountdownModal } from "@/components/auth/TrialCountdownModal";
 import { I18nProvider } from "@/components/providers/I18nProvider";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useAuthStore } from "@/stores/authStore";
+import { useThemeStore } from "@/stores/themeStore";
 
 // Suppress expo-av deprecation warning (still works in SDK 54, will migrate in future)
 LogBox.ignoreLogs(["expo-av"]);
@@ -30,8 +31,9 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const { session, initialized, initialize } = useAuthStore();
+  const { loadTheme } = useThemeStore();
   const segments = useSegments();
   const router = useRouter();
   const hasInitialRedirect = useRef(false);
@@ -46,8 +48,9 @@ export default function RootLayout() {
   useEffect(() => {
     if (!initialized) {
       initialize();
+      loadTheme();
     }
-  }, [initialized, initialize]);
+  }, [initialized, initialize, loadTheme]);
 
   // Hide splash screen when fonts are loaded
   useEffect(() => {
@@ -125,7 +128,7 @@ export default function RootLayout() {
               />
             </Stack>
             <TrialCountdownModal />
-            <StatusBar style="auto" />
+            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
           </ThemeProvider>
         </I18nProvider>
       </SafeAreaProvider>

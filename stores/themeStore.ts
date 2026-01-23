@@ -1,25 +1,25 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { colorScheme } from "nativewind";
 import { create } from "zustand";
 
 const THEME_STORAGE_KEY = "APP_THEME";
 
-type ThemeType = "light" | "dark";
+type ThemeType = "light" | "dark" | "system";
 
 interface ThemeState {
   theme: ThemeType;
-  isLoading: boolean;
   setTheme: (theme: ThemeType) => Promise<void>;
   loadTheme: () => Promise<void>;
 }
 
 export const useThemeStore = create<ThemeState>((set) => ({
   theme: "light",
-  isLoading: true,
 
-  setTheme: async (theme: ThemeType) => {
+  setTheme: async (newTheme: ThemeType) => {
     try {
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, theme);
-      set({ theme });
+      colorScheme.set(newTheme);
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme);
+      set({ theme: newTheme });
     } catch (error) {
       console.warn("Failed to save theme:", error);
     }
@@ -27,25 +27,27 @@ export const useThemeStore = create<ThemeState>((set) => ({
 
   loadTheme: async () => {
     try {
-      const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+      const savedTheme = (await AsyncStorage.getItem(
+        THEME_STORAGE_KEY
+      )) as ThemeType;
+      
       if (savedTheme === "light" || savedTheme === "dark") {
-        set({ theme: savedTheme, isLoading: false });
+        colorScheme.set(savedTheme);
+        set({ theme: savedTheme });
       } else {
-        set({ isLoading: false });
+        colorScheme.set("system");
+        set({ theme: "system" });
       }
     } catch (error) {
       console.warn("Failed to load theme:", error);
-      set({ isLoading: false });
+      colorScheme.set("system");
+      set({ theme: "system" });
     }
   },
 }));
 
 // ============================================
-// Atomic Selectors - Reduce unnecessary re-renders
-// Usage: const theme = useTheme();
+// Atomic Selectors
 // ============================================
 
-export const useTheme = (): ThemeType =>
-  useThemeStore((s) => s.theme);
-export const useThemeIsLoading = (): boolean =>
-  useThemeStore((s) => s.isLoading);
+export const useTheme = (): ThemeType => useThemeStore((s) => s.theme);
