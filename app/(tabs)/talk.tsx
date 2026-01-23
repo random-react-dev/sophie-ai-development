@@ -123,6 +123,9 @@ export default function TalkScreen() {
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef(false);
   const router = useRouter();
+  
+  // Session tracking
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
 
   // Language picker state
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
@@ -214,6 +217,9 @@ Stay in character while teaching.`;
           `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`,
         );
         geminiWebSocket.connect(token, instruction);
+        
+        // Start session timer when connection is established
+        setSessionStartTime(Date.now());
       } catch (err) {
         if (isMounted) {
           const errorMessage =
@@ -281,6 +287,12 @@ Stay in character while teaching.`;
       return;
     }
 
+    // Calculate duration
+    const endTime = Date.now();
+    const durationSeconds = sessionStartTime 
+        ? Math.round((endTime - sessionStartTime) / 1000) 
+        : 0;
+
     showAlert(
       "Finish Conversation",
       "Are you done with this practice session?",
@@ -289,7 +301,10 @@ Stay in character while teaching.`;
         {
           text: "Finish",
           onPress: () => {
-            router.push("/report" as any);
+            router.push({
+                pathname: "/report",
+                params: { duration: durationSeconds.toString() }
+            });
           },
         },
       ],
@@ -315,6 +330,8 @@ Stay in character while teaching.`;
             // Force reconnect
             geminiWebSocket.disconnect();
             isInitialized.current = false;
+            // Reset session timer
+            setSessionStartTime(null);
           },
         },
       ],

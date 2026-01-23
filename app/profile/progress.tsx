@@ -1,10 +1,38 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
+import { useStatsStore } from "@/stores/statsStore";
+import { useVocabularyStore } from "@/stores/vocabularyStore";
+import { useFocusEffect } from "@react-navigation/native";
 import { BookOpen, Clock, Target, TrendingUp } from "lucide-react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProgressScreen() {
+    const { totalSpeakingSeconds, totalConversations, fetchStats } = useStatsStore();
+    const { items: vocabularyItems, fetchVocabulary } = useVocabularyStore();
+
+    // Refresh stats when screen gains focus
+    useFocusEffect(
+        useCallback(() => {
+            fetchStats();
+            // We also fetch vocabulary to update words learned count if needed
+            // though it might already be up to date from vocabulary store logic
+            if (vocabularyItems.length === 0) {
+                fetchVocabulary();
+            }
+        }, [fetchStats, fetchVocabulary, vocabularyItems.length])
+    );
+
+    // Format speaking time
+    const formatSpeakingTime = (totalSeconds: number) => {
+        if (totalSeconds < 60) return `${totalSeconds}s`;
+        if (totalSeconds < 3600) return `${Math.floor(totalSeconds / 60)}m`;
+        return `${(totalSeconds / 3600).toFixed(1)}h`;
+    };
+
+    // Calculate words learned (total vocabulary items)
+    const wordsLearned = vocabularyItems.length;
+
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
@@ -39,8 +67,8 @@ export default function ProgressScreen() {
                 <View className="w-10 h-10 rounded-xl bg-blue-50 items-center justify-center mb-2">
                   <Clock size={20} color="#3b82f6" />
                 </View>
-                <Text className="text-2xl font-bold text-gray-900">--</Text>
-                <Text className="text-xs text-gray-500 mt-1">Hours</Text>
+                <Text className="text-2xl font-bold text-gray-900">{formatSpeakingTime(totalSpeakingSeconds)}</Text>
+                <Text className="text-xs text-gray-500 mt-1">Speaking</Text>
               </View>
 
               <View className="w-px bg-gray-100" />
@@ -49,8 +77,8 @@ export default function ProgressScreen() {
                 <View className="w-10 h-10 rounded-xl bg-green-50 items-center justify-center mb-2">
                   <BookOpen size={20} color="#22c55e" />
                 </View>
-                <Text className="text-2xl font-bold text-gray-900">--</Text>
-                <Text className="text-xs text-gray-500 mt-1">Lessons</Text>
+                <Text className="text-2xl font-bold text-gray-900">{wordsLearned}</Text>
+                <Text className="text-xs text-gray-500 mt-1">Words</Text>
               </View>
 
               <View className="w-px bg-gray-100" />
@@ -59,8 +87,8 @@ export default function ProgressScreen() {
                 <View className="w-10 h-10 rounded-xl bg-amber-50 items-center justify-center mb-2">
                   <Target size={20} color="#f59e0b" />
                 </View>
-                <Text className="text-2xl font-bold text-gray-900">--</Text>
-                <Text className="text-xs text-gray-500 mt-1">Goals</Text>
+                <Text className="text-2xl font-bold text-gray-900">{totalConversations}</Text>
+                <Text className="text-xs text-gray-500 mt-1">Sessions</Text>
               </View>
             </View>
           </View>

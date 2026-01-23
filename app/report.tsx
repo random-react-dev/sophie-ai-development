@@ -2,16 +2,37 @@ import { RainbowBorder } from '@/components/common/Rainbow';
 import { saveToVocabulary } from '@/services/supabase/vocabulary';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useScenarioStore } from '@/stores/scenarioStore';
-import { Stack, useRouter } from 'expo-router';
+import { useStatsStore } from '@/stores/statsStore';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { AlignLeft, Bookmark, Clock, MessageSquare, Sparkles, X } from 'lucide-react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ReportScreen() {
     const { messages, clearMessages } = useConversationStore();
     const { selectedScenario } = useScenarioStore();
+    const { recordSession } = useStatsStore();
     const router = useRouter();
+    const params = useLocalSearchParams();
+    
+    const [hasRecorded, setHasRecorded] = useState(false);
+
+    // Get duration from params or default to 0
+    const durationSeconds = params.duration ? parseInt(params.duration as string) : 0;
+    
+    // Format duration for display (e.g., "2m 30s")
+    const formattedDuration = durationSeconds < 60 
+        ? `${durationSeconds}s` 
+        : `${Math.floor(durationSeconds / 60)}m ${durationSeconds % 60 > 0 ? (durationSeconds % 60) + 's' : ''}`;
+
+    // Record stats on mount (once)
+    useEffect(() => {
+        if (!hasRecorded && durationSeconds > 0) {
+            recordSession(durationSeconds);
+            setHasRecorded(true);
+        }
+    }, [durationSeconds, hasRecorded, recordSession]);
 
     const handleSave = async (text: string) => {
         const success = await saveToVocabulary({ phrase: text });
@@ -81,7 +102,7 @@ export default function ReportScreen() {
                     </View>
                     <View className="flex-1 bg-gray-50 rounded-[24px] p-5 border border-gray-100 items-center">
                         <Clock size={20} color="#9ca3af" className="mb-2" />
-                        <Text className="text-2xl font-bold text-gray-900">~2m</Text>
+                        <Text className="text-2xl font-bold text-gray-900">{formattedDuration}</Text>
                         <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Duration</Text>
                     </View>
                 </View>
