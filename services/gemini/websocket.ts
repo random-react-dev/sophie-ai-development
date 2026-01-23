@@ -1,5 +1,6 @@
 import { audioStreamer } from '../audio/streamer';
 import { Logger } from '../common/Logger';
+import { filterTranscriptText } from '@/utils/filterTranscriptText';
 import {
     ConnectionState,
     GeminiClientContent,
@@ -410,7 +411,7 @@ class GeminiWebSocket {
 
             // Handle model's speech transcription
             if (outputTranscription?.text) {
-                const text = outputTranscription.text.trim();
+                const text = filterTranscriptText(outputTranscription.text.trim());
                 if (text) {
                     Logger.info(TAG, `Model transcribed: ${text}`);
                     store.addMessage('model', text);
