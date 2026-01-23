@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
 import React from 'react';
-import { View, ViewStyle } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { Text as RNText, View, ViewStyle } from 'react-native';
+import Svg, { Defs, LinearGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 
 interface RainbowGradientProps {
     children?: React.ReactNode;
@@ -107,9 +107,6 @@ interface RainbowTextProps {
     fontWeight?: 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
     lineHeight?: number;
 }
-
-import { Text as RNText } from 'react-native';
-import { Text as SvgText } from 'react-native-svg';
 
 /**
  * A component that renders text with a rainbow gradient fill.

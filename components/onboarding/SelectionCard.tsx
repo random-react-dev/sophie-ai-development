@@ -1,95 +1,23 @@
+import { RainbowGradient } from "@/components/common/Rainbow";
 import { Colors } from "@/constants/theme";
 import React, { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
+  SharedValue,
   interpolate,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
-  withTiming,
+  withSpring
 } from "react-native-reanimated";
 import Svg, {
   Circle,
   Defs,
   LinearGradient,
-  Path,
-  Stop,
+  Stop
 } from "react-native-svg";
 
-const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-import { RainbowGradient } from "@/components/common/Rainbow";
-
-// Animated Checkbox with full Rainbow gradient when checked (no border)
-function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
-  const progress = useSharedValue(isChecked ? 1 : 0);
-  const pathLength = 22;
-
-  useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, {
-      duration: 300,
-    });
-  }, [isChecked]);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
-    };
-  });
-
-  const scaleStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
-    };
-  });
-
-  return (
-    <Animated.View
-      style={scaleStyle}
-      className="w-6 h-6 rounded-full items-center justify-center overflow-hidden"
-    >
-      {isChecked ? (
-        // Full rainbow gradient circle when checked
-        <Svg width="24" height="24" viewBox="0 0 24 24">
-          <Defs>
-            <LinearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              {Colors.rainbow.map((color, index) => (
-                <Stop
-                  key={color}
-                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
-                  stopColor={color}
-                />
-              ))}
-            </LinearGradient>
-          </Defs>
-          <Circle cx="12" cy="12" r="12" fill="url(#checkGrad)" />
-        </Svg>
-      ) : (
-        // Gray border circle when unchecked
-        <View className="w-6 h-6 rounded-full border-2 border-gray-300" />
-      )}
-      {/* Checkmark - always visible when checked */}
-      {isChecked && (
-        <View className="absolute">
-          <Svg width="14" height="14" viewBox="0 0 24 24">
-            <AnimatedPath
-              d="M5 12l5 5L20 7"
-              fill="none"
-              stroke="white"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray={pathLength}
-              animatedProps={animatedProps}
-            />
-          </Svg>
-        </View>
-      )}
-    </Animated.View>
-  );
-}
 
 // Duration Ring Component with Rainbow gradient
 // Fixed behavior:
@@ -181,6 +109,59 @@ function DurationRing({
   );
 }
 
+// Individual animated bar item - moved outside to properly use hooks
+function AnimatedBar({
+  barLevel,
+  level,
+  progress,
+  index,
+  barColors,
+}: {
+  barLevel: number;
+  level: number;
+  progress: SharedValue<number>;
+  index: number;
+  barColors: string[];
+}) {
+  const heightClass: Record<number, string> = {
+    1: "h-[6px]",
+    2: "h-[10px]",
+    3: "h-[14px]",
+    4: "h-[18px]",
+    5: "h-[22px]",
+  };
+
+  const isActive = level >= barLevel;
+
+  const barStyle = useAnimatedStyle(() => {
+    const scale = interpolate(
+      progress.value,
+      [index * 0.1, index * 0.1 + 0.5],
+      [0, 1],
+      "clamp"
+    );
+    return {
+      transform: [{ scaleY: scale }],
+      opacity: scale,
+    };
+  });
+
+  return (
+    <Animated.View
+      key={barLevel}
+      className={`w-1 rounded-full ${heightClass[barLevel]}`}
+      style={[
+        {
+          backgroundColor: isActive
+            ? barColors[barLevel - 1]
+            : "#e5e7eb",
+        },
+        isActive ? barStyle : {},
+      ]}
+    />
+  );
+}
+
 // Signal Bars Component with Rainbow colors
 function SignalBars({
   level,
@@ -202,50 +183,21 @@ function SignalBars({
     } else {
       progress.value = withSpring(1, { damping: 15, stiffness: 100 });
     }
-  }, [selected]);
+  }, [selected, progress]);
 
   return (
     <View className="size-12 rounded-full bg-gray-50 items-center justify-center">
       <View className="flex-row items-end gap-0.5 h-6">
-        {bars.map((barLevel, index) => {
-          const heightClass: Record<number, string> = {
-            1: "h-[6px]",
-            2: "h-[10px]",
-            3: "h-[14px]",
-            4: "h-[18px]",
-            5: "h-[22px]",
-          };
-
-          const isActive = level >= barLevel;
-
-          const barStyle = useAnimatedStyle(() => {
-            const scale = interpolate(
-              progress.value,
-              [index * 0.1, index * 0.1 + 0.5],
-              [0, 1],
-              "clamp"
-            );
-            return {
-              transform: [{ scaleY: scale }],
-              opacity: scale,
-            };
-          });
-
-          return (
-            <Animated.View
-              key={barLevel}
-              className={`w-1 rounded-full ${heightClass[barLevel]}`}
-              style={[
-                {
-                  backgroundColor: isActive
-                    ? barColors[barLevel - 1]
-                    : "#e5e7eb",
-                },
-                isActive ? barStyle : {},
-              ]}
-            />
-          );
-        })}
+        {bars.map((barLevel, index) => (
+          <AnimatedBar
+            key={barLevel}
+            barLevel={barLevel}
+            level={level}
+            progress={progress}
+            index={index}
+            barColors={barColors}
+          />
+        ))}
       </View>
     </View>
   );
@@ -433,9 +385,8 @@ export function SelectionCard({
       )}
       <View className="flex-1 justify-center py-1">
         <Text
-          className={`font-bold text-base ${
-            selected ? "text-gray-900" : "text-gray-900"
-          }`}
+          className={`font-bold text-base ${selected ? "text-gray-900" : "text-gray-900"
+            }`}
         >
           {title}
         </Text>

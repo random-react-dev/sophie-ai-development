@@ -69,14 +69,11 @@ const buildTutorPrompt = (
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${
-    nativeLang.name
-  }), then introduce the lesson:
-"Welcome to your ${
-    targetLang.name
-  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
-    targetLang.name
-  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Start by greeting the user in their native language (${nativeLang.name
+    }), then introduce the lesson:
+"Welcome to your ${targetLang.name
+    } lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name
+    } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -87,9 +84,8 @@ Start by greeting the user in their native language (${
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${
-    targetLang.name
-  } for the words being taught
+- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name
+    } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress`;
 };
@@ -267,23 +263,6 @@ Stay in character while teaching.`;
         return error || "Error";
       default:
         return "Hold mic to speak";
-    }
-  };
-
-  const getDotColor = (): string => {
-    if (isSpeaking) return "bg-purple-500";
-    if (isListening) return "bg-blue-500";
-
-    switch (connectionState) {
-      case "connecting":
-      case "reconnecting":
-        return "bg-orange-500";
-      case "connected":
-        return "bg-green-500";
-      case "error":
-        return "bg-red-500";
-      default:
-        return "bg-gray-400";
     }
   };
 

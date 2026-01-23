@@ -527,7 +527,7 @@ export const CompletionStep = () => {
         </View>
 
         <Text className="text-3xl font-bold text-gray-900 text-center mb-2">
-          You're all set!
+          You&apos;re all set!
         </Text>
         <Text className="text-gray-500 text-base text-center px-4 leading-6 w-full">
           Your personalized learning path is ready

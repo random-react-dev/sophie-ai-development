@@ -70,7 +70,7 @@ export default function RoleplayScreen() {
     setSelectedCategory,
     selectScenario,
   } = useScenarioStore();
-  const { user } = useAuthStore();
+  useAuthStore(); // Kept for potential auth state side effects
   const router = useRouter();
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
@@ -622,9 +622,8 @@ function CreateScenarioModal({
                                 setCategory(cat);
                                 setIsCategoryDropdownOpen(false);
                               }}
-                              className={`px-4 py-3.5 flex-row items-center overflow-hidden relative ${
-                                !isLast ? "border-b border-gray-100" : ""
-                              }`}
+                              className={`px-4 py-3.5 flex-row items-center overflow-hidden relative ${!isLast ? "border-b border-gray-100" : ""
+                                }`}
                             >
                               {isSelected && (
                                 <View className="absolute inset-0">

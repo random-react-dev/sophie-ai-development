@@ -5,14 +5,12 @@ import {
   disabledColorScheme,
   getRainbowColorScheme,
 } from "@/utils/rainbowColors";
-import { useRouter } from "expo-router";
 import { Info, Lock, Shield, ShieldCheck } from "lucide-react-native";
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SecurityScreen() {
-  const router = useRouter();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   return (

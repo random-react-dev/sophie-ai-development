@@ -2,15 +2,13 @@ import { AuthInput } from "@/components/auth/AuthInput";
 import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { APP_LANGUAGES, Language } from "@/constants/languages";
-import { Colors } from "@/constants/theme";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { Ionicons } from "@expo/vector-icons";
 import { ChevronDown } from "lucide-react-native";
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
-  useState,
+  useState
 } from "react";
 import {
   FlatList,
@@ -21,98 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, {
-  interpolate,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, {
-  Circle,
-  Defs,
-  LinearGradient,
-  Path,
-  Stop,
-} from "react-native-svg";
-
-const AnimatedPath = Animated.createAnimatedComponent(Path);
-
-// Animated Checkbox with full Rainbow gradient when checked (same as SelectionCard)
-function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
-  const progress = useSharedValue(isChecked ? 1 : 0);
-  const pathLength = 22;
-
-  useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, {
-      duration: 300,
-    });
-  }, [isChecked]);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
-    };
-  });
-
-  const scaleStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
-    };
-  });
-
-  return (
-    <Animated.View
-      style={scaleStyle}
-      className="w-6 h-6 rounded-full items-center justify-center overflow-hidden"
-    >
-      {isChecked ? (
-        // Full rainbow gradient circle when checked
-        <Svg width="24" height="24" viewBox="0 0 24 24">
-          <Defs>
-            <LinearGradient
-              id="checkGradProfile"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              {Colors.rainbow.map((color, index) => (
-                <Stop
-                  key={color}
-                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
-                  stopColor={color}
-                />
-              ))}
-            </LinearGradient>
-          </Defs>
-          <Circle cx="12" cy="12" r="12" fill="url(#checkGradProfile)" />
-        </Svg>
-      ) : (
-        // Gray border circle when unchecked
-        <View className="w-6 h-6 rounded-full border-2 border-gray-300" />
-      )}
-      {/* Checkmark - always visible when checked */}
-      {isChecked && (
-        <View className="absolute">
-          <Svg width="14" height="14" viewBox="0 0 24 24">
-            <AnimatedPath
-              d="M5 12l5 5L20 7"
-              fill="none"
-              stroke="white"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray={pathLength}
-              animatedProps={animatedProps}
-            />
-          </Svg>
-        </View>
-      )}
-    </Animated.View>
-  );
-}
 
 // Language Item Component (simplified to prevent jerky modal animation)
 // Uses RainbowBorder like CountryPicker.tsx for smooth modal transitions
@@ -373,9 +280,8 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setCountryModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${
-                  data.country ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={`flex-1 text-base ${data.country ? "text-gray-800" : "text-gray-400"
+                  }`}
                 numberOfLines={1}
               >
                 {data.country || "Select your country"}
@@ -395,9 +301,8 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setLanguageModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${
-                  data.nativeLanguage ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={`flex-1 text-base ${data.nativeLanguage ? "text-gray-800" : "text-gray-400"
+                  }`}
                 numberOfLines={1}
               >
                 {getSelectedLanguageName()}
@@ -514,3 +419,5 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     );
   },
 );
+
+ProfileStep.displayName = "ProfileStep";

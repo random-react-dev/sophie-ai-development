@@ -59,7 +59,7 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VocabScreen() {
-  const { user } = useAuthStore();
+  useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -440,7 +440,7 @@ export default function VocabScreen() {
       ) : (
         <FlatList
           data={filteredItems}
-          keyExtractor={(item) => item.id || Math.random().toString()}
+          keyExtractor={(item) => item.id || item.phrase}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
           refreshControl={
             <RefreshControl

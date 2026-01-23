@@ -1,6 +1,5 @@
 import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import { useRouter } from "expo-router";
 import { Check, Crown } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -73,8 +72,6 @@ const PLANS = [
 ];
 
 export default function SubscriptionScreen() {
-  const router = useRouter();
-
   const renderPlanCard = (plan: (typeof PLANS)[0]) => {
     const cardContent = (
       <View className="p-6">

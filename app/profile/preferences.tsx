@@ -9,14 +9,12 @@ import { setAppLanguage } from "@/services/i18n";
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getRainbowColorScheme } from "@/utils/rainbowColors";
-import { useRouter } from "expo-router";
 import { Globe, Languages, Mail, MapPin, User } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PreferencesScreen() {
-  const router = useRouter();
   const { user, updateProfile } = useAuthStore();
   const { theme, setTheme, loadTheme } = useThemeStore();
 

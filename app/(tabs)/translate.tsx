@@ -46,7 +46,7 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TranslateScreen() {
-  const { user } = useAuthStore();
+  useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
 
