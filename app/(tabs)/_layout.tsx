@@ -1,4 +1,4 @@
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
@@ -9,7 +9,25 @@ import * as Haptics from "expo-haptics";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Platform, Pressable, Text, View } from "react-native";
+import {
+  Animated,
+  Dimensions,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
+
+// Get screen width for responsive sizing
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+// Base design width (iPhone SE/8)
+const BASE_WIDTH = 375;
+// Responsive font size calculator
+const responsiveFontSize = (size: number) => {
+  const scale = SCREEN_WIDTH / BASE_WIDTH;
+  const newSize = size * Math.min(scale, 1.2); // Cap at 1.2x to prevent too large on tablets
+  return Math.max(newSize, size * 0.85); // Min 85% of original to stay readable
+};
 
 // Check if voice mode is available (not available in Expo Go)
 const voiceAvailable = isVoiceModeAvailable();
@@ -100,10 +118,11 @@ export default function TabLayout() {
         tabBarLabel: ({ children, color }) => (
           <Text
             allowFontScaling={false}
+            numberOfLines={1}
             style={{
               color,
               fontFamily: "GoogleSans-Bold",
-              fontSize: 10,
+              fontSize: responsiveFontSize(10),
               fontWeight: "bold",
               textAlign: "center",
               includeFontPadding: false,
@@ -114,6 +133,7 @@ export default function TabLayout() {
         ),
         tabBarItemStyle: {
           paddingHorizontal: 0,
+          flex: 1,
         },
       }}
     >
@@ -227,27 +247,26 @@ export default function TabLayout() {
                       <RainbowBorder
                         borderRadius={20}
                         borderWidth={3}
-                        className="size-20 shadow-2xl"
+                        className="size-20"
+                        style={{
+                          // Subtle premium shadow when active
+                          shadowColor:
+                            isFocused && !isPTTActive ? "#70369D" : "#000",
+                          shadowOffset: { width: 0, height: isFocused ? 3 : 2 },
+                          shadowOpacity:
+                            isFocused && !isPTTActive ? 0.25 : 0.15,
+                          shadowRadius: isFocused && !isPTTActive ? 8 : 4,
+                          elevation: isFocused && !isPTTActive ? 8 : 4,
+                        }}
                         containerClassName={`items-center justify-center ${getButtonColor()}`}
                       >
-                        {/* Rainbow gradient bg inside button when focused */}
-                        {isFocused && !isPTTActive && (
-                          <View
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              borderRadius: 17,
-                              overflow: "hidden",
-                              opacity: 0.4,
-                            }}
-                          >
-                            <RainbowGradient style={{ flex: 1 }} />
-                          </View>
-                        )}
-                        <Feather name="mic" size={26} color="black" />
+                        <Feather
+                          name="mic"
+                          size={26}
+                          color={
+                            isFocused && !isPTTActive ? "#FFA500" : "black"
+                          }
+                        />
                       </RainbowBorder>
                     </Pressable>
                   </Animated.View>

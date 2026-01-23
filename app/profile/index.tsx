@@ -20,7 +20,6 @@ import {
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -58,7 +57,7 @@ export default function ProfileScreen() {
             "Success",
             "Avatar updated successfully!",
             undefined,
-            "success"
+            "success",
           );
         } else {
           showAlert("Error", "Failed to upload avatar.", undefined, "error");
@@ -96,7 +95,7 @@ export default function ProfileScreen() {
           },
         },
       ],
-      "warning"
+      "warning",
     );
   };
 
@@ -105,7 +104,7 @@ export default function ProfileScreen() {
       "Delete Account",
       "This feature is coming soon. Your data is safe.",
       undefined,
-      "info"
+      "info",
     );
   };
 
@@ -114,10 +113,7 @@ export default function ProfileScreen() {
       {/* Header */}
       <ProfileHeader title="My Profile" />
 
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <View className="flex-1 justify-between">
         {/* Profile Card */}
         <View className="bg-surface mx-4 mt-2 rounded-2xl p-4 shadow-sm">
           <View className="items-center">
@@ -157,7 +153,7 @@ export default function ProfileScreen() {
                 <TextInput
                   value={name}
                   onChangeText={setName}
-                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xl font-bold text-gray-900 min-w-[220px] text-center"
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xl font-bold text-gray-900 min-w-[100px] text-center"
                   autoFocus
                   onBlur={handleUpdateName}
                   onSubmitEditing={handleUpdateName}
@@ -176,7 +172,13 @@ export default function ProfileScreen() {
             </View>
 
             {/* Email */}
-            <Text className="text-gray-500 text-sm mt-1">{user?.email}</Text>
+            <Text
+              className="text-gray-500 text-sm mt-1 text-center w-full"
+              numberOfLines={2}
+              selectable
+            >
+              {user?.email}
+            </Text>
           </View>
         </View>
 
@@ -186,7 +188,9 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Preferences"
             subtitle="Language, country, and more"
-            icon={<Settings size={20} color={getRainbowColorScheme(0).iconColor} />}
+            icon={
+              <Settings size={20} color={getRainbowColorScheme(0).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(0)}
             onPress={() => router.push("/profile/preferences")}
           />
@@ -204,7 +208,9 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Security"
             subtitle="Password and authentication"
-            icon={<Shield size={20} color={getRainbowColorScheme(2).iconColor} />}
+            icon={
+              <Shield size={20} color={getRainbowColorScheme(2).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(2)}
             onPress={() => router.push("/profile/security")}
           />
@@ -213,7 +219,9 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Progress"
             subtitle="Track your learning journey"
-            icon={<BarChart3 size={20} color={getRainbowColorScheme(3).iconColor} />}
+            icon={
+              <BarChart3 size={20} color={getRainbowColorScheme(3).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(3)}
             onPress={() => router.push("/profile/progress")}
           />
@@ -222,49 +230,56 @@ export default function ProfileScreen() {
           <ProfileSettingCard
             title="Support"
             subtitle="Help, policies, and feedback"
-            icon={<HelpCircle size={20} color={getRainbowColorScheme(4).iconColor} />}
+            icon={
+              <HelpCircle
+                size={20}
+                color={getRainbowColorScheme(4).iconColor}
+              />
+            }
             colorScheme={getRainbowColorScheme(4)}
             onPress={() => router.push("/profile/support")}
           />
         </View>
 
         {/* Actions Section */}
-        <View className="mx-4">
-          {/* Log Out Card */}
-          <ProfileSettingCard
-            title="Log Out"
-            icon={<LogOut size={20} color="#ef4444" />}
-            iconBgColor="bg-red-50"
-            textColor="text-red-500"
-            showArrow={false}
-            onPress={handleLogout}
-          />
-        </View>
+        <View className="mb-4">
+          <View className="mx-4">
+            {/* Log Out Card */}
+            <ProfileSettingCard
+              title="Log Out"
+              icon={<LogOut size={20} color="#ef4444" />}
+              iconBgColor="bg-red-50"
+              textColor="text-red-500"
+              showArrow={false}
+              onPress={handleLogout}
+            />
+          </View>
 
-        {/* Danger Zone Section */}
-        <View className="mx-4">
-          {/* Delete Account Card */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={handleDeleteAccount}
-            className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-200"
-          >
-            <View className="flex-row items-center gap-4">
-              <View className="w-11 h-11 rounded-xl bg-red-50 items-center justify-center">
-                <Trash2 size={20} color="#ef4444" />
+          {/* Danger Zone Section */}
+          <View className="mx-4">
+            {/* Delete Account Card */}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleDeleteAccount}
+              className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-200"
+            >
+              <View className="flex-row items-center gap-4">
+                <View className="w-11 h-11 rounded-xl bg-red-50 items-center justify-center">
+                  <Trash2 size={20} color="#ef4444" />
+                </View>
+                <View>
+                  <Text className="text-base font-semibold text-red-500">
+                    Delete Account
+                  </Text>
+                  <Text className="text-xs text-gray-400 mt-0.5">
+                    Permanently remove your account
+                  </Text>
+                </View>
               </View>
-              <View>
-                <Text className="text-base font-semibold text-red-500">
-                  Delete Account
-                </Text>
-                <Text className="text-xs text-gray-400 mt-0.5">
-                  Permanently remove your account
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
+      </View>
 
       {/* Alert Modal */}
       <AlertModal

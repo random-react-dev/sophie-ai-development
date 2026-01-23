@@ -1,9 +1,12 @@
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
-import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
+import {
+  disabledColorScheme,
+  getRainbowColorScheme,
+} from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
-import { Lock, Shield } from "lucide-react-native";
+import { Info, Lock, Shield, ShieldCheck } from "lucide-react-native";
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -64,36 +67,37 @@ export default function SecurityScreen() {
         </View>
 
         {/* Security Tips */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+        <View className="mx-4 mt-8">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 ml-1">
             Security Tips
           </Text>
 
-          <View className="bg-surface rounded-2xl p-4 shadow-sm">
-            <View className="flex-row items-start gap-3 py-2">
-              <View className="w-6 h-6 rounded-full bg-green-100 items-center justify-center mt-0.5">
-                <Text className="text-green-600 text-xs font-bold">✓</Text>
+          <View className="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
+            <View className="flex-row items-start gap-4 mb-6">
+              <View className="w-10 h-10 rounded-2xl items-center justify-center bg-green-50">
+                <ShieldCheck size={22} color="#16a34a" />
               </View>
               <View className="flex-1">
-                <Text className="text-gray-900 font-medium">
+                <Text className="text-gray-900 font-bold text-base">
                   Use a strong password
                 </Text>
-                <Text className="text-gray-500 text-sm mt-1">
-                  Mix letters, numbers, and special characters
+                <Text className="text-gray-500 text-sm mt-1 leading-5">
+                  Mix letters, numbers, and special characters for maximum
+                  protection.
                 </Text>
               </View>
             </View>
 
-            <View className="flex-row items-start gap-3 py-2 border-t border-gray-100">
-              <View className="w-6 h-6 rounded-full bg-blue-100 items-center justify-center mt-0.5">
-                <Text className="text-blue-600 text-xs font-bold">i</Text>
+            <View className="flex-row items-start gap-4 pt-6 border-t border-gray-200">
+              <View className="w-10 h-10 rounded-2xl items-center justify-center bg-blue-50">
+                <Info size={22} color="#2563eb" />
               </View>
               <View className="flex-1">
-                <Text className="text-gray-900 font-medium">
+                <Text className="text-gray-900 font-bold text-base">
                   Enable two-factor auth
                 </Text>
-                <Text className="text-gray-500 text-sm mt-1">
-                  Coming soon for extra protection
+                <Text className="text-gray-500 text-sm mt-1 leading-5">
+                  An extra layer of security for your account. coming soon!
                 </Text>
               </View>
             </View>

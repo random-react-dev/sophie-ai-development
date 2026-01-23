@@ -11,13 +11,18 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-// Benefit item component with rainbow checkmark
+// Benefit item component with rainbow border checkmark
 function BenefitItem({ text }: { text: string }) {
   return (
     <View className="flex-row items-center gap-3 mb-3">
-      <RainbowGradient className="w-6 h-6 rounded-full items-center justify-center">
-        <Check size={14} color="white" strokeWidth={3} />
-      </RainbowGradient>
+      <RainbowBorder
+        borderRadius={9999}
+        borderWidth={2}
+        className="w-6 h-6"
+        containerClassName="items-center justify-center"
+      >
+        <Check size={12} color="black" strokeWidth={3} />
+      </RainbowBorder>
       <Text className="text-gray-700 font-medium text-base flex-1">{text}</Text>
     </View>
   );
@@ -108,7 +113,7 @@ export const TrialCountdownModal = () => {
 
           {/* Header with Icon */}
           <View className="items-center mb-5">
-            <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4 shadow-lg shadow-gray-200">
+            <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4">
               <Crown size={36} color="white" />
             </RainbowGradient>
             <Text className="text-3xl font-black text-gray-900 text-center">
@@ -134,19 +139,23 @@ export const TrialCountdownModal = () => {
 
           {/* Discount Section */}
           {!isLastDay && (
-            <RainbowGradient className="rounded-2xl p-5 mb-5 items-center shadow-lg shadow-gray-200">
-              <View className="bg-white/20 px-3 py-1 rounded-full mb-2">
-                <Text className="text-white font-bold uppercase tracking-wider text-xs">
+            <View className="rounded-2xl p-5 mb-5 items-center shadow-lg shadow-gray-200 overflow-hidden relative border border-gray-100">
+              {/* Subtle rainbow gradient background like category selection */}
+              <View className="absolute inset-0">
+                <RainbowGradient className="flex-1 opacity-20" />
+              </View>
+              <View className="bg-black/10 px-3 py-1 rounded-full mb-2">
+                <Text className="text-gray-800 font-bold uppercase tracking-wider text-xs">
                   Limited Time Offer
                 </Text>
               </View>
-              <Text className="text-5xl font-black text-white">
+              <Text className="text-5xl font-black text-gray-900">
                 {discount}% OFF
               </Text>
-              <Text className="text-white/80 text-sm mt-1 font-medium">
+              <Text className="text-gray-600 text-sm mt-1 font-medium">
                 Claim your discount today
               </Text>
-            </RainbowGradient>
+            </View>
           )}
 
           {/* CTA Buttons */}

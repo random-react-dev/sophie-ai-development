@@ -1,7 +1,10 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { useAuthStore } from "@/stores/authStore";
-import { disabledColorScheme, getRainbowColorScheme } from "@/utils/rainbowColors";
+import {
+  disabledColorScheme,
+  getRainbowColorScheme,
+} from "@/utils/rainbowColors";
 import { useRouter } from "expo-router";
 import { Crown, Receipt, Sparkles, Wallet } from "lucide-react-native";
 import React from "react";
@@ -43,7 +46,9 @@ export default function AccountScreen() {
           {/* Status Card */}
           <ProfileSettingCard
             title="Status"
-            icon={<Sparkles size={20} color={getRainbowColorScheme(0).iconColor} />}
+            icon={
+              <Sparkles size={20} color={getRainbowColorScheme(0).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(0)}
             showArrow={false}
             rightElement={
@@ -58,7 +63,9 @@ export default function AccountScreen() {
           {/* Upgrade to Pro Card */}
           <ProfileSettingCard
             title="Upgrade to Pro"
-            icon={<Crown size={20} color={getRainbowColorScheme(1).iconColor} />}
+            icon={
+              <Crown size={20} color={getRainbowColorScheme(1).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(1)}
             textColor="text-blue-500"
             onPress={() => {
@@ -113,7 +120,7 @@ export default function AccountScreen() {
               <Text className="text-gray-900 font-medium">{user?.email}</Text>
             </View>
             <View className="flex-row justify-between py-2 border-t border-gray-100">
-              <Text className="text-gray-500">Member Since</Text>
+              <Text className="text-gray-500 w-full flex-1">Member Since</Text>
               <Text className="text-gray-900 font-medium">
                 {user?.created_at
                   ? new Date(user.created_at).toLocaleDateString()

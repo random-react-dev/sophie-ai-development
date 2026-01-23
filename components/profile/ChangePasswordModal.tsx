@@ -1,7 +1,8 @@
+import { AuthInput } from "@/components/auth/AuthInput";
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
-import { Eye, EyeOff, Lock } from "lucide-react-native";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -11,7 +12,6 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -30,7 +30,6 @@ export default function ChangePasswordModal({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   // Alert Modal
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -41,7 +40,7 @@ export default function ChangePasswordModal({
         "Error",
         "Password must be at least 6 characters long.",
         undefined,
-        "error"
+        "error",
       );
       return;
     }
@@ -66,7 +65,7 @@ export default function ChangePasswordModal({
             },
           },
         ],
-        "success"
+        "success",
       );
     } catch (error: unknown) {
       const errorMessage =
@@ -110,65 +109,57 @@ export default function ChangePasswordModal({
                 contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
               >
                 <View className="mb-6">
-                  <Text className="text-gray-500 font-medium mb-2">
+                  <Text className="text-gray-500 font-medium mb-2 ml-1">
                     New Password
                   </Text>
-                  <View className="flex-row items-center border border-gray-300 rounded-2xl px-4 py-2 bg-gray-50">
-                    <Lock size={20} color="#94a3b8" />
-                    <TextInput
-                      className="flex-1 ml-3 text-gray-900 text-base"
-                      secureTextEntry={!showPassword}
-                      placeholder="Enter new password"
-                      value={password}
-                      onChangeText={setPassword}
-                      autoCapitalize="none"
-                      placeholderTextColor="#9ca3af"
-                    />
-                    <TouchableOpacity
-                      onPress={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff size={20} color="#94a3b8" />
-                      ) : (
-                        <Eye size={20} color="#94a3b8" />
-                      )}
-                    </TouchableOpacity>
-                  </View>
+                  <AuthInput
+                    placeholder="Enter new password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
                 </View>
 
                 <View className="mb-8">
-                  <Text className="text-gray-500 font-medium mb-2">
+                  <Text className="text-gray-500 font-medium mb-2 ml-1">
                     Confirm Password
                   </Text>
-                  <View className="flex-row items-center border border-gray-200 rounded-2xl px-4 py-2 bg-gray-50">
-                    <Lock size={20} color="#94a3b8" />
-                    <TextInput
-                      className="flex-1 ml-3 text-gray-900 text-base"
-                      secureTextEntry={!showPassword}
-                      placeholder="Confirm new password"
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
-                      autoCapitalize="none"
-                      placeholderTextColor="#9ca3af"
-                    />
-                  </View>
+                  <AuthInput
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                  />
                 </View>
 
                 <TouchableOpacity
                   onPress={handleSubmit}
                   disabled={isLoading || !password || !confirmPassword}
-                  className={`w-full py-4 rounded-full items-center shadow-lg ${
-                    isLoading || !password || !confirmPassword
-                      ? "bg-gray-300 shadow-none"
-                      : "bg-blue-500 shadow-blue-200"
-                  }`}
+                  activeOpacity={0.8}
                 >
-                  {isLoading ? (
-                    <ActivityIndicator color="white" />
+                  {isLoading || !password || !confirmPassword ? (
+                    <View className="w-full h-14 bg-gray-100 rounded-full items-center justify-center">
+                      <Text className="text-gray-400 font-bold text-lg">
+                        Update Password
+                      </Text>
+                    </View>
                   ) : (
-                    <Text className="text-white font-bold text-lg">
-                      Update Password
-                    </Text>
+                    <RainbowBorder
+                      borderRadius={9999}
+                      borderWidth={2}
+                      className="h-14"
+                      containerClassName="items-center justify-center"
+                    >
+                      <View className="flex-row items-center justify-center">
+                        {isLoading ? (
+                          <ActivityIndicator color="black" />
+                        ) : (
+                          <Text className="text-black font-bold text-lg">
+                            Update Password
+                          </Text>
+                        )}
+                      </View>
+                    </RainbowBorder>
                   )}
                 </TouchableOpacity>
               </ScrollView>

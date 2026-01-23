@@ -15,7 +15,7 @@ import { useProfileStore } from "@/stores/profileStore";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   CheckCircle2,
   ChevronDown,
@@ -63,7 +63,7 @@ export default function LanguageScreen() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newNativeLang, setNewNativeLang] = useState<Language>(
     SUPPORTED_LANGUAGES.find((l) => l.name === "Hindi") ||
-    SUPPORTED_LANGUAGES[0]
+      SUPPORTED_LANGUAGES[0],
   );
   const [newTargetLang, setNewTargetLang] =
     useState<Language>(DEFAULT_TARGET_LANG);
@@ -88,10 +88,11 @@ export default function LanguageScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     showAlert(
       "Play Sound",
-      `Speaking "${testPhrase}" with ${activeProfile?.preferred_accent || "American"
+      `Speaking "${testPhrase}" with ${
+        activeProfile?.preferred_accent || "American"
       } accent at ${speechRate.toFixed(1)}x speed`,
       undefined,
-      "info"
+      "info",
     );
   };
 
@@ -117,7 +118,7 @@ export default function LanguageScreen() {
         "Error",
         "Failed to create profile. Please try again.",
         undefined,
-        "error"
+        "error",
       );
     }
   };
@@ -137,7 +138,7 @@ export default function LanguageScreen() {
           },
         },
       ],
-      "warning"
+      "warning",
     );
   };
 
@@ -171,10 +172,11 @@ export default function LanguageScreen() {
               activeOpacity={0.7}
               key={profile.id}
               onPress={() => handleSwitchProfile(profile.id)}
-              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${profile.is_active
-                ? "bg-white border-transparent"
-                : "bg-white border-gray-100"
-                }`}
+              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${
+                profile.is_active
+                  ? "bg-white border-transparent"
+                  : "bg-white border-gray-100"
+              }`}
             >
               {profile.is_active && (
                 <View className="absolute inset-0">
@@ -183,8 +185,9 @@ export default function LanguageScreen() {
               )}
               <View className="flex-row items-center gap-4 flex-1 p-5">
                 <View
-                  className={`w-12 h-12 rounded-full items-center justify-center ${profile.is_active ? "bg-white" : "bg-blue-50"
-                    }`}
+                  className={`w-12 h-12 rounded-full items-center justify-center ${
+                    profile.is_active ? "bg-white" : "bg-blue-50"
+                  }`}
                 >
                   <Folder
                     size={24}
@@ -265,8 +268,8 @@ export default function LanguageScreen() {
               <View className="bg-surface rounded-2xl p-5 border border-gray-100 shadow-sm shadow-gray-100 mb-6">
                 {/* Section Header */}
                 <View className="flex-row items-center gap-2 mb-2">
-                  <Globe size={18} color="#3b82f6" />
-                  <Text className="text-blue-500 text-base font-semibold capitalize">
+                  <Globe size={18} color="#374151" />
+                  <Text className="text-gray-700 text-base font-semibold capitalize">
                     Learning Preferences
                   </Text>
                 </View>
@@ -325,10 +328,10 @@ export default function LanguageScreen() {
                   >
                     <CircleFlag
                       countryCode={(() => {
-                        if (newAccent === "American") return "us";
-                        if (newAccent === "British") return "gb";
                         if (newAccent === "Indian") return "in";
                         if (newAccent === "Australian") return "au";
+                        if (newAccent === "American") return "us";
+                        if (newAccent === "British") return "gb";
                         return "us";
                       })()}
                       size={28}
@@ -351,8 +354,8 @@ export default function LanguageScreen() {
               {/* Accent Playground */}
               <View className="bg-surface rounded-2xl p-5 border border-gray-100 mb-6">
                 <View className="flex-row items-center gap-2 mb-4">
-                  <Volume2 size={18} color="#3b82f6" />
-                  <Text className="text-blue-500 text-base font-semibold capitalize">
+                  <Volume2 size={18} color="#374151" />
+                  <Text className="text-gray-700 text-base font-semibold capitalize">
                     Accent Playground
                   </Text>
                 </View>
@@ -374,34 +377,39 @@ export default function LanguageScreen() {
                       Speed
                     </Text>
                     <View className="flex-row items-center gap-2">
-                      <Text className="text-blue-500 font-bold text-sm bg-blue-50 px-2 py-1 rounded-lg">
+                      <Text className="text-gray-700 font-bold text-sm bg-gray-100 px-2 py-1 rounded-lg">
                         {speechRate.toFixed(2)}x
                       </Text>
                       <TouchableOpacity
                         activeOpacity={0.7}
                         onPress={handlePlayAccent}
                         disabled={isPlaying}
-                        className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center shadow-sm shadow-blue-200"
                       >
-                        {isPlaying ? (
-                          <ActivityIndicator size="small" color="white" />
-                        ) : (
-                          <Play size={14} color="white" fill="white" />
-                        )}
+                        <RainbowBorder
+                          borderRadius={9999}
+                          borderWidth={2}
+                          containerClassName="w-8 h-8 items-center justify-center"
+                        >
+                          {isPlaying ? (
+                            <ActivityIndicator size="small" color="black" />
+                          ) : (
+                            <Play size={14} color="black" fill="black" />
+                          )}
+                        </RainbowBorder>
                       </TouchableOpacity>
                     </View>
                   </View>
 
                   <Slider
-                    style={{ width: "100%", height: 40 }}
+                    style={{ width: "100%", height: 50 }}
                     minimumValue={0.25}
                     maximumValue={2.0}
                     step={0.05}
                     value={speechRate}
                     onValueChange={setSpeechRate}
-                    minimumTrackTintColor="#3b82f6"
-                    maximumTrackTintColor="#9ca3af"
-                    thumbTintColor="#3b82f6"
+                    minimumTrackTintColor="#374151"
+                    maximumTrackTintColor="#d1d5db"
+                    thumbTintColor="#374151"
                   />
 
                   <View className="flex-row justify-between px-1">
@@ -463,12 +471,13 @@ export default function LanguageScreen() {
               ? newTargetLang.code
               : newMediumLang?.code
         }
-        title={`Select ${pickerType === "native"
-          ? "Your Native"
-          : pickerType === "target"
-            ? "Target"
-            : "Instruction"
-          } Language`}
+        title={`Select ${
+          pickerType === "native"
+            ? "Your Native"
+            : pickerType === "target"
+              ? "Target"
+              : "Instruction"
+        } Language`}
       />
 
       {/* Accent Picker Modal */}
