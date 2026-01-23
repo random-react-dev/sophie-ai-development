@@ -157,3 +157,19 @@ export const useAuthStore = create<AuthState>((set) => ({
         });
     }
 }));
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const session = useSession();
+// ============================================
+
+export const useSession = (): Session | null =>
+    useAuthStore((s) => s.session);
+export const useUser = (): User | null =>
+    useAuthStore((s) => s.user);
+export const useAuthIsLoading = (): boolean =>
+    useAuthStore((s) => s.isLoading);
+export const useAuthInitialized = (): boolean =>
+    useAuthStore((s) => s.initialized);
+export const useShowTrialPopup = (): boolean =>
+    useAuthStore((s) => s.showTrialPopup);

@@ -1,7 +1,7 @@
+import { Language } from '@/constants/languages';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { Language } from '@/constants/languages';
 
 interface LearningState {
     targetLanguage: Language | null;
@@ -24,3 +24,13 @@ export const useLearningStore = create<LearningState>()(
         }
     )
 );
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const targetLanguage = useTargetLanguage();
+// ============================================
+
+export const useTargetLanguage = (): Language | null =>
+    useLearningStore((s) => s.targetLanguage);
+export const useNativeLanguage = (): Language | null =>
+    useLearningStore((s) => s.nativeLanguage);
