@@ -14,8 +14,11 @@
       "countryPlaceholder": "Wählen Sie Ihr Land",
       "nativeLanguageLabel": "Muttersprache",
       "nativeLanguagePlaceholder": "Wählen Sie Ihre Muttersprache",
+      "learningLanguageLabel": "Zu lernende Sprache",
+      "learningLanguagePlaceholder": "Wählen Sie die Sprache, die Sie lernen möchten",
       "selectCountry": "Land auswählen",
-      "selectNativeLanguage": "Muttersprache"
+      "selectNativeLanguage": "Muttersprache",
+      "selectLearningLanguage": "Lernsprache wählen"
     },
     "titles": {
       "goal": "Was ist Ihr Hauptziel im Leben?",

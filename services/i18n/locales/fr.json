@@ -14,8 +14,11 @@
       "countryPlaceholder": "Sélectionnez votre pays",
       "nativeLanguageLabel": "Langue maternelle",
       "nativeLanguagePlaceholder": "Sélectionnez votre langue maternelle",
+      "learningLanguageLabel": "Langue à apprendre",
+      "learningLanguagePlaceholder": "Sélectionnez la langue que vous souhaitez apprendre",
       "selectCountry": "Sélectionner un pays",
-      "selectNativeLanguage": "Langue maternelle"
+      "selectNativeLanguage": "Langue maternelle",
+      "selectLearningLanguage": "Choisir la langue d'apprentissage"
     },
     "titles": {
       "goal": "Quel est votre objectif principal dans la vie ?",

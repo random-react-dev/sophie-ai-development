@@ -14,8 +14,11 @@
       "countryPlaceholder": "Select your country",
       "nativeLanguageLabel": "Native Language",
       "nativeLanguagePlaceholder": "Select your native language",
+      "learningLanguageLabel": "Language to Learn",
+      "learningLanguagePlaceholder": "Select language you want to learn",
       "selectCountry": "Select Country",
-      "selectNativeLanguage": "Native Language"
+      "selectNativeLanguage": "Native Language",
+      "selectLearningLanguage": "Choose Learning Language"
     },
     "titles": {
       "goal": "What's your main goal in life?",

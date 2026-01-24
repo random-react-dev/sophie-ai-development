@@ -206,11 +206,11 @@ export default function OnboardingScreen() {
         }
       }
 
-      // Sub-step 2 validation: check name and country
-      if (!data.name || !data.country) {
+      // Sub-step 2 validation: check all required fields
+      if (!data.learningLanguage || !data.name || !data.country) {
         showAlert(
           t("common.incomplete"),
-          t("common.incompleteMessage"),
+          "Please fill in all fields before continuing.",
           undefined,
           "warning",
         );

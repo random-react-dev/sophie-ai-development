@@ -14,8 +14,11 @@
       "countryPlaceholder": "अपना देश चुनें",
       "nativeLanguageLabel": "मातृभाषा",
       "nativeLanguagePlaceholder": "अपनी मातृभाषा चुनें",
+      "learningLanguageLabel": "सीखने की भाषा",
+      "learningLanguagePlaceholder": "वह भाषा चुनें जो आप सीखना चाहते हैं",
       "selectCountry": "देश चुनें",
-      "selectNativeLanguage": "मातृभाषा"
+      "selectNativeLanguage": "मातृभाषा",
+      "selectLearningLanguage": "सीखने की भाषा चुनें"
     },
     "titles": {
       "goal": "जीवन में आपका मुख्य लक्ष्य क्या है?",
