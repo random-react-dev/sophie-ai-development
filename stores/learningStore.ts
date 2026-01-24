@@ -8,15 +8,21 @@ interface LearningState {
     nativeLanguage: Language | null;
     setTargetLanguage: (lang: Language | null) => void;
     setNativeLanguage: (lang: Language | null) => void;
+    reset: () => void;
 }
+
+const initialState = {
+    targetLanguage: null as Language | null,
+    nativeLanguage: null as Language | null,
+};
 
 export const useLearningStore = create<LearningState>()(
     persist(
         (set) => ({
-            targetLanguage: null,
-            nativeLanguage: null,
+            ...initialState,
             setTargetLanguage: (targetLanguage) => set({ targetLanguage }),
             setNativeLanguage: (nativeLanguage) => set({ nativeLanguage }),
+            reset: () => set(initialState),
         }),
         {
             name: 'sophie-learning-preferences',

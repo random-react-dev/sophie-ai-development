@@ -17,12 +17,17 @@ interface TranslationHistoryState {
   addEntry: (entry: Omit<TranslationHistoryItem, "id" | "timestamp">) => void;
   removeEntry: (id: string) => void;
   clearHistory: () => void;
+  reset: () => void;
 }
+
+const initialState = {
+  history: [] as TranslationHistoryItem[],
+};
 
 export const useTranslationHistoryStore = create<TranslationHistoryState>()(
   persist(
     (set) => ({
-      history: [],
+      ...initialState,
       addEntry: (entry) =>
         set((state) => {
           // New entry at the top
@@ -42,6 +47,7 @@ export const useTranslationHistoryStore = create<TranslationHistoryState>()(
           history: state.history.filter((item) => item.id !== id),
         })),
       clearHistory: () => set({ history: [] }),
+      reset: () => set(initialState),
     }),
     {
       name: "translation-history",

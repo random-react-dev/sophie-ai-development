@@ -9,12 +9,17 @@ interface StatsState {
     // Actions
     fetchStats: () => Promise<void>;
     recordSession: (durationSeconds: number) => Promise<boolean>;
+    reset: () => void;
 }
 
-export const useStatsStore = create<StatsState>((set, get) => ({
+const initialState = {
     totalSpeakingSeconds: 0,
     totalConversations: 0,
     isLoading: false,
+};
+
+export const useStatsStore = create<StatsState>((set, get) => ({
+    ...initialState,
 
     fetchStats: async () => {
         set({ isLoading: true });
@@ -55,7 +60,9 @@ export const useStatsStore = create<StatsState>((set, get) => ({
             console.error('Error recording session:', error);
             return false;
         }
-    }
+    },
+
+    reset: () => set(initialState)
 }));
 
 // ============================================
