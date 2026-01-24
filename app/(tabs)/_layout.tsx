@@ -13,11 +13,11 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Platform,
   Pressable,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Get screen width for responsive sizing
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -36,6 +36,7 @@ const voiceAvailable = isVoiceModeAvailable();
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const {
     startPTTRecording,
     stopPTTRecording,
@@ -112,8 +113,8 @@ export default function TabLayout() {
           backgroundColor: "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#f1f5f9",
-          height: Platform.OS === "ios" ? 88 : 70,
-          paddingBottom: Platform.OS === "ios" ? 30 : 12,
+          height: 58 + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: 12,
           paddingHorizontal: 8,
         },
