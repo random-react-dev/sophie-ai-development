@@ -29,6 +29,7 @@ import {
   Copy,
   Folder,
   MessageSquare,
+  Plus,
   Sparkles,
   Trash2,
   Volume2,
@@ -58,7 +59,7 @@ export default function TranslateScreen() {
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
   const { addEntry } = useTranslationHistoryStore();
-  const { addItem, folders, fetchVocabulary } = useVocabularyStore();
+  const { addItem, addFolder, folders, fetchVocabulary } = useVocabularyStore();
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
@@ -74,6 +75,8 @@ export default function TranslateScreen() {
   const [showTargetPicker, setShowTargetPicker] = useState(false);
   const [showSaveFolderPicker, setShowSaveFolderPicker] = useState(false);
   const [saveFolderId, setSaveFolderId] = useState<string | null>(null);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -549,46 +552,53 @@ export default function TranslateScreen() {
 
           <View className="flex-1">
             <View className="px-4 py-4">
-              <Text className="text-gray-500 text-base mb-4">
-                Choose a folder for this vocabulary item
-              </Text>
-
-              {/* No Folder Option */}
-              <TouchableOpacity
-                className="mb-3"
-                activeOpacity={0.7}
-                onPress={() => {
-                  setSaveFolderId(null);
-                }}
-              >
-                {saveFolderId === null ? (
-                  <RainbowBorder
-                    borderRadius={20}
-                    borderWidth={2}
-                    containerClassName="flex-row items-center px-4 py-4"
-                    className="bg-white"
+              {/* Create New Folder Input */}
+              {isCreatingFolder ? (
+                <View className="flex-row items-center gap-2 mb-4">
+                  <TextInput
+                    className="flex-1 bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                    placeholder="Folder name..."
+                    placeholderTextColor="gray"
+                    value={newFolderName}
+                    onChangeText={setNewFolderName}
+                    style={{ includeFontPadding: false }}
+                  />
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    className="h-12 rounded-full overflow-hidden"
+                    onPress={async () => {
+                      if (!newFolderName.trim()) return;
+                      const newFolder = await addFolder(newFolderName);
+                      if (newFolder) {
+                        setSaveFolderId(newFolder.id);
+                        setIsCreatingFolder(false);
+                        setNewFolderName("");
+                        setShowSaveFolderPicker(false);
+                      }
+                    }}
                   >
-                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
-                      <Folder size={20} color="gray" />
-                    </View>
-                    <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">No Folder</Text>
-                    </View>
-                  </RainbowBorder>
-                ) : (
-                  <View
-                    style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
-                    className="flex-row items-center border-gray-200 bg-white"
-                  >
-                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
-                      <Folder size={20} color="gray" />
-                    </View>
-                    <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">No Folder</Text>
-                    </View>
+                    <RainbowBorder
+                      borderRadius={9999}
+                      borderWidth={2}
+                      className="flex-1"
+                      containerClassName="flex-row items-center justify-center px-4 gap-2"
+                    >
+                      <Plus size={20} color="black" />
+                      <Text className="text-black font-bold text-base">Create</Text>
+                    </RainbowBorder>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  className="flex-row items-center gap-3 py-3 px-2 mb-2"
+                  onPress={() => setIsCreatingFolder(true)}
+                >
+                  <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                    <Plus size={20} color="black" />
                   </View>
-                )}
-              </TouchableOpacity>
+                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
+                </TouchableOpacity>
+              )}
 
               <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
             </View>
@@ -636,7 +646,7 @@ export default function TranslateScreen() {
               })}
               {folders.length === 0 && (
                 <Text className="text-gray-400 text-center mt-10 italic">
-                  No folders yet. Create one in the Vocab tab!
+                  No folders yet. Create one above!
                 </Text>
               )}
               <View className="h-20" />
