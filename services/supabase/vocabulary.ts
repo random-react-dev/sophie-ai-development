@@ -99,6 +99,32 @@ export const deleteFromVocabulary = async (id: string) => {
     }
 };
 
+export const updateVocabularyItem = async (
+    id: string,
+    updates: Partial<Omit<VocabularyItem, 'user_id' | 'id' | 'created_at'>>
+): Promise<VocabularyItem | null> => {
+    try {
+        // Remove 'folder' object if present, only save folder_id
+        const { folder, ...updateData } = updates;
+
+        const { data, error } = await supabase
+            .from('vocabulary')
+            .update(updateData)
+            .eq('id', id)
+            .select(`
+                *,
+                folder:vocabulary_folders(*)
+            `)
+            .single();
+
+        if (error) throw error;
+        return data as VocabularyItem;
+    } catch (error) {
+        console.error('Error updating vocabulary:', error);
+        return null;
+    }
+};
+
 export const getVocabulary = async () => {
     try {
         // Fetch items and join with folders

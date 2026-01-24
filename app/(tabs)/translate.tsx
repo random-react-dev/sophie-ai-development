@@ -14,7 +14,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -27,6 +27,7 @@ import {
   Bookmark,
   ChevronDown,
   Copy,
+  Folder,
   MessageSquare,
   Sparkles,
   Trash2,
@@ -36,6 +37,7 @@ import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   Text,
@@ -56,7 +58,7 @@ export default function TranslateScreen() {
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
   const { addEntry } = useTranslationHistoryStore();
-  const { addItem } = useVocabularyStore();
+  const { addItem, folders, fetchVocabulary } = useVocabularyStore();
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
@@ -70,6 +72,8 @@ export default function TranslateScreen() {
   // Modal states
   const [showSourcePicker, setShowSourcePicker] = useState(false);
   const [showTargetPicker, setShowTargetPicker] = useState(false);
+  const [showSaveFolderPicker, setShowSaveFolderPicker] = useState(false);
+  const [saveFolderId, setSaveFolderId] = useState<string | null>(null);
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -181,7 +185,14 @@ export default function TranslateScreen() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSaveClick = () => {
+    if (!translatedText) return;
+    // Fetch folders and show picker
+    fetchVocabulary();
+    setShowSaveFolderPicker(true);
+  };
+
+  const handleSaveWithFolder = async () => {
     if (!translatedText) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -191,9 +202,12 @@ export default function TranslateScreen() {
       translation: translatedText,
       context: `${sourceLang.name} → ${targetLang.name}`,
       language: targetLang.name,
+      folder_id: saveFolderId,
     });
 
     if (success) {
+      setShowSaveFolderPicker(false);
+      setSaveFolderId(null);
       showAlert("Saved!", "Added to your vocabulary", undefined, "success");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
@@ -457,7 +471,7 @@ export default function TranslateScreen() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         activeOpacity={0.7}
-                        onPress={handleSave}
+                        onPress={handleSaveClick}
                         className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
                       >
                         <Bookmark size={18} color="#374151" />
@@ -514,6 +528,142 @@ export default function TranslateScreen() {
         selectedCode={targetLang.code}
         title="Translate to"
       />
+
+      {/* Save Folder Picker Modal */}
+      <Modal
+        visible={showSaveFolderPicker}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowSaveFolderPicker(false)}
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+            <Text className="text-2xl font-bold text-black">Save to Folder</Text>
+            <TouchableOpacity
+              onPress={() => setShowSaveFolderPicker(false)}
+              className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-1">
+            <View className="px-4 py-4">
+              <Text className="text-gray-500 text-base mb-4">
+                Choose a folder for this vocabulary item
+              </Text>
+
+              {/* No Folder Option */}
+              <TouchableOpacity
+                className="mb-3"
+                activeOpacity={0.7}
+                onPress={() => {
+                  setSaveFolderId(null);
+                }}
+              >
+                {saveFolderId === null ? (
+                  <RainbowBorder
+                    borderRadius={20}
+                    borderWidth={2}
+                    containerClassName="flex-row items-center px-4 py-4"
+                    className="bg-white"
+                  >
+                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                      <Folder size={20} color="gray" />
+                    </View>
+                    <View className="flex-1 ml-4">
+                      <Text className="font-bold text-base text-gray-900">No Folder</Text>
+                    </View>
+                  </RainbowBorder>
+                ) : (
+                  <View
+                    style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                    className="flex-row items-center border-gray-200 bg-white"
+                  >
+                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                      <Folder size={20} color="gray" />
+                    </View>
+                    <View className="flex-1 ml-4">
+                      <Text className="font-bold text-base text-gray-900">No Folder</Text>
+                    </View>
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+            </View>
+
+            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+              {folders.map(folder => {
+                const isSelected = saveFolderId === folder.id;
+                const Content = () => (
+                  <>
+                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                      <Folder size={20} color="gray" />
+                    </View>
+                    <View className="flex-1 ml-4">
+                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                    </View>
+                  </>
+                );
+
+                return (
+                  <TouchableOpacity
+                    key={folder.id}
+                    onPress={() => setSaveFolderId(folder.id)}
+                    className="mb-3"
+                    activeOpacity={0.7}
+                  >
+                    {isSelected ? (
+                      <RainbowBorder
+                        borderRadius={20}
+                        borderWidth={2}
+                        containerClassName="flex-row items-center px-4 py-4"
+                        className="bg-white"
+                      >
+                        <Content />
+                      </RainbowBorder>
+                    ) : (
+                      <View
+                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        className="flex-row items-center border-gray-200 bg-white"
+                      >
+                        <Content />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+              {folders.length === 0 && (
+                <Text className="text-gray-400 text-center mt-10 italic">
+                  No folders yet. Create one in the Vocab tab!
+                </Text>
+              )}
+              <View className="h-20" />
+            </ScrollView>
+          </View>
+
+          {/* Save Button */}
+          <View className="px-6 py-8 border-t border-gray-100">
+            <TouchableOpacity
+              onPress={handleSaveWithFolder}
+              activeOpacity={0.7}
+              className="w-full h-16 rounded-full overflow-hidden shadow-lg"
+            >
+              <RainbowBorder
+                borderWidth={2}
+                borderRadius={9999}
+                className="flex-1"
+                containerClassName="items-center justify-center"
+              >
+                <Text className="text-black font-bold text-lg">
+                  Save to Vocabulary
+                </Text>
+              </RainbowBorder>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Modal>
 
       {/* Custom AlertModal for Copy/Save feedback */}
       <AlertModal

@@ -4,6 +4,7 @@ import {
     getFolders,
     getVocabulary,
     saveToVocabulary,
+    updateVocabularyItem,
     VocabularyFolder,
     VocabularyItem,
 } from '@/services/supabase/vocabulary';
@@ -17,6 +18,7 @@ interface VocabularyState {
     // Actions
     fetchVocabulary: () => Promise<void>;
     addItem: (item: Omit<VocabularyItem, 'user_id'>) => Promise<boolean>;
+    updateItem: (id: string, updates: Partial<Omit<VocabularyItem, 'user_id' | 'id' | 'created_at'>>) => Promise<boolean>;
     removeItem: (id: string) => Promise<boolean>;
     fetchFolders: () => Promise<void>;
     addFolder: (name: string) => Promise<VocabularyFolder | null>;
@@ -59,6 +61,33 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
             return false;
         } finally {
             set({ isLoading: false });
+        }
+    },
+
+    updateItem: async (id, updates) => {
+        const previousItems = get().items;
+        // Optimistic update
+        set((state) => ({
+            items: state.items.map((item) =>
+                item.id === id ? { ...item, ...updates } : item
+            ),
+        }));
+
+        try {
+            const updated = await updateVocabularyItem(id, updates);
+            if (!updated) {
+                set({ items: previousItems });
+                return false;
+            }
+            // Update with server data (includes folder relation)
+            set((state) => ({
+                items: state.items.map((item) => (item.id === id ? updated : item)),
+            }));
+            return true;
+        } catch (error) {
+            console.error('Error updating item:', error);
+            set({ items: previousItems });
+            return false;
         }
     },
 
