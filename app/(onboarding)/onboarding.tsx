@@ -18,6 +18,7 @@ import { RainbowProgressBar } from "@/components/onboarding/RainbowProgressBar";
 import { getLanguageByCode } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
+import { useLanguageStore } from "@/stores/languageStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { useProfileStore } from "@/stores/profileStore";
@@ -136,12 +137,13 @@ export default function OnboardingScreen() {
   const handleContinue = async () => {
     if (currentStep === 10) {
       try {
+        const { currentLanguage } = useLanguageStore.getState();
         const onboardingMetadata = {
           full_name: data.name,
           country: data.country,
           native_language: data.nativeLanguage,
-          app_language: data.preferredLanguage,
-          learn_language: data.preferredLanguage,
+          app_language: currentLanguage,
+          learn_language: data.learningLanguage,
           onboarding_data: {
             main_goal: data.mainGoal,
             fluency_speed: data.fluencySpeed,
@@ -161,7 +163,7 @@ export default function OnboardingScreen() {
         // 2. Create Language Profile
         try {
           const nativeLangObj = getLanguageByCode(data.nativeLanguage);
-          const targetLangObj = getLanguageByCode(data.preferredLanguage);
+          const targetLangObj = getLanguageByCode(data.learningLanguage);
 
           const nativeLangName = nativeLangObj?.name || "English";
           const targetLangName = targetLangObj?.name || "Hindi";

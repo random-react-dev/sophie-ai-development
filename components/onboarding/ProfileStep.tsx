@@ -184,9 +184,17 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           setSubStep(2);
           return true;
         }
+        if (subStep === 2 && data.learningLanguage) {
+          setSubStep(3);
+          return true;
+        }
         return false;
       },
       goToPrevSubStep: () => {
+        if (subStep === 3) {
+          setSubStep(2);
+          return true;
+        }
         if (subStep === 2) {
           setSubStep(1);
           return true;
@@ -241,7 +249,6 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
                 isSelected={currentLanguage === item.code}
                 onPress={() => {
                   setLanguage(item.code);
-                  updateData({ preferredLanguage: item.code }); // Keep syncing for now
                 }}
               />
             )}
@@ -250,7 +257,61 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
       );
     }
 
-    // Sub-step 2: Profile Details (Name, Country, Native Language)
+    // Sub-step 2: Learning Language Selection
+    if (subStep === 2) {
+      return (
+        <View className="flex-1">
+          <View className="mb-6 px-4">
+            <Text className="text-3xl font-bold text-gray-900 mb-2">
+              {t("onboarding.chooseLearningLanguage")}
+            </Text>
+          </View>
+
+          <FlatList
+            data={APP_LANGUAGES}
+            keyExtractor={(item) => item.code}
+            contentContainerStyle={{
+              paddingTop: 4,
+              paddingBottom: 100,
+              paddingHorizontal: 16,
+            }}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            scrollEventThrottle={16}
+            onScroll={(event) => {
+              const scrollY = event.nativeEvent.contentOffset.y;
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              const isAtBottom =
+                scrollY + containerHeightRef.current >=
+                contentHeightRef.current - 10;
+              onScrollStateChange?.(isScrollable && !isAtBottom);
+            }}
+            onContentSizeChange={(width, height) => {
+              contentHeightRef.current = height;
+            }}
+            onLayout={(event) => {
+              containerHeightRef.current = event.nativeEvent.layout.height;
+              // Initial check
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              onScrollStateChange?.(isScrollable);
+            }}
+            renderItem={({ item }) => (
+              <LanguageItem
+                lang={item}
+                isSelected={data.learningLanguage === item.code}
+                onPress={() => {
+                  updateData({ learningLanguage: item.code });
+                }}
+              />
+            )}
+          />
+        </View>
+      );
+    }
+
+    // Sub-step 3: Profile Details (Name, Country, Native Language)
     return (
       <View className="flex-1">
         <View className="mb-6 px-4">

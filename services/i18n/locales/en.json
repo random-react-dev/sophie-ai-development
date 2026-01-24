@@ -1,6 +1,7 @@
 {
   "onboarding": {
     "chooseLanguage": "Choose Your App Language",
+    "chooseLearningLanguage": "What language do you want to learn?",
     "continue": "Continue",
     "saving": "Saving...",
     "startLearning": "Start Learning",

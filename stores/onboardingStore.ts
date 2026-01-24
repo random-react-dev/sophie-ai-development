@@ -16,7 +16,7 @@ export interface OnboardingData {
   name: string;
   country: string;
   nativeLanguage: string;
-  preferredLanguage: string;
+  learningLanguage: string;
   mainGoal: string;
   fluencySpeed: string;
   learningDuration: string;
@@ -41,7 +41,7 @@ const initialData: OnboardingData = {
   name: "",
   country: "",
   nativeLanguage: "",
-  preferredLanguage: "",
+  learningLanguage: "",
   mainGoal: "",
   fluencySpeed: "",
   learningDuration: "",
