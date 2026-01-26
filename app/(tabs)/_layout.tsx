@@ -10,13 +10,7 @@ import * as Haptics from "expo-haptics";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Dimensions,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { Animated, Dimensions, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Get screen width for responsive sizing

@@ -116,7 +116,7 @@ export default function TranslateScreen() {
 
       // Construct locale code (e.g., "en-US", "hi-IN")
       const locale = `${sourceLang.code}-${sourceLang.countryCode.toUpperCase()}`;
-      
+
       ExpoSpeechRecognitionModule.start({
         lang: locale,
         interimResults: true,
@@ -141,9 +141,9 @@ export default function TranslateScreen() {
     if (translatedText) {
       setInputText(translatedText);
       setTranslatedText(inputText);
-      // We don't have romanization for the reverse easily without re-translating, 
+      // We don't have romanization for the reverse easily without re-translating,
       // but we can clear it or leave it empty
-      setRomanization(""); 
+      setRomanization("");
     }
   }, [sourceLang, targetLang, inputText, translatedText, flipX]);
 
@@ -174,7 +174,6 @@ export default function TranslateScreen() {
         sourceLang: sourceLang.code,
         targetLang: targetLang.code,
       });
-
     } catch (error) {
       console.error("Translation error:", error);
       showAlert(
@@ -247,7 +246,7 @@ export default function TranslateScreen() {
     setInputText(item.sourceText);
     setTranslatedText(item.translatedText);
     setRomanization(item.romanization);
-    // Note: We don't automatically switch languages to match history item 
+    // Note: We don't automatically switch languages to match history item
     // because that might be confusing if user just wants to see the result
   };
 
@@ -257,7 +256,7 @@ export default function TranslateScreen() {
 
       <View className="px-4 mb-4">
         <Text className="text-3xl font-bold text-black text-left">
-          Translation
+          Translate
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Translate text to another language
@@ -375,10 +374,10 @@ export default function TranslateScreen() {
                     isListening ? "bg-red-100" : "bg-gray-100"
                   }`}
                 >
-                  <FontAwesome 
-                    name="microphone" 
-                    size={18} 
-                    color={isListening ? "#ef4444" : "black"} 
+                  <FontAwesome
+                    name="microphone"
+                    size={18}
+                    color={isListening ? "#ef4444" : "black"}
                   />
                 </TouchableOpacity>
                 {inputText.length > 0 && (
@@ -541,7 +540,9 @@ export default function TranslateScreen() {
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-2xl font-bold text-black">Save to Folder</Text>
+            <Text className="text-2xl font-bold text-black">
+              Save to Folder
+            </Text>
             <TouchableOpacity
               onPress={() => setShowSaveFolderPicker(false)}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -584,7 +585,9 @@ export default function TranslateScreen() {
                       containerClassName="flex-row items-center justify-center px-4 gap-2"
                     >
                       <Plus size={20} color="black" />
-                      <Text className="text-black font-bold text-base">Create</Text>
+                      <Text className="text-black font-bold text-base">
+                        Create
+                      </Text>
                     </RainbowBorder>
                   </TouchableOpacity>
                 </View>
@@ -596,15 +599,22 @@ export default function TranslateScreen() {
                   <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
                     <Plus size={20} color="black" />
                   </View>
-                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
+                  <Text className="text-black font-bold text-lg">
+                    Create New Folder
+                  </Text>
                 </TouchableOpacity>
               )}
 
-              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
+                Your Folders
+              </Text>
             </View>
 
-            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-              {folders.map(folder => {
+            <ScrollView
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+            >
+              {folders.map((folder) => {
                 const isSelected = saveFolderId === folder.id;
                 const Content = () => (
                   <>
@@ -612,7 +622,9 @@ export default function TranslateScreen() {
                       <Folder size={20} color="gray" />
                     </View>
                     <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                      <Text className="font-bold text-base text-gray-900">
+                        {folder.name}
+                      </Text>
                     </View>
                   </>
                 );
@@ -635,7 +647,11 @@ export default function TranslateScreen() {
                       </RainbowBorder>
                     ) : (
                       <View
-                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        style={{
+                          borderWidth: 1.5,
+                          borderRadius: 20,
+                          padding: 16,
+                        }}
                         className="flex-row items-center border-gray-200 bg-white"
                       >
                         <Content />
