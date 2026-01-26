@@ -15,7 +15,6 @@ import { useProfileStore } from "@/stores/profileStore";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
 import {
   CheckCircle2,
   ChevronDown,
@@ -42,12 +41,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LanguageScreen() {
   const { alertState, showAlert, hideAlert } = useAlertModal();
-  const router = useRouter();
-  const { user, signOut } = useAuthStore();
+  const { user } = useAuthStore();
   const {
     profiles,
     activeProfile,
-    isLoading,
     fetchProfiles,
     addProfile,
     switchProfile,
@@ -63,7 +60,7 @@ export default function LanguageScreen() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newNativeLang, setNewNativeLang] = useState<Language>(
     SUPPORTED_LANGUAGES.find((l) => l.name === "Hindi") ||
-      SUPPORTED_LANGUAGES[0],
+    SUPPORTED_LANGUAGES[0],
   );
   const [newTargetLang, setNewTargetLang] =
     useState<Language>(DEFAULT_TARGET_LANG);
@@ -79,7 +76,7 @@ export default function LanguageScreen() {
     if (user) {
       fetchProfiles();
     }
-  }, [user]);
+  }, [user, fetchProfiles]);
 
   const handlePlayAccent = () => {
     setIsPlaying(true);
@@ -88,8 +85,7 @@ export default function LanguageScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     showAlert(
       "Play Sound",
-      `Speaking "${testPhrase}" with ${
-        activeProfile?.preferred_accent || "American"
+      `Speaking "${testPhrase}" with ${activeProfile?.preferred_accent || "American"
       } accent at ${speechRate.toFixed(1)}x speed`,
       undefined,
       "info",
@@ -172,11 +168,10 @@ export default function LanguageScreen() {
               activeOpacity={0.7}
               key={profile.id}
               onPress={() => handleSwitchProfile(profile.id)}
-              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${
-                profile.is_active
+              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${profile.is_active
                   ? "bg-white border-transparent"
                   : "bg-white border-gray-100"
-              }`}
+                }`}
             >
               {profile.is_active && (
                 <View className="absolute inset-0">
@@ -185,9 +180,8 @@ export default function LanguageScreen() {
               )}
               <View className="flex-row items-center gap-4 flex-1 p-5">
                 <View
-                  className={`w-12 h-12 rounded-full items-center justify-center ${
-                    profile.is_active ? "bg-white" : "bg-blue-50"
-                  }`}
+                  className={`w-12 h-12 rounded-full items-center justify-center ${profile.is_active ? "bg-white" : "bg-blue-50"
+                    }`}
                 >
                   <Folder
                     size={24}
@@ -471,13 +465,12 @@ export default function LanguageScreen() {
               ? newTargetLang.code
               : newMediumLang?.code
         }
-        title={`Select ${
-          pickerType === "native"
+        title={`Select ${pickerType === "native"
             ? "Your Native"
             : pickerType === "target"
               ? "Target"
               : "Instruction"
-        } Language`}
+          } Language`}
       />
 
       {/* Accent Picker Modal */}

@@ -15,8 +15,14 @@ import {
   ProfileStepRef,
 } from "@/components/onboarding/ProfileStep";
 import { RainbowProgressBar } from "@/components/onboarding/RainbowProgressBar";
+import { getLanguageByCode } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
+import { useLanguageStore } from "@/stores/languageStore";
+import { useLearningStore } from "@/stores/learningStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
+import { useProfileStore } from "@/stores/profileStore";
+import { safeGoBack } from "@/utils/navigation";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -84,6 +90,9 @@ export default function OnboardingScreen() {
   const { updateProfile, isLoading: isSaving } = useAuthStore();
   const { currentStep, nextStep, prevStep, data, resetOnboarding } =
     useOnboardingStore();
+  const { addProfile } = useProfileStore();
+  const { setTargetLanguage, setNativeLanguage } = useLearningStore();
+  const { t } = useTranslation();
 
   // Ref for ProfileStep sub-step control
   const profileStepRef = useRef<ProfileStepRef>(null);
@@ -128,12 +137,13 @@ export default function OnboardingScreen() {
   const handleContinue = async () => {
     if (currentStep === 10) {
       try {
+        const { currentLanguage } = useLanguageStore.getState();
         const onboardingMetadata = {
           full_name: data.name,
           country: data.country,
           native_language: data.nativeLanguage,
-          app_language: data.preferredLanguage,
-          learn_language: data.preferredLanguage,
+          app_language: currentLanguage,
+          learn_language: data.learningLanguage,
           onboarding_data: {
             main_goal: data.mainGoal,
             fluency_speed: data.fluencySpeed,
@@ -147,13 +157,41 @@ export default function OnboardingScreen() {
           },
         };
 
+        // 1. Update User Profile Metadata
         await updateProfile(onboardingMetadata);
+
+        // 2. Create Language Profile
+        try {
+          const nativeLangObj = getLanguageByCode(data.nativeLanguage);
+          const targetLangObj = getLanguageByCode(data.learningLanguage);
+
+          const nativeLangName = nativeLangObj?.name || "English";
+          const targetLangName = targetLangObj?.name || "Hindi";
+
+          // Auto-create profile
+          await addProfile({
+            name: `Learning ${targetLangName}`,
+            native_language: nativeLangName,
+            target_language: targetLangName,
+            medium_language: nativeLangName, // Teach in native language
+            preferred_accent: "American", // Default accent
+          });
+
+          // 3. Set Learning Store Languages (so app is ready to use)
+          if (targetLangObj) setTargetLanguage(targetLangObj);
+          if (nativeLangObj) setNativeLanguage(nativeLangObj);
+        } catch (profileError) {
+          console.error("Failed to auto-create profile:", profileError);
+          // Continue anyway, user can create profile manually
+        }
+
         resetOnboarding();
-        router.replace("/(tabs)/talk");
-      } catch (error) {
+        // 4. Navigate to Language Tab to show the new profile
+        router.replace("/(tabs)/language");
+      } catch {
         showAlert(
-          "Error",
-          "Failed to save your preferences. Please try again.",
+          t("common.error"),
+          t("common.errorMessage"),
           undefined,
           "error",
         );
@@ -171,8 +209,8 @@ export default function OnboardingScreen() {
       // Sub-step 2 validation: check name and country
       if (!data.name || !data.country) {
         showAlert(
-          "Incomplete",
-          "Please enter your name and select a country.",
+          t("common.incomplete"),
+          t("common.incompleteMessage"),
           undefined,
           "warning",
         );
@@ -196,7 +234,7 @@ export default function OnboardingScreen() {
         }
       }
       // If on sub-step 1, go back to previous screen
-      router.back();
+      safeGoBack(router, "/(auth)/login");
     } else {
       prevStep();
     }
@@ -310,10 +348,10 @@ export default function OnboardingScreen() {
           >
             <Text className="text-gray-900 font-bold text-lg">
               {isSaving
-                ? "Saving..."
+                ? t("onboarding.saving")
                 : currentStep === 10
-                  ? "Start Learning"
-                  : "Continue"}
+                  ? t("onboarding.startLearning")
+                  : t("onboarding.continue")}
             </Text>
           </RainbowBorder>
         </TouchableOpacity>
@@ -323,7 +361,7 @@ export default function OnboardingScreen() {
             className="items-center mt-4"
             disabled={isSaving}
           >
-            <Text className="text-gray-400 font-medium">Skip for now</Text>
+            <Text className="text-gray-400 font-medium">{t("onboarding.skip")}</Text>
           </TouchableOpacity>
         )}
       </View>

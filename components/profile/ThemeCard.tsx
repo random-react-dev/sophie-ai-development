@@ -43,7 +43,7 @@ export default function ThemeCard({
       {/* Theme Preview Card */}
       <View
         className={`w-24 h-16 rounded-xl mb-3 items-center justify-center ${
-          isLight ? "bg-gray-100" : "bg-gray-800"
+          isLight ? "bg-gray-100 dark:bg-gray-700" : "bg-gray-800 dark:bg-black"
         }`}
         style={{
           shadowColor: "#000",
@@ -63,7 +63,7 @@ export default function ThemeCard({
             />
             <View
               className={`flex-1 h-2 rounded-full ${
-                isLight ? "bg-gray-300" : "bg-gray-600"
+                isLight ? "bg-gray-300 dark:bg-gray-500" : "bg-gray-600 dark:bg-gray-800"
               }`}
             />
           </View>
@@ -75,7 +75,7 @@ export default function ThemeCard({
             />
             <View
               className={`flex-1 h-2 rounded-full ${
-                isLight ? "bg-gray-300" : "bg-gray-600"
+                isLight ? "bg-gray-300 dark:bg-gray-500" : "bg-gray-600 dark:bg-gray-800"
               }`}
             />
           </View>
@@ -83,14 +83,14 @@ export default function ThemeCard({
       </View>
 
       {/* Theme Label */}
-      <Text className="text-base font-semibold text-gray-900 mb-2">
+      <Text className="text-base font-semibold text-gray-900 dark:text-white mb-2">
         {isLight ? "Light" : "Dark"}
       </Text>
 
       {/* Animated Radio Button */}
       <View
         className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-          isSelected ? "border-blue-500" : "border-gray-300"
+          isSelected ? "border-blue-500" : "border-gray-300 dark:border-gray-600"
         }`}
       >
         <Animated.View

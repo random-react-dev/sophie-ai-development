@@ -312,3 +312,56 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 // Selector for backward compatibility
 export const selectIsConnected = (state: ConversationState): boolean =>
     state.connectionState === 'connected';
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const isListening = useIsListening();
+// ============================================
+
+// State selectors
+export const useConnectionState = (): ConnectionState =>
+    useConversationStore((s) => s.connectionState);
+export const useError = (): string | null =>
+    useConversationStore((s) => s.error);
+export const useIsListening = (): boolean =>
+    useConversationStore((s) => s.isListening);
+export const useIsSpeaking = (): boolean =>
+    useConversationStore((s) => s.isSpeaking);
+export const useIsProcessing = (): boolean =>
+    useConversationStore((s) => s.isProcessing);
+export const useIsPTTActive = (): boolean =>
+    useConversationStore((s) => s.isPTTActive);
+export const useVolumeLevel = (): number =>
+    useConversationStore((s) => s.volumeLevel);
+export const useBufferProgress = (): number =>
+    useConversationStore((s) => s.bufferProgress);
+export const useMessages = (): Message[] =>
+    useConversationStore((s) => s.messages);
+export const useShowTranscript = (): boolean =>
+    useConversationStore((s) => s.showTranscript);
+export const useIsConversationActive = (): boolean =>
+    useConversationStore((s) => s.isConversationActive);
+
+// Action selectors (stable references - won't cause re-renders)
+export const useConversationActions = (): {
+    setShowTranscript: (show: boolean) => void;
+    clearMessages: () => void;
+    setHasGreeted: (hasGreeted: boolean) => void;
+    stopConversation: () => Promise<void>;
+    startConversation: () => Promise<void>;
+    toggleConversation: () => Promise<void>;
+    startPTTRecording: () => Promise<void>;
+    stopPTTRecording: () => Promise<void>;
+    handleInterruption: () => void;
+} =>
+    useConversationStore((s) => ({
+        setShowTranscript: s.setShowTranscript,
+        clearMessages: s.clearMessages,
+        setHasGreeted: s.setHasGreeted,
+        stopConversation: s.stopConversation,
+        startConversation: s.startConversation,
+        toggleConversation: s.toggleConversation,
+        startPTTRecording: s.startPTTRecording,
+        stopPTTRecording: s.stopPTTRecording,
+        handleInterruption: s.handleInterruption,
+    }));

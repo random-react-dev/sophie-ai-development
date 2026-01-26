@@ -1,0 +1,46 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Elige el idioma de la aplicación",
+    "chooseLearningLanguage": "¿Qué idioma quieres aprender?",
+    "continue": "Continuar",
+    "saving": "Guardando...",
+    "startLearning": "Empezar a aprender",
+    "skip": "Saltar por ahora",
+    "profileStep": {
+      "almostThere": "¡Ya casi estás!",
+      "nameLabel": "Tu nombre",
+      "namePlaceholder": "Ingresa tu nombre",
+      "countryLabel": "País",
+      "countryPlaceholder": "Selecciona tu país",
+      "nativeLanguageLabel": "Idioma nativo",
+      "nativeLanguagePlaceholder": "Selecciona tu idioma nativo",
+      "selectCountry": "Seleccionar país",
+      "selectNativeLanguage": "Idioma nativo"
+    },
+    "titles": {
+      "goal": "¿Cuál es tu objetivo principal en la vida?",
+      "fluency": "¿Qué tan rápido quieres volverte fluido?",
+      "duration": "¿Cuánto tiempo llevas estudiando este idioma?",
+      "level": "¿Cuál te describe mejor?",
+      "confidence": "¿Qué tan seguro te sientes?",
+      "barriers": "¿Por qué no te sientes seguro?",
+      "focus": "¿En qué quieres enfocarte primero?",
+      "discovery": "¿Cómo nos encontraste?"
+    }
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "error": "Error",
+    "warning": "Advertencia",
+    "incomplete": "Incompleto",
+    "incompleteMessage": "Por favor ingresa tu nombre y selecciona un país.",
+    "errorMessage": "Error al guardar tus preferencias. Por favor intenta de nuevo."
+  },
+  "tabs": {
+    "talk": "Hablar",
+    "vocab": "Vocabulario",
+    "scenarios": "Escenarios",
+    "profile": "Perfil"
+  }
+}

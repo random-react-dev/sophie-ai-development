@@ -3,25 +3,33 @@ import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
+import { TranslationHistory } from "@/components/translate/TranslationHistory";
 import {
   DEFAULT_SOURCE_LANG,
   DEFAULT_TARGET_LANG,
   Language,
 } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
-import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { FontAwesome } from "@expo/vector-icons";
+import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
+import { useVocabularyStore } from "@/stores/vocabularyStore";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
 import {
   ArrowRightLeft,
   Bookmark,
   ChevronDown,
   Copy,
+  Folder,
   MessageSquare,
+  Plus,
   Sparkles,
   Trash2,
   Volume2,
@@ -30,6 +38,7 @@ import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   Text,
@@ -46,13 +55,17 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TranslateScreen() {
-  const { user } = useAuthStore();
+  useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
+  const { addEntry } = useTranslationHistoryStore();
+  const { addItem, addFolder, folders, fetchVocabulary } = useVocabularyStore();
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
+  const [romanization, setRomanization] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const [sourceLang, setSourceLang] = useState<Language>(DEFAULT_SOURCE_LANG);
   const [targetLang, setTargetLang] = useState<Language>(DEFAULT_TARGET_LANG);
@@ -60,12 +73,56 @@ export default function TranslateScreen() {
   // Modal states
   const [showSourcePicker, setShowSourcePicker] = useState(false);
   const [showTargetPicker, setShowTargetPicker] = useState(false);
+  const [showSaveFolderPicker, setShowSaveFolderPicker] = useState(false);
+  const [saveFolderId, setSaveFolderId] = useState<string | null>(null);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
   // Animation for swap button - horizontal flip
   const flipX = useSharedValue(1);
+
+  // Speech Recognition Events
+  useSpeechRecognitionEvent("start", () => setIsListening(true));
+  useSpeechRecognitionEvent("end", () => setIsListening(false));
+  useSpeechRecognitionEvent("result", (event) => {
+    if (event.results[0]?.transcript) {
+      setInputText(event.results[0].transcript);
+      // Clear translation when new speech input comes in
+      if (translatedText) {
+        setTranslatedText("");
+        setRomanization("");
+      }
+    }
+  });
+
+  const handleMicPress = async () => {
+    if (isListening) {
+      ExpoSpeechRecognitionModule.stop();
+    } else {
+      Haptics.selectionAsync();
+      const perms = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!perms.granted) {
+        showAlert(
+          "Permission Required",
+          "Please enable microphone access to use voice input.",
+          undefined,
+          "error",
+        );
+        return;
+      }
+
+      // Construct locale code (e.g., "en-US", "hi-IN")
+      const locale = `${sourceLang.code}-${sourceLang.countryCode.toUpperCase()}`;
+      
+      ExpoSpeechRecognitionModule.start({
+        lang: locale,
+        interimResults: true,
+      });
+    }
+  };
 
   const handleSwap = useCallback(() => {
     Haptics.selectionAsync();
@@ -84,6 +141,9 @@ export default function TranslateScreen() {
     if (translatedText) {
       setInputText(translatedText);
       setTranslatedText(inputText);
+      // We don't have romanization for the reverse easily without re-translating, 
+      // but we can clear it or leave it empty
+      setRomanization(""); 
     }
   }, [sourceLang, targetLang, inputText, translatedText, flipX]);
 
@@ -103,7 +163,18 @@ export default function TranslateScreen() {
         targetLang.name,
         sourceLang.name,
       );
-      setTranslatedText(result);
+      setTranslatedText(result.translation);
+      setRomanization(result.romanization);
+
+      // Save to history
+      addEntry({
+        sourceText: inputText,
+        translatedText: result.translation,
+        romanization: result.romanization,
+        sourceLang: sourceLang.code,
+        targetLang: targetLang.code,
+      });
+
     } catch (error) {
       console.error("Translation error:", error);
       showAlert(
@@ -117,18 +188,29 @@ export default function TranslateScreen() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSaveClick = () => {
+    if (!translatedText) return;
+    // Fetch folders and show picker
+    fetchVocabulary();
+    setShowSaveFolderPicker(true);
+  };
+
+  const handleSaveWithFolder = async () => {
     if (!translatedText) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const success = await saveToVocabulary({
+    const success = await addItem({
       phrase: inputText,
       translation: translatedText,
       context: `${sourceLang.name} → ${targetLang.name}`,
+      language: targetLang.name,
+      folder_id: saveFolderId,
     });
 
     if (success) {
+      setShowSaveFolderPicker(false);
+      setSaveFolderId(null);
       showAlert("Saved!", "Added to your vocabulary", undefined, "success");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
@@ -157,14 +239,23 @@ export default function TranslateScreen() {
   const clearAll = () => {
     setInputText("");
     setTranslatedText("");
+    setRomanization("");
     Haptics.selectionAsync();
+  };
+
+  const handleHistorySelect = (item: any) => {
+    setInputText(item.sourceText);
+    setTranslatedText(item.translatedText);
+    setRomanization(item.romanization);
+    // Note: We don't automatically switch languages to match history item 
+    // because that might be confusing if user just wants to see the result
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <PageHeader />
 
-      <View className="px-4 mb-8">
+      <View className="px-4 mb-4">
         <Text className="text-3xl font-bold text-black text-left">
           Translation
         </Text>
@@ -264,7 +355,10 @@ export default function TranslateScreen() {
                 value={inputText}
                 onChangeText={(text) => {
                   setInputText(text);
-                  if (!text) setTranslatedText("");
+                  if (!text) {
+                    setTranslatedText("");
+                    setRomanization("");
+                  }
                 }}
                 placeholderTextColor="gray"
                 scrollEnabled={false}
@@ -276,9 +370,16 @@ export default function TranslateScreen() {
               <View className="flex-row gap-2">
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                  onPress={handleMicPress}
+                  className={`w-10 h-10 items-center justify-center rounded-full ${
+                    isListening ? "bg-red-100" : "bg-gray-100"
+                  }`}
                 >
-                  <FontAwesome name="microphone" size={18} color="black" />
+                  <FontAwesome 
+                    name="microphone" 
+                    size={18} 
+                    color={isListening ? "#ef4444" : "black"} 
+                  />
                 </TouchableOpacity>
                 {inputText.length > 0 && (
                   <TouchableOpacity
@@ -348,6 +449,11 @@ export default function TranslateScreen() {
                   <Text className="text-gray-900 text-xl leading-normal">
                     {translatedText}
                   </Text>
+                  {romanization ? (
+                    <Text className="text-gray-500 text-lg italic mt-1 font-medium">
+                      {romanization}
+                    </Text>
+                  ) : null}
 
                   {/* Actions Row */}
                   <View className="mt-8 flex-row items-center justify-between">
@@ -368,7 +474,7 @@ export default function TranslateScreen() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         activeOpacity={0.7}
-                        onPress={handleSave}
+                        onPress={handleSaveClick}
                         className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
                       >
                         <Bookmark size={18} color="#374151" />
@@ -393,7 +499,7 @@ export default function TranslateScreen() {
                 </View>
               </>
             ) : (
-              <View className="flex-1 items-center justify-center gap-4">
+              <View className="flex-1 items-center justify-center gap-4 py-10">
                 <View className="w-16 h-16 bg-gray-200 rounded-full items-center justify-center">
                   <MessageSquare size={28} color="#9ca3af" />
                 </View>
@@ -402,6 +508,9 @@ export default function TranslateScreen() {
                 </Text>
               </View>
             )}
+
+            {/* Translation History */}
+            <TranslationHistory onSelect={handleHistorySelect} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -422,6 +531,149 @@ export default function TranslateScreen() {
         selectedCode={targetLang.code}
         title="Translate to"
       />
+
+      {/* Save Folder Picker Modal */}
+      <Modal
+        visible={showSaveFolderPicker}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowSaveFolderPicker(false)}
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+            <Text className="text-2xl font-bold text-black">Save to Folder</Text>
+            <TouchableOpacity
+              onPress={() => setShowSaveFolderPicker(false)}
+              className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-1">
+            <View className="px-4 py-4">
+              {/* Create New Folder Input */}
+              {isCreatingFolder ? (
+                <View className="flex-row items-center gap-2 mb-4">
+                  <TextInput
+                    className="flex-1 bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                    placeholder="Folder name..."
+                    placeholderTextColor="gray"
+                    value={newFolderName}
+                    onChangeText={setNewFolderName}
+                    style={{ includeFontPadding: false }}
+                  />
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    className="h-12 rounded-full overflow-hidden"
+                    onPress={async () => {
+                      if (!newFolderName.trim()) return;
+                      const newFolder = await addFolder(newFolderName);
+                      if (newFolder) {
+                        setSaveFolderId(newFolder.id);
+                        setIsCreatingFolder(false);
+                        setNewFolderName("");
+                        setShowSaveFolderPicker(false);
+                      }
+                    }}
+                  >
+                    <RainbowBorder
+                      borderRadius={9999}
+                      borderWidth={2}
+                      className="flex-1"
+                      containerClassName="flex-row items-center justify-center px-4 gap-2"
+                    >
+                      <Plus size={20} color="black" />
+                      <Text className="text-black font-bold text-base">Create</Text>
+                    </RainbowBorder>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  className="flex-row items-center gap-3 py-3 px-2 mb-2"
+                  onPress={() => setIsCreatingFolder(true)}
+                >
+                  <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                    <Plus size={20} color="black" />
+                  </View>
+                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
+                </TouchableOpacity>
+              )}
+
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+            </View>
+
+            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+              {folders.map(folder => {
+                const isSelected = saveFolderId === folder.id;
+                const Content = () => (
+                  <>
+                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                      <Folder size={20} color="gray" />
+                    </View>
+                    <View className="flex-1 ml-4">
+                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                    </View>
+                  </>
+                );
+
+                return (
+                  <TouchableOpacity
+                    key={folder.id}
+                    onPress={() => setSaveFolderId(folder.id)}
+                    className="mb-3"
+                    activeOpacity={0.7}
+                  >
+                    {isSelected ? (
+                      <RainbowBorder
+                        borderRadius={20}
+                        borderWidth={2}
+                        containerClassName="flex-row items-center px-4 py-4"
+                        className="bg-white"
+                      >
+                        <Content />
+                      </RainbowBorder>
+                    ) : (
+                      <View
+                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        className="flex-row items-center border-gray-200 bg-white"
+                      >
+                        <Content />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+              {folders.length === 0 && (
+                <Text className="text-gray-400 text-center mt-10 italic">
+                  No folders yet. Create one above!
+                </Text>
+              )}
+              <View className="h-20" />
+            </ScrollView>
+          </View>
+
+          {/* Save Button */}
+          <View className="px-6 py-8 border-t border-gray-100">
+            <TouchableOpacity
+              onPress={handleSaveWithFolder}
+              activeOpacity={0.7}
+              className="w-full h-16 rounded-full overflow-hidden shadow-lg"
+            >
+              <RainbowBorder
+                borderWidth={2}
+                borderRadius={9999}
+                className="flex-1"
+                containerClassName="items-center justify-center"
+              >
+                <Text className="text-black font-bold text-lg">
+                  Save to Vocabulary
+                </Text>
+              </RainbowBorder>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Modal>
 
       {/* Custom AlertModal for Copy/Save feedback */}
       <AlertModal

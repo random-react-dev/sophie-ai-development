@@ -16,7 +16,7 @@ export interface OnboardingData {
   name: string;
   country: string;
   nativeLanguage: string;
-  preferredLanguage: string;
+  learningLanguage: string;
   mainGoal: string;
   fluencySpeed: string;
   learningDuration: string;
@@ -41,7 +41,7 @@ const initialData: OnboardingData = {
   name: "",
   country: "",
   nativeLanguage: "",
-  preferredLanguage: "",
+  learningLanguage: "",
   mainGoal: "",
   fluencySpeed: "",
   learningDuration: "",
@@ -64,3 +64,13 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
     set((state) => ({ data: { ...state.data, ...updates } })),
   resetOnboarding: () => set({ currentStep: 1, data: initialData }),
 }));
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const currentStep = useCurrentStep();
+// ============================================
+
+export const useCurrentStep = (): number =>
+  useOnboardingStore((s) => s.currentStep);
+export const useOnboardingData = (): OnboardingData =>
+  useOnboardingStore((s) => s.data);

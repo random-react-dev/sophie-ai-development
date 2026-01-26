@@ -259,18 +259,6 @@ const SophieIntroVideo: React.FC = () => {
   const controlsOpacity = useSharedValue(0);
   const buttonScale = useSharedValue(1);
 
-  // Auto-play video when component mounts
-  useEffect(() => {
-    const playVideo = async () => {
-      if (videoRef.current) {
-        await videoRef.current.playAsync();
-        setIsPlaying(true);
-      }
-    };
-    const timeout = setTimeout(playVideo, 500);
-    return () => clearTimeout(timeout);
-  }, []);
-
   // Handle controls visibility with fade animation
   useEffect(() => {
     if (showControls) {
@@ -380,6 +368,7 @@ const SophieIntroVideo: React.FC = () => {
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls={false}
           isLooping={false}
+          shouldPlay={true}
           onPlaybackStatusUpdate={(status) => {
             if (status.isLoaded) {
               setIsPlaying(status.isPlaying);
@@ -527,7 +516,7 @@ export const CompletionStep = () => {
         </View>
 
         <Text className="text-3xl font-bold text-gray-900 text-center mb-2">
-          You're all set!
+          You&apos;re all set!
         </Text>
         <Text className="text-gray-500 text-base text-center px-4 leading-6 w-full">
           Your personalized learning path is ready

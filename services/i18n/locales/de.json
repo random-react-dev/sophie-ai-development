@@ -1,0 +1,46 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Wählen Sie Ihre App-Sprache",
+    "chooseLearningLanguage": "Welche Sprache möchten Sie lernen?",
+    "continue": "Weiter",
+    "saving": "Speichern...",
+    "startLearning": "Lernen beginnen",
+    "skip": "Vorerst überspringen",
+    "profileStep": {
+      "almostThere": "Fast geschafft!",
+      "nameLabel": "Ihr Name",
+      "namePlaceholder": "Geben Sie Ihren Namen ein",
+      "countryLabel": "Land",
+      "countryPlaceholder": "Wählen Sie Ihr Land",
+      "nativeLanguageLabel": "Muttersprache",
+      "nativeLanguagePlaceholder": "Wählen Sie Ihre Muttersprache",
+      "selectCountry": "Land auswählen",
+      "selectNativeLanguage": "Muttersprache"
+    },
+    "titles": {
+      "goal": "Was ist Ihr Hauptziel im Leben?",
+      "fluency": "Wie schnell möchten Sie fließend sprechen?",
+      "duration": "Wie lange lernen Sie diese Sprache schon?",
+      "level": "Was beschreibt Sie am besten?",
+      "confidence": "Wie selbstbewusst sind Sie?",
+      "barriers": "Warum sind Sie nicht selbstbewusst?",
+      "focus": "Worauf möchten Sie sich zuerst konzentrieren?",
+      "discovery": "Wie haben Sie uns gefunden?"
+    }
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "error": "Fehler",
+    "warning": "Warnung",
+    "incomplete": "Unvollständig",
+    "incompleteMessage": "Bitte geben Sie Ihren Namen ein und wählen Sie ein Land.",
+    "errorMessage": "Fehler beim Speichern Ihrer Einstellungen. Bitte versuchen Sie es erneut."
+  },
+  "tabs": {
+    "talk": "Sprechen",
+    "vocab": "Vokabeln",
+    "scenarios": "Szenarien",
+    "profile": "Profil"
+  }
+}

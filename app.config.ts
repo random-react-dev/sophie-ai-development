@@ -47,7 +47,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-secure-store",
-    "expo-localization",
+    [
+      "expo-localization",
+      {
+        supportedLocales: {
+          ios: ["en", "hi", "es", "fr", "de", "ja", "zh"],
+          android: ["en", "hi", "es", "fr", "de", "ja", "zh"],
+        },
+      },
+    ],
     "expo-audio",
     "expo-asset",
     [
@@ -67,6 +75,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           "./assets/fonts/GoogleSans-Medium.ttf",
           "./assets/fonts/GoogleSans-Bold.ttf",
         ],
+      },
+    ],
+    [
+      "expo-speech-recognition",
+      {
+        microphonePermission: "Allow Sophie to use the microphone for voice input.",
+        speechRecognitionPermission: "Allow Sophie to use speech recognition.",
       },
     ],
   ],

@@ -3,20 +3,17 @@ import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder, RainbowText } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
-import { DEFAULT_TARGET_LANG, Language } from "@/constants/languages";
+import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
 import {
-  createFolder,
-  deleteFromVocabulary,
-  getFolders,
-  getVocabulary,
-  saveToVocabulary,
   VocabularyFolder,
   VocabularyItem,
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
+import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import {
@@ -54,19 +51,30 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
+  withTiming
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VocabScreen() {
-  const { user } = useAuthStore();
+  useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
+  const { 
+    items, 
+    folders, 
+    isLoading, 
+    fetchVocabulary, 
+    addItem, 
+    updateItem,
+    removeItem, 
+    // fetchFolders, // unused
+    addFolder 
+  } = useVocabularyStore();
   const router = useRouter();
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
   // Data
-  const [items, setItems] = useState<VocabularyItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [items, setItems] = useState<VocabularyItem[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Filter & Search
@@ -84,15 +92,24 @@ export default function VocabScreen() {
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
 
+  // Edit Phrase Modal
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState<VocabularyItem | null>(null);
+  const [editPhrase, setEditPhrase] = useState("");
+  const [editTranslation, setEditTranslation] = useState("");
+  const [editLanguage, setEditLanguage] = useState<Language>(DEFAULT_TARGET_LANG);
+  const [showEditLangPicker, setShowEditLangPicker] = useState(false);
+  const [editFolderId, setEditFolderId] = useState<string | null>(null);
+  const [isEditFolderPickerVisible, setIsEditFolderPickerVisible] = useState(false);
+
   // Folders Data
-  const [folders, setFolders] = useState<VocabularyFolder[]>([]);
-  const [selectedFolderFilter, setSelectedFolderFilter] =
-    useState<string>("All");
+  // const [folders, setFolders] = useState<VocabularyFolder[]>([]);
+  const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>("All");
 
   // Multi-select Modal
   const [isMultiSelectVisible, setIsMultiSelectVisible] = useState(false);
   const [selectedForPractice, setSelectedForPractice] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [primaryPracticeItem, setPrimaryPracticeItem] =
     useState<VocabularyItem | null>(null);
@@ -102,25 +119,13 @@ export default function VocabScreen() {
   const [selectedActionItem, setSelectedActionItem] =
     useState<VocabularyItem | null>(null);
 
-  const fetchVocab = async () => {
-    try {
-      const [vocabData, foldersData] = await Promise.all([
-        getVocabulary(),
-        getFolders(),
-      ]);
-      setItems(vocabData);
-      setFolders(foldersData);
-    } catch (error) {
-      console.error("Error fetching vocab:", error);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchVocab();
-  }, []);
+  // Use useFocusEffect to refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchVocabulary();
+      // fetchFolders is called within fetchVocabulary now, but keeping distinct functions in store is good
+    }, [fetchVocabulary])
+  );
 
   const languages = useMemo(() => {
     const langs = new Set(items.map((i) => i.language).filter(Boolean));
@@ -136,8 +141,7 @@ export default function VocabScreen() {
       const matchesLang =
         selectedLanguage === "All" || item.language === selectedLanguage;
       const matchesFolder =
-        selectedFolderFilter === "All" ||
-        item.folder_id === selectedFolderFilter;
+        selectedFolderFilter === "All" || item.folder_id === selectedFolderFilter;
 
       return matchesSearch && matchesLang && matchesFolder;
     });
@@ -158,11 +162,10 @@ export default function VocabScreen() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            const success = await deleteFromVocabulary(id);
+            const success = await removeItem(id);
             if (success) {
-              setItems((prev) => prev.filter((i) => i.id !== id));
               Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success,
+                Haptics.NotificationFeedbackType.Success
               );
             } else {
               showAlert("Error", "Failed to delete item", undefined, "error");
@@ -170,7 +173,7 @@ export default function VocabScreen() {
           },
         },
       ],
-      "warning",
+      "warning"
     );
   };
 
@@ -182,12 +185,14 @@ export default function VocabScreen() {
 
     try {
       // Defaulting target to English if unknown, or infer from context
-      const translated = await translateText(item.phrase, "English");
+      const result = await translateText(item.phrase, "English");
 
       // Ask to save the translation
       showAlert(
         "Translation",
-        translated,
+        result.romanization 
+          ? `${result.translation}\n\n${result.romanization}` 
+          : result.translation,
         [
           { text: "Close", style: "cancel" },
           {
@@ -197,7 +202,7 @@ export default function VocabScreen() {
             },
           },
         ],
-        "success",
+        "success"
       );
     } catch {
       showAlert("Error", "Translation failed", undefined, "error");
@@ -231,7 +236,7 @@ export default function VocabScreen() {
   };
 
   const handleActionPress = (
-    action: "play" | "translate" | "conversation" | "delete",
+    action: "play" | "translate" | "conversation" | "edit" | "delete"
   ) => {
     if (!selectedActionItem) return;
     closeActionModal();
@@ -246,6 +251,9 @@ export default function VocabScreen() {
       case "conversation":
         initPractice(selectedActionItem);
         break;
+      case "edit":
+        handleOpenEditModal(selectedActionItem);
+        break;
       case "delete":
         if (selectedActionItem.id) handleDelete(selectedActionItem.id);
         break;
@@ -258,7 +266,7 @@ export default function VocabScreen() {
       return;
     }
 
-    const success = await saveToVocabulary({
+    const success = await addItem({
       phrase: newPhrase,
       translation: newTranslation,
       language: newLanguage.name,
@@ -271,10 +279,47 @@ export default function VocabScreen() {
       setNewTranslation("");
       setNewFolderId(null);
       setIsAddModalVisible(false);
-      fetchVocab();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
       showAlert("Error", "Failed to save phrase", undefined, "error");
+    }
+  };
+
+  const handleOpenEditModal = (item: VocabularyItem) => {
+    setEditingItem(item);
+    setEditPhrase(item.phrase);
+    setEditTranslation(item.translation || "");
+    
+    // Find language by name or default
+    const foundLang = SUPPORTED_LANGUAGES.find(
+      (lang) => lang.name === item.language
+    );
+    setEditLanguage(foundLang || DEFAULT_TARGET_LANG);
+    
+    setEditFolderId(item.folder_id || null);
+    setIsEditModalVisible(true);
+    closeActionModal();
+  };
+
+  const handleUpdateItem = async () => {
+    if (!editingItem?.id || !editPhrase.trim()) {
+      showAlert("Required", "Please enter a phrase", undefined, "error");
+      return;
+    }
+
+    const success = await updateItem(editingItem.id, {
+      phrase: editPhrase,
+      translation: editTranslation,
+      language: editLanguage.name,
+      folder_id: editFolderId,
+    });
+
+    if (success) {
+      setIsEditModalVisible(false);
+      setEditingItem(null);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else {
+      showAlert("Error", "Failed to update phrase", undefined, "error");
     }
   };
 
@@ -289,9 +334,10 @@ export default function VocabScreen() {
     Haptics.selectionAsync();
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setIsRefreshing(true);
-    fetchVocab();
+    await fetchVocabulary();
+    setIsRefreshing(false);
   };
 
   return (
@@ -299,9 +345,7 @@ export default function VocabScreen() {
       <PageHeader />
 
       <View className="px-4 mb-8">
-        <Text className="text-3xl font-bold text-black text-left">
-          My Vocabulary
-        </Text>
+        <Text className="text-3xl font-bold text-black text-left">Vocab</Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Your saved words & phrases
         </Text>
@@ -362,7 +406,9 @@ export default function VocabScreen() {
                     className="flex-1"
                     containerClassName="px-5 py-2"
                   >
-                    <Text className="font-bold text-sm text-black">{lang}</Text>
+                    <Text className="font-bold text-sm text-black">
+                      {lang}
+                    </Text>
                   </RainbowBorder>
                 </TouchableOpacity>
               );
@@ -375,7 +421,9 @@ export default function VocabScreen() {
                 onPress={() => setSelectedLanguage(lang)}
                 className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                <Text className="font-bold text-sm text-gray-600">{lang}</Text>
+                <Text className="font-bold text-sm text-gray-600">
+                  {lang}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -392,9 +440,7 @@ export default function VocabScreen() {
           {["All", ...folders].map((folder) => {
             const isAll = typeof folder === "string";
             const id = isAll ? "All" : (folder as VocabularyFolder).id;
-            const name = isAll
-              ? "All Folders"
-              : (folder as VocabularyFolder).name;
+            const name = isAll ? "All Folders" : (folder as VocabularyFolder).name;
             const isSelected = selectedFolderFilter === id;
 
             if (isSelected) {
@@ -412,9 +458,7 @@ export default function VocabScreen() {
                   >
                     <View className="flex-row items-center gap-2">
                       {!isAll && <Folder size={12} color="black" />}
-                      <Text className="font-bold text-xs text-black">
-                        {name}
-                      </Text>
+                      <Text className="font-bold text-xs text-black">{name}</Text>
                     </View>
                   </RainbowBorder>
                 </TouchableOpacity>
@@ -444,7 +488,7 @@ export default function VocabScreen() {
       ) : (
         <FlatList
           data={filteredItems}
-          keyExtractor={(item) => item.id || Math.random().toString()}
+          keyExtractor={(item) => item.id || item.phrase}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
           refreshControl={
             <RefreshControl
@@ -573,15 +617,12 @@ export default function VocabScreen() {
                   <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
                     <Folder size={16} color="#6b7280" />
                   </View>
-                  <Text
-                    className={`text-lg font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}
-                  >
-                    {newFolderId
-                      ? folders.find((f) => f.id === newFolderId)?.name ||
-                        "Selected Folder"
-                      : "Select a folder"}
+                  <Text className={`text-lg font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}>
+                    {newFolderId ? folders.find(f => f.id === newFolderId)?.name || "Selected Folder" : "Select a folder"}
                   </Text>
-                  <Text className="text-black font-bold text-sm">Change</Text>
+                  <Text className="text-black font-bold text-sm">
+                    Change
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -647,6 +688,220 @@ export default function VocabScreen() {
         </KeyboardAvoidingView>
       </Modal>
 
+      {/* Edit Phrase Modal */}
+      <Modal
+        visible={isEditModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1 bg-white"
+        >
+          <SafeAreaView className="flex-1">
+            <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
+              <Text className="text-2xl font-bold text-black">Edit Phrase</Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setIsEditModalVisible(false)}
+                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+              >
+                <Ionicons name="close" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              className="flex-1 px-4 pt-6"
+              showsVerticalScrollIndicator={false}
+            >
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Language
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setShowEditLangPicker(true)}
+                  className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
+                >
+                  <CircleFlag countryCode={editLanguage.countryCode} size={28} />
+                  <Text className="text-lg font-semibold text-black flex-1">
+                    {editLanguage.name}
+                  </Text>
+                  <Text className="text-gray-700 font-bold text-sm">
+                    Change
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Folder (Optional)
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setIsEditFolderPickerVisible(true)}
+                  className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
+                >
+                  <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
+                    <Folder size={16} color="#6b7280" />
+                  </View>
+                  <Text className={`text-lg font-semibold flex-1 ${editFolderId ? "text-black" : "text-gray-400"}`}>
+                    {editFolderId ? folders.find(f => f.id === editFolderId)?.name || "Selected Folder" : "Select a folder"}
+                  </Text>
+                  <Text className="text-black font-bold text-sm">
+                    Change
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="mb-6">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Phrase <Text className="text-red-500">*</Text>
+                </Text>
+                <TextInput
+                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                  placeholder="Enter word or phrase..."
+                  placeholderTextColor="gray"
+                  value={editPhrase}
+                  onChangeText={setEditPhrase}
+                  multiline
+                  style={{ includeFontPadding: false }}
+                />
+              </View>
+
+              <View className="mb-10">
+                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  Translation (Optional)
+                </Text>
+                <TextInput
+                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
+                  placeholder="Enter meaning..."
+                  placeholderTextColor="gray"
+                  value={editTranslation}
+                  onChangeText={setEditTranslation}
+                  multiline
+                  style={{ includeFontPadding: false }}
+                />
+              </View>
+            </ScrollView>
+
+            <View className="px-6 py-8 border-t border-gray-100">
+              <TouchableOpacity
+                onPress={handleUpdateItem}
+                disabled={!editPhrase.trim()}
+                activeOpacity={0.7}
+                className="w-full h-16 rounded-full overflow-hidden shadow-lg"
+              >
+                {!editPhrase.trim() ? (
+                  <View className="flex-1 bg-gray-200 items-center justify-center rounded-full">
+                    <Text className="text-gray-400 font-bold text-lg">
+                      Update Phrase
+                    </Text>
+                  </View>
+                ) : (
+                  <RainbowBorder
+                    borderWidth={2}
+                    borderRadius={9999}
+                    className="flex-1"
+                    containerClassName="items-center justify-center"
+                  >
+                    <Text className="text-black font-bold text-lg">
+                      Update Phrase
+                    </Text>
+                  </RainbowBorder>
+                )}
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Edit Folder Picker Modal */}
+      <Modal
+        visible={isEditFolderPickerVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsEditFolderPickerVisible(false)}
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+            <Text className="text-2xl font-bold text-black">Select Folder</Text>
+            <TouchableOpacity
+              onPress={() => setIsEditFolderPickerVisible(false)}
+              className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-1">
+            <View className="px-4 py-4">
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+            </View>
+
+            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+              {folders.map(folder => {
+                const isSelected = editFolderId === folder.id;
+                const Content = () => (
+                  <>
+                    <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
+                      <Folder size={20} color="gray" />
+                    </View>
+                    <View className="flex-1 ml-4">
+                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                    </View>
+                  </>
+                );
+
+                return (
+                  <TouchableOpacity
+                    key={folder.id}
+                    onPress={() => {
+                      setEditFolderId(folder.id);
+                      setIsEditFolderPickerVisible(false);
+                    }}
+                    className="mb-3"
+                    activeOpacity={0.7}
+                  >
+                    {isSelected ? (
+                      <RainbowBorder
+                        borderRadius={20}
+                        borderWidth={2}
+                        containerClassName="flex-row items-center px-4 py-4"
+                        className="bg-white"
+                      >
+                        <Content />
+                      </RainbowBorder>
+                    ) : (
+                      <View
+                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        className="flex-row items-center border-gray-200 bg-white"
+                      >
+                        <Content />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+              {folders.length === 0 && (
+                <Text className="text-gray-400 text-center mt-10 italic">No folders yet</Text>
+              )}
+              <View className="h-20" />
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      <LanguagePickerModal
+        visible={showEditLangPicker}
+        onClose={() => setShowEditLangPicker(false)}
+        onSelect={(lang) => {
+          setEditLanguage(lang);
+          setShowEditLangPicker(false);
+        }}
+        selectedCode={editLanguage.code}
+      />
+
       {/* Folder Picker Modal */}
       <Modal
         visible={isFolderPickerVisible}
@@ -683,9 +938,8 @@ export default function VocabScreen() {
                     className="h-12 rounded-full overflow-hidden"
                     onPress={async () => {
                       if (!newFolderName.trim()) return;
-                      const newFolder = await createFolder(newFolderName);
+                      const newFolder = await addFolder(newFolderName);
                       if (newFolder) {
-                        setFolders((prev) => [...prev, newFolder]);
                         setNewFolderId(newFolder.id);
                         setIsCreatingFolder(false);
                         setNewFolderName("");
@@ -700,9 +954,7 @@ export default function VocabScreen() {
                       containerClassName="flex-row items-center justify-center px-4 gap-2"
                     >
                       <Plus size={20} color="black" />
-                      <Text className="text-black font-bold text-base">
-                        Create
-                      </Text>
+                      <Text className="text-black font-bold text-base">Create</Text>
                     </RainbowBorder>
                   </TouchableOpacity>
                 </View>
@@ -714,22 +966,15 @@ export default function VocabScreen() {
                   <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
                     <Plus size={20} color="black" />
                   </View>
-                  <Text className="text-black font-bold text-lg">
-                    Create New Folder
-                  </Text>
+                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
                 </TouchableOpacity>
               )}
 
-              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
-                Your Folders
-              </Text>
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
             </View>
 
-            <ScrollView
-              className="flex-1 px-4"
-              showsVerticalScrollIndicator={false}
-            >
-              {folders.map((folder) => {
+            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+              {folders.map(folder => {
                 const isSelected = newFolderId === folder.id;
                 const Content = () => (
                   <>
@@ -737,9 +982,7 @@ export default function VocabScreen() {
                       <Folder size={20} color="gray" />
                     </View>
                     <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">
-                        {folder.name}
-                      </Text>
+                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
                     </View>
                   </>
                 );
@@ -765,11 +1008,7 @@ export default function VocabScreen() {
                       </RainbowBorder>
                     ) : (
                       <View
-                        style={{
-                          borderWidth: 1.5,
-                          borderRadius: 20,
-                          padding: 16,
-                        }}
+                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
                         className="flex-row items-center border-gray-200 bg-white"
                       >
                         <Content />
@@ -779,9 +1018,7 @@ export default function VocabScreen() {
                 );
               })}
               {folders.length === 0 && (
-                <Text className="text-gray-400 text-center mt-10 italic">
-                  No folders yet
-                </Text>
+                <Text className="text-gray-400 text-center mt-10 italic">No folders yet</Text>
               )}
               {/* Padding for bottom */}
               <View className="h-20" />
@@ -920,7 +1157,7 @@ function ActionModalContent({
 }: {
   selectedItem: VocabularyItem | null;
   onClose: () => void;
-  onAction: (action: "play" | "translate" | "conversation" | "delete") => void;
+  onAction: (action: "play" | "translate" | "conversation" | "edit" | "delete") => void;
 }) {
   const translateY = useSharedValue(0);
   const context = useSharedValue(0);
@@ -1043,9 +1280,8 @@ function ActionModalContent({
                   Start Conversation
                 </Text>
               </Pressable>
-              {/*Temporarily removed Edit button*/}
               <Pressable
-                onPress={() => {}}
+                onPress={() => onAction("edit")}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
               >
                 <View className="w-10 h-10 bg-gray-200 rounded-full items-center justify-center mr-4">
@@ -1074,6 +1310,8 @@ function ActionModalContent({
   );
 }
 
+
+
 // Premium Selectable Phrase Item
 // Premium Selectable Phrase Item
 function SelectablePhraseItem({
@@ -1096,12 +1334,19 @@ function SelectablePhraseItem({
           </Text>
           {isPrimary && (
             <View className="bg-white px-2 py-0.5 rounded-2xl border border-gray-300">
-              <RainbowText text="PRIMARY" fontSize={10} fontWeight="900" />
+              <RainbowText
+                text="PRIMARY"
+                fontSize={10}
+                fontWeight="900"
+              />
             </View>
           )}
         </View>
         {item.translation && (
-          <Text className="text-sm text-gray-500" numberOfLines={2}>
+          <Text
+            className="text-sm text-gray-500"
+            numberOfLines={2}
+          >
             {item.translation}
           </Text>
         )}

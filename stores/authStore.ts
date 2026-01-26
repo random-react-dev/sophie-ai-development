@@ -1,8 +1,38 @@
 import { UserProfileUpdate, changePassword as authChangePassword, updateUserProfile } from '@/services/supabase/auth';
 import { supabase } from '@/services/supabase/client';
 import { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
 import { create } from 'zustand';
+import { useConversationStore } from './conversationStore';
+import { useGameStore } from './gameStore';
+import { useLearningStore } from './learningStore';
+import { useProfileStore } from './profileStore';
+import { useStatsStore } from './statsStore';
+import { useTranslationHistoryStore } from './translationHistoryStore';
+import { useVocabularyStore } from './vocabularyStore';
+
+/**
+ * Clear all user-specific data from stores and AsyncStorage on logout.
+ * This ensures complete data isolation between different user accounts.
+ */
+const clearUserData = async (): Promise<void> => {
+    // Clear persisted stores from AsyncStorage
+    await AsyncStorage.multiRemove([
+        'translation-history',
+        'profile-storage',
+        'sophie-learning-preferences'
+    ]);
+
+    // Reset in-memory and persisted stores to initial state
+    useTranslationHistoryStore.getState().reset();
+    useProfileStore.getState().reset();
+    useLearningStore.getState().reset();
+    useVocabularyStore.setState({ items: [], folders: [], isLoading: false });
+    useStatsStore.getState().reset();
+    useConversationStore.getState().reset();
+    useGameStore.getState().reset();
+};
 
 interface AuthState {
     user: User | null;
@@ -102,6 +132,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
     signOut: async () => {
         set({ isLoading: true });
+        
+        // Clear all user-specific data before signing out
+        await clearUserData();
+        
         await supabase.auth.signOut();
         set({ user: null, session: null, isLoading: false });
     },
@@ -157,3 +191,19 @@ export const useAuthStore = create<AuthState>((set) => ({
         });
     }
 }));
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const session = useSession();
+// ============================================
+
+export const useSession = (): Session | null =>
+    useAuthStore((s) => s.session);
+export const useUser = (): User | null =>
+    useAuthStore((s) => s.user);
+export const useAuthIsLoading = (): boolean =>
+    useAuthStore((s) => s.isLoading);
+export const useAuthInitialized = (): boolean =>
+    useAuthStore((s) => s.initialized);
+export const useShowTrialPopup = (): boolean =>
+    useAuthStore((s) => s.showTrialPopup);

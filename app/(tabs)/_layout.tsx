@@ -1,5 +1,6 @@
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
@@ -12,11 +13,11 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  Platform,
   Pressable,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Get screen width for responsive sizing
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -35,6 +36,7 @@ const voiceAvailable = isVoiceModeAvailable();
 export default function TabLayout() {
   const pathname = usePathname();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const {
     startPTTRecording,
     stopPTTRecording,
@@ -47,6 +49,7 @@ export default function TabLayout() {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [isPressing, setIsPressing] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
@@ -110,8 +113,8 @@ export default function TabLayout() {
           backgroundColor: "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#f1f5f9",
-          height: Platform.OS === "ios" ? 88 : 70,
-          paddingBottom: Platform.OS === "ios" ? 30 : 12,
+          height: 58 + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: 12,
           paddingHorizontal: 8,
         },
@@ -140,7 +143,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Roleplay",
+          title: t("tabs.scenarios"),
           tabBarActiveTintColor: "#9333EA",
           tabBarIcon: ({ color }) => <VenetianMask size={24} color={color} />,
         }}
@@ -148,7 +151,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="translate"
         options={{
-          title: "Translate",
+          title: "Translate", // Keeping as is, not in prototype scope list but can update if needed
           tabBarActiveTintColor: "#2563EB",
           tabBarIcon: ({ color }) => <Languages size={24} color={color} />,
         }}
@@ -156,7 +159,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="talk"
         options={{
-          title: "",
+          title: t("tabs.talk"),
           // Hide the tab completely in Expo Go (native modules not available)
           href: voiceAvailable ? undefined : null,
           tabBarButton: voiceAvailable
@@ -278,7 +281,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="vocab"
         options={{
-          title: "Vocab",
+          title: t("tabs.vocab"),
           tabBarActiveTintColor: "#16A34A",
           tabBarIcon: ({ color }) => (
             <Feather name="book" size={24} color={color} />
@@ -288,7 +291,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="language"
         options={{
-          title: "Language",
+          title: t("tabs.profile"),
           tabBarActiveTintColor: "#ef4444",
           tabBarIcon: ({ color }) => (
             <View>

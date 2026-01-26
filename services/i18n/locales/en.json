@@ -1,0 +1,46 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Choose Your App Language",
+    "chooseLearningLanguage": "What language do you want to learn?",
+    "continue": "Continue",
+    "saving": "Saving...",
+    "startLearning": "Start Learning",
+    "skip": "Skip for now",
+    "profileStep": {
+      "almostThere": "Almost there!",
+      "nameLabel": "Your Name",
+      "namePlaceholder": "Enter your name",
+      "countryLabel": "Country",
+      "countryPlaceholder": "Select your country",
+      "nativeLanguageLabel": "Native Language",
+      "nativeLanguagePlaceholder": "Select your native language",
+      "selectCountry": "Select Country",
+      "selectNativeLanguage": "Native Language"
+    },
+    "titles": {
+      "goal": "What's your main goal in life?",
+      "fluency": "How quickly do you want to become fluent?",
+      "duration": "How long have you been studying this language?",
+      "level": "Which best describes you?",
+      "confidence": "How confident are you?",
+      "barriers": "Why are you not confident?",
+      "focus": "What do you want to focus on first?",
+      "discovery": "How did you find us?"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "error": "Error",
+    "warning": "Warning",
+    "incomplete": "Incomplete",
+    "incompleteMessage": "Please enter your name and select a country.",
+    "errorMessage": "Failed to save your preferences. Please try again."
+  },
+  "tabs": {
+    "talk": "Talk",
+    "vocab": "Vocab",
+    "scenarios": "Scenarios",
+    "profile": "Profile"
+  }
+}

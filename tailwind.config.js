@@ -9,6 +9,7 @@ module.exports = {
         // Application Theme Colors
         background: "#ffffff", // Page background - white
         surface: "#f8fafc", // Card/box background - slate-50
+        "surface-dark": "#1f2937", // Dark mode surface
       },
       fontFamily: {
         // Google Sans Font Family Mapping

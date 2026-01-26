@@ -1,0 +1,46 @@
+{
+  "onboarding": {
+    "chooseLanguage": "अपनी ऐप भाषा चुनें",
+    "chooseLearningLanguage": "आप कौन सी भाषा सीखना चाहते हैं?",
+    "continue": "जारी रखें",
+    "saving": "सहेजा जा रहा है...",
+    "startLearning": "सीखना शुरू करें",
+    "skip": "अभी के लिए छोड़ें",
+    "profileStep": {
+      "almostThere": "बस हो ही गया!",
+      "nameLabel": "आपका नाम",
+      "namePlaceholder": "अपना नाम दर्ज करें",
+      "countryLabel": "देश",
+      "countryPlaceholder": "अपना देश चुनें",
+      "nativeLanguageLabel": "मातृभाषा",
+      "nativeLanguagePlaceholder": "अपनी मातृभाषा चुनें",
+      "selectCountry": "देश चुनें",
+      "selectNativeLanguage": "मातृभाषा"
+    },
+    "titles": {
+      "goal": "जीवन में आपका मुख्य लक्ष्य क्या है?",
+      "fluency": "आप कितनी जल्दी धाराप्रवाह बनना चाहते हैं?",
+      "duration": "आप इस भाषा का अध्ययन कब से कर रहे हैं?",
+      "level": "कौन सा वर्णन आप पर सबसे अच्छा फिट बैठता है?",
+      "confidence": "आप कितने आश्वस्त हैं?",
+      "barriers": "आप आश्वस्त क्यों नहीं हैं?",
+      "focus": "आप पहले किस पर ध्यान केंद्रित करना चाहते हैं?",
+      "discovery": "आपने हमें कैसे ढूंढा?"
+    }
+  },
+  "common": {
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "error": "त्रुटि",
+    "warning": "चेतावनी",
+    "incomplete": "अपूर्ण",
+    "incompleteMessage": "कृपया अपना नाम दर्ज करें और एक देश चुनें।",
+    "errorMessage": "आपकी प्राथमिकताओं को सहेजने में विफल। कृपया पुन: प्रयास करें।"
+  },
+  "tabs": {
+    "talk": "बातचीत",
+    "vocab": "शब्दावली",
+    "scenarios": "परिदृश्य",
+    "profile": "प्रोफ़ाइल"
+  }
+}

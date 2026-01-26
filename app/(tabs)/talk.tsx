@@ -69,14 +69,11 @@ const buildTutorPrompt = (
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${
-    nativeLang.name
-  }), then introduce the lesson:
-"Welcome to your ${
-    targetLang.name
-  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
-    targetLang.name
-  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Start by greeting the user in their native language (${nativeLang.name
+    }), then introduce the lesson:
+"Welcome to your ${targetLang.name
+    } lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name
+    } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -87,9 +84,8 @@ Start by greeting the user in their native language (${
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${
-    targetLang.name
-  } for the words being taught
+- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name
+    } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress`;
 };
@@ -127,6 +123,9 @@ export default function TalkScreen() {
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef(false);
   const router = useRouter();
+  
+  // Session tracking
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
 
   // Language picker state
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
@@ -218,6 +217,9 @@ Stay in character while teaching.`;
           `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`,
         );
         geminiWebSocket.connect(token, instruction);
+        
+        // Start session timer when connection is established
+        setSessionStartTime(Date.now());
       } catch (err) {
         if (isMounted) {
           const errorMessage =
@@ -270,23 +272,6 @@ Stay in character while teaching.`;
     }
   };
 
-  const getDotColor = (): string => {
-    if (isSpeaking) return "bg-purple-500";
-    if (isListening) return "bg-blue-500";
-
-    switch (connectionState) {
-      case "connecting":
-      case "reconnecting":
-        return "bg-orange-500";
-      case "connected":
-        return "bg-green-500";
-      case "error":
-        return "bg-red-500";
-      default:
-        return "bg-gray-400";
-    }
-  };
-
   useEffect(() => {
     if (showTranscript && messages.length > 0) {
       flatListRef.current?.scrollToEnd({ animated: true });
@@ -302,6 +287,12 @@ Stay in character while teaching.`;
       return;
     }
 
+    // Calculate duration
+    const endTime = Date.now();
+    const durationSeconds = sessionStartTime 
+        ? Math.round((endTime - sessionStartTime) / 1000) 
+        : 0;
+
     showAlert(
       "Finish Conversation",
       "Are you done with this practice session?",
@@ -310,7 +301,10 @@ Stay in character while teaching.`;
         {
           text: "Finish",
           onPress: () => {
-            router.push("/report" as any);
+            router.push({
+                pathname: "/report",
+                params: { duration: durationSeconds.toString() }
+            });
           },
         },
       ],
@@ -336,6 +330,8 @@ Stay in character while teaching.`;
             // Force reconnect
             geminiWebSocket.disconnect();
             isInitialized.current = false;
+            // Reset session timer
+            setSessionStartTime(null);
           },
         },
       ],
@@ -346,8 +342,11 @@ Stay in character while teaching.`;
   const handleTranslate = useCallback(
     async (text: string) => {
       try {
-        const translated = await translateText(text, "English");
-        showAlert("Translation", translated, undefined, "info");
+        const result = await translateText(text, "English");
+        const displayText = result.romanization 
+          ? `${result.translation}\n\n${result.romanization}` 
+          : result.translation;
+        showAlert("Translation", displayText, undefined, "info");
       } catch {
         showAlert(
           "Error",

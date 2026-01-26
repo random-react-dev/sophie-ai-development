@@ -5,20 +5,19 @@ import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import ThemeCard from "@/components/profile/ThemeCard";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { getLanguageByCode } from "@/constants/languages";
-import { setAppLanguage } from "@/services/i18n";
 import { useAuthStore } from "@/stores/authStore";
+import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
 import { getRainbowColorScheme } from "@/utils/rainbowColors";
-import { useRouter } from "expo-router";
 import { Globe, Languages, Mail, MapPin, User } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PreferencesScreen() {
-  const router = useRouter();
   const { user, updateProfile } = useAuthStore();
   const { theme, setTheme, loadTheme } = useThemeStore();
+  const { setLanguage } = useLanguageStore();
 
   // Load saved theme on mount
   useEffect(() => {
@@ -41,7 +40,7 @@ export default function PreferencesScreen() {
 
   const handleUpdatePreferredLanguage = async (langCode: string) => {
     try {
-      await setAppLanguage(langCode);
+      setLanguage(langCode);
       await updateProfile({ app_language: langCode });
       setShowPreferredPicker(false);
     } catch {
@@ -59,7 +58,7 @@ export default function PreferencesScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-black" edges={["top"]}>
       {/* Header */}
       <ProfileHeader title="Preferences" />
 
@@ -82,7 +81,7 @@ export default function PreferencesScreen() {
 
         {/* Identity Section */}
         <View className="mx-4 mt-2">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+          <Text className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 ml-1">
             Account Info
           </Text>
 
@@ -107,7 +106,7 @@ export default function PreferencesScreen() {
 
         {/* Localization Section */}
         <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+          <Text className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 ml-1">
             Languages
           </Text>
 
@@ -150,12 +149,12 @@ export default function PreferencesScreen() {
 
         {/* Appearance Section */}
         <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+          <Text className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 ml-1">
             Appearance
           </Text>
 
           {/* Theme Selector Card */}
-          <View className="bg-surface rounded-2xl p-6 shadow-sm">
+          <View className="bg-surface dark:bg-surface-dark rounded-2xl p-6 shadow-sm">
             {/* Theme Cards Row */}
             <View className="flex-row justify-center gap-8">
               <ThemeCard
@@ -171,10 +170,10 @@ export default function PreferencesScreen() {
             </View>
 
             {/* Divider */}
-            <View className="h-px bg-gray-200 mt-6 mb-4" />
+            <View className="h-px bg-gray-200 dark:bg-gray-700 mt-6 mb-4" />
 
             {/* Colour scheme label */}
-            <Text className="text-base font-semibold text-gray-900">
+            <Text className="text-base font-semibold text-gray-900 dark:text-white">
               Colour scheme
             </Text>
           </View>

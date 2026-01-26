@@ -13,14 +13,19 @@ interface ProfileState {
     removeProfile: (id: string) => Promise<boolean>;
     switchProfile: (id: string) => Promise<void>;
     clearActiveProfile: () => void;
+    reset: () => void;
 }
+
+const initialState = {
+    profiles: [] as LearningProfile[],
+    activeProfile: null as LearningProfile | null,
+    isLoading: false,
+};
 
 export const useProfileStore = create<ProfileState>()(
     persist(
         (set, get) => ({
-            profiles: [],
-            activeProfile: null,
-            isLoading: false,
+            ...initialState,
 
             fetchProfiles: async () => {
                 set({ isLoading: true });
@@ -98,7 +103,9 @@ export const useProfileStore = create<ProfileState>()(
                 }
             },
 
-            clearActiveProfile: () => set({ activeProfile: null })
+            clearActiveProfile: () => set({ activeProfile: null }),
+
+            reset: () => set(initialState)
         }),
         {
             name: 'profile-storage',
@@ -107,3 +114,15 @@ export const useProfileStore = create<ProfileState>()(
         }
     )
 );
+
+// ============================================
+// Atomic Selectors - Reduce unnecessary re-renders
+// Usage: const profiles = useProfiles();
+// ============================================
+
+export const useProfiles = (): LearningProfile[] =>
+    useProfileStore((s) => s.profiles);
+export const useActiveProfile = (): LearningProfile | null =>
+    useProfileStore((s) => s.activeProfile);
+export const useProfileIsLoading = (): boolean =>
+    useProfileStore((s) => s.isLoading);

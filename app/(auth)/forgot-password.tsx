@@ -1,3 +1,4 @@
+import { safeGoBack } from "@/utils/navigation";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthInput } from "@/components/auth/AuthInput";
 import { AlertModal } from "@/components/common/AlertModal";
@@ -29,7 +30,7 @@ export default function ForgotPasswordScreen() {
   const handleModalClose = () => {
     setModalVisible(false);
     if (isSuccessModal) {
-      router.back();
+      safeGoBack(router, "/(auth)/login");
     }
   };
 

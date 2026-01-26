@@ -2,15 +2,15 @@ import { AuthInput } from "@/components/auth/AuthInput";
 import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { APP_LANGUAGES, Language } from "@/constants/languages";
-import { Colors } from "@/constants/theme";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/stores/languageStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { Ionicons } from "@expo/vector-icons";
 import { ChevronDown } from "lucide-react-native";
 import React, {
   forwardRef,
-  useEffect,
   useImperativeHandle,
-  useState,
+  useState
 } from "react";
 import {
   FlatList,
@@ -21,98 +21,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, {
-  interpolate,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, {
-  Circle,
-  Defs,
-  LinearGradient,
-  Path,
-  Stop,
-} from "react-native-svg";
-
-const AnimatedPath = Animated.createAnimatedComponent(Path);
-
-// Animated Checkbox with full Rainbow gradient when checked (same as SelectionCard)
-function AnimatedCheckbox({ isChecked }: { isChecked: boolean }) {
-  const progress = useSharedValue(isChecked ? 1 : 0);
-  const pathLength = 22;
-
-  useEffect(() => {
-    progress.value = withTiming(isChecked ? 1 : 0, {
-      duration: 300,
-    });
-  }, [isChecked]);
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      strokeDashoffset: interpolate(progress.value, [0, 1], [pathLength, 0]),
-    };
-  });
-
-  const scaleStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: interpolate(progress.value, [0, 1], [1, 1.1]) }],
-    };
-  });
-
-  return (
-    <Animated.View
-      style={scaleStyle}
-      className="w-6 h-6 rounded-full items-center justify-center overflow-hidden"
-    >
-      {isChecked ? (
-        // Full rainbow gradient circle when checked
-        <Svg width="24" height="24" viewBox="0 0 24 24">
-          <Defs>
-            <LinearGradient
-              id="checkGradProfile"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              {Colors.rainbow.map((color, index) => (
-                <Stop
-                  key={color}
-                  offset={`${(index * 100) / (Colors.rainbow.length - 1)}%`}
-                  stopColor={color}
-                />
-              ))}
-            </LinearGradient>
-          </Defs>
-          <Circle cx="12" cy="12" r="12" fill="url(#checkGradProfile)" />
-        </Svg>
-      ) : (
-        // Gray border circle when unchecked
-        <View className="w-6 h-6 rounded-full border-2 border-gray-300" />
-      )}
-      {/* Checkmark - always visible when checked */}
-      {isChecked && (
-        <View className="absolute">
-          <Svg width="14" height="14" viewBox="0 0 24 24">
-            <AnimatedPath
-              d="M5 12l5 5L20 7"
-              fill="none"
-              stroke="white"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray={pathLength}
-              animatedProps={animatedProps}
-            />
-          </Svg>
-        </View>
-      )}
-    </Animated.View>
-  );
-}
 
 // Language Item Component (simplified to prevent jerky modal animation)
 // Uses RainbowBorder like CountryPicker.tsx for smooth modal transitions
@@ -247,6 +156,8 @@ interface ProfileStepProps {
 export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
   ({ onScrollStateChange }, ref) => {
     const { data, updateData } = useOnboardingStore();
+    const { t } = useTranslation();
+    const { currentLanguage, setLanguage } = useLanguageStore();
     const [subStep, setSubStep] = useState(1);
 
     // State for Native Language modal (must be at top, before any returns)
@@ -269,13 +180,21 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     useImperativeHandle(ref, () => ({
       subStep,
       goToNextSubStep: () => {
-        if (subStep === 1 && data.preferredLanguage) {
+        if (subStep === 1 && currentLanguage) {
           setSubStep(2);
+          return true;
+        }
+        if (subStep === 2 && data.learningLanguage) {
+          setSubStep(3);
           return true;
         }
         return false;
       },
       goToPrevSubStep: () => {
+        if (subStep === 3) {
+          setSubStep(2);
+          return true;
+        }
         if (subStep === 2) {
           setSubStep(1);
           return true;
@@ -290,7 +209,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
         <View className="flex-1">
           <View className="mb-6 px-4">
             <Text className="text-3xl font-bold text-gray-900 mb-2">
-              Choose Your App Language
+              {t("onboarding.chooseLanguage")}
             </Text>
           </View>
 
@@ -327,8 +246,10 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
             renderItem={({ item }) => (
               <LanguageItem
                 lang={item}
-                isSelected={data.preferredLanguage === item.code}
-                onPress={() => updateData({ preferredLanguage: item.code })}
+                isSelected={currentLanguage === item.code}
+                onPress={() => {
+                  setLanguage(item.code);
+                }}
               />
             )}
           />
@@ -336,12 +257,66 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
       );
     }
 
-    // Sub-step 2: Profile Details (Name, Country, Native Language)
+    // Sub-step 2: Learning Language Selection
+    if (subStep === 2) {
+      return (
+        <View className="flex-1">
+          <View className="mb-6 px-4">
+            <Text className="text-3xl font-bold text-gray-900 mb-2">
+              {t("onboarding.chooseLearningLanguage")}
+            </Text>
+          </View>
+
+          <FlatList
+            data={APP_LANGUAGES}
+            keyExtractor={(item) => item.code}
+            contentContainerStyle={{
+              paddingTop: 4,
+              paddingBottom: 100,
+              paddingHorizontal: 16,
+            }}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            scrollEventThrottle={16}
+            onScroll={(event) => {
+              const scrollY = event.nativeEvent.contentOffset.y;
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              const isAtBottom =
+                scrollY + containerHeightRef.current >=
+                contentHeightRef.current - 10;
+              onScrollStateChange?.(isScrollable && !isAtBottom);
+            }}
+            onContentSizeChange={(width, height) => {
+              contentHeightRef.current = height;
+            }}
+            onLayout={(event) => {
+              containerHeightRef.current = event.nativeEvent.layout.height;
+              // Initial check
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              onScrollStateChange?.(isScrollable);
+            }}
+            renderItem={({ item }) => (
+              <LanguageItem
+                lang={item}
+                isSelected={data.learningLanguage === item.code}
+                onPress={() => {
+                  updateData({ learningLanguage: item.code });
+                }}
+              />
+            )}
+          />
+        </View>
+      );
+    }
+
+    // Sub-step 3: Profile Details (Name, Country, Native Language)
     return (
       <View className="flex-1">
         <View className="mb-6 px-4">
           <Text className="text-3xl font-bold text-gray-900 mb-2">
-            Almost there!
+            {t("onboarding.profileStep.almostThere")}
           </Text>
         </View>
 
@@ -352,10 +327,10 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           {/* Name */}
           <View className="mb-4">
             <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-              Your Name
+              {t("onboarding.profileStep.nameLabel")}
             </Text>
             <AuthInput
-              placeholder="Enter your name"
+              placeholder={t("onboarding.profileStep.namePlaceholder")}
               value={data.name}
               onChangeText={(text) => updateData({ name: text })}
               autoCapitalize="words"
@@ -365,7 +340,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           {/* Country */}
           <View className="mb-4">
             <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-              Country
+              {t("onboarding.profileStep.countryLabel")}
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
@@ -373,12 +348,11 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setCountryModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${
-                  data.country ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={`flex-1 text-base ${data.country ? "text-gray-800" : "text-gray-400"
+                  }`}
                 numberOfLines={1}
               >
-                {data.country || "Select your country"}
+                {data.country || t("onboarding.profileStep.countryPlaceholder")}
               </Text>
               <ChevronDown size={20} color="#9CA3AF" />
             </TouchableOpacity>
@@ -387,7 +361,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           {/* Native Language */}
           <View className="mb-4">
             <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-              Native Language
+              {t("onboarding.profileStep.nativeLanguageLabel")}
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
@@ -395,12 +369,13 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setLanguageModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${
-                  data.nativeLanguage ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={`flex-1 text-base ${data.nativeLanguage ? "text-gray-800" : "text-gray-400"
+                  }`}
                 numberOfLines={1}
               >
-                {getSelectedLanguageName()}
+                {data.nativeLanguage
+                  ? getSelectedLanguageName()
+                  : t("onboarding.profileStep.nativeLanguagePlaceholder")}
               </Text>
               <ChevronDown size={20} color="#9CA3AF" />
             </TouchableOpacity>
@@ -421,7 +396,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
                 <View className="flex-row justify-between items-center">
                   <View className="flex-1 pr-4">
                     <Text className="text-2xl font-bold text-gray-900">
-                      Select Country
+                      {t("onboarding.profileStep.selectCountry")}
                     </Text>
                   </View>
                   <Pressable
@@ -473,7 +448,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
                 <View className="flex-row justify-between items-center">
                   <View className="flex-1 pr-4">
                     <Text className="text-2xl font-bold text-gray-900">
-                      Native Language
+                      {t("onboarding.profileStep.selectNativeLanguage")}
                     </Text>
                   </View>
                   <Pressable
@@ -514,3 +489,5 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     );
   },
 );
+
+ProfileStep.displayName = "ProfileStep";
