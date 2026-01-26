@@ -1,4 +1,3 @@
-import CountryPicker from "@/components/profile/CountryPicker";
 import LanguagePicker from "@/components/profile/LanguagePicker";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
@@ -24,18 +23,8 @@ export default function PreferencesScreen() {
   }, [loadTheme]);
 
   // Modal states
-  const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [showPreferredPicker, setShowPreferredPicker] = useState(false);
   const [showNativePicker, setShowNativePicker] = useState(false);
-
-  const handleUpdateCountry = async (country: string) => {
-    try {
-      await updateProfile({ country });
-      setShowCountryPicker(false);
-    } catch {
-      // Silent error handling for prototype
-    }
-  };
 
   const handleUpdatePreferredLanguage = async (langCode: string) => {
     try {
@@ -109,7 +98,7 @@ export default function PreferencesScreen() {
             Languages
           </Text>
 
-          {/* Country Card */}
+          {/* Country Card - Read Only */}
           <ProfileSettingCard
             title="Country"
             subtitle={user?.user_metadata?.country || "Not set"}
@@ -117,7 +106,7 @@ export default function PreferencesScreen() {
               <MapPin size={20} color={getRainbowColorScheme(2).iconColor} />
             }
             colorScheme={getRainbowColorScheme(2)}
-            onPress={() => setShowCountryPicker(true)}
+            showArrow={false}
           />
 
           {/* Native Language Card */}
@@ -152,14 +141,6 @@ export default function PreferencesScreen() {
           />
         </View>
       </ScrollView>
-
-      {/* Modals */}
-      <CountryPicker
-        visible={showCountryPicker}
-        onClose={() => setShowCountryPicker(false)}
-        onSelect={handleUpdateCountry}
-        selectedCountry={user?.user_metadata?.country}
-      />
 
       {/* Preferred Language Picker (Original) */}
       <LanguagePicker
