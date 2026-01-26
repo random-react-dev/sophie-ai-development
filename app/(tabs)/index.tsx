@@ -96,7 +96,7 @@ export default function RoleplayScreen() {
 
       <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">
-          Choose a Scenario
+          Learning Scenarios
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Practice real-life conversations

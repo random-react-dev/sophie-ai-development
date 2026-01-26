@@ -154,7 +154,7 @@ export default function LanguageScreen() {
 
       <View className="px-4 mb-6">
         <Text className="text-3xl font-bold text-black text-left">
-          Language Environment
+          Language Preferences
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Choose your native & target languages and preferred accent.

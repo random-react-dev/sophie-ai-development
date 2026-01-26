@@ -54,7 +54,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -86,12 +86,13 @@ export default function VocabScreen() {
 
   // Folders Data
   const [folders, setFolders] = useState<VocabularyFolder[]>([]);
-  const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>("All");
+  const [selectedFolderFilter, setSelectedFolderFilter] =
+    useState<string>("All");
 
   // Multi-select Modal
   const [isMultiSelectVisible, setIsMultiSelectVisible] = useState(false);
   const [selectedForPractice, setSelectedForPractice] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [primaryPracticeItem, setPrimaryPracticeItem] =
     useState<VocabularyItem | null>(null);
@@ -135,7 +136,8 @@ export default function VocabScreen() {
       const matchesLang =
         selectedLanguage === "All" || item.language === selectedLanguage;
       const matchesFolder =
-        selectedFolderFilter === "All" || item.folder_id === selectedFolderFilter;
+        selectedFolderFilter === "All" ||
+        item.folder_id === selectedFolderFilter;
 
       return matchesSearch && matchesLang && matchesFolder;
     });
@@ -160,7 +162,7 @@ export default function VocabScreen() {
             if (success) {
               setItems((prev) => prev.filter((i) => i.id !== id));
               Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success
+                Haptics.NotificationFeedbackType.Success,
               );
             } else {
               showAlert("Error", "Failed to delete item", undefined, "error");
@@ -168,7 +170,7 @@ export default function VocabScreen() {
           },
         },
       ],
-      "warning"
+      "warning",
     );
   };
 
@@ -195,7 +197,7 @@ export default function VocabScreen() {
             },
           },
         ],
-        "success"
+        "success",
       );
     } catch {
       showAlert("Error", "Translation failed", undefined, "error");
@@ -229,7 +231,7 @@ export default function VocabScreen() {
   };
 
   const handleActionPress = (
-    action: "play" | "translate" | "conversation" | "delete"
+    action: "play" | "translate" | "conversation" | "delete",
   ) => {
     if (!selectedActionItem) return;
     closeActionModal();
@@ -297,7 +299,9 @@ export default function VocabScreen() {
       <PageHeader />
 
       <View className="px-4 mb-8">
-        <Text className="text-3xl font-bold text-black text-left">Vocab</Text>
+        <Text className="text-3xl font-bold text-black text-left">
+          My Vocabulary
+        </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Your saved words & phrases
         </Text>
@@ -358,9 +362,7 @@ export default function VocabScreen() {
                     className="flex-1"
                     containerClassName="px-5 py-2"
                   >
-                    <Text className="font-bold text-sm text-black">
-                      {lang}
-                    </Text>
+                    <Text className="font-bold text-sm text-black">{lang}</Text>
                   </RainbowBorder>
                 </TouchableOpacity>
               );
@@ -373,9 +375,7 @@ export default function VocabScreen() {
                 onPress={() => setSelectedLanguage(lang)}
                 className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                <Text className="font-bold text-sm text-gray-600">
-                  {lang}
-                </Text>
+                <Text className="font-bold text-sm text-gray-600">{lang}</Text>
               </TouchableOpacity>
             );
           })}
@@ -392,7 +392,9 @@ export default function VocabScreen() {
           {["All", ...folders].map((folder) => {
             const isAll = typeof folder === "string";
             const id = isAll ? "All" : (folder as VocabularyFolder).id;
-            const name = isAll ? "All Folders" : (folder as VocabularyFolder).name;
+            const name = isAll
+              ? "All Folders"
+              : (folder as VocabularyFolder).name;
             const isSelected = selectedFolderFilter === id;
 
             if (isSelected) {
@@ -410,7 +412,9 @@ export default function VocabScreen() {
                   >
                     <View className="flex-row items-center gap-2">
                       {!isAll && <Folder size={12} color="black" />}
-                      <Text className="font-bold text-xs text-black">{name}</Text>
+                      <Text className="font-bold text-xs text-black">
+                        {name}
+                      </Text>
                     </View>
                   </RainbowBorder>
                 </TouchableOpacity>
@@ -569,12 +573,15 @@ export default function VocabScreen() {
                   <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
                     <Folder size={16} color="#6b7280" />
                   </View>
-                  <Text className={`text-lg font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}>
-                    {newFolderId ? folders.find(f => f.id === newFolderId)?.name || "Selected Folder" : "Select a folder"}
+                  <Text
+                    className={`text-lg font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}
+                  >
+                    {newFolderId
+                      ? folders.find((f) => f.id === newFolderId)?.name ||
+                        "Selected Folder"
+                      : "Select a folder"}
                   </Text>
-                  <Text className="text-black font-bold text-sm">
-                    Change
-                  </Text>
+                  <Text className="text-black font-bold text-sm">Change</Text>
                 </TouchableOpacity>
               </View>
 
@@ -678,7 +685,7 @@ export default function VocabScreen() {
                       if (!newFolderName.trim()) return;
                       const newFolder = await createFolder(newFolderName);
                       if (newFolder) {
-                        setFolders(prev => [...prev, newFolder]);
+                        setFolders((prev) => [...prev, newFolder]);
                         setNewFolderId(newFolder.id);
                         setIsCreatingFolder(false);
                         setNewFolderName("");
@@ -693,7 +700,9 @@ export default function VocabScreen() {
                       containerClassName="flex-row items-center justify-center px-4 gap-2"
                     >
                       <Plus size={20} color="black" />
-                      <Text className="text-black font-bold text-base">Create</Text>
+                      <Text className="text-black font-bold text-base">
+                        Create
+                      </Text>
                     </RainbowBorder>
                   </TouchableOpacity>
                 </View>
@@ -705,15 +714,22 @@ export default function VocabScreen() {
                   <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
                     <Plus size={20} color="black" />
                   </View>
-                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
+                  <Text className="text-black font-bold text-lg">
+                    Create New Folder
+                  </Text>
                 </TouchableOpacity>
               )}
 
-              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
+                Your Folders
+              </Text>
             </View>
 
-            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-              {folders.map(folder => {
+            <ScrollView
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+            >
+              {folders.map((folder) => {
                 const isSelected = newFolderId === folder.id;
                 const Content = () => (
                   <>
@@ -721,7 +737,9 @@ export default function VocabScreen() {
                       <Folder size={20} color="gray" />
                     </View>
                     <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                      <Text className="font-bold text-base text-gray-900">
+                        {folder.name}
+                      </Text>
                     </View>
                   </>
                 );
@@ -747,7 +765,11 @@ export default function VocabScreen() {
                       </RainbowBorder>
                     ) : (
                       <View
-                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        style={{
+                          borderWidth: 1.5,
+                          borderRadius: 20,
+                          padding: 16,
+                        }}
                         className="flex-row items-center border-gray-200 bg-white"
                       >
                         <Content />
@@ -757,7 +779,9 @@ export default function VocabScreen() {
                 );
               })}
               {folders.length === 0 && (
-                <Text className="text-gray-400 text-center mt-10 italic">No folders yet</Text>
+                <Text className="text-gray-400 text-center mt-10 italic">
+                  No folders yet
+                </Text>
               )}
               {/* Padding for bottom */}
               <View className="h-20" />
@@ -1021,7 +1045,7 @@ function ActionModalContent({
               </Pressable>
               {/*Temporarily removed Edit button*/}
               <Pressable
-                onPress={() => { }}
+                onPress={() => {}}
                 className="flex-row items-center px-4 py-4 bg-gray-50 rounded-2xl active:bg-gray-100"
               >
                 <View className="w-10 h-10 bg-gray-200 rounded-full items-center justify-center mr-4">
@@ -1050,8 +1074,6 @@ function ActionModalContent({
   );
 }
 
-
-
 // Premium Selectable Phrase Item
 // Premium Selectable Phrase Item
 function SelectablePhraseItem({
@@ -1074,19 +1096,12 @@ function SelectablePhraseItem({
           </Text>
           {isPrimary && (
             <View className="bg-white px-2 py-0.5 rounded-2xl border border-gray-300">
-              <RainbowText
-                text="PRIMARY"
-                fontSize={10}
-                fontWeight="900"
-              />
+              <RainbowText text="PRIMARY" fontSize={10} fontWeight="900" />
             </View>
           )}
         </View>
         {item.translation && (
-          <Text
-            className="text-sm text-gray-500"
-            numberOfLines={2}
-          >
+          <Text className="text-sm text-gray-500" numberOfLines={2}>
             {item.translation}
           </Text>
         )}
