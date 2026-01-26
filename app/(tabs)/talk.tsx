@@ -1,6 +1,6 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
 import LanguageSelectorModal from "@/components/tutor/LanguageSelectorModal";
 import { Language } from "@/constants/languages";
@@ -69,11 +69,14 @@ const buildTutorPrompt = (
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${nativeLang.name
-    }), then introduce the lesson:
-"Welcome to your ${targetLang.name
-    } lesson! Let's start with a simple greeting. The word for 'hello' in ${targetLang.name
-    } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Start by greeting the user in their native language (${
+    nativeLang.name
+  }), then introduce the lesson:
+"Welcome to your ${
+    targetLang.name
+  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
+    targetLang.name
+  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -84,8 +87,9 @@ Start by greeting the user in their native language (${nativeLang.name
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${targetLang.name
-    } for the words being taught
+- Always respond in ${nativeLang.name} when explaining, but use ${
+    targetLang.name
+  } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress`;
 };
@@ -123,7 +127,7 @@ export default function TalkScreen() {
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef(false);
   const router = useRouter();
-  
+
   // Session tracking
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
 
@@ -217,7 +221,7 @@ Stay in character while teaching.`;
           `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`,
         );
         geminiWebSocket.connect(token, instruction);
-        
+
         // Start session timer when connection is established
         setSessionStartTime(Date.now());
       } catch (err) {
@@ -289,9 +293,9 @@ Stay in character while teaching.`;
 
     // Calculate duration
     const endTime = Date.now();
-    const durationSeconds = sessionStartTime 
-        ? Math.round((endTime - sessionStartTime) / 1000) 
-        : 0;
+    const durationSeconds = sessionStartTime
+      ? Math.round((endTime - sessionStartTime) / 1000)
+      : 0;
 
     showAlert(
       "Finish Conversation",
@@ -302,8 +306,8 @@ Stay in character while teaching.`;
           text: "Finish",
           onPress: () => {
             router.push({
-                pathname: "/report",
-                params: { duration: durationSeconds.toString() }
+              pathname: "/report",
+              params: { duration: durationSeconds.toString() },
             });
           },
         },
@@ -343,8 +347,8 @@ Stay in character while teaching.`;
     async (text: string) => {
       try {
         const result = await translateText(text, "English");
-        const displayText = result.romanization 
-          ? `${result.translation}\n\n${result.romanization}` 
+        const displayText = result.romanization
+          ? `${result.translation}\n\n${result.romanization}`
           : result.translation;
         showAlert("Translation", displayText, undefined, "info");
       } catch {
@@ -454,17 +458,17 @@ Stay in character while teaching.`;
               {/* Finish Button */}
               {messages.length > 0 && (
                 <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
-                  <View className="bg-white rounded-full border border-gray-100 overflow-hidden">
-                    <View className="absolute inset-0 opacity-20">
-                      <RainbowGradient className="flex-1" />
-                    </View>
-                    <View className="px-3 py-2 flex-row items-center gap-1.5">
-                      <Feather name="check-circle" size={12} color="black" />
-                      <Text className="text-black font-bold text-xs">
-                        Finish & Get Report
-                      </Text>
-                    </View>
-                  </View>
+                  <RainbowBorder
+                    borderRadius={9999}
+                    borderWidth={1.5}
+                    className="flex-1"
+                    containerClassName="px-3 py-2 flex-row items-center gap-1.5"
+                  >
+                    <Feather name="check-circle" size={12} color="black" />
+                    <Text className="text-black font-bold text-xs">
+                      Finish & Get Report
+                    </Text>
+                  </RainbowBorder>
                 </TouchableOpacity>
               )}
 
@@ -523,9 +527,10 @@ Stay in character while teaching.`;
         <View className="flex-1 mt-6">
           {!showTranscript ? (
             <View className="flex-1 items-center justify-center">
-              <Text className="text-gray-400 font-medium">
+              {/* Hide transcript */}
+              {/* <Text className="text-gray-400 font-medium">
                 Transcript Hidden
-              </Text>
+              </Text> */}
             </View>
           ) : messages.length === 0 ? (
             /* Premium Mic Button - matches tab bar design */
@@ -552,10 +557,8 @@ Stay in character while teaching.`;
                     Sophie.
                   </Text>
                 ) : (
-                  <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                    Hold the mic button below to start your{" "}
-                    {selectedScenario ? "roleplay" : targetLanguage?.name}{" "}
-                    lesson.
+                  <Text className="text-black/60 font-medium text-center px-10 leading-6">
+                    Hold the mic below to start speaking with Sophie.
                   </Text>
                 )}
               </View>

@@ -96,7 +96,7 @@ export default function RoleplayScreen() {
 
       <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">
-          Choose a Scenario
+          Learning Scenarios
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Practice real-life conversations
@@ -622,8 +622,9 @@ function CreateScenarioModal({
                                 setCategory(cat);
                                 setIsCategoryDropdownOpen(false);
                               }}
-                              className={`px-4 py-3.5 flex-row items-center overflow-hidden relative ${!isLast ? "border-b border-gray-100" : ""
-                                }`}
+                              className={`px-4 py-3.5 flex-row items-center overflow-hidden relative ${
+                                !isLast ? "border-b border-gray-100" : ""
+                              }`}
                             >
                               {isSelected && (
                                 <View className="absolute inset-0">

@@ -345,7 +345,7 @@ export default function VocabScreen() {
       <PageHeader />
 
       <View className="px-4 mb-8">
-        <Text className="text-3xl font-bold text-black text-left">Vocab</Text>
+        <Text className="text-3xl font-bold text-black text-left">My Vocabulary</Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Your saved words & phrases
         </Text>

@@ -60,7 +60,7 @@ export default function LanguageScreen() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newNativeLang, setNewNativeLang] = useState<Language>(
     SUPPORTED_LANGUAGES.find((l) => l.name === "Hindi") ||
-    SUPPORTED_LANGUAGES[0],
+      SUPPORTED_LANGUAGES[0],
   );
   const [newTargetLang, setNewTargetLang] =
     useState<Language>(DEFAULT_TARGET_LANG);
@@ -85,7 +85,8 @@ export default function LanguageScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     showAlert(
       "Play Sound",
-      `Speaking "${testPhrase}" with ${activeProfile?.preferred_accent || "American"
+      `Speaking "${testPhrase}" with ${
+        activeProfile?.preferred_accent || "American"
       } accent at ${speechRate.toFixed(1)}x speed`,
       undefined,
       "info",
@@ -150,7 +151,7 @@ export default function LanguageScreen() {
 
       <View className="px-4 mb-6">
         <Text className="text-3xl font-bold text-black text-left">
-          Language Environment
+          Language Preferences
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Choose your native & target languages and preferred accent.
@@ -168,10 +169,11 @@ export default function LanguageScreen() {
               activeOpacity={0.7}
               key={profile.id}
               onPress={() => handleSwitchProfile(profile.id)}
-              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${profile.is_active
+              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${
+                profile.is_active
                   ? "bg-white border-transparent"
                   : "bg-white border-gray-100"
-                }`}
+              }`}
             >
               {profile.is_active && (
                 <View className="absolute inset-0">
@@ -179,15 +181,27 @@ export default function LanguageScreen() {
                 </View>
               )}
               <View className="flex-row items-center gap-4 flex-1 p-5">
-                <View
-                  className={`w-12 h-12 rounded-full items-center justify-center ${profile.is_active ? "bg-white" : "bg-blue-50"
-                    }`}
-                >
-                  <Folder
-                    size={24}
-                    color={profile.is_active ? "#111827" : "#3b82f6"}
-                    strokeWidth={2}
-                  />
+                <View className="w-12 h-12 rounded-full items-center justify-center">
+                  {(() => {
+                    const targetLang = SUPPORTED_LANGUAGES.find(
+                      (l) => l.name === profile.target_language,
+                    );
+                    if (targetLang) {
+                      return (
+                        <CircleFlag
+                          countryCode={targetLang.countryCode}
+                          size={32}
+                        />
+                      );
+                    }
+                    return (
+                      <Folder
+                        size={24}
+                        color={profile.is_active ? "#111827" : "#3b82f6"}
+                        strokeWidth={2}
+                      />
+                    );
+                  })()}
                 </View>
                 <View>
                   <Text className="text-lg font-bold text-gray-900">
@@ -465,12 +479,13 @@ export default function LanguageScreen() {
               ? newTargetLang.code
               : newMediumLang?.code
         }
-        title={`Select ${pickerType === "native"
+        title={`Select ${
+          pickerType === "native"
             ? "Your Native"
             : pickerType === "target"
               ? "Target"
               : "Instruction"
-          } Language`}
+        } Language`}
       />
 
       {/* Accent Picker Modal */}
