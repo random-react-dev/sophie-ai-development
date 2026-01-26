@@ -2,7 +2,6 @@ import CountryPicker from "@/components/profile/CountryPicker";
 import LanguagePicker from "@/components/profile/LanguagePicker";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
-import ThemeCard from "@/components/profile/ThemeCard";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { getLanguageByCode } from "@/constants/languages";
 import { useAuthStore } from "@/stores/authStore";
@@ -114,7 +113,9 @@ export default function PreferencesScreen() {
           <ProfileSettingCard
             title="Country"
             subtitle={user?.user_metadata?.country || "Not set"}
-            icon={<MapPin size={20} color={getRainbowColorScheme(2).iconColor} />}
+            icon={
+              <MapPin size={20} color={getRainbowColorScheme(2).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(2)}
             onPress={() => setShowCountryPicker(true)}
           />
@@ -126,7 +127,9 @@ export default function PreferencesScreen() {
               getLanguageByCode(user?.user_metadata?.native_language)?.name ||
               "Select Language"
             }
-            icon={<Globe size={20} color={getRainbowColorScheme(3).iconColor} />}
+            icon={
+              <Globe size={20} color={getRainbowColorScheme(3).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(3)}
             onPress={() => setShowNativePicker(true)}
           />
@@ -141,42 +144,12 @@ export default function PreferencesScreen() {
                   ? "Spanish"
                   : "English"
             }
-            icon={<Languages size={20} color={getRainbowColorScheme(4).iconColor} />}
+            icon={
+              <Languages size={20} color={getRainbowColorScheme(4).iconColor} />
+            }
             colorScheme={getRainbowColorScheme(4)}
             onPress={() => setShowPreferredPicker(true)}
           />
-        </View>
-
-        {/* Appearance Section */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 ml-1">
-            Appearance
-          </Text>
-
-          {/* Theme Selector Card */}
-          <View className="bg-surface dark:bg-surface-dark rounded-2xl p-6 shadow-sm">
-            {/* Theme Cards Row */}
-            <View className="flex-row justify-center gap-8">
-              <ThemeCard
-                theme="light"
-                isSelected={theme === "light"}
-                onSelect={() => setTheme("light")}
-              />
-              <ThemeCard
-                theme="dark"
-                isSelected={theme === "dark"}
-                onSelect={() => setTheme("dark")}
-              />
-            </View>
-
-            {/* Divider */}
-            <View className="h-px bg-gray-200 dark:bg-gray-700 mt-6 mb-4" />
-
-            {/* Colour scheme label */}
-            <Text className="text-base font-semibold text-gray-900 dark:text-white">
-              Colour scheme
-            </Text>
-          </View>
         </View>
       </ScrollView>
 

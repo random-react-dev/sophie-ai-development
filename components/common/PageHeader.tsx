@@ -11,7 +11,7 @@ interface PageHeaderProps {
 
 export const PageHeader = ({
   title = "Sophie AI",
-  subtitle = "Any Language. Anytime. Anywhere",
+  subtitle = "Any Language. Anywhere. Anytime",
 }: PageHeaderProps) => {
   const { user } = useAuthStore();
 
