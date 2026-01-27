@@ -94,6 +94,7 @@ export default function RoleplayScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <PageHeader />
 
+      {/* title and subtitle */}
       <View className="px-4 mb-8">
         <Text className="text-3xl font-bold text-black text-left">
           Learning Scenarios
@@ -226,8 +227,8 @@ export default function RoleplayScreen() {
                 activeOpacity={0.7}
                 className={`mb-4 p-4 rounded-2xl shadow-lg flex-row items-center ${bgColor}`}
               >
-                <View className="w-12 h-12 rounded-xl items-center justify-center transform scale-110">
-                  <Icon size={28} color="gray" />
+                <View className="w-12 h-12 rounded-full items-center justify-center bg-blue-100/60">
+                  <Icon size={24} color="#3b82f6" />
                 </View>
                 <View className="flex-1 ml-6">
                   <Text className="text-xl font-bold text-black">

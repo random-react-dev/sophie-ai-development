@@ -206,13 +206,13 @@ export default function TabLayout() {
                 };
 
                 const getButtonColor = (): string => {
-                  if (isPTTActive) return "bg-red-500 shadow-red-200";
-                  if (isProcessing) return "bg-orange-500 shadow-orange-200";
-                  if (!isFocused) return "bg-gray-900 shadow-gray-400";
-                  if (!isConnected) return "bg-gray-600 shadow-gray-400";
+                  if (isPTTActive) return "bg-white shadow-red-200";
+                  if (isProcessing) return "bg-white shadow-orange-200";
+                  if (!isFocused) return "bg-white shadow-gray-200";
+                  if (!isConnected) return "bg-gray-100 shadow-gray-200";
                   return isPressing
-                    ? "bg-blue-400 shadow-blue-200"
-                    : "bg-blue-500 shadow-blue-200";
+                    ? "bg-gray-50 shadow-blue-200"
+                    : "bg-white shadow-blue-200";
                 };
 
                 return (
@@ -226,19 +226,6 @@ export default function TabLayout() {
                     }}
                     className="items-center justify-center -top-8"
                   >
-                    {/* Pulsing ring when recording ONLY */}
-                    {isPTTActive && (
-                      <Animated.View
-                        style={{
-                          position: "absolute",
-                          width: 80,
-                          height: 80,
-                          borderRadius: 24,
-                          backgroundColor: "rgba(239, 68, 68, 0.3)",
-                          transform: [{ scale: pulseAnim }],
-                        }}
-                      />
-                    )}
                     <Pressable
                       onPressIn={handlePressIn}
                       onPressOut={handlePressOut}
@@ -249,6 +236,7 @@ export default function TabLayout() {
                       <RainbowBorder
                         borderRadius={20}
                         borderWidth={3}
+                        innerBackgroundClassName=""
                         className="size-20"
                         style={{
                           // Subtle premium shadow when active
@@ -266,7 +254,11 @@ export default function TabLayout() {
                           name="mic"
                           size={26}
                           color={
-                            isFocused && !isPTTActive ? "#FFA500" : "black"
+                            isPTTActive
+                              ? "#ef4444"
+                              : isProcessing
+                                ? "black"
+                                : "black"
                           }
                         />
                       </RainbowBorder>

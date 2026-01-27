@@ -16,8 +16,8 @@ export const PageHeader = ({
   const { user } = useAuthStore();
 
   return (
-    <View className="px-4 py-4 mb-2 flex-row justify-center items-center relative">
-      <View className="items-center">
+    <View className="px-4 py-4 mb-6 flex-row justify-center items-center relative">
+      <View className="items-center gap-0.5">
         <Text
           allowFontScaling={false}
           style={{ fontSize: 24, fontWeight: "bold" }}
