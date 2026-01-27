@@ -107,10 +107,15 @@ export default function TabLayout() {
           backgroundColor: "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#f1f5f9",
-          height: 58 + insets.bottom,
-          paddingBottom: insets.bottom,
-          paddingTop: 12,
+          // Use a safer height calculation that works across devices
+          height: 60 + (insets.bottom > 0 ? insets.bottom : 10),
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          paddingTop: 10,
           paddingHorizontal: 8,
+          // CRITICAL: Allow floating buttons to extend outside the tab bar
+          overflow: "visible",
+          // Ensure tab bar sits above other content if needed
+          zIndex: 50,
         },
         tabBarLabel: ({ children, color }) => (
           <Text
