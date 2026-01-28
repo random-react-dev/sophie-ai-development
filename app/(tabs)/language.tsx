@@ -1,7 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import AccentPickerModal from "@/components/language/AccentPickerModal";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
@@ -164,72 +164,87 @@ export default function LanguageScreen() {
           {/* <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">
             My Language Profile
           </Text> */}
-          {profiles.map((profile) => (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              key={profile.id}
-              onPress={() => handleSwitchProfile(profile.id)}
-              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${
-                profile.is_active
-                  ? "bg-white border-transparent"
-                  : "bg-white border-gray-100"
-              }`}
-            >
-              {profile.is_active && (
-                <View className="absolute inset-0">
-                  <RainbowGradient className="flex-1 opacity-20" />
-                </View>
-              )}
-              <View className="flex-row items-center gap-4 flex-1 p-5">
-                <View className="w-12 h-12 rounded-full items-center justify-center">
-                  {(() => {
-                    const targetLang = SUPPORTED_LANGUAGES.find(
-                      (l) => l.name === profile.target_language,
-                    );
-                    if (targetLang) {
+          {profiles.map((profile) => {
+            // Inner content only - no container styling
+            const ProfileInner = () => (
+              <>
+                <View className="flex-row items-center gap-4 flex-1">
+                  <View className="w-12 h-12 rounded-full items-center justify-center">
+                    {(() => {
+                      const targetLang = SUPPORTED_LANGUAGES.find(
+                        (l) => l.name === profile.target_language,
+                      );
+                      if (targetLang) {
+                        return (
+                          <CircleFlag
+                            countryCode={targetLang.countryCode}
+                            size={32}
+                          />
+                        );
+                      }
                       return (
-                        <CircleFlag
-                          countryCode={targetLang.countryCode}
-                          size={32}
+                        <Folder
+                          size={24}
+                          color={profile.is_active ? "#111827" : "#3b82f6"}
+                          strokeWidth={2}
                         />
                       );
-                    }
-                    return (
-                      <Folder
-                        size={24}
-                        color={profile.is_active ? "#111827" : "#3b82f6"}
-                        strokeWidth={2}
-                      />
-                    );
-                  })()}
-                </View>
-                <View>
-                  <Text className="text-lg font-bold text-gray-900">
-                    {profile.name}
-                  </Text>
-                  <Text className="text-sm font-medium text-gray-500">
-                    {profile.native_language} → {profile.target_language}
-                  </Text>
-                </View>
-              </View>
-
-              <View className="pr-5">
-                {profile.is_active ? (
-                  <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center">
-                    <CheckCircle2 size={20} color="white" />
+                    })()}
                   </View>
-                ) : (
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => handleDeleteProfile(profile.id)}
-                    className="w-10 h-10 rounded-full bg-red-50 items-center justify-center"
+                  <View>
+                    <Text className="text-lg font-bold text-gray-900">
+                      {profile.name}
+                    </Text>
+                    <Text className="text-sm font-medium text-gray-500">
+                      {profile.native_language} → {profile.target_language}
+                    </Text>
+                  </View>
+                </View>
+
+                <View>
+                  {profile.is_active ? (
+                    <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center">
+                      <CheckCircle2 size={20} color="white" />
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => handleDeleteProfile(profile.id)}
+                      className="w-10 h-10 rounded-full bg-red-50 items-center justify-center"
+                    >
+                      <Trash2 size={20} color="#ef4444" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </>
+            );
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                key={profile.id}
+                onPress={() => handleSwitchProfile(profile.id)}
+                className="mb-4 shadow-lg rounded-2xl bg-white"
+                // Remove border from here as it's handled inside for inactive, or via Rainbow for active
+              >
+                {profile.is_active ? (
+                  <RainbowBorder
+                    borderWidth={2}
+                    borderRadius={16} // Rounded-2xl ~ 16px
+                    className="w-full"
+                    containerClassName="flex-row items-center justify-between p-5" // Removed w-full to fix overflow
+                    innerBackgroundClassName="bg-white"
                   >
-                    <Trash2 size={20} color="#ef4444" />
-                  </TouchableOpacity>
+                    <ProfileInner />
+                  </RainbowBorder>
+                ) : (
+                  <View className="w-full flex-row items-center justify-between p-5 border border-gray-100 rounded-2xl bg-white">
+                    <ProfileInner />
+                  </View>
                 )}
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
 
           <TouchableOpacity
             activeOpacity={0.7}

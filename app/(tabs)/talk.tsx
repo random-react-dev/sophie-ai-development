@@ -344,13 +344,13 @@ Stay in character while teaching.`;
   };
 
   const handleTranslate = useCallback(
-    async (text: string) => {
+    async (text: string): Promise<string | null> => {
       try {
         const result = await translateText(text, "English");
         const displayText = result.romanization
           ? `${result.translation}\n\n${result.romanization}`
           : result.translation;
-        showAlert("Translation", displayText, undefined, "info");
+        return displayText;
       } catch {
         showAlert(
           "Error",
@@ -358,6 +358,7 @@ Stay in character while teaching.`;
           undefined,
           "error",
         );
+        return null;
       }
     },
     [showAlert],

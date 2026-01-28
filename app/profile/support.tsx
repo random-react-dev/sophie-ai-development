@@ -7,14 +7,35 @@ import {
 } from "@/utils/rainbowColors";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { FileText, Mail, MessageCircle, Scale } from "lucide-react-native";
+import {
+  FileText,
+  Mail,
+  MessageCircle,
+  Scale,
+  Trash2,
+} from "lucide-react-native";
 import React from "react";
-import { Linking, ScrollView, Text, View } from "react-native";
+import {
+  Linking,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SupportScreen() {
   const router = useRouter();
   const { alertState, showAlert, hideAlert } = useAlertModal();
+
+  const handleDeleteAccount = () => {
+    showAlert(
+      "Delete Account",
+      "This feature is coming soon. Your data is safe.",
+      undefined,
+      "info",
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
@@ -124,6 +145,32 @@ export default function SupportScreen() {
               Linking.openURL(url);
             }}
           />
+        </View>
+
+        {/* Danger Zone Section */}
+        <View className="mx-4 mt-6">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
+            Danger Zone
+          </Text>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={handleDeleteAccount}
+            className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-200"
+          >
+            <View className="flex-row items-center gap-4">
+              <View className="w-11 h-11 rounded-xl bg-red-50 items-center justify-center">
+                <Trash2 size={20} color="#ef4444" />
+              </View>
+              <View>
+                <Text className="text-base font-semibold text-red-500">
+                  Delete Account
+                </Text>
+                <Text className="text-xs text-gray-400 mt-0.5">
+                  Permanently remove your account
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* App Info */}

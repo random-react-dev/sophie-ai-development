@@ -13,8 +13,8 @@ import {
   HelpCircle,
   LogOut,
   Settings,
+  Share2,
   Shield,
-  Trash2,
   User,
 } from "lucide-react-native";
 import React, { useState } from "react";
@@ -96,15 +96,6 @@ export default function ProfileScreen() {
         },
       ],
       "warning",
-    );
-  };
-
-  const handleDeleteAccount = () => {
-    showAlert(
-      "Delete Account",
-      "This feature is coming soon. Your data is safe.",
-      undefined,
-      "info",
     );
   };
 
@@ -239,6 +230,24 @@ export default function ProfileScreen() {
             colorScheme={getRainbowColorScheme(4)}
             onPress={() => router.push("/profile/support")}
           />
+
+          {/* Social Media Card */}
+          <ProfileSettingCard
+            title="Social Media"
+            subtitle="Connect with us"
+            icon={
+              <Share2
+                size={20}
+                color="#9333EA" // Purple-600
+              />
+            }
+            colorScheme={{
+              iconColor: "#9333EA",
+              iconBgColor: "bg-purple-50",
+              borderColor: "border-purple-300", // Stronger purple border as requested
+            }}
+            onPress={() => router.push("/profile/social")}
+          />
         </View>
 
         {/* Actions Section */}
@@ -253,30 +262,6 @@ export default function ProfileScreen() {
               showArrow={false}
               onPress={handleLogout}
             />
-          </View>
-
-          {/* Danger Zone Section */}
-          <View className="mx-4">
-            {/* Delete Account Card */}
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleDeleteAccount}
-              className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-200"
-            >
-              <View className="flex-row items-center gap-4">
-                <View className="w-11 h-11 rounded-xl bg-red-50 items-center justify-center">
-                  <Trash2 size={20} color="#ef4444" />
-                </View>
-                <View>
-                  <Text className="text-base font-semibold text-red-500">
-                    Delete Account
-                  </Text>
-                  <Text className="text-xs text-gray-400 mt-0.5">
-                    Permanently remove your account
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
       </View>

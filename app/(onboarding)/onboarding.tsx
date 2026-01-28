@@ -361,7 +361,9 @@ export default function OnboardingScreen() {
             className="items-center mt-4"
             disabled={isSaving}
           >
-            <Text className="text-gray-400 font-medium">{t("onboarding.skip")}</Text>
+            <Text className="text-gray-400 font-medium">
+              {t("onboarding.skip")}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
