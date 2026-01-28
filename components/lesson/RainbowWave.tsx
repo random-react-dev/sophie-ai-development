@@ -16,6 +16,8 @@ interface RainbowWaveProps {
   isSpeaking: boolean;
   isProcessing?: boolean;
   volumeLevel: number;
+  width?: number;
+  height?: number;
 }
 
 export const RainbowWave = React.memo(
@@ -24,9 +26,12 @@ export const RainbowWave = React.memo(
     isSpeaking,
     isProcessing = false,
     volumeLevel,
+    width: customWidth,
+    height: customHeight = 160,
   }: RainbowWaveProps) => {
-    const { width } = useWindowDimensions();
-    const height = 160;
+    const { width: windowWidth } = useWindowDimensions();
+    const width = customWidth || windowWidth;
+    const height = customHeight;
     const phase = useSharedValue(0);
     const amplitude = useSharedValue(height * 0.24); // Match InteractiveRainbowWave: height * 0.24
 
@@ -93,7 +98,7 @@ export const RainbowWave = React.memo(
     });
 
     return (
-      <View style={{ width: "100%", height }}>
+      <View style={{ width: customWidth || "100%", height }}>
         <Svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`}>
           <Defs>
             <LinearGradient id="rainbow" x1="0" y1="0" x2="1" y2="0">
