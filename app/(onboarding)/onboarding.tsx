@@ -187,7 +187,8 @@ export default function OnboardingScreen() {
 
         resetOnboarding();
         // 4. Navigate to Language Tab to show the new profile
-        router.replace("/(tabs)/language");
+        // 4. Navigate to Talk Tab to start conversing
+        router.replace("/(tabs)/talk");
       } catch {
         showAlert(
           t("common.error"),
