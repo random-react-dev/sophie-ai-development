@@ -96,7 +96,7 @@ export default function RoleplayScreen() {
 
       {/* title and subtitle */}
       <View className="px-4 mb-8">
-        <Text className="text-3xl font-bold text-black text-left">
+        <Text className="text-xl font-bold text-black text-left">
           Learning Scenarios
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
@@ -110,7 +110,7 @@ export default function RoleplayScreen() {
           <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search scenarios..."
-            className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
+            className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="gray"
@@ -231,10 +231,10 @@ export default function RoleplayScreen() {
                   <Icon size={24} color="#3b82f6" />
                 </View>
                 <View className="flex-1 ml-6">
-                  <Text className="text-xl font-bold text-black">
+                  <Text className="text-base font-bold text-black">
                     {item.title}
                   </Text>
-                  <Text className="text-gray-400 text-base font-medium">
+                  <Text className="text-gray-400 text-sm font-medium">
                     {item.category}
                   </Text>
                   <Text
@@ -258,7 +258,7 @@ export default function RoleplayScreen() {
                 <Star size={24} color="#6b7280" />
               </View>
               <View className="flex-1 ml-6">
-                <Text className="text-xl font-bold text-gray-500">
+                <Text className="text-base font-bold text-gray-500">
                   Create Your Own
                 </Text>
               </View>
@@ -346,7 +346,7 @@ function CreateScenarioModal({
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-2xl font-bold text-black">
+              <Text className="text-xl font-bold text-black">
                 Create Scenario
               </Text>
               <TouchableOpacity
@@ -393,13 +393,13 @@ function CreateScenarioModal({
                 showsVerticalScrollIndicator={false}
               >
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     Sophie&apos;s Role <Text className="text-red-500">*</Text>
                   </Text>
                   <TextInput
                     placeholder="e.g. A grumpy but helpful shopkeeper"
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
+                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium text-sm h-14 p-0"
                     value={sophieRole}
                     onChangeText={setSophieRole}
                     textAlignVertical="center"
@@ -408,13 +408,13 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     Your Role
                   </Text>
                   <TextInput
                     placeholder="e.g. A customer in a hurry"
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
+                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium text-sm h-14 p-0"
                     value={userRole}
                     onChangeText={setUserRole}
                     textAlignVertical="center"
@@ -423,13 +423,13 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     Topic <Text className="text-red-500">*</Text>
                   </Text>
                   <TextInput
                     placeholder="e.g. Buying a vintage watch"
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
+                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium text-sm h-14 p-0"
                     value={topic}
                     onChangeText={setTopic}
                     textAlignVertical="center"
@@ -438,7 +438,7 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     Level
                   </Text>
                   <View className="flex-row flex-wrap gap-1.5">
@@ -483,7 +483,7 @@ function CreateScenarioModal({
 
                 {/* Category Dropdown */}
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     Category
                   </Text>
                   <TouchableOpacity
@@ -653,13 +653,13 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-10">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     Context / Situation
                   </Text>
                   <TextInput
                     placeholder="Describe the setting..."
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium h-32 text-start align-top"
+                    className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium text-sm h-32 text-start align-top"
                     multiline
                     value={context}
                     onChangeText={setContext}

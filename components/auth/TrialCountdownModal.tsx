@@ -23,7 +23,7 @@ function BenefitItem({ text }: { text: string }) {
       >
         <Check size={12} color="black" strokeWidth={3} />
       </RainbowBorder>
-      <Text className="text-gray-700 font-medium text-base flex-1">{text}</Text>
+      <Text className="text-gray-700 font-medium text-sm flex-1">{text}</Text>
     </View>
   );
 }
@@ -116,10 +116,10 @@ export const TrialCountdownModal = () => {
             <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4">
               <Crown size={36} color="white" />
             </RainbowGradient>
-            <Text className="text-3xl font-black text-gray-900 text-center">
+            <Text className="text-xl font-black text-gray-900 text-center">
               {isLastDay ? "Last Day!" : `${remainingDays} Days Left`}
             </Text>
-            <Text className="text-gray-500 text-center mt-2 text-base leading-6">
+            <Text className="text-gray-500 text-center mt-2 text-sm leading-6">
               {isLastDay
                 ? "Your free trial ends today!"
                 : `Upgrade to Sophie AI Pro for the full experience.`}
@@ -171,7 +171,7 @@ export const TrialCountdownModal = () => {
                 className="flex-1"
                 containerClassName="items-center justify-center"
               >
-                <Text className="text-black font-bold text-lg">
+                <Text className="text-black font-bold text-base">
                   {isLastDay ? "Upgrade Now" : "Claim My Discount"}
                 </Text>
               </RainbowBorder>

@@ -84,7 +84,7 @@ export function AlertModal({
           </Text>
 
           {/* Message */}
-          <Text className="text-gray-500 text-center text-base mb-6">
+          <Text className="text-gray-500 text-center text-sm mb-6">
             {message}
           </Text>
 

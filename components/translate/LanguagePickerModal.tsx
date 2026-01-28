@@ -16,8 +16,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
-
 // Language Item Card
 function LanguageItem({
   item,
@@ -35,7 +33,6 @@ function LanguageItem({
         <Text className="font-bold text-base text-gray-900">{item.name}</Text>
         <Text className="text-gray-500 text-sm">{item.nativeName}</Text>
       </View>
-
     </>
   );
 
@@ -87,7 +84,7 @@ export default function LanguagePickerModal({
       (lang) =>
         lang.name.toLowerCase().includes(query) ||
         lang.nativeName.toLowerCase().includes(query) ||
-        lang.code.toLowerCase().includes(query)
+        lang.code.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -116,7 +113,7 @@ export default function LanguagePickerModal({
         <SafeAreaView className="flex-1">
           {/* Header */}
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-2xl font-bold text-black">{title}</Text>
+            <Text className="text-xl font-bold text-black">{title}</Text>
             <Pressable
               onPress={handleClose}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -131,7 +128,7 @@ export default function LanguagePickerModal({
               <Feather name="search" size={20} color="gray" />
               <TextInput
                 placeholder="Search languages..."
-                className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
+                className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 placeholderTextColor="gray"

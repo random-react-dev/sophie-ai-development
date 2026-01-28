@@ -123,7 +123,7 @@ export default function ProfileScreen() {
                   />
                 ) : (
                   <View className="w-full h-full items-center justify-center">
-                    <Text className="text-3xl font-bold text-blue-500">
+                    <Text className="text-2xl font-bold text-blue-500">
                       {user?.email?.charAt(0).toUpperCase()}
                     </Text>
                   </View>

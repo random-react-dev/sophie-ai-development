@@ -94,7 +94,7 @@ export default function SignupScreen() {
   const renderStep1 = () => (
     <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8">
       <View className="items-center mb-8">
-        <Text className="text-3xl font-bold text-gray-900">
+        <Text className="text-2xl font-bold text-gray-900">
           Create your account
         </Text>
         {/* <Text className="text-gray-500 mt-2 w-full text-center">
@@ -144,8 +144,8 @@ export default function SignupScreen() {
   const renderStep2 = () => (
     <View className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
       <View className="items-center mb-8">
-        <Text className="text-3xl font-bold text-gray-900">Profile Setup</Text>
-        <Text className="text-gray-500 mt-2 w-full text-center">
+        <Text className="text-2xl font-bold text-gray-900">Profile Setup</Text>
+        <Text className="text-gray-500 text-sm mt-2 w-full text-center">
           Step 2 of 2 — Finalize your account
         </Text>
       </View>
@@ -232,7 +232,7 @@ export default function SignupScreen() {
             </Text>
             <Link href="/login" asChild>
               <TouchableOpacity activeOpacity={0.7}>
-                <Text className="text-black font-medium underline text-lg">
+                <Text className="text-black font-medium underline text-base">
                   Log in
                 </Text>
               </TouchableOpacity>
@@ -241,7 +241,7 @@ export default function SignupScreen() {
 
           {/* Terms */}
           <View className="items-center pb-6">
-            <Text className="text-gray-400 text-sm w-full text-center">
+            <Text className="text-gray-400 text-xs w-full text-center">
               By continuing, you agree to our{" "}
               <Text className="text-gray-600 font-bold">Terms to Service</Text>
               {"\n"}and{" "}

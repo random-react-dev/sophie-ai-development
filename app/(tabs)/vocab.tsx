@@ -3,7 +3,11 @@ import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder, RainbowText } from "@/components/common/Rainbow";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
-import { DEFAULT_TARGET_LANG, Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
+import {
+  DEFAULT_TARGET_LANG,
+  Language,
+  SUPPORTED_LANGUAGES,
+} from "@/constants/languages";
 import { translateText } from "@/services/gemini/translate";
 import {
   VocabularyFolder,
@@ -51,23 +55,23 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VocabScreen() {
   useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
-  const { 
-    items, 
-    folders, 
-    isLoading, 
-    fetchVocabulary, 
-    addItem, 
+  const {
+    items,
+    folders,
+    isLoading,
+    fetchVocabulary,
+    addItem,
     updateItem,
-    removeItem, 
+    removeItem,
     // fetchFolders, // unused
-    addFolder 
+    addFolder,
   } = useVocabularyStore();
   const router = useRouter();
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -97,19 +101,22 @@ export default function VocabScreen() {
   const [editingItem, setEditingItem] = useState<VocabularyItem | null>(null);
   const [editPhrase, setEditPhrase] = useState("");
   const [editTranslation, setEditTranslation] = useState("");
-  const [editLanguage, setEditLanguage] = useState<Language>(DEFAULT_TARGET_LANG);
+  const [editLanguage, setEditLanguage] =
+    useState<Language>(DEFAULT_TARGET_LANG);
   const [showEditLangPicker, setShowEditLangPicker] = useState(false);
   const [editFolderId, setEditFolderId] = useState<string | null>(null);
-  const [isEditFolderPickerVisible, setIsEditFolderPickerVisible] = useState(false);
+  const [isEditFolderPickerVisible, setIsEditFolderPickerVisible] =
+    useState(false);
 
   // Folders Data
   // const [folders, setFolders] = useState<VocabularyFolder[]>([]);
-  const [selectedFolderFilter, setSelectedFolderFilter] = useState<string>("All");
+  const [selectedFolderFilter, setSelectedFolderFilter] =
+    useState<string>("All");
 
   // Multi-select Modal
   const [isMultiSelectVisible, setIsMultiSelectVisible] = useState(false);
   const [selectedForPractice, setSelectedForPractice] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [primaryPracticeItem, setPrimaryPracticeItem] =
     useState<VocabularyItem | null>(null);
@@ -124,7 +131,7 @@ export default function VocabScreen() {
     useCallback(() => {
       fetchVocabulary();
       // fetchFolders is called within fetchVocabulary now, but keeping distinct functions in store is good
-    }, [fetchVocabulary])
+    }, [fetchVocabulary]),
   );
 
   const languages = useMemo(() => {
@@ -141,7 +148,8 @@ export default function VocabScreen() {
       const matchesLang =
         selectedLanguage === "All" || item.language === selectedLanguage;
       const matchesFolder =
-        selectedFolderFilter === "All" || item.folder_id === selectedFolderFilter;
+        selectedFolderFilter === "All" ||
+        item.folder_id === selectedFolderFilter;
 
       return matchesSearch && matchesLang && matchesFolder;
     });
@@ -165,7 +173,7 @@ export default function VocabScreen() {
             const success = await removeItem(id);
             if (success) {
               Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success
+                Haptics.NotificationFeedbackType.Success,
               );
             } else {
               showAlert("Error", "Failed to delete item", undefined, "error");
@@ -173,7 +181,7 @@ export default function VocabScreen() {
           },
         },
       ],
-      "warning"
+      "warning",
     );
   };
 
@@ -190,8 +198,8 @@ export default function VocabScreen() {
       // Ask to save the translation
       showAlert(
         "Translation",
-        result.romanization 
-          ? `${result.translation}\n\n${result.romanization}` 
+        result.romanization
+          ? `${result.translation}\n\n${result.romanization}`
           : result.translation,
         [
           { text: "Close", style: "cancel" },
@@ -202,7 +210,7 @@ export default function VocabScreen() {
             },
           },
         ],
-        "success"
+        "success",
       );
     } catch {
       showAlert("Error", "Translation failed", undefined, "error");
@@ -236,7 +244,7 @@ export default function VocabScreen() {
   };
 
   const handleActionPress = (
-    action: "play" | "translate" | "conversation" | "edit" | "delete"
+    action: "play" | "translate" | "conversation" | "edit" | "delete",
   ) => {
     if (!selectedActionItem) return;
     closeActionModal();
@@ -289,13 +297,13 @@ export default function VocabScreen() {
     setEditingItem(item);
     setEditPhrase(item.phrase);
     setEditTranslation(item.translation || "");
-    
+
     // Find language by name or default
     const foundLang = SUPPORTED_LANGUAGES.find(
-      (lang) => lang.name === item.language
+      (lang) => lang.name === item.language,
     );
     setEditLanguage(foundLang || DEFAULT_TARGET_LANG);
-    
+
     setEditFolderId(item.folder_id || null);
     setIsEditModalVisible(true);
     closeActionModal();
@@ -345,7 +353,9 @@ export default function VocabScreen() {
       <PageHeader />
 
       <View className="px-4 mb-8">
-        <Text className="text-3xl font-bold text-black text-left">My Vocabulary</Text>
+        <Text className="text-xl font-bold text-black text-left">
+          My Vocabulary
+        </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
           Your saved words & phrases
         </Text>
@@ -358,7 +368,7 @@ export default function VocabScreen() {
           <Feather name="search" size={20} color="gray" />
           <TextInput
             placeholder="Search saved words..."
-            className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
+            className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="gray"
@@ -406,9 +416,7 @@ export default function VocabScreen() {
                     className="flex-1"
                     containerClassName="px-5 py-2"
                   >
-                    <Text className="font-bold text-sm text-black">
-                      {lang}
-                    </Text>
+                    <Text className="font-bold text-sm text-black">{lang}</Text>
                   </RainbowBorder>
                 </TouchableOpacity>
               );
@@ -421,9 +429,7 @@ export default function VocabScreen() {
                 onPress={() => setSelectedLanguage(lang)}
                 className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                <Text className="font-bold text-sm text-gray-600">
-                  {lang}
-                </Text>
+                <Text className="font-bold text-sm text-gray-600">{lang}</Text>
               </TouchableOpacity>
             );
           })}
@@ -440,7 +446,9 @@ export default function VocabScreen() {
           {["All", ...folders].map((folder) => {
             const isAll = typeof folder === "string";
             const id = isAll ? "All" : (folder as VocabularyFolder).id;
-            const name = isAll ? "All Folders" : (folder as VocabularyFolder).name;
+            const name = isAll
+              ? "All Folders"
+              : (folder as VocabularyFolder).name;
             const isSelected = selectedFolderFilter === id;
 
             if (isSelected) {
@@ -458,7 +466,9 @@ export default function VocabScreen() {
                   >
                     <View className="flex-row items-center gap-2">
                       {!isAll && <Folder size={12} color="black" />}
-                      <Text className="font-bold text-xs text-black">{name}</Text>
+                      <Text className="font-bold text-xs text-black">
+                        {name}
+                      </Text>
                     </View>
                   </RainbowBorder>
                 </TouchableOpacity>
@@ -511,7 +521,7 @@ export default function VocabScreen() {
                       </Text>
                     )}
                   </View>
-                  <Text className="text-lg font-bold text-gray-900 leading-snug">
+                  <Text className="text-base font-bold text-gray-900 leading-snug">
                     {item.phrase}
                   </Text>
                   {item.translation && (
@@ -572,7 +582,7 @@ export default function VocabScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-2xl font-bold text-black">Add Phrase</Text>
+              <Text className="text-xl font-bold text-black">Add Phrase</Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setIsAddModalVisible(false)}
@@ -587,7 +597,7 @@ export default function VocabScreen() {
               showsVerticalScrollIndicator={false}
             >
               <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                   Language
                 </Text>
                 <TouchableOpacity
@@ -596,7 +606,7 @@ export default function VocabScreen() {
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
                   <CircleFlag countryCode={newLanguage.countryCode} size={28} />
-                  <Text className="text-lg font-semibold text-black flex-1">
+                  <Text className="text-sm font-semibold text-black flex-1">
                     {newLanguage.name}
                   </Text>
                   <Text className="text-gray-700 font-bold text-sm">
@@ -606,7 +616,7 @@ export default function VocabScreen() {
               </View>
 
               <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                   Folder (Optional)
                 </Text>
                 <TouchableOpacity
@@ -617,21 +627,24 @@ export default function VocabScreen() {
                   <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
                     <Folder size={16} color="#6b7280" />
                   </View>
-                  <Text className={`text-lg font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}>
-                    {newFolderId ? folders.find(f => f.id === newFolderId)?.name || "Selected Folder" : "Select a folder"}
+                  <Text
+                    className={`text-sm font-semibold flex-1 ${newFolderId ? "text-black" : "text-gray-400"}`}
+                  >
+                    {newFolderId
+                      ? folders.find((f) => f.id === newFolderId)?.name ||
+                        "Selected Folder"
+                      : "Select a folder"}
                   </Text>
-                  <Text className="text-black font-bold text-sm">
-                    Change
-                  </Text>
+                  <Text className="text-black font-bold text-sm">Change</Text>
                 </TouchableOpacity>
               </View>
 
               <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                   Phrase <Text className="text-red-500">*</Text>
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                  className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900"
                   placeholder="Enter word or phrase..."
                   placeholderTextColor="gray"
                   value={newPhrase}
@@ -642,11 +655,11 @@ export default function VocabScreen() {
               </View>
 
               <View className="mb-10">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                   Translation (Optional)
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
+                  className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
                   placeholder="Enter meaning..."
                   placeholderTextColor="gray"
                   value={newTranslation}
@@ -666,7 +679,7 @@ export default function VocabScreen() {
               >
                 {!newPhrase.trim() ? (
                   <View className="flex-1 bg-gray-200 items-center justify-center rounded-full">
-                    <Text className="text-gray-400 font-bold text-lg">
+                    <Text className="text-gray-400 font-bold text-base">
                       Save Phrase
                     </Text>
                   </View>
@@ -677,7 +690,7 @@ export default function VocabScreen() {
                     className="flex-1"
                     containerClassName="items-center justify-center"
                   >
-                    <Text className="text-black font-bold text-lg">
+                    <Text className="text-black font-bold text-base">
                       Save Phrase
                     </Text>
                   </RainbowBorder>
@@ -700,7 +713,7 @@ export default function VocabScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-2xl font-bold text-black">Edit Phrase</Text>
+              <Text className="text-xl font-bold text-black">Edit Phrase</Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setIsEditModalVisible(false)}
@@ -723,8 +736,11 @@ export default function VocabScreen() {
                   onPress={() => setShowEditLangPicker(true)}
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
-                  <CircleFlag countryCode={editLanguage.countryCode} size={28} />
-                  <Text className="text-lg font-semibold text-black flex-1">
+                  <CircleFlag
+                    countryCode={editLanguage.countryCode}
+                    size={28}
+                  />
+                  <Text className="text-base font-semibold text-black flex-1">
                     {editLanguage.name}
                   </Text>
                   <Text className="text-gray-700 font-bold text-sm">
@@ -745,21 +761,24 @@ export default function VocabScreen() {
                   <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
                     <Folder size={16} color="#6b7280" />
                   </View>
-                  <Text className={`text-lg font-semibold flex-1 ${editFolderId ? "text-black" : "text-gray-400"}`}>
-                    {editFolderId ? folders.find(f => f.id === editFolderId)?.name || "Selected Folder" : "Select a folder"}
+                  <Text
+                    className={`text-base font-semibold flex-1 ${editFolderId ? "text-black" : "text-gray-400"}`}
+                  >
+                    {editFolderId
+                      ? folders.find((f) => f.id === editFolderId)?.name ||
+                        "Selected Folder"
+                      : "Select a folder"}
                   </Text>
-                  <Text className="text-black font-bold text-sm">
-                    Change
-                  </Text>
+                  <Text className="text-black font-bold text-sm">Change</Text>
                 </TouchableOpacity>
               </View>
 
               <View className="mb-6">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                   Phrase <Text className="text-red-500">*</Text>
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                  className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900"
                   placeholder="Enter word or phrase..."
                   placeholderTextColor="gray"
                   value={editPhrase}
@@ -770,11 +789,11 @@ export default function VocabScreen() {
               </View>
 
               <View className="mb-10">
-                <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
+                <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                   Translation (Optional)
                 </Text>
                 <TextInput
-                  className="bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
+                  className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
                   placeholder="Enter meaning..."
                   placeholderTextColor="gray"
                   value={editTranslation}
@@ -794,7 +813,7 @@ export default function VocabScreen() {
               >
                 {!editPhrase.trim() ? (
                   <View className="flex-1 bg-gray-200 items-center justify-center rounded-full">
-                    <Text className="text-gray-400 font-bold text-lg">
+                    <Text className="text-gray-400 font-bold text-base">
                       Update Phrase
                     </Text>
                   </View>
@@ -805,7 +824,7 @@ export default function VocabScreen() {
                     className="flex-1"
                     containerClassName="items-center justify-center"
                   >
-                    <Text className="text-black font-bold text-lg">
+                    <Text className="text-black font-bold text-base">
                       Update Phrase
                     </Text>
                   </RainbowBorder>
@@ -836,11 +855,16 @@ export default function VocabScreen() {
 
           <View className="flex-1">
             <View className="px-4 py-4">
-              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
+                Your Folders
+              </Text>
             </View>
 
-            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-              {folders.map(folder => {
+            <ScrollView
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+            >
+              {folders.map((folder) => {
                 const isSelected = editFolderId === folder.id;
                 const Content = () => (
                   <>
@@ -848,7 +872,9 @@ export default function VocabScreen() {
                       <Folder size={20} color="gray" />
                     </View>
                     <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                      <Text className="font-bold text-base text-gray-900">
+                        {folder.name}
+                      </Text>
                     </View>
                   </>
                 );
@@ -874,7 +900,11 @@ export default function VocabScreen() {
                       </RainbowBorder>
                     ) : (
                       <View
-                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        style={{
+                          borderWidth: 1.5,
+                          borderRadius: 20,
+                          padding: 16,
+                        }}
                         className="flex-row items-center border-gray-200 bg-white"
                       >
                         <Content />
@@ -884,7 +914,9 @@ export default function VocabScreen() {
                 );
               })}
               {folders.length === 0 && (
-                <Text className="text-gray-400 text-center mt-10 italic">No folders yet</Text>
+                <Text className="text-gray-400 text-center mt-10 italic">
+                  No folders yet
+                </Text>
               )}
               <View className="h-20" />
             </ScrollView>
@@ -926,7 +958,7 @@ export default function VocabScreen() {
               {isCreatingFolder ? (
                 <View className="flex-row items-center gap-2 mb-4">
                   <TextInput
-                    className="flex-1 bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                    className="flex-1 bg-gray-50 py-3 px-4 text-sm rounded-full border border-gray-100 font-medium text-gray-900"
                     placeholder="Folder name..."
                     placeholderTextColor="gray"
                     value={newFolderName}
@@ -954,7 +986,9 @@ export default function VocabScreen() {
                       containerClassName="flex-row items-center justify-center px-4 gap-2"
                     >
                       <Plus size={20} color="black" />
-                      <Text className="text-black font-bold text-base">Create</Text>
+                      <Text className="text-black font-bold text-base">
+                        Create
+                      </Text>
                     </RainbowBorder>
                   </TouchableOpacity>
                 </View>
@@ -966,15 +1000,22 @@ export default function VocabScreen() {
                   <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
                     <Plus size={20} color="black" />
                   </View>
-                  <Text className="text-black font-bold text-lg">Create New Folder</Text>
+                  <Text className="text-black font-bold text-lg">
+                    Create New Folder
+                  </Text>
                 </TouchableOpacity>
               )}
 
-              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">Your Folders</Text>
+              <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
+                Your Folders
+              </Text>
             </View>
 
-            <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-              {folders.map(folder => {
+            <ScrollView
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+            >
+              {folders.map((folder) => {
                 const isSelected = newFolderId === folder.id;
                 const Content = () => (
                   <>
@@ -982,7 +1023,9 @@ export default function VocabScreen() {
                       <Folder size={20} color="gray" />
                     </View>
                     <View className="flex-1 ml-4">
-                      <Text className="font-bold text-base text-gray-900">{folder.name}</Text>
+                      <Text className="font-bold text-base text-gray-900">
+                        {folder.name}
+                      </Text>
                     </View>
                   </>
                 );
@@ -1008,7 +1051,11 @@ export default function VocabScreen() {
                       </RainbowBorder>
                     ) : (
                       <View
-                        style={{ borderWidth: 1.5, borderRadius: 20, padding: 16 }}
+                        style={{
+                          borderWidth: 1.5,
+                          borderRadius: 20,
+                          padding: 16,
+                        }}
                         className="flex-row items-center border-gray-200 bg-white"
                       >
                         <Content />
@@ -1018,7 +1065,9 @@ export default function VocabScreen() {
                 );
               })}
               {folders.length === 0 && (
-                <Text className="text-gray-400 text-center mt-10 italic">No folders yet</Text>
+                <Text className="text-gray-400 text-center mt-10 italic">
+                  No folders yet
+                </Text>
               )}
               {/* Padding for bottom */}
               <View className="h-20" />
@@ -1157,7 +1206,9 @@ function ActionModalContent({
 }: {
   selectedItem: VocabularyItem | null;
   onClose: () => void;
-  onAction: (action: "play" | "translate" | "conversation" | "edit" | "delete") => void;
+  onAction: (
+    action: "play" | "translate" | "conversation" | "edit" | "delete",
+  ) => void;
 }) {
   const translateY = useSharedValue(0);
   const context = useSharedValue(0);
@@ -1310,8 +1361,6 @@ function ActionModalContent({
   );
 }
 
-
-
 // Premium Selectable Phrase Item
 // Premium Selectable Phrase Item
 function SelectablePhraseItem({
@@ -1334,19 +1383,12 @@ function SelectablePhraseItem({
           </Text>
           {isPrimary && (
             <View className="bg-white px-2 py-0.5 rounded-2xl border border-gray-300">
-              <RainbowText
-                text="PRIMARY"
-                fontSize={10}
-                fontWeight="900"
-              />
+              <RainbowText text="PRIMARY" fontSize={10} fontWeight="900" />
             </View>
           )}
         </View>
         {item.translation && (
-          <Text
-            className="text-sm text-gray-500"
-            numberOfLines={2}
-          >
+          <Text className="text-sm text-gray-500" numberOfLines={2}>
             {item.translation}
           </Text>
         )}

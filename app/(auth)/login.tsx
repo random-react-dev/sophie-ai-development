@@ -62,10 +62,10 @@ export default function LoginScreen() {
           <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-8">
             {/* Welcome */}
             <View className="items-center mb-8">
-              <Text className="text-3xl font-bold text-gray-900">
+              <Text className="text-2xl font-bold text-gray-900">
                 Welcome back
               </Text>
-              <Text className="text-gray-500 mt-1 w-full text-center">
+              <Text className="text-gray-500 text-sm mt-1 w-full text-center">
                 Log in to continue learning
               </Text>
             </View>
@@ -122,7 +122,7 @@ export default function LoginScreen() {
             </Text>
             <Link href="/signup" asChild>
               <TouchableOpacity activeOpacity={0.7}>
-                <Text className="text-black underline font-medium text-lg">
+                <Text className="text-black underline font-medium text-base">
                   Sign up
                 </Text>
               </TouchableOpacity>
@@ -131,7 +131,7 @@ export default function LoginScreen() {
 
           {/* Terms */}
           <View className="items-center pb-6">
-            <Text className="text-gray-400 text-sm text-center w-full">
+            <Text className="text-gray-400 text-xs text-center w-full">
               By continuing, you agree to our{" "}
               <Text className="text-gray-600 font-bold">Terms of Service</Text>
               {"\n"}and{" "}

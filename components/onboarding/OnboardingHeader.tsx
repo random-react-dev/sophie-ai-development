@@ -12,9 +12,9 @@ export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({
 }) => {
   return (
     <View className="mb-8 px-4">
-      <Text className="text-3xl font-bold text-gray-900 mb-2">{title}</Text>
+      <Text className="text-xl font-bold text-gray-900 mb-2">{title}</Text>
       {subtitle && (
-        <Text className="text-gray-500 text-base leading-6">{subtitle}</Text>
+        <Text className="text-gray-500 text-sm leading-6">{subtitle}</Text>
       )}
     </View>
   );

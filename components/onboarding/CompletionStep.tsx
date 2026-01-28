@@ -238,7 +238,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <Text className="text-xs text-gray-400 uppercase tracking-wider mb-1">
               {label}
             </Text>
-            <Text className="text-lg font-semibold text-gray-800 capitalize">
+            <Text className="text-base font-semibold text-gray-800 capitalize">
               {value || "Not set"}
             </Text>
           </View>
@@ -515,10 +515,10 @@ export const CompletionStep = () => {
           <Text style={{ fontSize: 24 }}>🎉</Text>
         </View>
 
-        <Text className="text-3xl font-bold text-gray-900 text-center mb-2">
+        <Text className="text-xl font-bold text-gray-900 text-center mb-2">
           You&apos;re all set!
         </Text>
-        <Text className="text-gray-500 text-base text-center px-4 leading-6 w-full">
+        <Text className="text-gray-500 text-sm text-center px-4 leading-6 w-full">
           Your personalized learning path is ready
         </Text>
       </View>

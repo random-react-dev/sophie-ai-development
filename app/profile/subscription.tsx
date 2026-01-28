@@ -99,16 +99,16 @@ export default function SubscriptionScreen() {
             className="size-12"
             containerClassName="items-center justify-center"
           >
-            <Text className="text-2xl">{plan.emoji}</Text>
+            <Text className="text-xl">{plan.emoji}</Text>
           </RainbowBorder>
 
           {/* Plan Name & Price */}
           <View className="flex-1">
-            <Text className="text-lg font-bold text-gray-900 mb-0.5">
+            <Text className="text-base font-bold text-gray-900 mb-0.5">
               {plan.name}
             </Text>
             <View className="flex-row items-baseline">
-              <Text className="text-2xl font-black text-gray-900">
+              <Text className="text-xl font-black text-gray-900">
                 {plan.price}
               </Text>
               <Text className="text-gray-500 text-sm font-medium ml-1">
@@ -198,7 +198,7 @@ export default function SubscriptionScreen() {
           <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4">
             <Crown size={36} color="white" />
           </RainbowGradient>
-          <Text className="text-3xl font-bold text-gray-900 text-center">
+          <Text className="text-xl font-bold text-gray-900 text-center">
             Choose Your Plan
           </Text>
           <Text className="text-base text-gray-500 text-center mt-2 px-4">

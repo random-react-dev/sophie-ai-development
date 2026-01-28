@@ -255,7 +255,7 @@ export default function TranslateScreen() {
       <PageHeader />
 
       <View className="px-4 mb-4">
-        <Text className="text-3xl font-bold text-black text-left">
+        <Text className="text-xl font-bold text-black text-left">
           Translation
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
@@ -350,7 +350,7 @@ export default function TranslateScreen() {
               <TextInput
                 placeholder="Enter text to translate..."
                 multiline
-                className="text-gray-900 text-xl leading-normal"
+                className="text-gray-900 text-sm leading-normal"
                 value={inputText}
                 onChangeText={(text) => {
                   setInputText(text);
@@ -445,11 +445,11 @@ export default function TranslateScreen() {
                       {targetLang.name}
                     </Text>
                   </View>
-                  <Text className="text-gray-900 text-xl leading-normal">
+                  <Text className="text-gray-900 text-sm leading-normal">
                     {translatedText}
                   </Text>
                   {romanization ? (
-                    <Text className="text-gray-500 text-lg italic mt-1 font-medium">
+                    <Text className="text-gray-500 text-sm italic mt-1 font-medium">
                       {romanization}
                     </Text>
                   ) : null}
@@ -540,9 +540,7 @@ export default function TranslateScreen() {
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-2xl font-bold text-black">
-              Save to Folder
-            </Text>
+            <Text className="text-xl font-bold text-black">Save to Folder</Text>
             <TouchableOpacity
               onPress={() => setShowSaveFolderPicker(false)}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -557,7 +555,7 @@ export default function TranslateScreen() {
               {isCreatingFolder ? (
                 <View className="flex-row items-center gap-2 mb-4">
                   <TextInput
-                    className="flex-1 bg-gray-50 p-4 rounded-2xl text-lg border border-gray-100 font-medium text-gray-900"
+                    className="flex-1 bg-gray-50 py-3 px-4 text-sm rounded-full border border-gray-100 font-medium text-gray-900"
                     placeholder="Folder name..."
                     placeholderTextColor="gray"
                     value={newFolderName}
@@ -599,7 +597,7 @@ export default function TranslateScreen() {
                   <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center">
                     <Plus size={20} color="black" />
                   </View>
-                  <Text className="text-black font-bold text-lg">
+                  <Text className="text-black font-bold text-base">
                     Create New Folder
                   </Text>
                 </TouchableOpacity>
@@ -682,7 +680,7 @@ export default function TranslateScreen() {
                 className="flex-1"
                 containerClassName="items-center justify-center"
               >
-                <Text className="text-black font-bold text-lg">
+                <Text className="text-black font-bold text-base">
                   Save to Vocabulary
                 </Text>
               </RainbowBorder>

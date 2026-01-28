@@ -346,7 +346,7 @@ export default function OnboardingScreen() {
             containerClassName="items-center justify-center"
             innerBackgroundClassName="bg-white"
           >
-            <Text className="text-gray-900 font-bold text-lg">
+            <Text className="text-gray-900 font-bold text-base">
               {isSaving
                 ? t("onboarding.saving")
                 : currentStep === 10

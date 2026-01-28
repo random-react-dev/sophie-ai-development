@@ -150,7 +150,7 @@ export default function LanguageScreen() {
       <PageHeader />
 
       <View className="px-4 mb-6">
-        <Text className="text-3xl font-bold text-black text-left">
+        <Text className="text-xl font-bold text-black text-left">
           Language Preferences
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
@@ -192,7 +192,7 @@ export default function LanguageScreen() {
                     })()}
                   </View>
                   <View>
-                    <Text className="text-lg font-bold text-gray-900">
+                    <Text className="text-base font-bold text-gray-900">
                       {profile.name}
                     </Text>
                     <Text className="text-sm font-medium text-gray-500">
@@ -271,7 +271,7 @@ export default function LanguageScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-2xl font-bold text-black">
+              <Text className="text-xl font-bold text-black">
                 New Learning Profile
               </Text>
               <TouchableOpacity
@@ -386,7 +386,7 @@ export default function LanguageScreen() {
                 <TextInput
                   value={testPhrase}
                   onChangeText={setTestPhrase}
-                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4 p-0"
+                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4 p-0 text-sm"
                   placeholder="Type your text here..."
                   placeholderTextColor="gray"
                   textAlignVertical="center"

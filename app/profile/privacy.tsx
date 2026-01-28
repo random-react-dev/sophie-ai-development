@@ -35,7 +35,7 @@ export default function PrivacyPolicyScreen() {
           </Text>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               1. Information We Collect
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -47,7 +47,7 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               2. How We Use Data
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -58,7 +58,7 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               3. AI Interaction
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -69,7 +69,7 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               4. Data Security
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -80,7 +80,7 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               5. Your Rights
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -91,7 +91,7 @@ export default function PrivacyPolicyScreen() {
           </View>
 
           <View>
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               6. Contact Information
             </Text>
             <Text className="text-gray-600 leading-6">

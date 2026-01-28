@@ -35,7 +35,7 @@ export default function TermsOfServiceScreen() {
           </Text>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               1. Acceptance of Terms
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -46,7 +46,7 @@ export default function TermsOfServiceScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               2. Use of Service
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -57,7 +57,7 @@ export default function TermsOfServiceScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               3. User Conduct
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -68,7 +68,7 @@ export default function TermsOfServiceScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               4. Intellectual Property
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -80,7 +80,7 @@ export default function TermsOfServiceScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               5. AI Disclaimer
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -92,7 +92,7 @@ export default function TermsOfServiceScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               6. Limitation of Liability
             </Text>
             <Text className="text-gray-600 leading-6">
@@ -103,7 +103,7 @@ export default function TermsOfServiceScreen() {
           </View>
 
           <View>
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-base font-bold text-gray-900 mb-2">
               7. Changes to Terms
             </Text>
             <Text className="text-gray-600 leading-6">

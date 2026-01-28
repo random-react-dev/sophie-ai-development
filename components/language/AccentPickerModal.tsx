@@ -88,7 +88,7 @@ export default function AccentPickerModal({
       <SafeAreaView className="flex-1 bg-white">
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-          <Text className="text-2xl font-bold text-black">Select Accent</Text>
+          <Text className="text-xl font-bold text-black">Select Accent</Text>
           <Pressable
             onPress={onClose}
             className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"

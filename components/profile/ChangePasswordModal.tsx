@@ -92,7 +92,7 @@ export default function ChangePasswordModal({
             >
               <View className="flex-row justify-between items-center px-4 py-5 border-b border-gray-100">
                 <View className="flex-1 pr-4">
-                  <Text className="text-2xl font-bold text-gray-900">
+                  <Text className="text-xl font-bold text-gray-900">
                     Change Password
                   </Text>
                 </View>
@@ -109,7 +109,7 @@ export default function ChangePasswordModal({
                 contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
               >
                 <View className="mb-6">
-                  <Text className="text-gray-500 font-medium mb-2 ml-1">
+                  <Text className="text-gray-500 font-medium text-sm mb-2">
                     New Password
                   </Text>
                   <AuthInput
@@ -120,8 +120,8 @@ export default function ChangePasswordModal({
                   />
                 </View>
 
-                <View className="mb-8">
-                  <Text className="text-gray-500 font-medium mb-2 ml-1">
+                <View className="mb-6">
+                  <Text className="text-gray-500 font-medium text-sm mb-2">
                     Confirm Password
                   </Text>
                   <AuthInput
@@ -139,7 +139,7 @@ export default function ChangePasswordModal({
                 >
                   {isLoading || !password || !confirmPassword ? (
                     <View className="w-full h-14 bg-gray-100 rounded-full items-center justify-center">
-                      <Text className="text-gray-400 font-bold text-lg">
+                      <Text className="text-gray-400 font-bold text-base">
                         Update Password
                       </Text>
                     </View>
@@ -154,7 +154,7 @@ export default function ChangePasswordModal({
                         {isLoading ? (
                           <ActivityIndicator color="black" />
                         ) : (
-                          <Text className="text-black font-bold text-lg">
+                          <Text className="text-black font-bold text-base">
                             Update Password
                           </Text>
                         )}
