@@ -18,6 +18,7 @@ interface RainbowWaveProps {
   volumeLevel: number;
   width?: number;
   height?: number;
+  amplitudeScale?: number;
 }
 
 export const RainbowWave = React.memo(
@@ -28,12 +29,13 @@ export const RainbowWave = React.memo(
     volumeLevel,
     width: customWidth,
     height: customHeight = 160,
+    amplitudeScale = 1.0,
   }: RainbowWaveProps) => {
     const { width: windowWidth } = useWindowDimensions();
     const width = customWidth || windowWidth;
     const height = customHeight;
     const phase = useSharedValue(0);
-    const amplitude = useSharedValue(height * 0.24); // Match InteractiveRainbowWave: height * 0.24
+    const amplitude = useSharedValue(height * 0.24 * amplitudeScale); // Match InteractiveRainbowWave: height * 0.24
 
     // Animation speed matching InteractiveRainbowWave: speed = 0.09 per frame at 60fps
     // 0.09 * 60 = 5.4 radians per second
@@ -49,7 +51,9 @@ export const RainbowWave = React.memo(
     // Amplitude responds to voice states while maintaining base amplitude
     useEffect(() => {
       // Base amplitude from InteractiveRainbowWave: height * 0.24 = 38.4
-      const baseAmplitude = height * 0.24;
+      const baseAmplitude = height * 0.24 * amplitudeScale;
+      const breathingAmplitude = baseAmplitude * 0.8; // Define breathing amplitude explicitly for smoother transitions
+
       let targetAmplitude = baseAmplitude;
 
       if (isSpeaking) {

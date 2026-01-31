@@ -2,8 +2,9 @@ import { RainbowWave } from "@/components/lesson/RainbowWave";
 import { useAuthStore } from "@/stores/authStore";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
+import { Headset } from "lucide-react-native";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Linking, Text, TouchableOpacity, View } from "react-native";
 
 interface PageHeaderProps {
   title?: string;
@@ -12,30 +13,47 @@ interface PageHeaderProps {
 export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
   const { user } = useAuthStore();
 
-  return (
-    <View className="bg-white mb-6 relative z-14 pb-2">
-      {/* Top Row: Logo, Wave, Profile */}
-      <View className="px-4 h-16 flex-row justify-between items-center relative">
-        {/* Center: Interactive Wave Visual (Absolute Positioned for perfect centering) */}
-        <View className="absolute left-0 right-0 top-0 bottom-0 items-center justify-center pointer-events-none">
-          <RainbowWave
-            isListening={false}
-            isSpeaking={false}
-            isProcessing={true}
-            volumeLevel={0}
-            width={170}
-            height={80}
-          />
-        </View>
+  const openWhatsApp = () => {
+    Linking.openURL("https://wa.me/9898456150");
+  };
 
-        {/* Left: Logo */}
-        <Text className="text-xl font-bold text-gray-900 z-20">{title}</Text>
+  return (
+    <View className="bg-white pb-2 px-4 shadow-sm z-50">
+      <View className="h-16 flex-row items-center justify-between">
+        {/* Left: Support/Help Icon */}
+        <TouchableOpacity
+          onPress={openWhatsApp}
+          activeOpacity={0.7}
+          className="w-10 h-10 rounded-full bg-blue-50 items-center justify-center border border-blue-100 shadow-sm"
+        >
+          <Headset size={20} color="#3B82F6" />
+        </TouchableOpacity>
+
+        {/* Center: Title & Wave */}
+        <View className="absolute left-0 right-0 top-0 bottom-0 items-center justify-center pointer-events-none">
+          <View className="items-center justify-center">
+            <Text className="text-lg font-bold text-gray-900 leading-none">
+              {title}
+            </Text>
+            <View className="items-center justify-start">
+              <RainbowWave
+                isListening={false}
+                isSpeaking={false}
+                isProcessing={true}
+                volumeLevel={0}
+                width={120}
+                height={40}
+                amplitudeScale={1.5}
+              />
+            </View>
+          </View>
+        </View>
 
         {/* Right: Profile */}
         <Link href="/profile" asChild>
           <TouchableOpacity
             activeOpacity={0.7}
-            className="w-10 h-10 rounded-full overflow-hidden border border-gray-200"
+            className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shadow-sm"
           >
             {user?.user_metadata?.avatar_url ? (
               <Image
@@ -51,16 +69,6 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
             )}
           </TouchableOpacity>
         </Link>
-      </View>
-
-      {/* Bottom Row: Tagline */}
-      <View
-        className="items-center justify-center relative z-0"
-        style={{ marginTop: -5 }}
-      >
-        <Text className="text-xs font-bold text-gray-400">
-          Any Language. Anywhere. Anytime.
-        </Text>
       </View>
     </View>
   );
