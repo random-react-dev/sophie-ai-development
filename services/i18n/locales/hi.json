@@ -612,7 +612,9 @@
         "medium_label": "सोफी सिखाती है",
         "medium_placeholder": "मातृभाषा के समान",
         "accent_label": "पसंदीदा लहज़ा"
-      }
+      },
+      "duplicate_profile_error": "आपके पास इस भाषा जोड़ी के लिए पहले से ही एक प्रोफ़ाइल है!",
+      "create_error": "प्रोफ़ाइल बनाने में विफल। कृपया पुन: प्रयास करें।"
     }
   },
   "accent_picker": {

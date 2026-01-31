@@ -613,7 +613,9 @@
         "medium_label": "Sophie 教學語言",
         "medium_placeholder": "同母語一樣",
         "accent_label": "首選口音"
-      }
+      },
+      "duplicate_profile_error": "你有咗呢個語言對嘅檔案啦！",
+      "create_error": "建立檔案失敗。請再試一次。"
     }
   },
   "accent_picker": {

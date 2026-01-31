@@ -613,7 +613,9 @@
         "medium_label": "Sophie teaches in",
         "medium_placeholder": "Same as Native",
         "accent_label": "Preferred accent"
-      }
+      },
+      "duplicate_profile_error": "You already have a profile for this language pair!",
+      "create_error": "Failed to create profile. Please try again."
     }
   },
   "accent_picker": {

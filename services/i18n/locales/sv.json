@@ -611,8 +611,10 @@
         "target_label": "Jag vill lära mig",
         "medium_label": "Sophie undervisar på",
         "medium_placeholder": "Samma som modersmål",
-        "accent_label": "Föredrad accent"
-      }
+        "accent_label": "Föredraget uttal"
+      },
+      "duplicate_profile_error": "Du har redan en profil för detta språkkpar!",
+      "create_error": "Misslyckades med att skapa profil. Försök igen."
     }
   },
   "accent_picker": {

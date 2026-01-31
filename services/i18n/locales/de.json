@@ -612,7 +612,9 @@
         "medium_label": "Sophie unterrichtet auf",
         "medium_placeholder": "Wie Muttersprache",
         "accent_label": "Bevorzugter Akzent"
-      }
+      },
+      "duplicate_profile_error": "Sie haben bereits ein Profil für dieses Sprachpaar!",
+      "create_error": "Profil konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
     }
   },
   "accent_picker": {

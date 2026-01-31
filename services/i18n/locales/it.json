@@ -401,7 +401,7 @@
       "sophieRole": "Recruiter Tecnico Senior presso un'azienda tecnologica",
       "userRole": "Candidato che si candida per un ruolo di Sviluppatore Frontend",
       "topic": "Carriera",
-      "context": "Sei a un colloquio per il lavoro dei tuoi sogni. Sophie ti chiederà della tua esperienza e delle tue capacità."
+      "context": "Sei a un colloquio per il lavoro dei tuoi sogni. Sophie ti chiederà della tua esperienza e delle tue abilità."
     },
     "asking-directions": {
       "title": "Chiedere Indicazioni",
@@ -607,7 +607,9 @@
         "medium_label": "Sophie insegna in",
         "medium_placeholder": "Uguale alla madrelingua",
         "accent_label": "Accento preferito"
-      }
+      },
+      "duplicate_profile_error": "Hai già un profilo per questa coppia di lingue!",
+      "create_error": "Impossibile creare il profilo. Riprova."
     }
   },
   "accent_picker": {

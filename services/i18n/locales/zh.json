@@ -613,7 +613,9 @@
         "medium_label": "Sophie 教学语言",
         "medium_placeholder": "与母语相同",
         "accent_label": "首选口音"
-      }
+      },
+      "duplicate_profile_error": "您已经拥有此语言对的个人资料！",
+      "create_error": "创建个人资料失败。请重试。"
     }
   },
   "accent_picker": {

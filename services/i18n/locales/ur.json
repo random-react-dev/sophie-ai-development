@@ -562,7 +562,9 @@
         "medium_label": "سوفی سکھاتی ہے",
         "medium_placeholder": "مادری زبان جیسی",
         "accent_label": "پسندیدہ لہجہ"
-      }
+      },
+      "duplicate_profile_error": "آپ کے پاس اس زبان کے جوڑے کے لیے پہلے ہی ایک پروفائل موجود ہے!",
+      "create_error": "پروفائل بنانے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔"
     }
   },
   "language_picker": {

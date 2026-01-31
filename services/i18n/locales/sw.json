@@ -612,7 +612,9 @@
         "medium_label": "Sophie anafundisha kwa",
         "medium_placeholder": "Sawa na Lugha ya Asili",
         "accent_label": "Lafudhi inayopendekezwa"
-      }
+      },
+      "duplicate_profile_error": "Tayari una wasifu wa jozi hii ya lugha!",
+      "create_error": "Imeshindikana kuunda wasifu. Tafadhali jaribu tena."
     }
   },
   "accent_picker": {

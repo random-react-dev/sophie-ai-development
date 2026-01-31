@@ -598,7 +598,9 @@
         "medium_label": "Sophie enseigne en",
         "medium_placeholder": "Identique à la langue maternelle",
         "accent_label": "Accent préféré"
-      }
+      },
+      "duplicate_profile_error": "Vous avez déjà un profil pour cette paire de langues !",
+      "create_error": "Échec de la création du profil. Veuillez réessayer."
     }
   },
   "accent_picker": {

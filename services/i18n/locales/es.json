@@ -598,7 +598,9 @@
         "medium_label": "Sophie enseña en",
         "medium_placeholder": "Igual que nativo",
         "accent_label": "Acento preferido"
-      }
+      },
+      "duplicate_profile_error": "¡Ya tienes un perfil para este par de idiomas!",
+      "create_error": "Error al crear el perfil. Por favor, inténtalo de nuevo."
     }
   },
   "accent_picker": {

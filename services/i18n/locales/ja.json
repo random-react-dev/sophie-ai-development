@@ -611,8 +611,10 @@
         "target_label": "学びたい言語",
         "medium_label": "Sophieの指導言語",
         "medium_placeholder": "母国語と同じ",
-        "accent_label": "好みのアクセント"
-      }
+        "accent_label": "優先アクセント"
+      },
+      "duplicate_profile_error": "この言語ペアのプロフィールはすでに存在します！",
+      "create_error": "プロフィールの作成に失敗しました。もう一度お試しください。"
     }
   },
   "accent_picker": {

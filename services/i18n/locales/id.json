@@ -612,7 +612,9 @@
         "medium_label": "Sophie mengajar dalam",
         "medium_placeholder": "Sama dengan Bahasa Asli",
         "accent_label": "Aksen pilihan"
-      }
+      },
+      "duplicate_profile_error": "Anda sudah memiliki profil untuk pasangan bahasa ini!",
+      "create_error": "Gagal membuat profil. Silakan coba lagi."
     }
   },
   "accent_picker": {

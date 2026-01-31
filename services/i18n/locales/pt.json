@@ -612,7 +612,9 @@
         "medium_label": "Sophie ensina em",
         "medium_placeholder": "Igual ao nativo",
         "accent_label": "Sotaque preferido"
-      }
+      },
+      "duplicate_profile_error": "Você já tem um perfil para este par de idiomas!",
+      "create_error": "Falha ao criar perfil. Por favor, tente novamente."
     }
   },
   "accent_picker": {

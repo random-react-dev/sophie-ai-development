@@ -112,6 +112,46 @@ export default function LanguageScreen() {
     "native" | "target" | "medium" | "accent" | null
   >(null);
 
+  // Sync with user preference or active profile when modal opens
+  useEffect(() => {
+    if (isCreateModalVisible) {
+      let defaultNative: Language | undefined;
+
+      // 1. Try Global User Preference (Code)
+      const globalNativeCode = user?.user_metadata?.native_language;
+      if (globalNativeCode) {
+        defaultNative = SUPPORTED_LANGUAGES.find(
+          (l) => l.code === globalNativeCode,
+        );
+      }
+
+      // 2. Fallback to Active Profile (Name)
+      if (!defaultNative && activeProfile?.native_language) {
+        defaultNative = SUPPORTED_LANGUAGES.find(
+          (l) => l.name === activeProfile.native_language,
+        );
+      }
+
+      // 3. Apply Default
+      if (defaultNative) {
+        setNewNativeLang(defaultNative);
+        setNewMediumLang(null); // Default to "Same as Native"
+
+        // 4. Ensure Target != Native
+        if (defaultNative.code === newTargetLang.code) {
+          // If default target (Hindi) matches native, switch to English or Spanish
+          const fallbackTarget =
+            defaultNative.code === "en"
+              ? SUPPORTED_LANGUAGES.find((l) => l.code === "es")
+              : SUPPORTED_LANGUAGES.find((l) => l.code === "en");
+          if (fallbackTarget) {
+            setNewTargetLang(fallbackTarget);
+          }
+        }
+      }
+    }
+  }, [isCreateModalVisible, activeProfile, user]);
+
   useEffect(() => {
     if (user) {
       fetchProfiles();
@@ -138,6 +178,24 @@ export default function LanguageScreen() {
     const mediumName = newMediumLang ? newMediumLang.name : newNativeLang.name;
     const profileName = `Learning ${newTargetLang.name}`;
 
+    // Validate: Check if profile already exists
+    const duplicateProfile = profiles.find(
+      (p) =>
+        p.target_language === newTargetLang.name &&
+        (p.medium_language === mediumName ||
+          (!p.medium_language && p.native_language === mediumName)),
+    );
+
+    if (duplicateProfile) {
+      showAlert(
+        t("common.error"),
+        t("language_screen.modals.duplicate_profile_error"),
+        undefined,
+        "error",
+      );
+      return;
+    }
+
     const newProfileData: CreateProfileDTO = {
       name: profileName,
       native_language: newNativeLang.name,
@@ -152,8 +210,8 @@ export default function LanguageScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
       showAlert(
-        "Error",
-        "Failed to create profile. Please try again.",
+        t("common.error"),
+        t("language_screen.modals.create_error"),
         undefined,
         "error",
       );
@@ -236,8 +294,10 @@ export default function LanguageScreen() {
                       {profile.name}
                     </Text>
                     <Text className="text-sm font-medium text-gray-500">
-                      {getLocalizedLanguageName(profile.native_language)} →{" "}
-                      {getLocalizedLanguageName(profile.target_language)}
+                      {getLocalizedLanguageName(
+                        profile.medium_language || profile.native_language,
+                      )}{" "}
+                      → {getLocalizedLanguageName(profile.target_language)}
                     </Text>
                   </View>
                 </View>
@@ -373,7 +433,9 @@ export default function LanguageScreen() {
                     className="flex-row items-center py-4"
                   >
                     <CircleFlag
-                      countryCode={newMediumLang?.countryCode || "in"}
+                      countryCode={
+                        newMediumLang?.countryCode || newNativeLang.countryCode
+                      }
                       size={28}
                     />
                     <View className="flex-1 ml-3">
@@ -383,9 +445,7 @@ export default function LanguageScreen() {
                       <Text className="text-gray-900 font-semibold text-base">
                         {newMediumLang?.name
                           ? getLocalizedLanguageName(newMediumLang.name)
-                          : t(
-                              "language_screen.modals.sections.medium_placeholder",
-                            )}
+                          : getLocalizedLanguageName(newNativeLang.name)}
                       </Text>
                     </View>
                     <ChevronDown size={20} color="#111827" />

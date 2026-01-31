@@ -612,7 +612,9 @@
         "medium_label": "Sophie dạy bằng",
         "medium_placeholder": "Giống như tiếng mẹ đẻ",
         "accent_label": "Giọng đọc ưa thích"
-      }
+      },
+      "duplicate_profile_error": "Bạn đã có hồ sơ cho cặp ngôn ngữ này!",
+      "create_error": "Không thể tạo hồ sơ. Vui lòng thử lại."
     }
   },
   "accent_picker": {

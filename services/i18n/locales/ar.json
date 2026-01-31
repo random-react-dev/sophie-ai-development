@@ -561,7 +561,9 @@
         "medium_label": "صوفي تدرس بـ",
         "medium_placeholder": "نفس اللغة الأم",
         "accent_label": "اللهجة المفضلة"
-      }
+      },
+      "duplicate_profile_error": "لديك بالفعل ملف تعريف لزوج اللغة هذا!",
+      "create_error": "فشل إنشاء الملف الشخصي. يرجى المحاولة مرة أخرى."
     }
   },
   "language_picker": {
