@@ -1,4 +1,5 @@
 import { ChatAvatar } from "@/components/common/ChatAvatar";
+import { useTranslation } from "@/hooks/useTranslation";
 import { EyeOff, Languages, Plus } from "lucide-react-native";
 import React, { memo, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
@@ -29,6 +30,7 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
   const [showTranslation, setShowTranslation] = useState(false);
   const [translation, setTranslation] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleTranslatePress = async () => {
     if (showTranslation) {
@@ -102,7 +104,9 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
               disabled={isLoading}
               accessibilityRole="button"
               accessibilityLabel={
-                showTranslation ? "Hide translation" : "Translate message"
+                showTranslation
+                  ? t("talk_screen.message_actions.hide")
+                  : t("talk_screen.message_actions.translate")
               }
             >
               {isLoading ? (
@@ -115,7 +119,9 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
                     <Languages size={12} color="#6b7280" />
                   )}
                   <Text className="text-xs font-bold text-gray-500">
-                    {showTranslation ? "Hide" : "Translate"}
+                    {showTranslation
+                      ? t("talk_screen.message_actions.hide")
+                      : t("talk_screen.message_actions.translate")}
                   </Text>
                 </>
               )}
@@ -126,11 +132,13 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
               className="flex-row items-center gap-1"
               onPress={() => onSave(message.text)}
               accessibilityRole="button"
-              accessibilityLabel="Save to vocabulary"
+              accessibilityLabel={t("talk_screen.message_actions.save")}
               accessibilityHint="Saves this message to your vocabulary list"
             >
               <Plus size={12} color="#6b7280" />
-              <Text className="text-xs font-bold text-gray-500">Save</Text>
+              <Text className="text-xs font-bold text-gray-500">
+                {t("talk_screen.message_actions.save")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

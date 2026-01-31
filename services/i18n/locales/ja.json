@@ -1,0 +1,645 @@
+{
+  "onboarding": {
+    "chooseLanguage": "アプリの言語を選択",
+    "chooseLearningLanguage": "どの言語を学びたいですか？",
+    "continue": "次へ",
+    "saving": "保存中...",
+    "startLearning": "学習を開始",
+    "skip": "スキップ",
+    "profileStep": {
+      "almostThere": "あと少しです！",
+      "nameLabel": "名前",
+      "namePlaceholder": "名前を入力してください",
+      "countryLabel": "国",
+      "countryPlaceholder": "国を選択してください",
+      "nativeLanguageLabel": "母国語",
+      "nativeLanguagePlaceholder": "母国語を選択してください",
+      "selectCountry": "国を選択",
+      "selectNativeLanguage": "母国語"
+    },
+    "options": {
+      "goal": {
+        "student": "学生です",
+        "traveler": "旅行者です",
+        "abroad": "海外に住む予定/住んでいます",
+        "job": "仕事で必要です",
+        "other": "その他"
+      },
+      "level": {
+        "zero": "一言もわかりません",
+        "words": "単語がいくつか分かる程度です",
+        "phrases": "フレーズがいくつか分かる程度です",
+        "basic_idea": "言いたいことはありますが、単語が足りません",
+        "fluent": "流暢ですが、もっと練習が必要です"
+      },
+      "fluency": {
+        "norush": "急いでいません、自分のペースでやります",
+        "consistent": "毎日コツコツ続けたいです",
+        "phrases": "いくつかのフレーズを知りたいだけです",
+        "conversations": "日常会話ができるようになりたいです",
+        "desperate": "今すぐ流暢になりたいです"
+      },
+      "duration": {
+        "less_1_month": "1ヶ月未満",
+        "less_6_months": "6ヶ月未満",
+        "less_2_years": "2年未満",
+        "less_5_years": "5年未満",
+        "less_10_years": "10年未満",
+        "more": "それ以上"
+      },
+      "confidence": {
+        "1": "怖い",
+        "2": "とても緊張する",
+        "3": "不安",
+        "4": "自信がない",
+        "5": "普通",
+        "6": "楽しみ",
+        "7": "自信がある",
+        "8": "無敵"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "間違いを恐れている",
+          "desc": "変なことを言ってしまうのが心配です"
+        },
+        "consistency": {
+          "title": "継続できない",
+          "desc": "定期的に練習するのが難しいです"
+        },
+        "practice": {
+          "title": "練習相手がいない",
+          "desc": "会話のパートナーがいません"
+        },
+        "other": {
+          "title": "その他",
+          "desc": "他にも理由があります"
+        }
+      },
+      "focus": {
+        "listening": "リスニング",
+        "speaking": "スピーキング",
+        "pronunciation": "発音",
+        "vocabulary": "語彙",
+        "grammar": "文法",
+        "reading": "リーディング",
+        "writing": "ライティング"
+      },
+      "discovery": {
+        "tiktok": "TikTok (ティックトック)",
+        "instagram": "Instagram (インスタグラム)",
+        "linkedin": "LinkedIn (リンクトイン)",
+        "youtube": "YouTube (ユーチューブ)",
+        "friend": "家族/友人",
+        "other": "その他"
+      }
+    },
+    "titles": {
+      "goal": "人生の主な目標は何ですか？",
+      "fluency": "どれくらい早く流暢になりたいですか？",
+      "duration": "この言語をどれくらい勉強していますか？",
+      "level": "どれが一番あなたに当てはまりますか？",
+      "confidence": "どれくらい自信がありますか？",
+      "barriers": "なぜ自信がないのですか？",
+      "focus": "最初に何に焦点を当てたいですか？",
+      "discovery": "どのようにして私たちを見つけましたか？"
+    },
+    "completion": {
+      "title": "準備完了！",
+      "subtitle": "あなた専用の学習パスの準備ができました",
+      "videoLabel": "AI語学コーチに会いましょう",
+      "primaryGoal": "主な目標",
+      "learningPace": "学習のペース",
+      "currentLevel": "現在のレベル",
+      "notSet": "未設定"
+    }
+  },
+  "profile": {
+    "title": "マイプロフィール",
+    "menu": {
+      "preferences": {
+        "title": "設定",
+        "subtitle": "言語、国、その他"
+      },
+      "account": {
+        "title": "アカウント",
+        "subtitle": "購読と請求"
+      },
+      "security": {
+        "title": "セキュリティ",
+        "subtitle": "パスワードと認証"
+      },
+      "progress": {
+        "title": "進捗",
+        "subtitle": "学習の旅を追跡"
+      },
+      "support": {
+        "title": "サポート",
+        "subtitle": "ヘルプ、ポリシー、フィードバック"
+      },
+      "social": {
+        "title": "ソーシャルメディア",
+        "subtitle": "私たちとつながる"
+      },
+      "logout": "ログアウト",
+      "setName": "名前を設定",
+      "avatarSuccess": "アバターが正常に更新されました！",
+      "avatarError": "アバターのアップロードに失敗しました。",
+      "nameError": "名前の更新に失敗しました。",
+      "logoutConfirm": {
+        "title": "ログアウト",
+        "message": "ログアウトしてもよろしいですか？",
+        "cancel": "キャン セル",
+        "confirm": "ログアウト"
+      }
+    },
+    "preferences_screen": {
+      "title": "設定",
+      "accountInfo": "アカウント情報",
+      "name": "名前",
+      "email": "メール",
+      "languages": "言語",
+      "country": "国",
+      "nativeLanguage": "母国語",
+      "appLanguage": "アプリの言語",
+      "selectLanguage": "言語を選択",
+      "notSet": "未設定"
+    },
+    "account_screen": {
+      "title": "アカウント",
+      "subscription": "サブスクリプション",
+      "status": "ステータス",
+      "freeTrial": "無料トライアル",
+      "upgradeToPro": "プロにアップグレード",
+      "payment": "支払い",
+      "paymentMethods": "支払い方法",
+      "billingHistory": "請求履歴",
+      "accountInfo": "アカウント情報",
+      "email": "メール",
+      "memberSince": "登録日",
+      "na": "なし",
+      "comingSoon": "近日公開"
+    },
+    "subscription_screen": {
+      "title": "プロにアップグレード",
+      "choosePlan": "プランを選択",
+      "subtitle": "Sophie AIの可能性を最大限に引き出し、あらゆる言語を習得しましょう。",
+      "plans": {
+        "mg": {
+          "name": "エムとジー",
+          "description": "気軽な練習に最適です。",
+          "features": {
+            "0": "すべての言語が含まれます",
+            "1": "1日5分の練習",
+            "2": "基本的なAI講師フィードバック"
+          }
+        },
+        "launch": {
+          "name": "ローンチパック",
+          "description": "自信を持って話したい真剣な学習者向け。",
+          "badge": "一番人気",
+          "features": {
+            "0": "好きな言語を1つ選択",
+            "1": "1日15分の練習",
+            "2": "優先AIフィードバック",
+            "3": "広告なし"
+          }
+        },
+        "sbb": {
+          "name": "エス・ビー・ビー",
+          "description": "ビジネスや試験向けの高度なコーチング。",
+          "features": {
+            "0": "無制限の言語",
+            "1": "無制限の時間",
+            "2": "高度なAI分析",
+            "3": "パーソナライズされたパス"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "今すぐ登録",
+        "getStarted": "始める",
+        "month": "月",
+        "day7": "7日間"
+      },
+      "footer": "すべてのプランには、24時間365日のAI講師アクセスと進捗追跡が含まれています。設定からいつでもキャンセルできます。"
+    },
+    "security_screen": {
+      "title": "セキュリティ",
+      "subtitle": "アカウントを保護する",
+      "auth_section": "認証",
+      "change_password": {
+        "title": "パスワードの変更",
+        "subtitle": "定期的にパスワードを更新してください"
+      },
+      "two_factor": {
+        "title": "二要素認証",
+        "status": "未有効"
+      },
+      "tips_section": "セキュリティのヒント",
+      "tips": {
+        "strong_password": {
+          "title": "強力なパスワードを使用する",
+          "body": "最大限の保護のために、文字、数字、記号を組み合わせてください。"
+        },
+        "enable_2fa": {
+          "title": "二要素認証を有効にする",
+          "body": "アカウントの追加のセキュリティレイヤー。近日公開！"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "パスワードを変更",
+      "new_password": "新しいパスワード",
+      "new_password_placeholder": "新しいパスワードを入力",
+      "confirm_password": "パスワードを確認",
+      "confirm_password_placeholder": "新しいパスワードを確認",
+      "update_button": "パスワードを更新",
+      "error_length": "パスワードは6文字以上である必要があります。",
+      "error_match": "パスワードが一致しません。",
+      "success_message": "パスワードが正常に更新されました。",
+      "error_generic": "パスワードの更新に失敗しました。"
+    },
+    "progress_screen": {
+      "title": "進捗",
+      "overview": "概要",
+      "speaking": "スピーキング",
+      "words": "単語",
+      "sessions": "セッション",
+      "detailed_stats": "詳細な統計",
+      "coming_soon": "近日公開",
+      "coming_soon_body": "詳細な学習分析と進捗追跡は、将来のアップデートで利用可能になります。"
+    },
+    "support_screen": {
+      "title": "サポート",
+      "legal": "法的情報",
+      "privacy_policy": "プライバシーポリシー",
+      "terms_of_service": "利用規約",
+      "contact_us": "お問い合わせ",
+      "email_support": "メールサポート",
+      "send_feedback": "フィードバックを送信",
+      "help_improve": "改善にご協力ください",
+      "whatsapp_support": "WhatsAppサポート",
+      "whatsapp_subtitle": "WhatsAppでチャット",
+      "whatsapp_message": "こんにちは、Sophieチーム！ 👋 Sophie AIアプリを使用しています。ご連絡したく思います。",
+      "contact_alert_title": "お問い合わせ",
+      "contact_alert_body": "ご質問やフィードバックは support@fluentai.com までメールでお送りください。",
+      "feedback_alert_title": "近日公開",
+      "feedback_alert_body": "アプリ内フィードバック機能は近日公開予定です。",
+      "danger_zone": "危険エリア",
+      "delete_account": "アカウント削除",
+      "delete_account_subtitle": "アカウントを完全に削除する",
+      "delete_account_alert_title": "アカウント削除",
+      "delete_account_alert_body": "この機能は近日公開予定です。データは安全です。",
+      "app_info": "アプリ情報",
+      "version": "バージョン",
+      "build": "ビルド",
+      "prototype": "プロトタイプ"
+    },
+    "privacy_policy_screen": {
+      "title": "プライバシーポリシー",
+      "last_updated": "最終更新日: 2026年1月13日",
+      "section1_title": "1. 収集する情報",
+      "section1_body": "私たちは、すべてのユーザーにより良いサービスを提供するために情報を収集します。これには、名前、メールアドレス、優先言語などのアカウント詳細、およびAIモデルを改善するための使用データが含まれます。",
+      "section2_title": "2. データの使用方法",
+      "section2_body": "あなたのデータは、学習体験のパーソナライズ、進捗状況の追跡、およびAIの精度の向上に使用されます。私たちはあなたの個人データを第三者に販売しません。",
+      "section3_title": "3. AIとの対話",
+      "section3_body": "アプリ内で提供される会話や入力は、AIの応答を生成するために処理されます。このデータは、言語学習モデルをトレーニングおよび改善するために匿名化された方法で使用される場合があります。",
+      "section4_title": "4. データセキュリティ",
+      "section4_body": "私たちは、不正アクセス、改ざん、開示、または破壊からあなたの情報を保護するために、業界標準のセキュリティ対策を実施しています。",
+      "section5_title": "5. あなたの権利",
+      "section5_body": "あなたは、アカウント設定を通じて、またはサポートチームに連絡することにより、いつでも自分の個人情報にアクセス、修正、または削除する権利を持っています。",
+      "section6_title": "6. 連絡先情報",
+      "section6_body": "このプライバシーポリシーについて質問がある場合は、support@fluentai.comまでお問い合わせください。"
+    },
+    "terms_screen": {
+      "title": "利用規約",
+      "last_updated": "最終更新日: 2026年1月13日",
+      "section1_title": "1. 規約の同意",
+      "section1_body": "このアプリケーションにアクセスして使用することにより、これらの利用規約に拘束されることに同意したことになります。これらの規約の一部に同意しない場合は、当社のサービスを使用することはできません。",
+      "section2_title": "2. サービスの利用",
+      "section2_body": "あなたは、個人的かつ非営利の語学学習目的でのみこのアプリケーションを使用することに同意します。違法または不正な目的でサービスを使用することはできません。",
+      "section3_title": "3. ユーザーの行動",
+      "section3_body": "ユーザーは、AIアシスタントと敬意を持って対話することが期待されます。アプリケーションの意図された機能を悪用、害する、または回避しようとする試みは固く禁じられています。",
+      "section4_title": "4. 知的財産",
+      "section4_body": "アプリケーション、そのコンテンツ、およびAIモデルは、著作権およびその他の知的財産法によって保護されています。許可なくサービスのいかなる部分も複製または配布することはできません。",
+      "section5_title": "5. AI免責事項",
+      "section5_body": "当社のサービスは、教育目的でAI生成コンテンツを提供します。正確さを期すよう努めていますが、AIは時折誤った情報を提供する場合があります。ユーザーは重要な詳細を確認することをお勧めします。",
+      "section6_title": "6. 責任の制限",
+      "section6_body": "当社は、アプリケーションの使用またはAIアシスタントによって提供された情報に起因する、直接的、間接的、または結果的な損害について責任を負いません。",
+      "section7_title": "7. 規約の変更",
+      "section7_body": "当社は、いつでもこれらの規約を変更する権利を留保します。変更が掲載された後もアプリケーションを継続して使用することは、新しい規約に同意したことになります。"
+    },
+    "social_screen": {
+      "title": "ソーシャルメディア",
+      "section_title": "私たちとつながる",
+      "instagram": "Instagram",
+      "instagram_subtitle": "Instagramでフォロー",
+      "facebook": "Facebook",
+      "facebook_subtitle": "コミュニティに参加",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "Xでフォロー",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "プロフェッショナルなつながり",
+      "youtube": "YouTube",
+      "youtube_subtitle": "チャンネル登録",
+      "tiktok": "TikTok",
+      "tiktok_subtitle": "最新の動画を見る",
+      "reddit": "Reddit",
+      "reddit_subtitle": "ディスカッションに参加",
+      "error": "エラー",
+      "open_error": "{platform}を開けませんでした。後でもう一度お試しください。",
+      "general_error": "{platform}を開く際にエラーが発生しました。"
+    }
+  },
+  "scenarios_screen": {
+    "title": "学習シナリオ",
+    "subtitle": "実際の会話を練習する",
+    "search_placeholder": "シナリオを検索...",
+    "create_button": "作成",
+    "create_your_own": "独自に作成",
+    "empty_search": "一致するものは見つかりませんでした",
+    "empty_list": "シナリオが見つかりません",
+    "categories": {
+      "all": "すべて",
+      "food_drink": "飲食",
+      "business": "ビジネス",
+      "social": "社交",
+      "travel": "旅行",
+      "customer_service": "カスタマーサービス",
+      "education": "教育"
+    },
+    "create_modal": {
+      "title": "シナリオを作成",
+      "sophie_role_label": "ソフィーの役割",
+      "sophie_role_placeholder": "例：不機嫌だが親切な店主",
+      "user_role_label": "あなたの役割",
+      "user_role_placeholder": "例：急いでいる客",
+      "topic_label": "トピック",
+      "topic_placeholder": "例：ヴィンテージ時計の購入",
+      "level_label": "レベル",
+      "category_label": "カテゴリ",
+      "category_placeholder": "カテゴリを選択",
+      "context_label": "コンテキスト / 状況",
+      "context_placeholder": "設定を説明してください...",
+      "start_button": "シナリオを開始",
+      "validation_title": "必須フィールドがありません",
+      "validation_message": "ソフィーの役割とトピックは必須です！"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "コーヒーを注文する",
+      "description": "忙しいカフェでラテとクロワッサンを注文します。",
+      "sophieRole": "忙しい都心のカフェのバリスタ",
+      "userRole": "朝食を探している客",
+      "topic": "日常生活",
+      "context": "あなたは「ザ・モーニング・グラインド」というカフェにいます。コーヒーと何か食べるものを注文したいです。"
+    },
+    "job-interview": {
+      "title": "就職面接",
+      "description": "ソフトウェアエンジニア職の面接。",
+      "sophieRole": "テック企業のシニアテクニカルリクルーター",
+      "userRole": "フロントエンド開発者に応募する候補者",
+      "topic": "キャリア",
+      "context": "あなたは夢の仕事の面接を受けています。ソフィーはあなたの経験とスキルについて質問します。"
+    },
+    "asking-directions": {
+      "title": "道を尋ねる",
+      "description": "東京で迷子になり、駅を探す必要があります。",
+      "sophieRole": "東京の親切な地元住民",
+      "userRole": "少し迷った観光客",
+      "topic": "旅行",
+      "context": "あなたは渋谷スクランブル交差点の近くにいて、JR駅に行く必要がありますが、携帯の充電が切れています。"
+    },
+    "hotel-check-in": {
+      "title": "ホテルチェックイン",
+      "description": "チェックインして、部屋と眺望をリクエストします。",
+      "sophieRole": "4つ星ホテルのフロント係",
+      "userRole": "3泊の滞在で到着したゲスト",
+      "topic": "旅行",
+      "context": "あなたの名前で予約があります。朝食の時間を確認し、眺めの良い部屋が空いているか尋ねたいです。"
+    },
+    "political-debate": {
+      "title": "政治討論",
+      "description": "環境政策と気候変動について議論します。",
+      "sophieRole": "情熱的な環境擁護者",
+      "userRole": "懐疑的な市民または反対派の政策立案者",
+      "topic": "時事問題",
+      "context": "経済成長と環境保護のバランスについて深い議論を交わしてください。"
+    }
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "error": "エラー",
+    "warning": "警告",
+    "incomplete": "未完了",
+    "incompleteMessage": "名前を入力し、国を選択してください。",
+    "errorMessage": "設定を保存できませんでした。再試行してください。",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "ソフィーが話しています...",
+      "preparing": "応答を準備中... {{progress}}%",
+      "thinking": "ソフィーは考えています...",
+      "listening": "聞いています...",
+      "connecting": "接続中...",
+      "reconnecting": "再接続中...",
+      "hold_mic": "マイクを長押しして話す",
+      "error": "エラー"
+    },
+    "language_selector": {
+      "learning_label": "学習中",
+      "select_label": "選択",
+      "explain_label": "説明言語",
+      "target_title": "何を学びたいですか？",
+      "native_title": "あなたの母国語は何ですか？"
+    },
+    "actions": {
+      "finish_report": "終了してレポートを取得",
+      "transcript": "書き起こし",
+      "transcript_hidden": "書き起こし非表示"
+    },
+    "message_actions": {
+      "translate": "翻訳",
+      "hide": "隠す",
+      "save": "保存",
+      "translating": "翻訳中..."
+    },
+    "prompts": {
+      "select_both_langs": "上記の両方の言語を選択して、ソフィーとのレッスンを開始してください。",
+      "hold_mic_start": "下のマイクを長押しして、ソフィーと話し始めてください。"
+    },
+    "alerts": {
+      "end_session_title": "セッション終了",
+      "end_session_msg": "シナリオライブラリに戻りますか？",
+      "finish_title": "会話終了",
+      "finish_msg": "この練習セッションを終了しますか？",
+      "reset_title": "チャットをリセット",
+      "reset_msg": "現在の会話をクリアしてソフィーをリセットします。続けますか？",
+      "error_title": "エラー",
+      "error_msg": "翻訳に失敗しました。もう一度お試しください。",
+      "success_title": "成功",
+      "vocab_added": "語彙に追加されました！",
+      "cancel": "キャンセル",
+      "yes": "はい",
+      "finish": "終了",
+      "reset": "リセット"
+    }
+  },
+  "vocab_screen": {
+    "title": "私の単語帳",
+    "subtitle": "保存された単語とフレーズ",
+    "search_placeholder": "保存された単語を検索...",
+    "add_button": "追加",
+    "all_filter": "すべて",
+    "all_folders": "すべてのフォルダ",
+    "empty_state": {
+      "no_matches": "一致するものは見つかりませんでした",
+      "empty_title": "単語帳は空です。",
+      "empty_subtitle": "フレーズを追加して学習を始めましょう！",
+      "no_phrases": "利用可能なフレーズはありません"
+    },
+    "labels": {
+      "primary": "主要"
+    },
+    "actions": {
+      "listen": "聞く",
+      "delete": "削除",
+      "close": "閉じる",
+      "save_translation": "翻訳を保存",
+      "change": "変更",
+      "save_phrase": "フレーズを保存",
+      "start_practice": "{{count}} フレーズで開始",
+      "start_practice_plural": "{{count}} フレーズで開始"
+    },
+    "modals": {
+      "add_title": "フレーズを追加",
+      "edit_title": "フレーズを編集",
+      "label_language": "言語",
+      "label_folder": "フォルダ (任意)",
+      "label_phrase": "フレーズ",
+      "placeholder_phrase": "単語またはフレーズを入力...",
+      "label_translation": "翻訳 (任意)",
+      "placeholder_translation": "意味を入力...",
+      "select_folder": "フォルダを選択",
+      "selected_folder": "選択されたフォルダ",
+      "practice_session_title": "練習セッション"
+    },
+    "alerts": {
+      "delete_title": "フレーズ削除",
+      "delete_msg": "このフレーズを削除してもよろしいですか？",
+      "required_title": "必須",
+      "required_msg": "フレーズを入力してください",
+      "error_title": "エラー",
+      "save_error": "フレーズの保存に失敗しました",
+      "update_error": "フレーズの更新に失敗しました",
+      "delete_error": "アイテムの削除に失敗しました",
+      "translation_title": "翻訳",
+      "translation_failed": "翻訳に失敗しました",
+      "playing_audio": "「{{text}}」の音声を再生中"
+    }
+  },
+  "language_picker": {
+    "title": "言語を選択",
+    "search_placeholder": "言語を検索...",
+    "no_results": "言語が見つかりません",
+    "select_native": "母国語を選択",
+    "select_target": "学習したい言語を選択",
+    "select_instruction": "指導言語を選択"
+  },
+  "tabs": {
+    "talk": "トーク",
+    "translate": "翻訳",
+    "vocab": "単語",
+    "scenarios": "シナリオ",
+    "profile": "プロフィール"
+  },
+  "translate_screen": {
+    "title": "翻訳",
+    "subtitle": "テキストを別の言語に翻訳",
+    "swap_instruction": "タップして入れ替え",
+    "input_placeholder": "翻訳するテキストを入力...",
+    "actions": {
+      "translate": "翻訳",
+      "practice": "練習",
+      "save": "保存",
+      "copy": "コピー"
+    },
+    "empty_state": "翻訳はここに表示されます...",
+    "modals": {
+      "source_picker_title": "翻訳元",
+      "target_picker_title": "翻訳先",
+      "save_folder_title": "フォルダに保存",
+      "folder_name_placeholder": "フォルダ名...",
+      "create_button": "作成",
+      "create_new_folder": "新しいフォルダを作成",
+      "your_folders": "あなたのフォルダ",
+      "no_folders": "フォルダはまだありません！上で作成してください",
+      "save_to_vocab_button": "単語帳に保存"
+    },
+    "alerts": {
+      "permission_required": "許可が必要です",
+      "mic_access": "音声入力を使用するにはマイクへのアクセスを有効にしてください。",
+      "error": "エラー",
+      "translate_failed": "翻訳に失敗しました。もう一度お試しください。",
+      "saved_title": "保存しました！",
+      "saved_message": "単語帳に追加されました",
+      "save_failed": "保存に失敗しました。もう一度お試しください。",
+      "copied_title": "コピーしました",
+      "copied_message": "テキストがクリップボードにコピーされました"
+    }
+  },
+  "language_screen": {
+    "title": "言語設定",
+    "subtitle": "母国語、学習言語、好みのアクセントを選択してください。",
+    "create_profile_btn": "新しいプロファイルを作成",
+    "sections": {
+      "learning_preferences": "学習設定",
+      "accent_playground": "アクセントテスト",
+      "text_placeholder": "ここにテキストを入力...",
+      "default_test_phrase": "こんにちは、お元気ですか？",
+      "speed_label": "速度",
+      "playground_hint": "選択したアクセントをテストし、話す速度を調整します。再生をタップしてプレビューします。"
+    },
+    "modals": {
+      "create_title": "新しい学習プロファイル",
+      "create_button": "プロファイルを作成",
+      "sections": {
+        "target_label": "学びたい言語",
+        "medium_label": "Sophieの指導言語",
+        "medium_placeholder": "母国語と同じ",
+        "accent_label": "好みのアクセント"
+      }
+    }
+  },
+  "accent_picker": {
+    "title": "アクセントを選択",
+    "english_suffix": "英語",
+    "accents": {
+      "Indian": "インド",
+      "Australian": "オーストラリア",
+      "American": "アメリカ",
+      "British": "イギリス"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "最終日！",
+    "days_left_title": "残り{{count}}日",
+    "last_day_subtitle": "無料トライアルは今日で終了です！",
+    "upgrade_subtitle": "ソフィー AI プロにアップグレードして、すべての機能を体験しましょう。",
+    "benefits_title": "得られるもの",
+    "benefit_1": "無制限のAI会話",
+    "benefit_2": "全10以上の言語をアンロック",
+    "benefit_3": "高度な語彙ツール",
+    "benefit_4": "優先サポート",
+    "limited_time_offer": "期間限定オファー",
+    "off_text": "{{percent}}% オフ",
+    "claim_discount_msg": "今すぐ割引を受け取る",
+    "upgrade_now_btn": "今すぐアップグレード",
+    "claim_discount_btn": "割引を受け取る",
+    "maybe_later_btn": "後で"
+  }
+}

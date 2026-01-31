@@ -1,6 +1,7 @@
 import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Feather, Ionicons } from "@expo/vector-icons";
 
 import React, { useMemo, useState } from "react";
@@ -72,8 +73,9 @@ export default function LanguagePickerModal({
   onClose,
   onSelect,
   selectedCode,
-  title = "Select Language",
+  title,
 }: LanguagePickerModalProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredLanguages = useMemo(() => {
@@ -99,6 +101,9 @@ export default function LanguagePickerModal({
     onClose();
   };
 
+  // Determine title: use prop if provided, otherwise translate default
+  const modalTitle = title || t("language_picker.title");
+
   return (
     <Modal
       visible={visible}
@@ -113,7 +118,9 @@ export default function LanguagePickerModal({
         <SafeAreaView className="flex-1">
           {/* Header */}
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-xl font-bold text-black">{title}</Text>
+            <Text className="text-xl font-bold text-black flex-1 pr-4">
+              {modalTitle}
+            </Text>
             <Pressable
               onPress={handleClose}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -127,7 +134,7 @@ export default function LanguagePickerModal({
             <View className="h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
               <Feather name="search" size={20} color="gray" />
               <TextInput
-                placeholder="Search languages..."
+                placeholder={t("language_picker.search_placeholder")}
                 className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -159,7 +166,7 @@ export default function LanguagePickerModal({
             ListEmptyComponent={
               <View className="items-center py-10">
                 <Text className="text-gray-400 font-medium">
-                  No languages found
+                  {t("language_picker.no_results")}
                 </Text>
               </View>
             }

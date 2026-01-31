@@ -150,7 +150,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="translate"
         options={{
-          title: "Translate", // Keeping as is, not in prototype scope list but can update if needed
+          title: t("tabs.translate"),
           tabBarActiveTintColor: "#2563EB",
           tabBarIcon: ({ color }) => <Languages size={24} color={color} />,
         }}

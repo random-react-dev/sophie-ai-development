@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/theme";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { Text, View } from "react-native";
@@ -6,16 +7,17 @@ import { CustomSlider } from "./CustomSlider";
 
 export const ConfidenceStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const confidenceMap: Record<number, { emoji: string; label: string }> = {
-    1: { emoji: "😖", label: "Terrified" },
-    2: { emoji: "😰", label: "Very Nervous" },
-    3: { emoji: "😟", label: "Anxious" },
-    4: { emoji: "😕", label: "Unsure" },
-    5: { emoji: "😐", label: "Neutral" },
-    6: { emoji: "🙂", label: "Hopeful" },
-    7: { emoji: "😃", label: "Confident" },
-    8: { emoji: "😎", label: "Unstoppable" },
+    1: { emoji: "😖", label: t("onboarding.options.confidence.1") },
+    2: { emoji: "😰", label: t("onboarding.options.confidence.2") },
+    3: { emoji: "😟", label: t("onboarding.options.confidence.3") },
+    4: { emoji: "😕", label: t("onboarding.options.confidence.4") },
+    5: { emoji: "😐", label: t("onboarding.options.confidence.5") },
+    6: { emoji: "🙂", label: t("onboarding.options.confidence.6") },
+    7: { emoji: "😃", label: t("onboarding.options.confidence.7") },
+    8: { emoji: "😎", label: t("onboarding.options.confidence.8") },
   };
 
   const currentLevel = data.confidenceLevel || 3;
@@ -48,8 +50,12 @@ export const ConfidenceStep = () => {
         />
 
         <View className="flex-row justify-between mt-4 px-2">
-          <Text className="text-sm text-gray-400 font-medium">Terrified</Text>
-          <Text className="text-sm text-gray-400 font-medium">Unstoppable</Text>
+          <Text className="text-sm text-gray-400 font-medium">
+            {t("onboarding.options.confidence.1")}
+          </Text>
+          <Text className="text-sm text-gray-400 font-medium">
+            {t("onboarding.options.confidence.8")}
+          </Text>
         </View>
       </View>
     </View>

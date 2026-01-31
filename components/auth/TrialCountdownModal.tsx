@@ -1,4 +1,5 @@
 import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Check, Crown } from "lucide-react-native";
@@ -30,6 +31,7 @@ function BenefitItem({ text }: { text: string }) {
 
 export const TrialCountdownModal = () => {
   const { user, showTrialPopup, setShowTrialPopup } = useAuthStore();
+  const { t } = useTranslation();
 
   // Animation values - slide up from bottom with spring bounce
   const translateY = useSharedValue(300);
@@ -117,24 +119,28 @@ export const TrialCountdownModal = () => {
               <Crown size={36} color="white" />
             </RainbowGradient>
             <Text className="text-xl font-black text-gray-900 text-center">
-              {isLastDay ? "Last Day!" : `${remainingDays} Days Left`}
+              {isLastDay
+                ? t("trial_countdown_modal.last_day_title")
+                : t("trial_countdown_modal.days_left_title", {
+                    count: remainingDays,
+                  })}
             </Text>
             <Text className="text-gray-500 text-center mt-2 text-sm leading-6">
               {isLastDay
-                ? "Your free trial ends today!"
-                : `Upgrade to Sophie AI Pro for the full experience.`}
+                ? t("trial_countdown_modal.last_day_subtitle")
+                : t("trial_countdown_modal.upgrade_subtitle")}
             </Text>
           </View>
 
           {/* Benefits List */}
           <View className="bg-gray-50 rounded-2xl p-4 mb-5">
             <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-              What you&apos;ll get
+              {t("trial_countdown_modal.benefits_title")}
             </Text>
-            <BenefitItem text="Unlimited AI conversations" />
-            <BenefitItem text="All 10+ languages unlocked" />
-            <BenefitItem text="Advanced vocabulary tools" />
-            <BenefitItem text="Priority support" />
+            <BenefitItem text={t("trial_countdown_modal.benefit_1")} />
+            <BenefitItem text={t("trial_countdown_modal.benefit_2")} />
+            <BenefitItem text={t("trial_countdown_modal.benefit_3")} />
+            <BenefitItem text={t("trial_countdown_modal.benefit_4")} />
           </View>
 
           {/* Discount Section */}
@@ -146,14 +152,14 @@ export const TrialCountdownModal = () => {
               </View>
               <View className="bg-black/10 px-3 py-1 rounded-full mb-2">
                 <Text className="text-gray-800 font-bold uppercase tracking-wider text-xs">
-                  Limited Time Offer
+                  {t("trial_countdown_modal.limited_time_offer")}
                 </Text>
               </View>
               <Text className="text-5xl font-black text-gray-900">
-                {discount}% OFF
+                {t("trial_countdown_modal.off_text", { percent: discount })}
               </Text>
               <Text className="text-gray-600 text-sm mt-1 font-medium">
-                Claim your discount today
+                {t("trial_countdown_modal.claim_discount_msg")}
               </Text>
             </View>
           )}
@@ -172,7 +178,9 @@ export const TrialCountdownModal = () => {
                 containerClassName="items-center justify-center"
               >
                 <Text className="text-black font-bold text-base">
-                  {isLastDay ? "Upgrade Now" : "Claim My Discount"}
+                  {isLastDay
+                    ? t("trial_countdown_modal.upgrade_now_btn")
+                    : t("trial_countdown_modal.claim_discount_btn")}
                 </Text>
               </RainbowBorder>
             </TouchableOpacity>
@@ -182,7 +190,9 @@ export const TrialCountdownModal = () => {
               onPress={handleClose}
               className="h-12 items-center justify-center mt-2"
             >
-              <Text className="text-gray-400 font-semibold">Maybe later</Text>
+              <Text className="text-gray-400 font-semibold">
+                {t("trial_countdown_modal.maybe_later_btn")}
+              </Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

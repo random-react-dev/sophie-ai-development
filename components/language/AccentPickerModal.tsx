@@ -1,5 +1,6 @@
 import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { FlatList, Modal, Pressable, Text, View } from "react-native";
@@ -28,12 +29,20 @@ function AccentItem({
   isSelected: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
+  // @ts-ignore
+  const localizedAccent = t(`accent_picker.accents.${accent.code}`);
+
   const Content = () => (
     <>
       <CircleFlag countryCode={accent.countryCode} size={40} />
       <View className="flex-1 ml-4">
-        <Text className="font-bold text-base text-gray-900">{accent.name}</Text>
-        <Text className="text-gray-500 text-sm">{accent.name} English</Text>
+        <Text className="font-bold text-base text-gray-900">
+          {localizedAccent}
+        </Text>
+        <Text className="text-gray-500 text-sm">
+          {localizedAccent} {t("accent_picker.english_suffix")}
+        </Text>
       </View>
     </>
   );
@@ -74,6 +83,8 @@ export default function AccentPickerModal({
   onSelect,
   selectedAccent,
 }: AccentPickerModalProps) {
+  const { t } = useTranslation();
+
   const handleSelect = (accent: Accent) => {
     onSelect(accent.code);
   };
@@ -88,7 +99,9 @@ export default function AccentPickerModal({
       <SafeAreaView className="flex-1 bg-white">
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-          <Text className="text-xl font-bold text-black">Select Accent</Text>
+          <Text className="text-xl font-bold text-black">
+            {t("accent_picker.title")}
+          </Text>
           <Pressable
             onPress={onClose}
             className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"

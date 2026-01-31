@@ -1,5 +1,6 @@
 import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
 import ProfileHeader from "@/components/profile/ProfileHeader";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Check, Crown } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -23,55 +24,57 @@ function FeatureCheck({ text }: { text: string }) {
   );
 }
 
-const PLANS = [
-  {
-    id: "free",
-    name: "M&G",
-    price: "$0",
-    duration: "7 days",
-    description: "Perfect for casual practice.",
-    features: [
-      "All languages included",
-      "5 min/day practice",
-      "Basic AI tutor feedback",
-    ],
-    emoji: "🎁",
-    isFeatured: false,
-  },
-  {
-    id: "launch",
-    name: "Launch Pack",
-    price: "$4.99",
-    duration: "month",
-    description: "For serious learners who want to speak confidently.",
-    features: [
-      "1 language of choice",
-      "15 min/day practice",
-      "Priority AI feedback",
-      "No ads",
-    ],
-    emoji: "🚀",
-    isFeatured: true,
-    badge: "Most Popular",
-  },
-  {
-    id: "pro",
-    name: "SBB",
-    price: "$19",
-    duration: "month",
-    description: "Advanced coaching for business & exams.",
-    features: [
-      "Unlimited languages",
-      "Unlimited time",
-      "Advanced AI analytics",
-      "Personalized paths",
-    ],
-    emoji: "👑",
-    isFeatured: false,
-  },
-];
-
 export default function SubscriptionScreen() {
+  const { t } = useTranslation();
+
+  const PLANS = [
+    {
+      id: "free",
+      name: t("profile.subscription_screen.plans.mg.name"),
+      price: "$0",
+      duration: t("profile.subscription_screen.common.day7"),
+      description: t("profile.subscription_screen.plans.mg.description"),
+      features: [
+        t("profile.subscription_screen.plans.mg.features.0"),
+        t("profile.subscription_screen.plans.mg.features.1"),
+        t("profile.subscription_screen.plans.mg.features.2"),
+      ],
+      emoji: "🎁",
+      isFeatured: false,
+    },
+    {
+      id: "launch",
+      name: t("profile.subscription_screen.plans.launch.name"),
+      price: "$4.99",
+      duration: t("profile.subscription_screen.common.month"),
+      description: t("profile.subscription_screen.plans.launch.description"),
+      features: [
+        t("profile.subscription_screen.plans.launch.features.0"),
+        t("profile.subscription_screen.plans.launch.features.1"),
+        t("profile.subscription_screen.plans.launch.features.2"),
+        t("profile.subscription_screen.plans.launch.features.3"),
+      ],
+      emoji: "🚀",
+      isFeatured: true,
+      badge: t("profile.subscription_screen.plans.launch.badge"),
+    },
+    {
+      id: "pro",
+      name: t("profile.subscription_screen.plans.sbb.name"),
+      price: "$19",
+      duration: t("profile.subscription_screen.common.month"),
+      description: t("profile.subscription_screen.plans.sbb.description"),
+      features: [
+        t("profile.subscription_screen.plans.sbb.features.0"),
+        t("profile.subscription_screen.plans.sbb.features.1"),
+        t("profile.subscription_screen.plans.sbb.features.2"),
+        t("profile.subscription_screen.plans.sbb.features.3"),
+      ],
+      emoji: "👑",
+      isFeatured: false,
+    },
+  ];
+
   const renderPlanCard = (plan: (typeof PLANS)[0]) => {
     const cardContent = (
       <View className="p-6">
@@ -139,13 +142,15 @@ export default function SubscriptionScreen() {
             containerClassName="items-center justify-center"
           >
             <Text className="text-black font-bold text-base">
-              Subscribe Now
+              {t("profile.subscription_screen.common.subscribe")}
             </Text>
           </RainbowBorder>
         ) : (
           <View className="h-14 rounded-full items-center justify-center bg-gray-100">
             <Text className="text-gray-700 font-bold text-base">
-              {plan.id === "free" ? "Get Started" : "Subscribe Now"}
+              {plan.id === "free"
+                ? t("profile.subscription_screen.common.getStarted")
+                : t("profile.subscription_screen.common.subscribe")}
             </Text>
           </View>
         )}
@@ -186,7 +191,7 @@ export default function SubscriptionScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <ProfileHeader title="Upgrade to Pro" />
+      <ProfileHeader title={t("profile.subscription_screen.title")} />
 
       <ScrollView
         className="flex-1"
@@ -199,10 +204,10 @@ export default function SubscriptionScreen() {
             <Crown size={36} color="white" />
           </RainbowGradient>
           <Text className="text-xl font-bold text-gray-900 text-center">
-            Choose Your Plan
+            {t("profile.subscription_screen.choosePlan")}
           </Text>
           <Text className="text-base text-gray-500 text-center mt-2 px-4">
-            Unlock the full potential of Sophie AI and master any language.
+            {t("profile.subscription_screen.subtitle")}
           </Text>
         </View>
 
@@ -214,8 +219,7 @@ export default function SubscriptionScreen() {
         {/* Footer Note */}
         <View className="px-6 mt-4 items-center">
           <Text className="text-gray-400 text-xs text-center italic">
-            All plans include 24/7 AI tutor access and Progress Tracking. Cancel
-            anytime from your settings.
+            {t("profile.subscription_screen.footer")}
           </Text>
         </View>
       </ScrollView>

@@ -1,0 +1,645 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Chagua Lugha ya Programu",
+    "chooseLearningLanguage": "Unataka kujifunza lugha gani?",
+    "continue": "Endelea",
+    "saving": "Inahifadhi...",
+    "startLearning": "Anza Kujifunza",
+    "skip": "Ruka",
+    "profileStep": {
+      "almostThere": "Karibu tumemaliza!",
+      "nameLabel": "Jina Lako",
+      "namePlaceholder": "Weka jina lako",
+      "countryLabel": "Nchi",
+      "countryPlaceholder": "Chagua nchi yako",
+      "nativeLanguageLabel": "Lugha ya Asili",
+      "nativeLanguagePlaceholder": "Chagua lugha yako ya asili",
+      "selectCountry": "Chagua Nchi",
+      "selectNativeLanguage": "Lugha ya Asili"
+    },
+    "options": {
+      "goal": {
+        "student": "Mimi ni mwanafunzi",
+        "traveler": "Mimi ni msafiri",
+        "abroad": "Nita / niko nje ya nchi",
+        "job": "Nahitaji kwa kazi yangu",
+        "other": "Nyingine"
+      },
+      "level": {
+        "zero": "Sijui hata neno moja",
+        "words": "Naweza kusema maneno machache tu",
+        "phrases": "Naweza kusema sentensi chache tu",
+        "basic_idea": "Nina wazo lakini sina msamiati",
+        "fluent": "Ninazungumza kwa ufasaha, lakini nahitaji mazoezi zaidi"
+      },
+      "fluency": {
+        "norush": "Hakuna haraka, ninaweza kuchukua muda wangu",
+        "consistent": "Nataka kuwa na msimamo na kufanya mazoezi kila siku",
+        "phrases": "Nahitaji tu sentensi chache",
+        "conversations": "Nahitaji kuwa na mazungumzo ya jumla",
+        "desperate": "Natamani sana kuwa fasaha, sasa."
+      },
+      "duration": {
+        "less_1_month": "Chini ya mwezi 1",
+        "less_6_months": "Chini ya miezi 6",
+        "less_2_years": "Chini ya miaka 2",
+        "less_5_years": "Chini ya miaka 5",
+        "less_10_years": "Chini ya miaka 10",
+        "more": "Zaidi"
+      },
+      "confidence": {
+        "1": "Hofu",
+        "2": "Wasiwasi sana",
+        "3": "Mwenye wasiwasi",
+        "4": "Hajui",
+        "5": "Katikati",
+        "6": "Mwenye matumaini",
+        "7": "Mwenye ujasiri",
+        "8": "Asiyezuilika"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "Hofu ya kufanya makosa",
+          "desc": "Nina wasiwasi kuhusu kusema vibaya"
+        },
+        "consistency": {
+          "title": "Ukosefu wa msimamo",
+          "desc": "Napata shida kufanya mazoezi mara kwa mara"
+        },
+        "practice": {
+          "title": "Ukosefu wa mtu wa kufanya naye mazoezi",
+          "desc": "Sina mshirika wa mazungumzo"
+        },
+        "other": {
+          "title": "Nyingine",
+          "desc": "Kitu kingine kinanizuia"
+        }
+      },
+      "focus": {
+        "listening": "Kusikiliza",
+        "speaking": "Kuzungumza",
+        "pronunciation": "Matamshi",
+        "vocabulary": "Msamiati",
+        "grammar": "Sarufi",
+        "reading": "Kusoma",
+        "writing": "Kuandika"
+      },
+      "discovery": {
+        "tiktok": "TikTok",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "friend": "Familia/Rafiki",
+        "other": "Nyingine"
+      }
+    },
+    "titles": {
+      "goal": "Je, lengo lako kuu maishani ni lipi?",
+      "fluency": "Unataka kuwa fasaha kwa haraka kiasi gani?",
+      "duration": "Umewahi kusoma lugha hii kwa muda gani?",
+      "level": "Ni ipi inakuelezea vyema?",
+      "confidence": "Unajiamini kiasi gani?",
+      "barriers": "Kwa nini hujiamini?",
+      "focus": "Unataka kuzingatia nini kwanza?",
+      "discovery": "Ulitujuaje?"
+    },
+    "completion": {
+      "title": "Tayari kabisa!",
+      "subtitle": "Njia yako ya kujifunza iko tayari",
+      "videoLabel": "Kutana na Kocha wako wa Lugha wa AI",
+      "primaryGoal": "Lengo Kuu",
+      "learningPace": "Kasi ya Kujifunza",
+      "currentLevel": "Kiwango cha Sasa",
+      "notSet": "Haijawekwa"
+    }
+  },
+  "profile": {
+    "title": "Wasifu Wangu",
+    "menu": {
+      "preferences": {
+        "title": "Mapendeleo",
+        "subtitle": "Lugha, nchi, na zaidi"
+      },
+      "account": {
+        "title": "Akaunti",
+        "subtitle": "Usajili na malipo"
+      },
+      "security": {
+        "title": "Usalama",
+        "subtitle": "Nenosiri na uthibitishaji"
+      },
+      "progress": {
+        "title": "Maendeleo",
+        "subtitle": "Fuatilia safari yako ya kujifunza"
+      },
+      "support": {
+        "title": "Usaidizi",
+        "subtitle": "Msaada, sera, na maoni"
+      },
+      "social": {
+        "title": "Mitandao ya Kijamii",
+        "subtitle": "Ungana nasi"
+      },
+      "logout": "Ondoka",
+      "setName": "Weka Jina",
+      "avatarSuccess": "Avatar imesasishwa kikamilifu!",
+      "avatarError": "Imeshindwa kupakia avatar.",
+      "nameError": "Imeshindwa kusasisha jina.",
+      "logoutConfirm": {
+        "title": "Ondoka",
+        "message": "Je, una uhakika unataka kuondoka?",
+        "cancel": "Ghairi",
+        "confirm": "Ondoka"
+      }
+    },
+    "preferences_screen": {
+      "title": "Mapendeleo",
+      "accountInfo": "Taarifa za Akaunti",
+      "name": "Jina",
+      "email": "Barua pepe",
+      "languages": "Lugha",
+      "country": "Nchi",
+      "nativeLanguage": "Lugha ya Asili",
+      "appLanguage": "Lugha ya Programu",
+      "selectLanguage": "Chagua Lugha",
+      "notSet": "Haijawekwa"
+    },
+    "account_screen": {
+      "title": "Akaunti",
+      "subscription": "Usajili",
+      "status": "Hali",
+      "freeTrial": "Jaribio la Bure",
+      "upgradeToPro": "Boresha hadi Pro",
+      "payment": "Malipo",
+      "paymentMethods": "Njia za Malipo",
+      "billingHistory": "Historia ya Malipo",
+      "accountInfo": "Taarifa za Akaunti",
+      "email": "Barua pepe",
+      "memberSince": "Mwanachama Tangu",
+      "na": "N/A",
+      "comingSoon": "Inakuja Hivi Karibuni"
+    },
+    "subscription_screen": {
+      "title": "Boresha hadi Pro",
+      "choosePlan": "Chagua Mpango Wako",
+      "subtitle": "Fungua uwezo kamili wa Sophie AI na ujifunze lugha yoyote.",
+      "plans": {
+        "mg": {
+          "name": "M na G",
+          "description": "Ni kamili kwa mazoezi ya kawaida.",
+          "features": {
+            "0": "Lugha zote zimejumuishwa",
+            "1": "Mazoezi ya dakika 5 kwa siku",
+            "2": "Maoni ya kimsingi ya mwalimu wa AI"
+          }
+        },
+        "launch": {
+          "name": "Kifurushi cha Uzinduzi",
+          "description": "Kwa wanafunzi makini wanaotaka kuzungumza kwa ujasiri.",
+          "badge": "Maarufu Zaidi",
+          "features": {
+            "0": "Lugha 1 ya chaguo",
+            "1": "Mazoezi ya dakika 15 kwa siku",
+            "2": "Maoni ya kipaumbele ya AI",
+            "3": "Hakuna matangazo"
+          }
+        },
+        "sbb": {
+          "name": "SBB",
+          "description": "Mafunzo ya hali ya juu kwa biashara na mitihani.",
+          "features": {
+            "0": "Lugha zisizo na kikomo",
+            "1": "Muda usio na kikomo",
+            "2": "Uchambuzi wa hali ya juu wa AI",
+            "3": "Njia zilizobinafsishwa"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "Jisajili Sasa",
+        "getStarted": "Anza",
+        "month": "mwezi",
+        "day7": "Siku 7"
+      },
+      "footer": "Mipango yote inajumuisha ufikiaji wa mwalimu wa AI wa 24/7 na Ufuatiliaji wa Maendeleo. Ghairi wakati wowote kutoka kwa mipangilio yako."
+    },
+    "security_screen": {
+      "title": "Usalama",
+      "subtitle": "Linda akaunti yako",
+      "auth_section": "Uthibitishaji",
+      "change_password": {
+        "title": "Badilisha Nenosiri",
+        "subtitle": "Sasisha nenosiri lako mara kwa mara"
+      },
+      "two_factor": {
+        "title": "Uthibitishaji wa Hatua Mbili",
+        "status": "Haijawezeshwa"
+      },
+      "tips_section": "Vidokezo vya Usalama",
+      "tips": {
+        "strong_password": {
+          "title": "Tumia nenosiri kali",
+          "body": "Changanya herufi, nambari na alama maalum kwa ulinzi wa hali ya juu."
+        },
+        "enable_2fa": {
+          "title": "Washa uthibitishaji wa hatua mbili",
+          "body": "Safu ya ziada ya usalama kwa akaunti yako. Inakuja hivi karibuni!"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "Badilisha Nenosiri",
+      "new_password": "Nenosiri Jipya",
+      "new_password_placeholder": "Ingiza nenosiri jipya",
+      "confirm_password": "Thibitisha Nenosiri",
+      "confirm_password_placeholder": "Thibitisha nenosiri jipya",
+      "update_button": "Sasisha Nenosiri",
+      "error_length": "Nenosiri lazima liwe na angalau herufi 6.",
+      "error_match": "Manenosiri hayalingani.",
+      "success_message": "Nenosiri lako limesasasishwa kikamilifu.",
+      "error_generic": "Imeshindikana kusasisha nenosiri."
+    },
+    "progress_screen": {
+      "title": "Maendeleo",
+      "overview": "Muhtasari",
+      "speaking": "Kuongea",
+      "words": "Maneno",
+      "sessions": "Vipindi",
+      "detailed_stats": "Takwimu za Kina",
+      "coming_soon": "Inakuja Hivi Karibuni",
+      "coming_soon_body": "Uchambuzi wa kina wa kujifunza na ufuatiliaji wa maendeleo utapatikana katika sasisho la baadaye."
+    },
+    "support_screen": {
+      "title": "Msaada",
+      "legal": "Kisheria",
+      "privacy_policy": "Sera ya Faragha",
+      "terms_of_service": "Masharti ya Huduma",
+      "contact_us": "Wasiliana Nasi",
+      "email_support": "Msaada wa Barua Pepe",
+      "send_feedback": "Tuma Maoni",
+      "help_improve": "Tusaidie kuboresha",
+      "whatsapp_support": "Msaada wa WhatsApp",
+      "whatsapp_subtitle": "Piga gumzo nasi kwenye WhatsApp",
+      "whatsapp_message": "Habari Timu ya Sophie! 👋 Ninatumia programu ya Sophie AI na ningependa kuwasiliana nanyi.",
+      "contact_alert_title": "Wasiliana Nasi",
+      "contact_alert_body": "Tutumie barua pepe kwa support@fluentai.com kwa maswali au maoni yoyote.",
+      "feedback_alert_title": "Inakuja Hivi Karibuni",
+      "feedback_alert_body": "Kipengele cha maoni ya ndani ya programu kitapatikana hivi karibuni.",
+      "danger_zone": "Eneo la Hatari",
+      "delete_account": "Futa Akaunti",
+      "delete_account_subtitle": "Ondoa akaunti yako kabisa",
+      "delete_account_alert_title": "Futa Akaunti",
+      "delete_account_alert_body": "Kipengele hiki kinakuja hivi karibuni. Data yako ipo salama.",
+      "app_info": "Maelezo ya Programu",
+      "version": "Toleo",
+      "build": "Jenga",
+      "prototype": "Mfano"
+    },
+    "privacy_policy_screen": {
+      "title": "Sera ya Faragha",
+      "last_updated": "Imesasishwa Mwisho: Januari 13, 2026",
+      "section1_title": "1. Taarifa Tunazokusanya",
+      "section1_body": "Tunakusanya taarifa kutoa huduma bora kwa watumiaji wetu wote. Hii inajumuisha maelezo ya akaunti kama vile jina lako, barua pepe, na lugha unazopendelea, pamoja na data ya matumizi ili kuboresha mifano yetu ya AI.",
+      "section2_title": "2. Jinsi Tunavyotumia Data",
+      "section2_body": "Data yako inatumiwa kubinafsisha uzoefu wako wa kujifunza, kufuatilia maendeleo, na kusafisha usahihi wa AI yetu. Hatuuzi data yako ya kibinafsi kwa watu wengine.",
+      "section3_title": "3. Mwingiliano wa AI",
+      "section3_body": "Mazungumzo na maingizo yaliyotolewa ndani ya programu yanachakatwa ili kutoa majibu ya AI. Data hii inaweza kutumika kwa njia isiyojulikana kutoa mafunzo na kuboresha mifano ya kujifunza lugha.",
+      "section4_title": "4. Usalama wa Data",
+      "section4_body": "Tunatathmini hatua za usalama za kiwango cha tasnia ili kulinda taarifa yako dhidi ya ufikiaji usioidhinishwa, mabadiliko, ufichuzi, au uharibifu.",
+      "section5_title": "5. Haki Zako",
+      "section5_body": "Una haki ya kufikia, kusahihisha, au kufuta taarifa zako za kibinafsi wakati wowote kupitia mipangilio ya akaunti au kwa kuwasiliana na timu yetu ya usaidizi.",
+      "section6_title": "6. Maelezo ya Mawasiliano",
+      "section6_body": "Ikiwa una maswali kuhusu Sera hii ya Faragha, tafadhali wasiliana nasi kwa support@fluentai.com."
+    },
+    "terms_screen": {
+      "title": "Masharti ya Huduma",
+      "last_updated": "Imesasishwa Mwisho: Januari 13, 2026",
+      "section1_title": "1. Kukubali Masharti",
+      "section1_body": "Kwa kufikia na kutumia programu hii, unakubali kufungwa na Masharti haya ya Huduma. Ikiwa hukubaliani na sehemu yoyote ya masharti haya, huwezi kutumia huduma zetu.",
+      "section2_title": "2. Matumizi ya Huduma",
+      "section2_body": "Unakubali kutumia programu hii kwa madhumuni ya kibinafsi, yasiyo ya kibiashara ya kujifunza lugha. Hupaswi kutumia huduma kwa madhumuni yoyote haramu au yasiyoidhinishwa.",
+      "section3_title": "3. Mwenendo wa Mtumiaji",
+      "section3_body": "Watumiaji wanatarajiwa kuingiliana na msaidizi wa AI kwa heshima. Jaribio lolote la unyanyasaji, kudhuru, au kupita utendaji uliokusudiwa wa programu ni marufuku kabisa.",
+      "section4_title": "4. Mali Miliki",
+      "section4_body": "Programu, maudhui yake, na mifano ya AI inalindwa na hakimiliki na sheria zingine za mali miliki. Hupaswi kuzalisha tena au kusambaza sehemu yoyote ya huduma bila ruhusa.",
+      "section5_title": "5. Kanusho la AI",
+      "section5_body": "Huduma yetu hutoa maudhui yaliyozalishwa na AI kwa madhumuni ya elimu. Ingawa tunajitahidi kwa usahihi, AI inaweza kutoa habari isiyo sahihi mara kwa mara. Watumiaji wanahimizwa kuthibitisha maelezo muhimu.",
+      "section6_title": "6. Ukomo wa Dhima",
+      "section6_body": "Sisi hatuwajibiki kwa uharibifu wowote wa moja kwa moja, usio wa moja kwa moja, au wa matokeo unaotokana na matumizi yako ya programu au habari yoyote iliyotolewa na msaidizi wa AI.",
+      "section7_title": "7. Mabadiliko ya Masharti",
+      "section7_body": "Tunahifadhi haki ya kurekebisha masharti haya wakati wowote. Matumizi yako ya kuendelea ya programu baada ya mabadiliko kuchapishwa inajumuisha kukubali kwako masharti mapya."
+    },
+    "social_screen": {
+      "title": "Mitandao ya Kijamii",
+      "section_title": "Ungana Nasi",
+      "instagram": "Instagram",
+      "instagram_subtitle": "Tufuate kwenye Instagram",
+      "facebook": "Facebook",
+      "facebook_subtitle": "Jiunge na jamii yetu",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "Tufuate kwenye X",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "Ungana kitaaluma",
+      "youtube": "YouTube",
+      "youtube_subtitle": "Jiandikishe kwa chaneli yetu",
+      "tiktok": "TikTok",
+      "tiktok_subtitle": "Tazama video zetu mpya",
+      "reddit": "Reddit",
+      "reddit_subtitle": "Jiunge na majadiliano",
+      "error": "Hitilafu",
+      "open_error": "imeshindikana kufungua {platform}. Tafadhali jaribu tena baadaye.",
+      "general_error": "Hitilafu imetokea wakati wa kufungua {platform}."
+    }
+  },
+  "scenarios_screen": {
+    "title": "Matukio ya Kujifunza",
+    "subtitle": "Fanya mazoezi ya mazungumzo ya maisha halisi",
+    "search_placeholder": "Tafuta matukio...",
+    "create_button": "Unda",
+    "create_your_own": "Unda yako mwenyewe",
+    "empty_search": "Hakuna inayolingana iliyopatikana",
+    "empty_list": "Hakuna matukio yaliyopatikana",
+    "categories": {
+      "all": "Zote",
+      "food_drink": "Chakula na Vinywaji",
+      "business": "Biashara",
+      "social": "Kijamii",
+      "travel": "Usafiri",
+      "customer_service": "Huduma kwa Wateja",
+      "education": "Elimu"
+    },
+    "create_modal": {
+      "title": "Unda Tukio",
+      "sophie_role_label": "Jukumu la Sophie",
+      "sophie_role_placeholder": "mfano Mmiliki wa duka mwenye hasira lakini anayesaidia",
+      "user_role_label": "Jukumu Lako",
+      "user_role_placeholder": "mfano Mteja aliye na haraka",
+      "topic_label": "Mada",
+      "topic_placeholder": "mfano Kununua saa ya zamani",
+      "level_label": "Kiwango",
+      "category_label": "Kategoria",
+      "category_placeholder": "Chagua kategoria",
+      "context_label": "Muktadha / Hali",
+      "context_placeholder": "Elezea mpangilio...",
+      "start_button": "Anza Tukio",
+      "validation_title": "Sehemu Zinazohitajika Zimekosekana",
+      "validation_message": "Jukumu la Sophie na Mada vinahitajika!"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "Kuagiza Kahawa",
+      "description": "Agiza latte na croissant katika mkahawa wenye shughuli nyingi.",
+      "sophieRole": "Barista katika mkahawa wenye shughuli nyingi katikati ya jiji",
+      "userRole": "Mteja anayetafuta kifungua kinywa",
+      "topic": "Maisha ya Kila Siku",
+      "context": "Uko katika mkahawa unaitwa \"The Morning Grind\". Unataka kuagiza kahawa na kitu cha kula."
+    },
+    "job-interview": {
+      "title": "Usaili wa Kazi",
+      "description": "Usaili kwa nafasi ya mhandisi wa programu.",
+      "sophieRole": "Mtaalamu Mkuu wa Uajiri katika kampuni ya teknolojia",
+      "userRole": "Mgombea anayeomba nafasi ya Msanidi wa Frontend",
+      "topic": "Kazi",
+      "context": "Uko kwenye usaili kwa kazi ya ndoto yako. Sophie atakuuliza kuhusu uzoefu na ujuzi wako."
+    },
+    "asking-directions": {
+      "title": "Kuuliza Maelekezo",
+      "description": "Umepotea Tokyo na unahitaji kupata kituo cha treni.",
+      "sophieRole": "Mkaazi mwenye msaada wa Tokyo",
+      "userRole": "Mtalii ambaye amepotea kidogo",
+      "topic": "Usafiri",
+      "context": "Uko karibu na Shibuya Crossing na unahitaji kufika kituo cha JR lakini betri ya simu yako imeisha."
+    },
+    "hotel-check-in": {
+      "title": "Kuingia Hotelini",
+      "description": "Ingia na uombe chumba na mandhari.",
+      "sophieRole": "Mpokezi wa dawati la mbele katika hoteli ya nyota 4",
+      "userRole": "Mgeni anayewasili kwa kukaa usiku tatu",
+      "topic": "Usafiri",
+      "context": "Una uhifadhi kwa jina lako. Unataka kuthibitisha muda wa kifungua kinywa na kuuliza ikiwa kuna chumba chenye mandhari nzuri kinapatikana."
+    },
+    "political-debate": {
+      "title": "Mjadala wa Kisiasa",
+      "description": "Jadili sera za mazingira na mabadiliko ya tabianchi.",
+      "sophieRole": "Mtetezi mwenye shauku wa mazingira",
+      "userRole": "Raia mwenye mashaka au mtunga sera wa upinzani",
+      "topic": "Mambo ya Sasa",
+      "context": "Shiriki katika majadiliano ya kina kuhusu usawa kati ya ukuaji wa uchumi na ulinzi wa mazingira."
+    }
+  },
+  "common": {
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "error": "Hitilafu",
+    "warning": "Onyo",
+    "incomplete": "Haijakamilika",
+    "incompleteMessage": "Tafadhali weka jina lako na uchague nchi.",
+    "errorMessage": "Imeshindikana kuhifadhi mipangilio. Tafadhali jaribu tena.",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "Sophie Anazungumza...",
+      "preparing": "Inaandaa jibu... {{progress}}%",
+      "thinking": "Sophie anafikiria...",
+      "listening": "Inasikiliza...",
+      "connecting": "Inaunganisha...",
+      "reconnecting": "Inaunganisha tena...",
+      "hold_mic": "Shikilia maikrofoni ili kuzungumza",
+      "error": "Hitilafu"
+    },
+    "language_selector": {
+      "learning_label": "Kujifunza",
+      "select_label": "Chagua",
+      "explain_label": "Fafanua kwa",
+      "target_title": "Unataka kujifunza nini?",
+      "native_title": "Lugha yako ya asili ni ipi?"
+    },
+    "actions": {
+      "finish_report": "Maliza & Pata Ripoti",
+      "transcript": "Nakala",
+      "transcript_hidden": "Nakala Imefichwa"
+    },
+    "message_actions": {
+      "translate": "Tafsiri",
+      "hide": "Ficha",
+      "save": "Hifadhi",
+      "translating": "Inatafsiri..."
+    },
+    "prompts": {
+      "select_both_langs": "Chagua lugha zote mbili hapo juu ili kuanza somo lako na Sophie.",
+      "hold_mic_start": "Shikilia maikrofoni hapa chini ili kuanza kuzungumza na Sophie."
+    },
+    "alerts": {
+      "end_session_title": "Maliza Kipindi",
+      "end_session_msg": "Rudi kwenye maktaba ya hali?",
+      "finish_title": "Maliza Mazungumzo",
+      "finish_msg": "Umemaliza kikao hiki cha mazoezi?",
+      "reset_title": "Weka Upya Gumzo",
+      "reset_msg": "Hii itafuta mazungumzo ya sasa na kuweka upya Sophie. Endelea?",
+      "error_title": "Hitilafu",
+      "error_msg": "Imeshindwa kutafsiri. Tafadhali jaribu tena.",
+      "success_title": "Mafanikio",
+      "vocab_added": "Imeongezwa kwenye msamiati wako!",
+      "cancel": "Ghairi",
+      "yes": "Ndiyo",
+      "finish": "Maliza",
+      "reset": "Weka Upya"
+    }
+  },
+  "vocab_screen": {
+    "title": "Msamiati Wangu",
+    "subtitle": "Maneno na misemo yako iliyohifadhiwa",
+    "search_placeholder": "Tafuta maneno yaliyohifadhiwa...",
+    "add_button": "Ongeza",
+    "all_filter": "Zote",
+    "all_folders": "Folders Zote",
+    "empty_state": {
+      "no_matches": "Hakuna ulinganifu uliopatikana",
+      "empty_title": "Msamiati wako ni mtupu.",
+      "empty_subtitle": "Ongeza misemo kuanza kujifunza!",
+      "no_phrases": "Hakuna misemo inayopatikana"
+    },
+    "labels": {
+      "primary": "KUU"
+    },
+    "actions": {
+      "listen": "Sikiliza",
+      "delete": "Futa",
+      "close": "Funga",
+      "save_translation": "Hifadhi Tafsiri",
+      "change": "Badilisha",
+      "save_phrase": "Hifadhi Msemo",
+      "start_practice": "Anza na Msemo {{count}}",
+      "start_practice_plural": "Anza na Misemo {{count}}"
+    },
+    "modals": {
+      "add_title": "Ongeza Msemo",
+      "edit_title": "Hariri Msemo",
+      "label_language": "Lugha",
+      "label_folder": "Folder (Hiari)",
+      "label_phrase": "Msemo",
+      "placeholder_phrase": "Ingiza neno au msemo...",
+      "label_translation": "Tafsiri (Hiari)",
+      "placeholder_translation": "Ingiza maana...",
+      "select_folder": "Chagua folder",
+      "selected_folder": "Folder Iliyochaguliwa",
+      "practice_session_title": "Kikao cha Mazoezi"
+    },
+    "alerts": {
+      "delete_title": "Futa Msemo",
+      "delete_msg": "Je, una uhakika unataka kufuta msemo huu?",
+      "required_title": "Inahitajika",
+      "required_msg": "Tafadhali ingiza msemo",
+      "error_title": "Hitilafu",
+      "save_error": "Imeshindwa kuhifadhi msemo",
+      "update_error": "Imeshindwa kusasisha msemo",
+      "delete_error": "Imeshindwa kufuta kipengee",
+      "translation_title": "Tafsiri",
+      "translation_failed": "Tafsiri imeshindwa",
+      "playing_audio": "Inacheza sauti kwa: \"{{text}}\""
+    }
+  },
+  "language_picker": {
+    "title": "Chagua Lugha",
+    "search_placeholder": "Tafuta lugha...",
+    "no_results": "Hakuna lugha zilizopatikana",
+    "select_native": "Chagua Lugha ya Asili",
+    "select_target": "Chagua Lugha Lengwa",
+    "select_instruction": "Chagua Lugha ya Maagizo"
+  },
+  "tabs": {
+    "talk": "Zungumza",
+    "translate": "Tafsiri",
+    "vocab": "Msamiati",
+    "scenarios": "Hali",
+    "profile": "Wasifu"
+  },
+  "translate_screen": {
+    "title": "Tafsiri",
+    "subtitle": "Tafsiri maandishi kwa lugha nyingine",
+    "swap_instruction": "Gonga badilisha ili kubadilisha mwelekeo",
+    "input_placeholder": "Ingiza maandishi ya kutafsiri...",
+    "actions": {
+      "translate": "Tafsiri",
+      "practice": "Fanya mazoezi",
+      "save": "Hifadhi",
+      "copy": "Nakili"
+    },
+    "empty_state": "Tafsiri itaonekana hapa...",
+    "modals": {
+      "source_picker_title": "Tafsiri kutoka",
+      "target_picker_title": "Tafsiri kwenda",
+      "save_folder_title": "Hifadhi kwenye Folda",
+      "folder_name_placeholder": "Jina la folda...",
+      "create_button": "Unda",
+      "create_new_folder": "Unda Folda Mpya",
+      "your_folders": "Folda Zako",
+      "no_folders": "Hakuna folda bado! Unda moja hapo juu",
+      "save_to_vocab_button": "Hifadhi kwenye Msamiati"
+    },
+    "alerts": {
+      "permission_required": "Ruhusa Inahitajika",
+      "mic_access": "Tafadhali washa ufikiaji wa maikrofoni ili kutumia uingizaji wa sauti.",
+      "error": "Hitilafu",
+      "translate_failed": "Imeshindwa kutafsiri. Tafadhali jaribu tena.",
+      "saved_title": "Imehifadhiwa!",
+      "saved_message": "Imeongezwa kwenye msamiati wako",
+      "save_failed": "Imeshindwa kuhifadhi. Tafadhali jaribu tena.",
+      "copied_title": "Imenakiliwa",
+      "copied_message": "Maandishi yamenakiliwa kwenye ubao wa kunakili"
+    }
+  },
+  "language_screen": {
+    "title": "Mapendeleo ya Lugha",
+    "subtitle": "Chagua lugha yako ya asili, lengwa na lafudhi unayopendelea.",
+    "create_profile_btn": "Unda Wasifu Mpya",
+    "sections": {
+      "learning_preferences": "Mapendeleo ya Kujifunza",
+      "accent_playground": "Uwanja wa Lafudhi",
+      "text_placeholder": "Andika maandishi yako hapa...",
+      "default_test_phrase": "Habari, hujambo?",
+      "speed_label": "Kasi",
+      "playground_hint": "Jaribu lafudhi iliyochaguliwa na urekebishe kasi ya kuongea. Gusa Cheza ili kuhakiki."
+    },
+    "modals": {
+      "create_title": "Wasifu Mpya wa Kujifunza",
+      "create_button": "Unda Wasifu",
+      "sections": {
+        "target_label": "Nataka kujifunza",
+        "medium_label": "Sophie anafundisha kwa",
+        "medium_placeholder": "Sawa na Lugha ya Asili",
+        "accent_label": "Lafudhi inayopendekezwa"
+      }
+    }
+  },
+  "accent_picker": {
+    "title": "Chagua Lafudhi",
+    "english_suffix": "Kiingereza",
+    "accents": {
+      "Indian": "Kihindi",
+      "Australian": "Kiaustralia",
+      "American": "Kiamerika",
+      "British": "Kibritania"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "Siku ya Mwisho!",
+    "days_left_title": "Siku {{count}} Zimebaki",
+    "last_day_subtitle": "Jaribio lako la bila malipo linaisha leo!",
+    "upgrade_subtitle": "Boresha hadi Sophie AI Pro kwa matumizi kamili.",
+    "benefits_title": "Utakachopata",
+    "benefit_1": "Mazungumzo ya AI yasiyo na kikomo",
+    "benefit_2": "Lugha zote 10+ zimefunguliwa",
+    "benefit_3": "Zana za juu za msamiati",
+    "benefit_4": "Msaada wa kipaumbele",
+    "limited_time_offer": "Ofa ya Muda Mfupi",
+    "off_text": "PUNGUZO LA {{percent}}%",
+    "claim_discount_msg": "Dai punguzo lako leo",
+    "upgrade_now_btn": "Boresha Sasa",
+    "claim_discount_btn": "Dai Punguzo Langu",
+    "maybe_later_btn": "Labda baadaye"
+  }
+}

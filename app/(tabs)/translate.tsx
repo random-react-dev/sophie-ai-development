@@ -9,6 +9,7 @@ import {
   DEFAULT_TARGET_LANG,
   Language,
 } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
 import { translateText } from "@/services/gemini/translate";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
@@ -60,6 +61,7 @@ export default function TranslateScreen() {
   const router = useRouter();
   const { addEntry } = useTranslationHistoryStore();
   const { addItem, addFolder, folders, fetchVocabulary } = useVocabularyStore();
+  const { t } = useTranslation();
 
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
@@ -106,8 +108,8 @@ export default function TranslateScreen() {
       const perms = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
       if (!perms.granted) {
         showAlert(
-          "Permission Required",
-          "Please enable microphone access to use voice input.",
+          t("translate_screen.alerts.permission_required"),
+          t("translate_screen.alerts.mic_access"),
           undefined,
           "error",
         );
@@ -177,8 +179,8 @@ export default function TranslateScreen() {
     } catch (error) {
       console.error("Translation error:", error);
       showAlert(
-        "Error",
-        "Failed to translate. Please try again.",
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.translate_failed"),
         undefined,
         "error",
       );
@@ -210,12 +212,17 @@ export default function TranslateScreen() {
     if (success) {
       setShowSaveFolderPicker(false);
       setSaveFolderId(null);
-      showAlert("Saved!", "Added to your vocabulary", undefined, "success");
+      showAlert(
+        t("translate_screen.alerts.saved_title"),
+        t("translate_screen.alerts.saved_message"),
+        undefined,
+        "success",
+      );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
       showAlert(
-        "Error",
-        "Failed to save. Please try again.",
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.save_failed"),
         undefined,
         "error",
       );
@@ -232,7 +239,12 @@ export default function TranslateScreen() {
   const copyToClipboard = async (text: string) => {
     await Clipboard.setStringAsync(text);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    showAlert("Copied", "Text copied to clipboard", undefined, "success");
+    showAlert(
+      t("translate_screen.alerts.copied_title"),
+      t("translate_screen.alerts.copied_message"),
+      undefined,
+      "success",
+    );
   };
 
   const clearAll = () => {
@@ -256,10 +268,10 @@ export default function TranslateScreen() {
 
       <View className="px-4 mb-4">
         <Text className="text-xl font-bold text-black text-left">
-          Translation
+          {t("translate_screen.title")}
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
-          Translate text to another language
+          {t("translate_screen.subtitle")}
         </Text>
       </View>
 
@@ -333,7 +345,7 @@ export default function TranslateScreen() {
 
             <View className="mt-3 mb-6">
               <Text className="text-gray-400 text-base text-center">
-                Tap swap to reverse direction
+                {t("translate_screen.swap_instruction")}
               </Text>
             </View>
           </View>
@@ -348,7 +360,7 @@ export default function TranslateScreen() {
                 </Text>
               </View>
               <TextInput
-                placeholder="Enter text to translate..."
+                placeholder={t("translate_screen.input_placeholder")}
                 multiline
                 className="text-gray-900 text-sm leading-normal"
                 value={inputText}
@@ -405,7 +417,7 @@ export default function TranslateScreen() {
                       <>
                         <Sparkles size={18} color="#9ca3af" />
                         <Text className="font-bold text-gray-400">
-                          Translate
+                          {t("translate_screen.actions.translate")}
                         </Text>
                       </>
                     )}
@@ -418,7 +430,9 @@ export default function TranslateScreen() {
                     className="bg-white"
                   >
                     <Sparkles size={18} color="black" />
-                    <Text className="font-bold text-black">Translate</Text>
+                    <Text className="font-bold text-black">
+                      {t("translate_screen.actions.translate")}
+                    </Text>
                   </RainbowBorder>
                 )}
               </TouchableOpacity>
@@ -491,7 +505,9 @@ export default function TranslateScreen() {
                         containerClassName="px-5 py-4 flex-row items-center gap-2"
                       >
                         <MessageSquare size={16} color="black" />
-                        <Text className="font-bold text-black">Practice</Text>
+                        <Text className="font-bold text-black">
+                          {t("translate_screen.actions.practice")}
+                        </Text>
                       </RainbowBorder>
                     </TouchableOpacity>
                   </View>
@@ -503,7 +519,7 @@ export default function TranslateScreen() {
                   <MessageSquare size={28} color="#9ca3af" />
                 </View>
                 <Text className="text-gray-400 text-lg text-center font-medium italic">
-                  Translation will appear here...
+                  {t("translate_screen.empty_state")}
                 </Text>
               </View>
             )}
@@ -520,7 +536,7 @@ export default function TranslateScreen() {
         onClose={() => setShowSourcePicker(false)}
         onSelect={setSourceLang}
         selectedCode={sourceLang.code}
-        title="Translate from"
+        title={t("translate_screen.modals.source_picker_title")}
       />
 
       <LanguagePickerModal
@@ -528,7 +544,7 @@ export default function TranslateScreen() {
         onClose={() => setShowTargetPicker(false)}
         onSelect={setTargetLang}
         selectedCode={targetLang.code}
-        title="Translate to"
+        title={t("translate_screen.modals.target_picker_title")}
       />
 
       {/* Save Folder Picker Modal */}
@@ -540,7 +556,9 @@ export default function TranslateScreen() {
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-xl font-bold text-black">Save to Folder</Text>
+            <Text className="text-xl font-bold text-black">
+              {t("translate_screen.modals.save_folder_title")}
+            </Text>
             <TouchableOpacity
               onPress={() => setShowSaveFolderPicker(false)}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -556,7 +574,9 @@ export default function TranslateScreen() {
                 <View className="flex-row items-center gap-2 mb-4">
                   <TextInput
                     className="flex-1 bg-gray-50 py-3 px-4 text-sm rounded-full border border-gray-100 font-medium text-gray-900"
-                    placeholder="Folder name..."
+                    placeholder={t(
+                      "translate_screen.modals.folder_name_placeholder",
+                    )}
                     placeholderTextColor="gray"
                     value={newFolderName}
                     onChangeText={setNewFolderName}
@@ -584,7 +604,7 @@ export default function TranslateScreen() {
                     >
                       <Plus size={20} color="black" />
                       <Text className="text-black font-bold text-base">
-                        Create
+                        {t("translate_screen.modals.create_button")}
                       </Text>
                     </RainbowBorder>
                   </TouchableOpacity>
@@ -598,13 +618,13 @@ export default function TranslateScreen() {
                     <Plus size={20} color="black" />
                   </View>
                   <Text className="text-black font-bold text-base">
-                    Create New Folder
+                    {t("translate_screen.modals.create_new_folder")}
                   </Text>
                 </TouchableOpacity>
               )}
 
               <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
-                Your Folders
+                {t("translate_screen.modals.your_folders")}
               </Text>
             </View>
 
@@ -660,7 +680,7 @@ export default function TranslateScreen() {
               })}
               {folders.length === 0 && (
                 <Text className="text-gray-400 text-center mt-10 italic">
-                  No folders yet. Create one above!
+                  {t("translate_screen.modals.no_folders")}
                 </Text>
               )}
               <View className="h-20" />
@@ -681,7 +701,7 @@ export default function TranslateScreen() {
                 containerClassName="items-center justify-center"
               >
                 <Text className="text-black font-bold text-base">
-                  Save to Vocabulary
+                  {t("translate_screen.modals.save_to_vocab_button")}
                 </Text>
               </RainbowBorder>
             </TouchableOpacity>

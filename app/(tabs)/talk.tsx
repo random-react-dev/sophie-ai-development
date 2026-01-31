@@ -17,8 +17,17 @@ import { useScenarioStore } from "@/stores/scenarioStore";
 import { useRouter } from "expo-router";
 import { Globe, RotateCcw } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useTranslation } from "@/hooks/useTranslation";
 
 import { MessageBubble } from "@/components/common/MessageBubble";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -127,6 +136,7 @@ export default function TalkScreen() {
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   // Session tracking
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
@@ -256,23 +266,23 @@ Stay in character while teaching.`;
   ]);
 
   const getStatusText = (): string => {
-    if (isSpeaking) return "Sophie Speaking...";
+    if (isSpeaking) return t("talk_screen.status.speaking");
     // Show buffering progress during processing
     if (isProcessing && bufferProgress > 0 && bufferProgress < 100) {
-      return `Preparing response... ${bufferProgress}%`;
+      return t("talk_screen.status.preparing", { progress: bufferProgress });
     }
-    if (isProcessing) return "Sophie is thinking...";
-    if (isListening) return "Listening...";
+    if (isProcessing) return t("talk_screen.status.thinking");
+    if (isListening) return t("talk_screen.status.listening");
 
     switch (connectionState) {
       case "connecting":
-        return "Connecting...";
+        return t("talk_screen.status.connecting");
       case "reconnecting":
-        return "Reconnecting...";
+        return t("talk_screen.status.reconnecting");
       case "error":
-        return error || "Error";
+        return error || t("talk_screen.status.error");
       default:
-        return "Hold mic to speak";
+        return t("talk_screen.status.hold_mic");
     }
   };
 
@@ -284,10 +294,17 @@ Stay in character while teaching.`;
 
   const handleFinish = () => {
     if (messages.length === 0) {
-      showAlert("End Session", "Go back to scenario library?", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Yes", onPress: () => router.push("/(tabs)") },
-      ]);
+      showAlert(
+        t("talk_screen.alerts.end_session_title"),
+        t("talk_screen.alerts.end_session_msg"),
+        [
+          { text: t("talk_screen.alerts.cancel"), style: "cancel" },
+          {
+            text: t("talk_screen.alerts.yes"),
+            onPress: () => router.push("/(tabs)"),
+          },
+        ],
+      );
       return;
     }
 
@@ -298,12 +315,12 @@ Stay in character while teaching.`;
       : 0;
 
     showAlert(
-      "Finish Conversation",
-      "Are you done with this practice session?",
+      t("talk_screen.alerts.finish_title"),
+      t("talk_screen.alerts.finish_msg"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("talk_screen.alerts.cancel"), style: "cancel" },
         {
-          text: "Finish",
+          text: t("talk_screen.alerts.finish"),
           onPress: () => {
             router.push({
               pathname: "/report",
@@ -318,12 +335,12 @@ Stay in character while teaching.`;
 
   const handleReset = () => {
     showAlert(
-      "Reset Chat",
-      "This will clear the current conversation and reset Sophie. Continue?",
+      t("talk_screen.alerts.reset_title"),
+      t("talk_screen.alerts.reset_msg"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("talk_screen.alerts.cancel"), style: "cancel" },
         {
-          text: "Reset",
+          text: t("talk_screen.alerts.reset"),
           style: "destructive",
           onPress: async () => {
             await stopConversation();
@@ -353,8 +370,8 @@ Stay in character while teaching.`;
         return displayText;
       } catch {
         showAlert(
-          "Error",
-          "Failed to translate. Please try again.",
+          t("talk_screen.alerts.error_title"),
+          t("talk_screen.alerts.error_msg"),
           undefined,
           "error",
         );
@@ -368,10 +385,15 @@ Stay in character while teaching.`;
     async (text: string) => {
       const success = await saveToVocabulary({ phrase: text });
       if (success) {
-        showAlert("Success", "Added to your vocabulary!", undefined, "success");
+        showAlert(
+          t("talk_screen.alerts.success_title"),
+          t("talk_screen.alerts.vocab_added"),
+          undefined,
+          "success",
+        );
       }
     },
-    [showAlert],
+    [showAlert, t],
   );
 
   // Message type for FlatList
@@ -419,7 +441,9 @@ Stay in character while teaching.`;
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
-            {targetLanguage ? "Learning" : "Select"}
+            {targetLanguage
+              ? t("talk_screen.language_selector.learning_label")
+              : t("talk_screen.language_selector.select_label")}
           </Text>
         </TouchableOpacity>
 
@@ -443,7 +467,9 @@ Stay in character while teaching.`;
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
-            {nativeLanguage ? "Explain in" : "Select"}
+            {nativeLanguage
+              ? t("talk_screen.language_selector.explain_label")
+              : t("talk_screen.language_selector.select_label")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -453,9 +479,20 @@ Stay in character while teaching.`;
         {/* Conversation Area */}
         <View className="bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-gray-100 h-[250px] overflow-hidden">
           {/* Premium Status Bar */}
-          <View className="flex-row items-center justify-end p-4 bg-gray-50/50 border-b border-gray-100">
+          <View className="bg-gray-50/50 border-b border-gray-100">
             {/* Actions Bar */}
-            <View className="flex-row items-center gap-3">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                gap: 12,
+                alignItems: "center",
+                minWidth: "100%",
+                justifyContent: "flex-end",
+              }}
+            >
               {/* Finish Button */}
               {messages.length > 0 && (
                 <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
@@ -467,7 +504,7 @@ Stay in character while teaching.`;
                   >
                     <Feather name="check-circle" size={12} color="black" />
                     <Text className="text-black font-bold text-xs">
-                      Finish & Get Report
+                      {t("talk_screen.actions.finish_report")}
                     </Text>
                   </RainbowBorder>
                 </TouchableOpacity>
@@ -485,14 +522,14 @@ Stay in character while teaching.`;
               {/* Transcript Toggle */}
               <View className="flex-row items-center bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
                 <Text className="text-black text-xs font-bold mr-2">
-                  Transcript
+                  {t("talk_screen.actions.transcript")}
                 </Text>
                 <CustomToggle
                   value={showTranscript}
                   onValueChange={setShowTranscript}
                 />
               </View>
-            </View>
+            </ScrollView>
           </View>
 
           <View className="flex-1 justify-center items-center relative">
@@ -530,7 +567,7 @@ Stay in character while teaching.`;
             <View className="flex-1 items-center justify-center">
               {/* Hide transcript */}
               {/* <Text className="text-gray-400 font-medium">
-                Transcript Hidden
+                {t("talk_screen.actions.transcript_hidden")}
               </Text> */}
             </View>
           ) : messages.length === 0 ? (
@@ -554,12 +591,11 @@ Stay in character while teaching.`;
               <View className="mt-4">
                 {!canStartConversation ? (
                   <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                    Select both languages above to start your lesson with
-                    Sophie.
+                    {t("talk_screen.prompts.select_both_langs")}
                   </Text>
                 ) : (
                   <Text className="text-black/60 font-medium text-center px-10 leading-6">
-                    Hold the mic below to start speaking with Sophie.
+                    {t("talk_screen.prompts.hold_mic_start")}
                   </Text>
                 )}
               </View>
@@ -601,8 +637,8 @@ Stay in character while teaching.`;
         }
         title={
           pickerMode === "target"
-            ? "What do you want to learn?"
-            : "What's your native language?"
+            ? t("talk_screen.language_selector.target_title")
+            : t("talk_screen.language_selector.native_title")
         }
       />
 

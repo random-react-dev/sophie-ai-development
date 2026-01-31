@@ -1,6 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   disabledColorScheme,
   getRainbowColorScheme,
@@ -26,12 +27,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SupportScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
   const handleDeleteAccount = () => {
     showAlert(
-      "Delete Account",
-      "This feature is coming soon. Your data is safe.",
+      t("profile.support_screen.delete_account_alert_title"),
+      t("profile.support_screen.delete_account_alert_body"),
       undefined,
       "info",
     );
@@ -40,7 +42,7 @@ export default function SupportScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <ProfileHeader title="Support" />
+      <ProfileHeader title={t("profile.support_screen.title")} />
 
       <ScrollView
         className="flex-1"
@@ -62,12 +64,12 @@ export default function SupportScreen() {
         {/* Legal Section */}
         <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Legal
+            {t("profile.support_screen.legal")}
           </Text>
 
           {/* Privacy Policy Card */}
           <ProfileSettingCard
-            title="Privacy Policy"
+            title={t("profile.support_screen.privacy_policy")}
             icon={
               <FileText size={20} color={getRainbowColorScheme(0).iconColor} />
             }
@@ -77,7 +79,7 @@ export default function SupportScreen() {
 
           {/* Terms of Service Card */}
           <ProfileSettingCard
-            title="Terms of Service"
+            title={t("profile.support_screen.terms_of_service")}
             icon={
               <Scale size={20} color={getRainbowColorScheme(1).iconColor} />
             }
@@ -89,19 +91,19 @@ export default function SupportScreen() {
         {/* Contact Section */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Contact Us
+            {t("profile.support_screen.contact_us")}
           </Text>
 
           {/* Email Support Card */}
           <ProfileSettingCard
-            title="Email Support"
+            title={t("profile.support_screen.email_support")}
             subtitle="support@fluentai.com"
             icon={<Mail size={20} color={getRainbowColorScheme(2).iconColor} />}
             colorScheme={getRainbowColorScheme(2)}
             onPress={() =>
               showAlert(
-                "Contact Us",
-                "Email us at support@fluentai.com for any questions or feedback.",
+                t("profile.support_screen.contact_alert_title"),
+                t("profile.support_screen.contact_alert_body"),
                 undefined,
                 "info",
               )
@@ -110,16 +112,16 @@ export default function SupportScreen() {
 
           {/* Feedback Card */}
           <ProfileSettingCard
-            title="Send Feedback"
-            subtitle="Help us improve"
+            title={t("profile.support_screen.send_feedback")}
+            subtitle={t("profile.support_screen.help_improve")}
             icon={
               <MessageCircle size={20} color={disabledColorScheme.iconColor} />
             }
             colorScheme={disabledColorScheme}
             onPress={() =>
               showAlert(
-                "Coming Soon",
-                "In-app feedback feature will be available soon.",
+                t("profile.support_screen.feedback_alert_title"),
+                t("profile.support_screen.feedback_alert_body"),
                 undefined,
                 "info",
               )
@@ -128,8 +130,8 @@ export default function SupportScreen() {
 
           {/* WhatsApp Support Card */}
           <ProfileSettingCard
-            title="WhatsApp Support"
-            subtitle="Chat with us on WhatsApp"
+            title={t("profile.support_screen.whatsapp_support")}
+            subtitle={t("profile.support_screen.whatsapp_subtitle")}
             icon={<FontAwesome name="whatsapp" size={20} color="#25D366" />}
             colorScheme={{
               iconColor: "#25D366",
@@ -139,7 +141,7 @@ export default function SupportScreen() {
             onPress={() => {
               const phoneNumber = "919898456150";
               const message = encodeURIComponent(
-                "Hi Sophie Team! 👋 I'm using the Sophie AI app and would love to connect with you.",
+                t("profile.support_screen.whatsapp_message"),
               );
               const url = `https://wa.me/${phoneNumber}?text=${message}`;
               Linking.openURL(url);
@@ -150,7 +152,7 @@ export default function SupportScreen() {
         {/* Danger Zone Section */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Danger Zone
+            {t("profile.support_screen.danger_zone")}
           </Text>
           <TouchableOpacity
             activeOpacity={0.7}
@@ -163,10 +165,10 @@ export default function SupportScreen() {
               </View>
               <View>
                 <Text className="text-base font-semibold text-red-500">
-                  Delete Account
+                  {t("profile.support_screen.delete_account")}
                 </Text>
                 <Text className="text-xs text-gray-400 mt-0.5">
-                  Permanently remove your account
+                  {t("profile.support_screen.delete_account_subtitle")}
                 </Text>
               </View>
             </View>
@@ -176,18 +178,22 @@ export default function SupportScreen() {
         {/* App Info */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            App Info
+            {t("profile.support_screen.app_info")}
           </Text>
 
           <View className="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
             <View className="flex-row items-center justify-between py-2">
-              <Text className="text-gray-500 flex-1">Version</Text>
+              <Text className="text-gray-500 flex-1">
+                {t("profile.support_screen.version")}
+              </Text>
               <Text className="text-gray-900 font-bold text-right">1.0.0</Text>
             </View>
             <View className="flex-row items-center justify-between py-2 border-t border-gray-200">
-              <Text className="text-gray-500 flex-1">Build</Text>
+              <Text className="text-gray-500 flex-1">
+                {t("profile.support_screen.build")}
+              </Text>
               <Text className="text-gray-900 font-bold text-right">
-                Prototype
+                {t("profile.support_screen.prototype")}
               </Text>
             </View>
           </View>

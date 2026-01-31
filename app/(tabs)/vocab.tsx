@@ -8,7 +8,9 @@ import {
   Language,
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
 import { translateText } from "@/services/gemini/translate";
+import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import {
   VocabularyFolder,
   VocabularyItem,
@@ -60,6 +62,9 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VocabScreen() {
+  const { t, locale } = useTranslation();
+  const ALL_LABEL = t("vocab_screen.all_filter");
+  const ALL_FOLDERS_LABEL = t("vocab_screen.all_folders");
   useAuthStore(); // Kept for auth state side effects
   const { setPracticePhrase } = useScenarioStore();
   const {
@@ -83,7 +88,12 @@ export default function VocabScreen() {
 
   // Filter & Search
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("All");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(ALL_LABEL);
+
+  // Reset language filter when translation changes
+  useEffect(() => {
+    setSelectedLanguage(ALL_LABEL);
+  }, [ALL_LABEL]);
 
   // Add Phrase Modal
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -134,10 +144,50 @@ export default function VocabScreen() {
     }, [fetchVocabulary]),
   );
 
+  const getLocalizedLanguageName = useCallback(
+    (englishName: string) => {
+      const matchedLang = SUPPORTED_LANGUAGES.find(
+        (l) => l.name === englishName,
+      );
+      if (!matchedLang) return englishName;
+
+      // Try Intl.DisplayNames first
+      try {
+        const localized = new Intl.DisplayNames([locale], {
+          type: "language",
+        }).of(matchedLang.code);
+
+        // If Intl works and gives a different result than the code (it usually returns code if unknown, or English name if locale is English), use it.
+        // Wait, if locale is 'en', Intl returns 'Spanish'. If locale is 'hi', it returns 'स्पेनी'.
+        // If it returns the same as englishName (and we are NOT in English locale), it means it failed to translate.
+        if (localized && localized !== englishName) {
+          return localized.charAt(0).toUpperCase() + localized.slice(1);
+        }
+
+        // If we are in English, returning englishName is correct.
+        if (locale.startsWith("en")) return englishName;
+      } catch (error) {
+        // Fallback below
+      }
+
+      // Fallback: Manual Map
+      // Normalize locale (e.g. 'hi-IN' -> 'hi')
+      const simpleLocale = locale.split("-")[0];
+      // @ts-ignore
+      const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
+      if (manualName) return manualName;
+
+      // Final valid fallback: Native Name (e.g. Español)
+      // This is better than English "Spanish" for most users
+      return matchedLang.nativeName || englishName;
+    },
+    [locale],
+  );
+
   const languages = useMemo(() => {
     const langs = new Set(items.map((i) => i.language).filter(Boolean));
-    return ["All", ...Array.from(langs)] as string[];
-  }, [items]);
+    return [ALL_LABEL, ...Array.from(langs)] as string[];
+  }, [items, ALL_LABEL]);
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -146,28 +196,33 @@ export default function VocabScreen() {
         (item.translation &&
           item.translation.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesLang =
-        selectedLanguage === "All" || item.language === selectedLanguage;
+        selectedLanguage === ALL_LABEL || item.language === selectedLanguage;
       const matchesFolder =
         selectedFolderFilter === "All" ||
         item.folder_id === selectedFolderFilter;
 
       return matchesSearch && matchesLang && matchesFolder;
     });
-  }, [items, searchQuery, selectedLanguage, selectedFolderFilter]);
+  }, [items, searchQuery, selectedLanguage, selectedFolderFilter, ALL_LABEL]);
 
   const handlePlay = (text: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    showAlert("Listen", `Playing audio for: "${text}"`, undefined, "info");
+    showAlert(
+      t("vocab_screen.actions.listen"),
+      t("vocab_screen.alerts.playing_audio", { text }),
+      undefined,
+      "info",
+    );
   };
 
   const handleDelete = async (id: string) => {
     showAlert(
-      "Delete Phrase",
-      "Are you sure you want to delete this phrase?",
+      t("vocab_screen.alerts.delete_title"),
+      t("vocab_screen.alerts.delete_msg"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("talk_screen.alerts.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("vocab_screen.actions.delete"),
           style: "destructive",
           onPress: async () => {
             const success = await removeItem(id);
@@ -176,7 +231,12 @@ export default function VocabScreen() {
                 Haptics.NotificationFeedbackType.Success,
               );
             } else {
-              showAlert("Error", "Failed to delete item", undefined, "error");
+              showAlert(
+                t("vocab_screen.alerts.error_title"),
+                t("vocab_screen.alerts.delete_error"),
+                undefined,
+                "error",
+              );
             }
           },
         },
@@ -187,7 +247,12 @@ export default function VocabScreen() {
 
   const handleTranslateItem = async (item: VocabularyItem) => {
     if (item.translation) {
-      showAlert("Translation", item.translation, undefined, "info");
+      showAlert(
+        t("vocab_screen.alerts.translation_title"),
+        item.translation,
+        undefined,
+        "info",
+      );
       return;
     }
 
@@ -197,14 +262,14 @@ export default function VocabScreen() {
 
       // Ask to save the translation
       showAlert(
-        "Translation",
+        t("vocab_screen.alerts.translation_title"),
         result.romanization
           ? `${result.translation}\n\n${result.romanization}`
           : result.translation,
         [
-          { text: "Close", style: "cancel" },
+          { text: t("vocab_screen.actions.close"), style: "cancel" },
           {
-            text: "Save Translation",
+            text: t("vocab_screen.actions.save_translation"),
             onPress: async () => {
               // Ideally update the item, but for now just show it
             },
@@ -213,7 +278,12 @@ export default function VocabScreen() {
         "success",
       );
     } catch {
-      showAlert("Error", "Translation failed", undefined, "error");
+      showAlert(
+        t("vocab_screen.alerts.error_title"),
+        t("vocab_screen.alerts.translation_failed"),
+        undefined,
+        "error",
+      );
     }
   };
 
@@ -270,7 +340,12 @@ export default function VocabScreen() {
 
   const handleAddItem = async () => {
     if (!newPhrase.trim()) {
-      showAlert("Required", "Please enter a phrase", undefined, "error");
+      showAlert(
+        t("vocab_screen.alerts.required_title"),
+        t("vocab_screen.alerts.required_msg"),
+        undefined,
+        "error",
+      );
       return;
     }
 
@@ -289,7 +364,12 @@ export default function VocabScreen() {
       setIsAddModalVisible(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
-      showAlert("Error", "Failed to save phrase", undefined, "error");
+      showAlert(
+        t("vocab_screen.alerts.error_title"),
+        t("vocab_screen.alerts.save_error"),
+        undefined,
+        "error",
+      );
     }
   };
 
@@ -311,7 +391,12 @@ export default function VocabScreen() {
 
   const handleUpdateItem = async () => {
     if (!editingItem?.id || !editPhrase.trim()) {
-      showAlert("Required", "Please enter a phrase", undefined, "error");
+      showAlert(
+        t("vocab_screen.alerts.required_title"),
+        t("vocab_screen.alerts.required_msg"),
+        undefined,
+        "error",
+      );
       return;
     }
 
@@ -327,7 +412,12 @@ export default function VocabScreen() {
       setEditingItem(null);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
-      showAlert("Error", "Failed to update phrase", undefined, "error");
+      showAlert(
+        t("vocab_screen.alerts.error_title"),
+        t("vocab_screen.alerts.update_error"),
+        undefined,
+        "error",
+      );
     }
   };
 
@@ -354,10 +444,10 @@ export default function VocabScreen() {
 
       <View className="px-4 mb-8">
         <Text className="text-xl font-bold text-black text-left">
-          My Vocabulary
+          {t("vocab_screen.title")}
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
-          Your saved words & phrases
+          {t("vocab_screen.subtitle")}
         </Text>
       </View>
 
@@ -367,7 +457,7 @@ export default function VocabScreen() {
           {/* <Search size={20} color="gray" /> */}
           <Feather name="search" size={20} color="gray" />
           <TextInput
-            placeholder="Search saved words..."
+            placeholder={t("vocab_screen.search_placeholder")}
             className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -388,7 +478,9 @@ export default function VocabScreen() {
             containerClassName="flex-row items-center justify-center px-4 gap-2"
           >
             <Plus size={20} color="black" />
-            <Text className="text-black font-bold text-base">Add</Text>
+            <Text className="text-black font-bold text-base">
+              {t("vocab_screen.add_button")}
+            </Text>
           </RainbowBorder>
         </TouchableOpacity>
       </View>
@@ -416,7 +508,11 @@ export default function VocabScreen() {
                     className="flex-1"
                     containerClassName="px-5 py-2"
                   >
-                    <Text className="font-bold text-sm text-black">{lang}</Text>
+                    <Text className="font-bold text-sm text-black">
+                      {lang === ALL_LABEL
+                        ? lang
+                        : getLocalizedLanguageName(lang)}
+                    </Text>
                   </RainbowBorder>
                 </TouchableOpacity>
               );
@@ -429,7 +525,9 @@ export default function VocabScreen() {
                 onPress={() => setSelectedLanguage(lang)}
                 className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                <Text className="font-bold text-sm text-gray-600">{lang}</Text>
+                <Text className="font-bold text-sm text-gray-600">
+                  {lang === ALL_LABEL ? lang : getLocalizedLanguageName(lang)}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -447,7 +545,7 @@ export default function VocabScreen() {
             const isAll = typeof folder === "string";
             const id = isAll ? "All" : (folder as VocabularyFolder).id;
             const name = isAll
-              ? "All Folders"
+              ? ALL_FOLDERS_LABEL
               : (folder as VocabularyFolder).name;
             const isSelected = selectedFolderFilter === id;
 
@@ -466,7 +564,11 @@ export default function VocabScreen() {
                   >
                     <View className="flex-row items-center gap-2">
                       {!isAll && <Folder size={12} color="black" />}
-                      <Text className="font-bold text-xs text-black">
+                      <Text
+                        className="font-bold text-xs text-black"
+                        numberOfLines={1}
+                        style={{ includeFontPadding: false }}
+                      >
                         {name}
                       </Text>
                     </View>
@@ -483,7 +585,13 @@ export default function VocabScreen() {
                 className="px-4 py-1.5 rounded-full border border-gray-300 bg-white flex-row items-center gap-2"
               >
                 {!isAll && <Folder size={12} color="gray" />}
-                <Text className="font-bold text-xs text-gray-600">{name}</Text>
+                <Text
+                  className="font-bold text-xs text-gray-600"
+                  numberOfLines={1}
+                  style={{ includeFontPadding: false }}
+                >
+                  {name}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -517,7 +625,7 @@ export default function VocabScreen() {
                   <View className="flex-row items-center gap-2 mb-1">
                     {item.language && (
                       <Text className="text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                        {item.language}
+                        {getLocalizedLanguageName(item.language)}
                       </Text>
                     )}
                   </View>
@@ -562,8 +670,8 @@ export default function VocabScreen() {
               <BookOpen size={60} color="#94a3b8" />
               <Text className="text-gray-500 font-bold mt-4 text-center px-10">
                 {searchQuery
-                  ? "No matches found"
-                  : "Your vocabulary is empty.\nAdd phrases to start learning!"}
+                  ? t("vocab_screen.empty_state.no_matches")
+                  : `${t("vocab_screen.empty_state.empty_title")}\n${t("vocab_screen.empty_state.empty_subtitle")}`}
               </Text>
             </View>
           }
@@ -582,7 +690,9 @@ export default function VocabScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-xl font-bold text-black">Add Phrase</Text>
+              <Text className="text-xl font-bold text-black">
+                {t("vocab_screen.modals.add_title")}
+              </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setIsAddModalVisible(false)}
@@ -598,7 +708,7 @@ export default function VocabScreen() {
             >
               <View className="mb-6">
                 <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
-                  Language
+                  {t("vocab_screen.modals.label_language")}
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -607,17 +717,17 @@ export default function VocabScreen() {
                 >
                   <CircleFlag countryCode={newLanguage.countryCode} size={28} />
                   <Text className="text-sm font-semibold text-black flex-1">
-                    {newLanguage.name}
+                    {getLocalizedLanguageName(newLanguage.name)}
                   </Text>
                   <Text className="text-gray-700 font-bold text-sm">
-                    Change
+                    {t("vocab_screen.actions.change")}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               <View className="mb-6">
                 <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
-                  Folder (Optional)
+                  {t("vocab_screen.modals.label_folder")}
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -632,20 +742,23 @@ export default function VocabScreen() {
                   >
                     {newFolderId
                       ? folders.find((f) => f.id === newFolderId)?.name ||
-                        "Selected Folder"
-                      : "Select a folder"}
+                        t("vocab_screen.modals.selected_folder")
+                      : t("vocab_screen.modals.select_folder")}
                   </Text>
-                  <Text className="text-black font-bold text-sm">Change</Text>
+                  <Text className="text-black font-bold text-sm">
+                    {t("vocab_screen.actions.change")}
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               <View className="mb-6">
                 <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
-                  Phrase <Text className="text-red-500">*</Text>
+                  {t("vocab_screen.modals.label_phrase")}{" "}
+                  <Text className="text-red-500">*</Text>
                 </Text>
                 <TextInput
                   className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900"
-                  placeholder="Enter word or phrase..."
+                  placeholder={t("vocab_screen.modals.placeholder_phrase")}
                   placeholderTextColor="gray"
                   value={newPhrase}
                   onChangeText={setNewPhrase}
@@ -656,11 +769,11 @@ export default function VocabScreen() {
 
               <View className="mb-10">
                 <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
-                  Translation (Optional)
+                  {t("vocab_screen.modals.label_translation")}
                 </Text>
                 <TextInput
                   className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
-                  placeholder="Enter meaning..."
+                  placeholder={t("vocab_screen.modals.placeholder_translation")}
                   placeholderTextColor="gray"
                   value={newTranslation}
                   onChangeText={setNewTranslation}
@@ -680,7 +793,7 @@ export default function VocabScreen() {
                 {!newPhrase.trim() ? (
                   <View className="flex-1 bg-gray-200 items-center justify-center rounded-full">
                     <Text className="text-gray-400 font-bold text-base">
-                      Save Phrase
+                      {t("vocab_screen.add_button")}
                     </Text>
                   </View>
                 ) : (
@@ -691,7 +804,7 @@ export default function VocabScreen() {
                     containerClassName="items-center justify-center"
                   >
                     <Text className="text-black font-bold text-base">
-                      Save Phrase
+                      {t("vocab_screen.add_button")}
                     </Text>
                   </RainbowBorder>
                 )}
@@ -713,7 +826,9 @@ export default function VocabScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-xl font-bold text-black">Edit Phrase</Text>
+              <Text className="text-xl font-bold text-black">
+                {t("vocab_screen.modals.edit_title")}
+              </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setIsEditModalVisible(false)}
@@ -729,7 +844,7 @@ export default function VocabScreen() {
             >
               <View className="mb-6">
                 <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                  Language
+                  {t("vocab_screen.modals.label_language")}
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -741,17 +856,17 @@ export default function VocabScreen() {
                     size={28}
                   />
                   <Text className="text-base font-semibold text-black flex-1">
-                    {editLanguage.name}
+                    {getLocalizedLanguageName(editLanguage.name)}
                   </Text>
                   <Text className="text-gray-700 font-bold text-sm">
-                    Change
+                    {t("vocab_screen.actions.change")}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               <View className="mb-6">
                 <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                  Folder (Optional)
+                  {t("vocab_screen.modals.label_folder")}
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -766,20 +881,23 @@ export default function VocabScreen() {
                   >
                     {editFolderId
                       ? folders.find((f) => f.id === editFolderId)?.name ||
-                        "Selected Folder"
-                      : "Select a folder"}
+                        t("vocab_screen.modals.selected_folder")
+                      : t("vocab_screen.modals.select_folder")}
                   </Text>
-                  <Text className="text-black font-bold text-sm">Change</Text>
+                  <Text className="text-black font-bold text-sm">
+                    {t("vocab_screen.actions.change")}
+                  </Text>
                 </TouchableOpacity>
               </View>
 
               <View className="mb-6">
                 <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
-                  Phrase <Text className="text-red-500">*</Text>
+                  {t("vocab_screen.modals.label_phrase")}{" "}
+                  <Text className="text-red-500">*</Text>
                 </Text>
                 <TextInput
                   className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900"
-                  placeholder="Enter word or phrase..."
+                  placeholder={t("vocab_screen.modals.placeholder_phrase")}
                   placeholderTextColor="gray"
                   value={editPhrase}
                   onChangeText={setEditPhrase}
@@ -790,11 +908,11 @@ export default function VocabScreen() {
 
               <View className="mb-10">
                 <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
-                  Translation (Optional)
+                  {t("vocab_screen.modals.label_translation")}
                 </Text>
                 <TextInput
                   className="bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 font-medium text-gray-900 h-32 text-start align-top"
-                  placeholder="Enter meaning..."
+                  placeholder={t("vocab_screen.modals.placeholder_translation")}
                   placeholderTextColor="gray"
                   value={editTranslation}
                   onChangeText={setEditTranslation}
@@ -814,7 +932,7 @@ export default function VocabScreen() {
                 {!editPhrase.trim() ? (
                   <View className="flex-1 bg-gray-200 items-center justify-center rounded-full">
                     <Text className="text-gray-400 font-bold text-base">
-                      Update Phrase
+                      {t("vocab_screen.actions.save_phrase")}
                     </Text>
                   </View>
                 ) : (
@@ -825,7 +943,7 @@ export default function VocabScreen() {
                     containerClassName="items-center justify-center"
                   >
                     <Text className="text-black font-bold text-base">
-                      Update Phrase
+                      {t("vocab_screen.actions.save_phrase")}
                     </Text>
                   </RainbowBorder>
                 )}
@@ -844,7 +962,9 @@ export default function VocabScreen() {
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-2xl font-bold text-black">Select Folder</Text>
+            <Text className="text-2xl font-bold text-black">
+              {t("vocab_screen.modals.select_folder")}
+            </Text>
             <TouchableOpacity
               onPress={() => setIsEditFolderPickerVisible(false)}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -856,7 +976,7 @@ export default function VocabScreen() {
           <View className="flex-1">
             <View className="px-4 py-4">
               <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
-                Your Folders
+                {t("translate_screen.modals.your_folders")}
               </Text>
             </View>
 
@@ -915,7 +1035,7 @@ export default function VocabScreen() {
               })}
               {folders.length === 0 && (
                 <Text className="text-gray-400 text-center mt-10 italic">
-                  No folders yet
+                  {t("translate_screen.modals.no_folders")}
                 </Text>
               )}
               <View className="h-20" />
@@ -943,7 +1063,9 @@ export default function VocabScreen() {
       >
         <SafeAreaView className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-2xl font-bold text-black">Select Folder</Text>
+            <Text className="text-2xl font-bold text-black">
+              {t("vocab_screen.modals.select_folder")}
+            </Text>
             <TouchableOpacity
               onPress={() => setIsFolderPickerVisible(false)}
               className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
@@ -959,7 +1081,9 @@ export default function VocabScreen() {
                 <View className="flex-row items-center gap-2 mb-4">
                   <TextInput
                     className="flex-1 bg-gray-50 py-3 px-4 text-sm rounded-full border border-gray-100 font-medium text-gray-900"
-                    placeholder="Folder name..."
+                    placeholder={t(
+                      "translate_screen.modals.folder_name_placeholder",
+                    )}
                     placeholderTextColor="gray"
                     value={newFolderName}
                     onChangeText={setNewFolderName}
@@ -987,7 +1111,7 @@ export default function VocabScreen() {
                     >
                       <Plus size={20} color="black" />
                       <Text className="text-black font-bold text-base">
-                        Create
+                        {t("translate_screen.modals.create_button")}
                       </Text>
                     </RainbowBorder>
                   </TouchableOpacity>
@@ -1001,13 +1125,13 @@ export default function VocabScreen() {
                     <Plus size={20} color="black" />
                   </View>
                   <Text className="text-black font-bold text-lg">
-                    Create New Folder
+                    {t("translate_screen.modals.create_new_folder")}
                   </Text>
                 </TouchableOpacity>
               )}
 
               <Text className="text-gray-400 font-bold text-sm uppercase tracking-widest mb-4 mt-2">
-                Your Folders
+                {t("translate_screen.modals.your_folders")}
               </Text>
             </View>
 
@@ -1066,7 +1190,7 @@ export default function VocabScreen() {
               })}
               {folders.length === 0 && (
                 <Text className="text-gray-400 text-center mt-10 italic">
-                  No folders yet
+                  {t("translate_screen.modals.no_folders")}
                 </Text>
               )}
               {/* Padding for bottom */}
@@ -1098,7 +1222,7 @@ export default function VocabScreen() {
             <View className="flex-row justify-between items-center">
               <View className="flex-1 pr-4">
                 <Text className="text-2xl font-bold text-gray-900">
-                  Practice Session
+                  {t("vocab_screen.modals.practice_session_title")}
                 </Text>
               </View>
               <TouchableOpacity
@@ -1129,7 +1253,7 @@ export default function VocabScreen() {
             ListEmptyComponent={
               <View className="items-center py-10">
                 <Text className="text-gray-400 font-medium text-base">
-                  No phrases available
+                  {t("vocab_screen.empty_state.no_phrases")}
                 </Text>
               </View>
             }
@@ -1151,15 +1275,25 @@ export default function VocabScreen() {
                   containerClassName="h-16 flex-row items-center justify-center"
                 >
                   <Text className="font-bold text-lg text-black">
-                    Start with {selectedForPractice.size} Phrase
-                    {selectedForPractice.size === 1 ? "" : "s"}
+                    {selectedForPractice.size === 1
+                      ? t("vocab_screen.actions.start_practice", {
+                          count: selectedForPractice.size,
+                        })
+                      : t("vocab_screen.actions.start_practice_plural", {
+                          count: selectedForPractice.size,
+                        })}
                   </Text>
                 </RainbowBorder>
               ) : (
                 <View className="h-16 rounded-full bg-gray-200 items-center justify-center flex-row">
                   <Text className="font-bold text-lg text-gray-400">
-                    Start with {selectedForPractice.size} Phrase
-                    {selectedForPractice.size === 1 ? "" : "s"}
+                    {selectedForPractice.size === 1
+                      ? t("vocab_screen.actions.start_practice", {
+                          count: selectedForPractice.size,
+                        })
+                      : t("vocab_screen.actions.start_practice_plural", {
+                          count: selectedForPractice.size,
+                        })}
                   </Text>
                 </View>
               )}
@@ -1210,6 +1344,7 @@ function ActionModalContent({
     action: "play" | "translate" | "conversation" | "edit" | "delete",
   ) => void;
 }) {
+  const { t } = useTranslation();
   const translateY = useSharedValue(0);
   const context = useSharedValue(0);
   const DISMISS_THRESHOLD = 80;
@@ -1317,7 +1452,7 @@ function ActionModalContent({
                   <Languages size={20} color="#1f2937" />
                 </View>
                 <Text className="text-base font-semibold text-gray-900">
-                  Translate
+                  {t("translate_screen.actions.translate")}
                 </Text>
               </Pressable>
               <Pressable
@@ -1328,7 +1463,7 @@ function ActionModalContent({
                   <MessageSquare size={20} color="#1f2937" />
                 </View>
                 <Text className="text-base font-semibold text-gray-900">
-                  Start Conversation
+                  {t("translate_screen.actions.practice")}
                 </Text>
               </Pressable>
               <Pressable
@@ -1339,7 +1474,7 @@ function ActionModalContent({
                   <Pencil size={20} color="#1f2937" />
                 </View>
                 <Text className="text-base font-semibold text-gray-900">
-                  Edit Vocabulary
+                  {t("vocab_screen.modals.edit_title")}
                 </Text>
               </Pressable>
               <Pressable
@@ -1350,7 +1485,7 @@ function ActionModalContent({
                   <Trash2 size={20} color="#ef4444" />
                 </View>
                 <Text className="text-base font-semibold text-red-500">
-                  Delete
+                  {t("vocab_screen.actions.delete")}
                 </Text>
               </Pressable>
             </View>
@@ -1374,6 +1509,7 @@ function SelectablePhraseItem({
   isPrimary: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const Content = () => (
     <>
       <View className="flex-1 pr-4">
@@ -1383,7 +1519,11 @@ function SelectablePhraseItem({
           </Text>
           {isPrimary && (
             <View className="bg-white px-2 py-0.5 rounded-2xl border border-gray-300">
-              <RainbowText text="PRIMARY" fontSize={10} fontWeight="900" />
+              <RainbowText
+                text={t("vocab_screen.labels.primary")}
+                fontSize={10}
+                fontWeight="900"
+              />
             </View>
           )}
         </View>

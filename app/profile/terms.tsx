@@ -1,115 +1,87 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
+import { useTranslation } from "@/hooks/useTranslation";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TermsOfServiceScreen() {
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <ProfileHeader title="Terms of Service" />
+      <ProfileHeader title={t("profile.terms_screen.title")} />
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* Hero Section */}
-        {/* <View className="mx-4 mt-6">
-          <View className="bg-surface rounded-2xl p-6 shadow-sm items-center">
-            <View className="w-16 h-16 rounded-2xl bg-slate-100 items-center justify-center mb-4">
-              <Scale size={32} color="#64748b" />
-            </View>
-            <Text className="text-xl font-bold text-gray-900">
-              Terms of Service
-            </Text>
-            <Text className="text-sm text-gray-500 mt-1 text-center">
-              The terms and conditions for using Sophie
-            </Text>
-          </View>
-        </View> */}
-
         {/* Content Section */}
         <View className="mx-4 mt-6 bg-white rounded-2xl p-6 shadow-sm">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">
-            Last Updated: January 13, 2026
+            {t("profile.terms_screen.last_updated")}
           </Text>
 
           <View className="mb-6">
             <Text className="text-base font-bold text-gray-900 mb-2">
-              1. Acceptance of Terms
+              {t("profile.terms_screen.section1_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              By accessing and using this application, you agree to be bound by
-              these Terms of Service. If you do not agree with any part of these
-              terms, you may not use our services.
+              {t("profile.terms_screen.section1_body")}
             </Text>
           </View>
 
           <View className="mb-6">
             <Text className="text-base font-bold text-gray-900 mb-2">
-              2. Use of Service
+              {t("profile.terms_screen.section2_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              You agree to use this application for personal, non-commercial
-              language learning purposes only. You must not use the services for
-              any illegal or unauthorized purpose.
+              {t("profile.terms_screen.section2_body")}
             </Text>
           </View>
 
           <View className="mb-6">
             <Text className="text-base font-bold text-gray-900 mb-2">
-              3. User Conduct
+              {t("profile.terms_screen.section3_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              Users are expected to interact with the AI assistant respectfully.
-              Any attempt to exploit, harm, or bypass the application&apos;s
-              intended functionality is strictly prohibited.
+              {t("profile.terms_screen.section3_body")}
             </Text>
           </View>
 
           <View className="mb-6">
             <Text className="text-base font-bold text-gray-900 mb-2">
-              4. Intellectual Property
+              {t("profile.terms_screen.section4_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              The application, its content, and AI models are protected by
-              copyright and other intellectual property laws. You may not
-              reproduce or distribute any part of the service without
-              permission.
+              {t("profile.terms_screen.section4_body")}
             </Text>
           </View>
 
           <View className="mb-6">
             <Text className="text-base font-bold text-gray-900 mb-2">
-              5. AI Disclaimer
+              {t("profile.terms_screen.section5_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              Our service provides AI-generated content for educational
-              purposes. While we strive for accuracy, the AI may occasionally
-              provide incorrect information. Users are encouraged to verify
-              important details.
+              {t("profile.terms_screen.section5_body")}
             </Text>
           </View>
 
           <View className="mb-6">
             <Text className="text-base font-bold text-gray-900 mb-2">
-              6. Limitation of Liability
+              {t("profile.terms_screen.section6_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              We are not liable for any direct, indirect, or consequential
-              damages resulting from your use of the application or any
-              information provided by the AI assistant.
+              {t("profile.terms_screen.section6_body")}
             </Text>
           </View>
 
           <View>
             <Text className="text-base font-bold text-gray-900 mb-2">
-              7. Changes to Terms
+              {t("profile.terms_screen.section7_title")}
             </Text>
             <Text className="text-gray-600 leading-6">
-              We reserve the right to modify these terms at any time. Your
-              continued use of the application after changes are posted
-              constitutes your acceptance of the new terms.
+              {t("profile.terms_screen.section7_body")}
             </Text>
           </View>
         </View>

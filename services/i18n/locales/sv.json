@@ -1,0 +1,645 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Välj appspråk",
+    "chooseLearningLanguage": "Vilket språk vill du lära dig?",
+    "continue": "Fortsätt",
+    "saving": "Sparar...",
+    "startLearning": "Börja lära dig",
+    "skip": "Hoppa över",
+    "profileStep": {
+      "almostThere": "Nästan klart!",
+      "nameLabel": "Ditt namn",
+      "namePlaceholder": "Ange ditt namn",
+      "countryLabel": "Land",
+      "countryPlaceholder": "Välj ditt land",
+      "nativeLanguageLabel": "Modersmål",
+      "nativeLanguagePlaceholder": "Välj ditt modersmål",
+      "selectCountry": "Välj land",
+      "selectNativeLanguage": "Modersmål"
+    },
+    "options": {
+      "goal": {
+        "student": "Jag är student",
+        "traveler": "Jag är resenär",
+        "abroad": "Jag ska / är utomlands",
+        "job": "Jag behöver det för mitt jobb",
+        "other": "Annat"
+      },
+      "level": {
+        "zero": "Jag kan inte ett enda ord",
+        "words": "Jag kan bara säga några få ord",
+        "phrases": "Jag kan bara säga några få fraser",
+        "basic_idea": "Jag har idén men inte ordförrådet",
+        "fluent": "Jag är flytande, men behöver mer övning"
+      },
+      "fluency": {
+        "norush": "Ingen brådska, jag kan ta min tid",
+        "consistent": "Jag vill vara konsekvent och öva dagligen",
+        "phrases": "Jag behöver bara ett par fraser",
+        "conversations": "Jag behöver ha allmänna konversationer",
+        "desperate": "Jag är desperat att bli flytande, nu."
+      },
+      "duration": {
+        "less_1_month": "Mindre än 1 månad",
+        "less_6_months": "Mindre än 6 månader",
+        "less_2_years": "Mindre än 2 år",
+        "less_5_years": "Mindre än 5 år",
+        "less_10_years": "Mindre än 10 år",
+        "more": "Mer"
+      },
+      "confidence": {
+        "1": "Livrädd",
+        "2": "Mycket nervös",
+        "3": "Orolig",
+        "4": "Osäker",
+        "5": "Neutral",
+        "6": "Hoppfull",
+        "7": "Självsäker",
+        "8": "Ostoppbar"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "Rädsla för att göra misstag",
+          "desc": "Jag är orolig för att säga fel"
+        },
+        "consistency": {
+          "title": "Brist på konsekvens",
+          "desc": "Jag har svårt att öva regelbundet"
+        },
+        "practice": {
+          "title": "Brist på någon att öva med",
+          "desc": "Jag har ingen samtalspartner"
+        },
+        "other": {
+          "title": "Annat",
+          "desc": "Något annat håller mig tillbaka"
+        }
+      },
+      "focus": {
+        "listening": "Hörförståelse",
+        "speaking": "Tala",
+        "pronunciation": "Uttal",
+        "vocabulary": "Ordförråd",
+        "grammar": "Grammatik",
+        "reading": "Läsa",
+        "writing": "Skriva"
+      },
+      "discovery": {
+        "tiktok": "TikTok",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "friend": "Familj/Vän",
+        "other": "Annat"
+      }
+    },
+    "titles": {
+      "goal": "Vad är ditt främsta mål i livet?",
+      "fluency": "Hur snabbt vill du bli flytande?",
+      "duration": "Hur länge har du studerat detta språk?",
+      "level": "Vilket beskriver dig bäst?",
+      "confidence": "Hur självsäker är du?",
+      "barriers": "Varför är du inte självsäker?",
+      "focus": "Vad vill du fokusera på först?",
+      "discovery": "Hur hittade du oss?"
+    },
+    "completion": {
+      "title": "Allt klart!",
+      "subtitle": "Din personliga inlärningsväg är redo",
+      "videoLabel": "Möt din AI-språkcoach",
+      "primaryGoal": "Huvudmål",
+      "learningPace": "Inlärningstakt",
+      "currentLevel": "Nuvarande nivå",
+      "notSet": "Ej inställt"
+    }
+  },
+  "profile": {
+    "title": "Min Profil",
+    "menu": {
+      "preferences": {
+        "title": "Inställningar",
+        "subtitle": "Språk, land och mer"
+      },
+      "account": {
+        "title": "Konto",
+        "subtitle": "Prenumeration och fakturering"
+      },
+      "security": {
+        "title": "Säkerhet",
+        "subtitle": "Lösenord och autentisering"
+      },
+      "progress": {
+        "title": "Framsteg",
+        "subtitle": "Följ din inlärningsresa"
+      },
+      "support": {
+        "title": "Support",
+        "subtitle": "Hjälp, policyer och feedback"
+      },
+      "social": {
+        "title": "Sociala Medier",
+        "subtitle": "Anslut till oss"
+      },
+      "logout": "Logga ut",
+      "setName": "Ange namn",
+      "avatarSuccess": "Avatar uppdaterad!",
+      "avatarError": "Misslyckades med att ladda upp avatar.",
+      "nameError": "Misslyckades med att uppdatera namn.",
+      "logoutConfirm": {
+        "title": "Logga ut",
+        "message": "Är du säker på att du vill logga ut?",
+        "cancel": "Avbryt",
+        "confirm": "Logga ut"
+      }
+    },
+    "preferences_screen": {
+      "title": "Inställningar",
+      "accountInfo": "Kontoinformation",
+      "name": "Namn",
+      "email": "E-post",
+      "languages": "Språk",
+      "country": "Land",
+      "nativeLanguage": "Modersmål",
+      "appLanguage": "Appspråk",
+      "selectLanguage": "Välj språk",
+      "notSet": "Ej inställt"
+    },
+    "account_screen": {
+      "title": "Konto",
+      "subscription": "Prenumeration",
+      "status": "Status",
+      "freeTrial": "Gratis testperiod",
+      "upgradeToPro": "Uppgradera till Pro",
+      "payment": "Betalning",
+      "paymentMethods": "Betalningsmetoder",
+      "billingHistory": "Faktureringshistorik",
+      "accountInfo": "Kontoinformation",
+      "email": "E-post",
+      "memberSince": "Medlem sedan",
+      "na": "E/T",
+      "comingSoon": "Kommer snart"
+    },
+    "subscription_screen": {
+      "title": "Uppgradera till Pro",
+      "choosePlan": "Välj din plan",
+      "subtitle": "Lås upp Sophie AI:s fulla potential och bemästra vilket språk som helst.",
+      "plans": {
+        "mg": {
+          "name": "M och G",
+          "description": "Perfekt för tillfällig övning.",
+          "features": {
+            "0": "Alla språk ingår",
+            "1": "5 min/dag övning",
+            "2": "Grundläggande AI-lärarfeedback"
+          }
+        },
+        "launch": {
+          "name": "Startpaket",
+          "description": "För seriösa inlärare som vill tala med självförtroende.",
+          "badge": "Mest populär",
+          "features": {
+            "0": "1 valfritt språk",
+            "1": "15 min/dag övning",
+            "2": "Prioriterad AI-feedback",
+            "3": "Inga annonser"
+          }
+        },
+        "sbb": {
+          "name": "SBB",
+          "description": "Avancerad coachning för affärer och tentor.",
+          "features": {
+            "0": "Obegränsade språk",
+            "1": "Obegränsad tid",
+            "2": "Avancerad AI-analys",
+            "3": "Personliga vägar"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "Prenumerera nu",
+        "getStarted": "Kom igång",
+        "month": "månad",
+        "day7": "7 dagar"
+      },
+      "footer": "Alla planer inkluderar dygnet runt AI-läraråtkomst och framstegsspårning. Avbryt när som helst från dina inställningar."
+    },
+    "security_screen": {
+      "title": "Säkerhet",
+      "subtitle": "Skydda ditt konto",
+      "auth_section": "Autentisering",
+      "change_password": {
+        "title": "Byt lösenord",
+        "subtitle": "Uppdatera ditt lösenord regelbundet"
+      },
+      "two_factor": {
+        "title": "Tvåfatorsautentisering",
+        "status": "Ej aktiverad"
+      },
+      "tips_section": "Säkerhetstips",
+      "tips": {
+        "strong_password": {
+          "title": "Använd ett starkt lösenord",
+          "body": "Blanda bokstäver, siffror och specialtecken för maximalt skydd."
+        },
+        "enable_2fa": {
+          "title": "Aktivera tvåfatorsautentisering",
+          "body": "Ett extra lager av säkerhet för ditt konto. Kommer snart!"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "Ändra lösenord",
+      "new_password": "Nytt lösenord",
+      "new_password_placeholder": "Ange nytt lösenord",
+      "confirm_password": "Bekräfta lösenord",
+      "confirm_password_placeholder": "Bekräfta nytt lösenord",
+      "update_button": "Uppdatera lösenord",
+      "error_length": "Lösenordet måste vara minst 6 tecken långt.",
+      "error_match": "Lösenorden matchar inte.",
+      "success_message": "Ditt lösenord har uppdaterats framgångsrikt.",
+      "error_generic": "Misslyckades med att uppdatera lösenord."
+    },
+    "progress_screen": {
+      "title": "Framsteg",
+      "overview": "Översikt",
+      "speaking": "Tala",
+      "words": "Ord",
+      "sessions": "Sessioner",
+      "detailed_stats": "Detaljerad statistik",
+      "coming_soon": "Kommer snart",
+      "coming_soon_body": "Detaljerad inlärningsanalys och framstegsspårning kommer att finnas tillgänglig i en framtida uppdatering."
+    },
+    "support_screen": {
+      "title": "Support",
+      "legal": "Juridik",
+      "privacy_policy": "Integritetspolicy",
+      "terms_of_service": "Användarvillkor",
+      "contact_us": "Kontakta oss",
+      "email_support": "E-postsupport",
+      "send_feedback": "Skicka feedback",
+      "help_improve": "Hjälp oss att förbättra",
+      "whatsapp_support": "WhatsApp-support",
+      "whatsapp_subtitle": "Chatta med oss på WhatsApp",
+      "whatsapp_message": "Hej Sophie-teamet! 👋 Jag använder Sophie AI-appen och skulle gärna vilja komma i kontakt med er.",
+      "contact_alert_title": "Kontakta oss",
+      "contact_alert_body": "Mejla oss på support@fluentai.com för frågor eller feedback.",
+      "feedback_alert_title": "Kommer snart",
+      "feedback_alert_body": "Feedback-funktion i appen kommer snart att vara tillgänglig.",
+      "danger_zone": "Farozon",
+      "delete_account": "Ta bort konto",
+      "delete_account_subtitle": "Ta bort ditt konto permanent",
+      "delete_account_alert_title": "Ta bort konto",
+      "delete_account_alert_body": "Denna funktion kommer snart. Din data är säker.",
+      "app_info": "Appinfo",
+      "version": "Version",
+      "build": "Bygge",
+      "prototype": "Prototyp"
+    },
+    "privacy_policy_screen": {
+      "title": "Integritetspolicy",
+      "last_updated": "Senast uppdaterad: 13 januari 2026",
+      "section1_title": "1. Information vi samlar in",
+      "section1_body": "Vi samlar in information för att tillhandahålla bättre tjänster till alla våra användare. Detta inkluderar kontouppgifter som ditt namn, e-post och föredragna språk, samt användningsdata för att förbättra våra AI-modeller.",
+      "section2_title": "2. Hur vi använder data",
+      "section2_body": "Din data används för att anpassa din inlärningsupplevelse, spåra framsteg och förfina vår AI:s noggrannhet. Vi säljer inte dina personuppgifter till tredje part.",
+      "section3_title": "3. AI-interaktion",
+      "section3_body": "Konversationer och inmatningar som tillhandahålls i appen bearbetas för att generera AI-svar. Denna data kan användas på ett anonymiserat sätt för att träna och förbättra språkinlärningsmodellerna.",
+      "section4_title": "4. Datasäkerhet",
+      "section4_body": "Vi implementerar branschstandardiserade säkerhetsåtgärder för att skydda din information från obehörig åtkomst, ändring, utlämnande eller förstörelse.",
+      "section5_title": "5. Dina rättigheter",
+      "section5_body": "Du har rätt att när som helst få tillgång till, korrigera eller ta bort din personliga information via kontoinställningarna eller genom att kontakta vårt supportteam.",
+      "section6_title": "6. Kontaktinformation",
+      "section6_body": "Om du har frågor om denna integritetspolicy, vänligen kontakta oss på support@fluentai.com."
+    },
+    "terms_screen": {
+      "title": "Användarvillkor",
+      "last_updated": "Senast uppdaterad: 13 januari 2026",
+      "section1_title": "1. Godkännande av villkor",
+      "section1_body": "Genom att komma åt och använda denna applikation godkänner du att vara bunden av dessa användarvillkor. Om du inte godkänner någon del av dessa villkor får du inte använda våra tjänster.",
+      "section2_title": "2. Användning av tjänsten",
+      "section2_body": "Du samtycker till att använda denna applikation endast för personliga, icke-kommersiella språkinlärningsändamål. Du får inte använda tjänsterna för något olagligt eller obehörigt syfte.",
+      "section3_title": "3. Användarbeteende",
+      "section3_body": "Användare förväntas interagera med AI-assistenten på ett respektfullt sätt. Varje försök att utnyttja, skada eller kringgå applikationens avsedda funktionalitet är strängt förbjudet.",
+      "section4_title": "4. Immateriella rättigheter",
+      "section4_body": "Applikationen, dess innehåll och AI-modeller skyddas av upphovsrätt och andra lagar om immateriella rättigheter. Du får inte reproducera eller distribuera någon del av tjänsten utan tillstånd.",
+      "section5_title": "5. AI-ansvarsfriskrivning",
+      "section5_body": "Vår tjänst tillhandahåller AI-genererat innehåll för utbildningsändamål. Medan vi strävar efter noggrannhet kan AI ibland ge felaktig information. Användare uppmanas att verifiera viktiga detaljer.",
+      "section6_title": "6. Ansvarsbegränsning",
+      "section6_body": "Vi är inte ansvariga för några direkta, indirekta eller följdskador som uppstår till följd av din användning av applikationen eller någon information som tillhandahålls av AI-assistenten.",
+      "section7_title": "7. Ändringar av villkor",
+      "section7_body": "Vi förbehåller oss rätten att ändra dessa villkor när som helst. Din fortsatta användning av applikationen efter att ändringar har publicerats utgör ditt godkännande av de nya villkoren."
+    },
+    "social_screen": {
+      "title": "Sociala Medier",
+      "section_title": "Anslut Till Oss",
+      "instagram": "Instagram",
+      "instagram_subtitle": "Följ oss på Instagram",
+      "facebook": "Facebook",
+      "facebook_subtitle": "Gå med i vår gemenskap",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "Följ oss på X",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "Anslut professionellt",
+      "youtube": "YouTube",
+      "youtube_subtitle": "Prenumerera på vår kanal",
+      "tiktok": "TikTok",
+      "tiktok_subtitle": "Titta på våra senaste videor",
+      "reddit": "Reddit",
+      "reddit_subtitle": "Gå med i diskussionen",
+      "error": "Fel",
+      "open_error": "Kunde inte öppna {platform}. Försök igen senare.",
+      "general_error": "Ett fel uppstod vid försök att öppna {platform}."
+    }
+  },
+  "scenarios_screen": {
+    "title": "Inlärningsscenarier",
+    "subtitle": "Öva verkliga konversationer",
+    "search_placeholder": "Sök scenarier...",
+    "create_button": "Skapa",
+    "create_your_own": "Skapa din egen",
+    "empty_search": "Inga matchningar hittades",
+    "empty_list": "Inga scenarier hittades",
+    "categories": {
+      "all": "Alla",
+      "food_drink": "Mat & Dryck",
+      "business": "Företag",
+      "social": "Socialt",
+      "travel": "Resor",
+      "customer_service": "Kundtjänst",
+      "education": "Utbildning"
+    },
+    "create_modal": {
+      "title": "Skapa scenario",
+      "sophie_role_label": "Sophies roll",
+      "sophie_role_placeholder": "t.ex. En grinig men hjälpsam butiksägare",
+      "user_role_label": "Din roll",
+      "user_role_placeholder": "t.ex. En kund som har bråttom",
+      "topic_label": "Ämne",
+      "topic_placeholder": "t.ex. Köpa en vintageklocka",
+      "level_label": "Nivå",
+      "category_label": "Kategori",
+      "category_placeholder": "Välj en kategori",
+      "context_label": "Kontext / Situation",
+      "context_placeholder": "Beskriv inställningen...",
+      "start_button": "Starta scenario",
+      "validation_title": "Obligatoriska fält saknas",
+      "validation_message": "Sophies roll och ämne är obligatoriska!"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "Beställa Kaffe",
+      "description": "Beställ en latte och en croissant på ett livligt kafé.",
+      "sophieRole": "Barista på ett livligt kafé i centrum",
+      "userRole": "En kund som letar efter frukost",
+      "topic": "Dagligt Liv",
+      "context": "Du är på ett kafé som heter \"The Morning Grind\". Du vill beställa en kaffe och något att äta."
+    },
+    "job-interview": {
+      "title": "Anställningsintervju",
+      "description": "Intervju för en position som mjukvaruingenjör.",
+      "sophieRole": "Senior teknisk rekryterare på ett teknikföretag",
+      "userRole": "Kandidat som söker en roll som Frontend-utvecklare",
+      "topic": "Karriär",
+      "context": "Du är på en intervju för ditt drömjobb. Sophie kommer att fråga om din erfarenhet och dina färdigheter."
+    },
+    "asking-directions": {
+      "title": "Fråga om Vägen",
+      "description": "Du är vilse i Tokyo och behöver hitta en tågstation.",
+      "sophieRole": "En hjälpsam lokalinvånare i Tokyo",
+      "userRole": "En turist som är lite vilse",
+      "topic": "Resa",
+      "context": "Du är nära Shibuya Crossing och behöver ta dig till JR-stationen men ditt mobilbatteri är slut."
+    },
+    "hotel-check-in": {
+      "title": "Hotellincheckning",
+      "description": "Checka in och be om ett rum och en utsikt.",
+      "sophieRole": "Receptionist på ett 4-stjärnigt hotell",
+      "userRole": "En gäst som anländer för en vistelse på tre nätter",
+      "topic": "Resa",
+      "context": "Du har en bokning i ditt namn. Du vill bekräfta frukosttiderna och fråga om det finns ett rum med fin utsikt tillgängligt."
+    },
+    "political-debate": {
+      "title": "Politisk Debatt",
+      "description": "Diskutera miljöpolitik och klimatförändringar.",
+      "sophieRole": "En passionerad miljöförespråkare",
+      "userRole": "En skeptisk medborgare eller oppositionspolitiker",
+      "topic": "Aktuella Händelser",
+      "context": "Delta i en djup diskussion om balansen mellan ekonomisk tillväxt och miljöskydd."
+    }
+  },
+  "common": {
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "error": "Fel",
+    "warning": "Varning",
+    "incomplete": "Ofullständig",
+    "incompleteMessage": "Ange ditt namn och välj ett land.",
+    "errorMessage": "Misslyckades med att spara inställningar. Försök igen.",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "Sophie talar...",
+      "preparing": "Förbereder svar... {{progress}}%",
+      "thinking": "Sophie tänker...",
+      "listening": "Lyssnar...",
+      "connecting": "Ansluter...",
+      "reconnecting": "Återansluter...",
+      "hold_mic": "Håll mikrofonen för att tala",
+      "error": "Fel"
+    },
+    "language_selector": {
+      "learning_label": "Lär sig",
+      "select_label": "Välj",
+      "explain_label": "Förklara på",
+      "target_title": "Vad vill du lära dig?",
+      "native_title": "Vad är ditt modersmål?"
+    },
+    "actions": {
+      "finish_report": "Slutför & Få Rapport",
+      "transcript": "Transkript",
+      "transcript_hidden": "Transkript Dolt"
+    },
+    "message_actions": {
+      "translate": "Översätt",
+      "hide": "Dölj",
+      "save": "Spara",
+      "translating": "Översätter..."
+    },
+    "prompts": {
+      "select_both_langs": "Välj båda språken ovan för att börja din lektion med Sophie.",
+      "hold_mic_start": "Håll mikrofonen nedan för att börja prata med Sophie."
+    },
+    "alerts": {
+      "end_session_title": "Avsluta session",
+      "end_session_msg": "Gå tillbaka till scenariobiblioteket?",
+      "finish_title": "Avsluta konversation",
+      "finish_msg": "Är du klar med denna övningssession?",
+      "reset_title": "Återställ chatt",
+      "reset_msg": "Detta raderar den nuvarande konversationen och återställer Sophie. Fortsätta?",
+      "error_title": "Fel",
+      "error_msg": "Det gick inte att översätta. Försök igen.",
+      "success_title": "Framgång",
+      "vocab_added": "Tillagd i ditt ordförråd!",
+      "cancel": "Avbryt",
+      "yes": "Ja",
+      "finish": "Avsluta",
+      "reset": "Återställ"
+    }
+  },
+  "vocab_screen": {
+    "title": "Mitt Ordförråd",
+    "subtitle": "Dina sparade ord & fraser",
+    "search_placeholder": "Sök sparade ord...",
+    "add_button": "Lägg till",
+    "all_filter": "Alla",
+    "all_folders": "Alla Mappar",
+    "empty_state": {
+      "no_matches": "Inga matchningar hittades",
+      "empty_title": "Ditt ordförråd är tomt.",
+      "empty_subtitle": "Lägg till fraser för att börja lära dig!",
+      "no_phrases": "Inga fraser tillgängliga"
+    },
+    "labels": {
+      "primary": "PRIMÄR"
+    },
+    "actions": {
+      "listen": "Lyssna",
+      "delete": "Ta bort",
+      "close": "Stäng",
+      "save_translation": "Spara Översättning",
+      "change": "Ändra",
+      "save_phrase": "Spara Fras",
+      "start_practice": "Börja med {{count}} fras",
+      "start_practice_plural": "Börja med {{count}} fraser"
+    },
+    "modals": {
+      "add_title": "Lägg till Fras",
+      "edit_title": "Redigera Fras",
+      "label_language": "Språk",
+      "label_folder": "Mapp (Valfritt)",
+      "label_phrase": "Fras",
+      "placeholder_phrase": "Ange ord eller fras...",
+      "label_translation": "Översättning (Valfritt)",
+      "placeholder_translation": "Ange betydelse...",
+      "select_folder": "Välj en mapp",
+      "selected_folder": "Vald Mapp",
+      "practice_session_title": "Övningspass"
+    },
+    "alerts": {
+      "delete_title": "Ta bort Fras",
+      "delete_msg": "Är du säker på att du vill ta bort denna fras?",
+      "required_title": "Krävs",
+      "required_msg": "Ange en fras",
+      "error_title": "Fel",
+      "save_error": "Det gick inte att spara frasen",
+      "update_error": "Det gick inte att uppdatera frasen",
+      "delete_error": "Det gick inte att ta bort objektet",
+      "translation_title": "Översättning",
+      "translation_failed": "Översättning misslyckades",
+      "playing_audio": "Spelar ljud för: \"{{text}}\""
+    }
+  },
+  "language_picker": {
+    "title": "Välj Språk",
+    "search_placeholder": "Sök språk...",
+    "no_results": "Inga språk hittades",
+    "select_native": "Välj Modersmål",
+    "select_target": "Välj Målspråk",
+    "select_instruction": "Välj Instruktionsspråk"
+  },
+  "tabs": {
+    "talk": "Prata",
+    "translate": "Översätt",
+    "vocab": "Ordförråd",
+    "scenarios": "Scenarier",
+    "profile": "Profil"
+  },
+  "translate_screen": {
+    "title": "Översättning",
+    "subtitle": "Översätt text till ett annat språk",
+    "swap_instruction": "Tryck på växla för att vända",
+    "input_placeholder": "Ange text att översätta...",
+    "actions": {
+      "translate": "Översätt",
+      "practice": "Öva",
+      "save": "Spara",
+      "copy": "Kopiera"
+    },
+    "empty_state": "Översättning kommer att visas här...",
+    "modals": {
+      "source_picker_title": "Översätt från",
+      "target_picker_title": "Översätt till",
+      "save_folder_title": "Spara i mapp",
+      "folder_name_placeholder": "Mappnamn...",
+      "create_button": "Skapa",
+      "create_new_folder": "Skapa ny mapp",
+      "your_folders": "Dina mappar",
+      "no_folders": "Inga mappar ännu! Skapa en ovan",
+      "save_to_vocab_button": "Spara till ordförråd"
+    },
+    "alerts": {
+      "permission_required": "Behörighet krävs",
+      "mic_access": "Aktivera mikrofonåtkomst för att använda röstinmatning.",
+      "error": "Fel",
+      "translate_failed": "Misslyckades att översätta. Försök igen.",
+      "saved_title": "Sparad!",
+      "saved_message": "Tillagd i ditt ordförråd",
+      "save_failed": "Misslyckades att spara. Försök igen.",
+      "copied_title": "Kopierad",
+      "copied_message": "Text kopierad till urklipp"
+    }
+  },
+  "language_screen": {
+    "title": "Språkinställningar",
+    "subtitle": "Välj ditt modersmål, målspråk och föredrad accent.",
+    "create_profile_btn": "Skapa ny profil",
+    "sections": {
+      "learning_preferences": "Inlärningsinställningar",
+      "accent_playground": "Accent-test",
+      "text_placeholder": "Skriv din text här...",
+      "default_test_phrase": "Hej, hur mår du?",
+      "speed_label": "Hastighet",
+      "playground_hint": "Testa vald accent och justera talhastighet. Tryck på Spela för att förhandsgranska."
+    },
+    "modals": {
+      "create_title": "Ny inlärningsprofil",
+      "create_button": "Skapa profil",
+      "sections": {
+        "target_label": "Jag vill lära mig",
+        "medium_label": "Sophie undervisar på",
+        "medium_placeholder": "Samma som modersmål",
+        "accent_label": "Föredrad accent"
+      }
+    }
+  },
+  "accent_picker": {
+    "title": "Välj accent",
+    "english_suffix": "Engelska",
+    "accents": {
+      "Indian": "Indisk",
+      "Australian": "Australisk",
+      "American": "Amerikansk",
+      "British": "Brittisk"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "Sista dagen!",
+    "days_left_title": "{{count}} dagar kvar",
+    "last_day_subtitle": "Din gratis provperiod slutar idag!",
+    "upgrade_subtitle": "Uppgradera till Sophie AI Pro för hela upplevelsen.",
+    "benefits_title": "Vad du får",
+    "benefit_1": "Obegränsade AI-konversationer",
+    "benefit_2": "Alla 10+ språk upplåsta",
+    "benefit_3": "Avancerade ordförrådsverktyg",
+    "benefit_4": "Prioriterad support",
+    "limited_time_offer": "Begränsat erbjudande",
+    "off_text": "{{percent}}% RABATT",
+    "claim_discount_msg": "Hämta din rabatt idag",
+    "upgrade_now_btn": "Uppgradera nu",
+    "claim_discount_btn": "Hämta min rabatt",
+    "maybe_later_btn": "Kanske senare"
+  }
+}

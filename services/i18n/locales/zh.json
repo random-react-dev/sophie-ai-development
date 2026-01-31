@@ -1,0 +1,646 @@
+{
+  "onboarding": {
+    "chooseLanguage": "选择应用语言",
+    "chooseLearningLanguage": "你想学什么语言？",
+    "continue": "继续",
+    "saving": "保存中...",
+    "startLearning": "开始学习",
+    "skip": "跳过",
+    "profileStep": {
+      "almostThere": "快完成了！",
+      "nameLabel": "你的名字",
+      "namePlaceholder": "输入你的名字",
+      "countryLabel": "国家",
+      "countryPlaceholder": "选择你的国家",
+      "nativeLanguageLabel": "母语",
+      "nativeLanguagePlaceholder": "选择你的母语",
+      "selectCountry": "选择国家",
+      "selectNativeLanguage": "母语"
+    },
+    "options": {
+      "goal": {
+        "student": "我是学生",
+        "traveler": "我是旅行者",
+        "abroad": "我将/在国外",
+        "job": "工作需要",
+        "other": "其他"
+      },
+      "level": {
+        "zero": "我一个字都不认识",
+        "words": "我只能说几个词",
+        "phrases": "我只能说几句话",
+        "basic_idea": "我有想法但词汇量不够",
+        "fluent": "我很流利，但需要更多练习"
+      },
+      "fluency": {
+        "norush": "不着急，我可以慢慢来",
+        "consistent": "我想坚持每天练习",
+        "phrases": "我只需要几个短语",
+        "conversations": "我需要进行一般对话",
+        "desperate": "我渴望现在就流利。"
+      },
+      "duration": {
+        "less_1_month": "不到1个月",
+        "less_6_months": "不到6个月",
+        "less_2_years": "不到2年",
+        "less_5_years": "不到5年",
+        "less_10_years": "不到10年",
+        "more": "更多"
+      },
+      "confidence": {
+        "1": "恐惧",
+        "2": "非常紧张",
+        "3": "焦虑",
+        "4": "不确定",
+        "5": "中立",
+        "6": "充满希望",
+        "7": "自信",
+        "8": "势不可挡"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "害怕犯错",
+          "desc": "我担心说错话"
+        },
+        "consistency": {
+          "title": "缺乏一致性",
+          "desc": "我很难经常练习"
+        },
+        "practice": {
+          "title": "缺乏练习对象",
+          "desc": "我没有对话伙伴"
+        },
+        "other": {
+          "title": "其他",
+          "desc": "其他阻碍我的原因"
+        }
+      },
+      "focus": {
+        "listening": "听力",
+        "speaking": "口语",
+        "pronunciation": "发音",
+        "vocabulary": "词汇",
+        "grammar": "语法",
+        "reading": "阅读",
+        "writing": "写作"
+      },
+      "discovery": {
+        "tiktok": "抖音",
+        "instagram": "Instagram (Ins)",
+        "linkedin": "领英",
+        "youtube": "YouTube (油管)",
+        "friend": "家人/朋友",
+        "other": "其他"
+      }
+    },
+    "titles": {
+      "goal": "你生活中的主要目标是什么？",
+      "fluency": "你想多快变得流利？",
+      "duration": "你学这门语言多久了？",
+      "level": "哪个最能描述你？",
+      "confidence": "你有多自信？",
+      "barriers": "为什么不自信？",
+      "focus": "你想首先关注什么？",
+      "discovery": "你是怎么找到我们的？"
+    },
+    "completion": {
+      "title": "准备好了！",
+      "subtitle": "您的个性化学习路径已准备就绪",
+      "videoLabel": "认识您的AI语言教练",
+      "primaryGoal": "主要目标",
+      "learningPace": "学习进度",
+      "currentLevel": "当前水平",
+      "notSet": "未设置"
+    }
+  },
+  "profile": {
+    "title": "我的个人资料",
+    "menu": {
+      "preferences": {
+        "title": "偏好设置",
+        "subtitle": "语言，国家及更多"
+      },
+      "account": {
+        "title": "帐户",
+        "subtitle": "订阅与账单"
+      },
+      "security": {
+        "title": "安全",
+        "subtitle": "密码与认证"
+      },
+      "progress": {
+        "title": "进度",
+        "subtitle": "追踪你的学习历程"
+      },
+      "support": {
+        "title": "支持",
+        "subtitle": "帮助，政策与反馈"
+      },
+      "social": {
+        "title": "社交媒体",
+        "subtitle": "联系我们"
+      },
+      "logout": "登出",
+      "setName": "设置名字",
+      "avatarSuccess": "头像更新成功！",
+      "avatarError": "上传头像失败。",
+      "nameError": "更新名字失败。",
+      "logoutConfirm": {
+        "title": "登出",
+        "message": "你确定要登出吗？",
+        "cancel": "取消",
+        "confirm": "登出"
+      }
+    },
+    "preferences_screen": {
+      "title": "偏好设置",
+      "accountInfo": "账户信息",
+      "name": "姓名",
+      "email": "电子邮件",
+      "languages": "语言",
+      "country": "国家",
+      "nativeLanguage": "母语",
+      "appLanguage": "应用语言",
+      "selectLanguage": "选择语言",
+      "notSet": "未设置"
+    },
+    "account_screen": {
+      "title": "账户",
+      "subscription": "订阅",
+      "status": "状态",
+      "freeTrial": "免费试用",
+      "upgradeToPro": "升级到 Pro",
+      "payment": "支付",
+      "paymentMethods": "支付方式",
+      "billingHistory": "账单历史",
+      "accountInfo": "账户信息",
+      "email": "电子邮件",
+      "memberSince": "注册时间",
+      "na": "N/A",
+      "comingSoon": "即将推出"
+    },
+    "subscription_screen": {
+      "title": "升级到 Pro",
+      "choosePlan": "选择您的计划",
+      "subtitle": "释放 Sophie AI 的全部潜力并精通任何语言。",
+      "plans": {
+        "mg": {
+          "name": "M 和 G",
+          "description": "适合随时练习。",
+          "features": {
+            "0": "包含所有语言",
+            "1": "每天练习 5 分钟",
+            "2": "基础 AI 导师反馈"
+          }
+        },
+        "launch": {
+          "name": "启动包",
+          "description": "适合想要自信开口说的认真学习者。",
+          "badge": "最受欢迎",
+          "features": {
+            "0": "自选 1 种语言",
+            "1": "每天练习 15 分钟",
+            "2": "优先 AI 反馈",
+            "3": "无广告"
+          }
+        },
+        "sbb": {
+          "name": "专业商务版",
+          "description": "针对商务和考试的高级辅导。",
+          "features": {
+            "0": "无限语言",
+            "1": "无限时间",
+            "2": "高级 AI 分析",
+            "3": "个性化路径"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "立即订阅",
+        "getStarted": "开始使用",
+        "month": "月",
+        "day7": "7 天"
+      },
+      "footer": "所有计划均包含 24/7 AI 导师服务及进度追踪。随时可在设置中取消。"
+    },
+
+    "security_screen": {
+      "title": "安全",
+      "subtitle": "保护您的帐户",
+      "auth_section": "身份验证",
+      "change_password": {
+        "title": "更改密码",
+        "subtitle": "定期更新您的密码"
+      },
+      "two_factor": {
+        "title": "双重认证",
+        "status": "未启用"
+      },
+      "tips_section": "安全提示",
+      "tips": {
+        "strong_password": {
+          "title": "使用强密码",
+          "body": "混合使用字母、数字和特殊字符以获得最大保护。"
+        },
+        "enable_2fa": {
+          "title": "启用双重认证",
+          "body": "为您的帐户提供额外的安全层。即将推出！"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "更改密码",
+      "new_password": "新密码",
+      "new_password_placeholder": "输入新密码",
+      "confirm_password": "确认密码",
+      "confirm_password_placeholder": "确认新密码",
+      "update_button": "更新密码",
+      "error_length": "密码长度必须至少为6个字符。",
+      "error_match": "密码不匹配。",
+      "success_message": "您的密码已成功更新。",
+      "error_generic": "更新密码失败。"
+    },
+    "progress_screen": {
+      "title": "进度",
+      "overview": "概览",
+      "speaking": "口语",
+      "words": "单词",
+      "sessions": "会话",
+      "detailed_stats": "详细统计",
+      "coming_soon": "即将推出",
+      "coming_soon_body": "详细的学习分析和进度跟踪将在未来的更新中提供。"
+    },
+    "support_screen": {
+      "title": "支持",
+      "legal": "法律",
+      "privacy_policy": "隐私政策",
+      "terms_of_service": "服务条款",
+      "contact_us": "联系我们",
+      "email_support": "邮件支持",
+      "send_feedback": "发送反馈",
+      "help_improve": "帮助我们要改进",
+      "whatsapp_support": "WhatsApp 支持",
+      "whatsapp_subtitle": "在 WhatsApp 上与我们聊天",
+      "whatsapp_message": "你好 Sophie 团队！👋 我正在使用 Sophie AI 应用程序，希望能与你们联系。",
+      "contact_alert_title": "联系我们",
+      "contact_alert_body": "有任何问题或反馈，请发送电子邮件至 support@fluentai.com。",
+      "feedback_alert_title": "即将推出",
+      "feedback_alert_body": "应用内反馈功能即将推出。",
+      "danger_zone": "危险区域",
+      "delete_account": "删除账户",
+      "delete_account_subtitle": "永久删除您的账户",
+      "delete_account_alert_title": "删除账户",
+      "delete_account_alert_body": "此功能即将推出。您的数据是安全的。",
+      "app_info": "应用信息",
+      "version": "版本",
+      "build": "构建",
+      "prototype": "原型"
+    },
+    "privacy_policy_screen": {
+      "title": "隐私政策",
+      "last_updated": "最后更新：2026年1月13日",
+      "section1_title": "1. 我们收集的信息",
+      "section1_body": "我们收集信息是为了向所有用户提供更好的服务。这包括帐户详细信息（如您的姓名、电子邮件和首选语言）以及用于改进我们 AI 模型的使用数据。",
+      "section2_title": "2. 我们如何使用数据",
+      "section2_body": "您的数据用于个性化您的学习体验、跟踪进度并提高我们 AI 的准确性。我们不会将您的个人数据出售给第三方。",
+      "section3_title": "3. AI 互动",
+      "section3_body": "在应用程序中提供的对话和输入将被处理以生成 AI 响应。这些数据可能会以匿名方式用于训练和改进语言学习模型。",
+      "section4_title": "4. 数据安全",
+      "section4_body": "我们实施行业标准的安全措施，以保护您的信息免受未经授权的访问、更改、披露或破坏。",
+      "section5_title": "5. 您的权利",
+      "section5_body": "您有权随时通过帐户设置或联系我们的支持团队访问、更正或删除您的个人信息。",
+      "section6_title": "6. 联系信息",
+      "section6_body": "如果您对本隐私政策有任何疑问，请通过 support@fluentai.com 联系我们。"
+    },
+    "terms_screen": {
+      "title": "服务条款",
+      "last_updated": "最后更新：2026年1月13日",
+      "section1_title": "1. 条款接受",
+      "section1_body": "访问和使用此应用程序即表示您同意受这些服务条款的约束。如果您不同意这些条款的任何部分，则不得使用我们的服务。",
+      "section2_title": "2. 服务使用",
+      "section2_body": "您同意仅出于个人、非商业语言学习目的使用此应用程序。您不得将服务用于任何非法或未经授权的目的。",
+      "section3_title": "3. 用户行为",
+      "section3_body": "用户应尊重地与 AI 助手互动。严禁任何试图利用、损害或绕过应用程序预期功能的行为。",
+      "section4_title": "4. 知识产权",
+      "section4_body": "该应用程序、其内容和 AI 模型受版权和其他知识产权法的保护。未经许可，您不得复制或分发服务的任何部分。",
+      "section5_title": "5. AI 免责声明",
+      "section5_body": "我们的服务出于教育目的提供 AI 生成的内容。虽然我们要力求准确，但 AI 偶尔可能会提供不正确的信息。鼓励用户验证重要细节。",
+      "section6_title": "6. 责任限制",
+      "section6_body": "对于因您使用应用程序或 AI 助手提供的任何信息而造成的任何直接、间接或后果性损害，我们概不负责。",
+      "section7_title": "7. 条款变更",
+      "section7_body": "我们保留随时修改这些条款的权利。在发布更改后继续使用应用程序即表示您接受新条款。"
+    },
+    "social_screen": {
+      "title": "社交媒体",
+      "section_title": "与我们联系",
+      "instagram": "Instagram",
+      "instagram_subtitle": "在 Instagram 上关注我们",
+      "facebook": "Facebook",
+      "facebook_subtitle": "加入我们的社区",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "在 X 上关注我们",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "建立职业联系",
+      "youtube": "YouTube",
+      "youtube_subtitle": "订阅我们的频道",
+      "tiktok": "抖音 (TikTok)",
+      "tiktok_subtitle": "观看我们的最新视频",
+      "reddit": "Reddit",
+      "reddit_subtitle": "参与讨论",
+      "error": "错误",
+      "open_error": "无法打开 {platform}。请稍后再试。",
+      "general_error": "尝试打开 {platform} 时发生错误。"
+    }
+  },
+  "scenarios_screen": {
+    "title": "学习场景",
+    "subtitle": "练习真实对话",
+    "search_placeholder": "搜索场景...",
+    "create_button": "创建",
+    "create_your_own": "创建你自己的",
+    "empty_search": "未找到匹配项",
+    "empty_list": "未找到场景",
+    "categories": {
+      "all": "全部",
+      "food_drink": "餐饮",
+      "business": "商务",
+      "social": "社交",
+      "travel": "旅行",
+      "customer_service": "客户服务",
+      "education": "教育"
+    },
+    "create_modal": {
+      "title": "创建场景",
+      "sophie_role_label": "Sophie的角色",
+      "sophie_role_placeholder": "例如：脾气暴躁但乐于助人的店主",
+      "user_role_label": "你的角色",
+      "user_role_placeholder": "例如：赶时间的顾客",
+      "topic_label": "话题",
+      "topic_placeholder": "例如：购买复古手表",
+      "level_label": "等级",
+      "category_label": "类别",
+      "category_placeholder": "选择一个类别",
+      "context_label": "背景 / 情境",
+      "context_placeholder": "描述设置...",
+      "start_button": "开始场景",
+      "validation_title": "缺少必填字段",
+      "validation_message": "Sophie的角色和话题是必填的！"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "点咖啡",
+      "description": "在繁忙的咖啡馆点一杯拿铁和一个牛角包。",
+      "sophieRole": "繁忙市中心咖啡馆的咖啡师",
+      "userRole": "寻找早餐的顾客",
+      "topic": "日常生活",
+      "context": "你在一家名为“The Morning Grind”的咖啡馆。你想点一杯咖啡和一些吃的。"
+    },
+    "job-interview": {
+      "title": "求职面试",
+      "description": "软件工程师职位的面试。",
+      "sophieRole": "科技公司的高级技术招聘人员",
+      "userRole": "申请前端开发人员职位的候选人",
+      "topic": "职业",
+      "context": "你正在面试你梦寐以求的工作。Sophie会询问你的经验和技能。"
+    },
+    "asking-directions": {
+      "title": "问路",
+      "description": "你在东京迷路了，需要找到火车站。",
+      "sophieRole": "东京一位热心的当地居民",
+      "userRole": "有点迷路的游客",
+      "topic": "旅行",
+      "context": "你在涩谷十字路口附近，需要去JR站，但你的手机没电了。"
+    },
+    "hotel-check-in": {
+      "title": "酒店入住",
+      "description": "办理入住并询问房间和景观。",
+      "sophieRole": "四星级酒店的前台接待员",
+      "userRole": "入住三晚的客人",
+      "topic": "旅行",
+      "context": "你名下有预订。你想确认早餐时间，并询问是否有风景好的房间。"
+    },
+    "political-debate": {
+      "title": "政治辩论",
+      "description": "讨论环境政策和气候变化。",
+      "sophieRole": "充满激情的环境拥护者",
+      "userRole": "持怀疑态度的公民或反对派决策者",
+      "topic": "时事",
+      "context": "就经济增长与环境保护之间的平衡进行深入讨论。"
+    }
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "error": "错误",
+    "warning": "警告",
+    "incomplete": "未完成",
+    "incompleteMessage": "请输入你的名字并选择国家。",
+    "errorMessage": "保存偏好设置失败。请重试。",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "苏菲正在说话...",
+      "preparing": "准备回复... {{progress}}%",
+      "thinking": "苏菲正在思考...",
+      "listening": "正在听...",
+      "connecting": "正在连接...",
+      "reconnecting": "正在重新连接...",
+      "hold_mic": "按住麦克风说话",
+      "error": "错误"
+    },
+    "language_selector": {
+      "learning_label": "正在学习",
+      "select_label": "选择",
+      "explain_label": "解释语言",
+      "target_title": "你想学什么？",
+      "native_title": "你的母语是什么？"
+    },
+    "actions": {
+      "finish_report": "结束并获取报告",
+      "transcript": "文字记录",
+      "transcript_hidden": "文字记录隐藏"
+    },
+    "message_actions": {
+      "translate": "翻译",
+      "hide": "隐藏",
+      "save": "保存",
+      "translating": "正在翻译..."
+    },
+    "prompts": {
+      "select_both_langs": "选择上面的两种语言开始与苏菲的课程。",
+      "hold_mic_start": "按住下面的麦克风开始与苏菲交谈。"
+    },
+    "alerts": {
+      "end_session_title": "结束会话",
+      "end_session_msg": "返回场景库？",
+      "finish_title": "结束对话",
+      "finish_msg": "你完成这次练习了吗？",
+      "reset_title": "重置聊天",
+      "reset_msg": "这将清除当前的对话并重置苏菲。继续吗？",
+      "error_title": "错误",
+      "error_msg": "翻译失败。请重试。",
+      "success_title": "成功",
+      "vocab_added": "已添加到你的词汇表！",
+      "cancel": "取消",
+      "yes": "是",
+      "finish": "完成",
+      "reset": "重置"
+    }
+  },
+  "vocab_screen": {
+    "title": "我的词汇表",
+    "subtitle": "你保存的单词和短语",
+    "search_placeholder": "搜索保存的单词...",
+    "add_button": "添加",
+    "all_filter": "全部",
+    "all_folders": "所有文件夹",
+    "empty_state": {
+      "no_matches": "未找到匹配项",
+      "empty_title": "你的词汇表是空的。",
+      "empty_subtitle": "添加短语开始学习！",
+      "no_phrases": "没有可用短语"
+    },
+    "labels": {
+      "primary": "主要"
+    },
+    "actions": {
+      "listen": "听",
+      "delete": "删除",
+      "close": "关闭",
+      "save_translation": "保存翻译",
+      "change": "更改",
+      "save_phrase": "保存短语",
+      "start_practice": "从 {{count}} 个短语开始",
+      "start_practice_plural": "从 {{count}} 个短语开始"
+    },
+    "modals": {
+      "add_title": "添加短语",
+      "edit_title": "编辑短语",
+      "label_language": "语言",
+      "label_folder": "文件夹（可选）",
+      "label_phrase": "短语",
+      "placeholder_phrase": "输入单词或短语...",
+      "label_translation": "翻译（可选）",
+      "placeholder_translation": "输入含义...",
+      "select_folder": "选择文件夹",
+      "selected_folder": "已选文件夹",
+      "practice_session_title": "练习课程"
+    },
+    "alerts": {
+      "delete_title": "删除短语",
+      "delete_msg": "你确定要删除此短语吗？",
+      "required_title": "必须",
+      "required_msg": "请输入短语",
+      "error_title": "错误",
+      "save_error": "保存短语失败",
+      "update_error": "更新短语失败",
+      "delete_error": "删除项目失败",
+      "translation_title": "翻译",
+      "translation_failed": "翻译失败",
+      "playing_audio": "正在播放音频：\"{{text}}\""
+    }
+  },
+  "language_picker": {
+    "title": "选择语言",
+    "search_placeholder": "搜索语言...",
+    "no_results": "未找到语言",
+    "select_native": "选择母语",
+    "select_target": "选择目标语言",
+    "select_instruction": "选择教学语言"
+  },
+  "tabs": {
+    "talk": "交谈",
+    "translate": "翻译",
+    "vocab": "词汇",
+    "scenarios": "场景",
+    "profile": "个人资料"
+  },
+  "translate_screen": {
+    "title": "翻译",
+    "subtitle": "将文本翻译成另一种语言",
+    "swap_instruction": "点击交换以反转方向",
+    "input_placeholder": "输入要翻译的文本...",
+    "actions": {
+      "translate": "翻译",
+      "practice": "练习",
+      "save": "保存",
+      "copy": "复制"
+    },
+    "empty_state": "翻译将出现在这里...",
+    "modals": {
+      "source_picker_title": "源语言",
+      "target_picker_title": "目标语言",
+      "save_folder_title": "保存到文件夹",
+      "folder_name_placeholder": "文件夹名称...",
+      "create_button": "创建",
+      "create_new_folder": "创建新文件夹",
+      "your_folders": "您的文件夹",
+      "no_folders": "还没有文件夹！在上方创建一个",
+      "save_to_vocab_button": "保存到词汇表"
+    },
+    "alerts": {
+      "permission_required": "需要权限",
+      "mic_access": "请启用麦克风访问权限以使用语音输入。",
+      "error": "错误",
+      "translate_failed": "翻译失败。请重试。",
+      "saved_title": "已保存！",
+      "saved_message": "已添加到您的词汇表",
+      "save_failed": "保存失败。请重试。",
+      "copied_title": "已复制",
+      "copied_message": "文本已复制到剪贴板"
+    }
+  },
+  "language_screen": {
+    "title": "语言偏好",
+    "subtitle": "选择您的母语、目标语言和首选口音。",
+    "create_profile_btn": "创建新个人资料",
+    "sections": {
+      "learning_preferences": "学习偏好",
+      "accent_playground": "口音测试",
+      "text_placeholder": "在此输入文本...",
+      "default_test_phrase": "你好，你好吗？",
+      "speed_label": "语速",
+      "playground_hint": "测试所选口音并调整语速。点击播放进行预览。"
+    },
+    "modals": {
+      "create_title": "新学习资料",
+      "create_button": "创建资料",
+      "sections": {
+        "target_label": "我想学习",
+        "medium_label": "Sophie 教学语言",
+        "medium_placeholder": "与母语相同",
+        "accent_label": "首选口音"
+      }
+    }
+  },
+  "accent_picker": {
+    "title": "选择口音",
+    "english_suffix": "英语",
+    "accents": {
+      "Indian": "印度",
+      "Australian": "澳大利亚",
+      "American": "美国",
+      "British": "英国"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "最后一天！",
+    "days_left_title": "剩余 {{count}} 天",
+    "last_day_subtitle": "您的免费试用今天结束！",
+    "upgrade_subtitle": "升级到苏菲 AI Pro 以获得完整体验。",
+    "benefits_title": "您将获得",
+    "benefit_1": "无限 AI 对话",
+    "benefit_2": "解锁所有 10+ 种语言",
+    "benefit_3": "高级词汇工具",
+    "benefit_4": "优先支持",
+    "limited_time_offer": "限时优惠",
+    "off_text": "{{percent}}% 折扣",
+    "claim_discount_msg": "立即领取折扣",
+    "upgrade_now_btn": "立即升级",
+    "claim_discount_btn": "领取我的折扣",
+    "maybe_later_btn": "也许以后"
+  }
+}

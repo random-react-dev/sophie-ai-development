@@ -1,5 +1,6 @@
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { Colors } from "@/constants/theme";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { ResizeMode, Video } from "expo-av";
 import React, { useEffect, useRef } from "react";
@@ -238,8 +239,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <Text className="text-xs text-gray-400 uppercase tracking-wider mb-1">
               {label}
             </Text>
-            <Text className="text-base font-semibold text-gray-800 capitalize">
-              {value || "Not set"}
+            <Text className="text-base font-semibold text-gray-800">
+              {value}
             </Text>
           </View>
         </View>
@@ -249,6 +250,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 };
 // Premium Custom Video Player Component
 const SophieIntroVideo: React.FC = () => {
+  const { t } = useTranslation();
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [showControls, setShowControls] = React.useState(false);
@@ -417,7 +419,7 @@ const SophieIntroVideo: React.FC = () => {
 
       {/* Video Label */}
       <Text className="text-center text-gray-500 text-sm mt-3 font-medium">
-        Meet Your AI Language Coach
+        {t("onboarding.completion.videoLabel")}
       </Text>
     </Animated.View>
   );
@@ -496,11 +498,30 @@ const styles = StyleSheet.create({
 
 export const CompletionStep = () => {
   const { data } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const summaries = [
-    { label: "Primary Goal", value: data.mainGoal, emoji: "🎯" },
-    { label: "Learning Pace", value: data.fluencySpeed, emoji: "🏃" },
-    { label: "Current Level", value: data.speakingLevel, emoji: "📊" },
+    {
+      label: t("onboarding.completion.primaryGoal"),
+      value: data.mainGoal
+        ? t(`onboarding.options.goal.${data.mainGoal}`)
+        : t("onboarding.completion.notSet"),
+      emoji: "🎯",
+    },
+    {
+      label: t("onboarding.completion.learningPace"),
+      value: data.fluencySpeed
+        ? t(`onboarding.options.fluency.${data.fluencySpeed}`)
+        : t("onboarding.completion.notSet"),
+      emoji: "🏃",
+    },
+    {
+      label: t("onboarding.completion.currentLevel"),
+      value: data.speakingLevel
+        ? t(`onboarding.options.level.${data.speakingLevel}`)
+        : t("onboarding.completion.notSet"),
+      emoji: "📊",
+    },
   ];
 
   return (
@@ -516,10 +537,10 @@ export const CompletionStep = () => {
         </View>
 
         <Text className="text-xl font-bold text-gray-900 text-center mb-2">
-          You&apos;re all set!
+          {t("onboarding.completion.title")}
         </Text>
         <Text className="text-gray-500 text-sm text-center px-4 leading-6 w-full">
-          Your personalized learning path is ready
+          {t("onboarding.completion.subtitle")}
         </Text>
       </View>
 
@@ -532,7 +553,7 @@ export const CompletionStep = () => {
           <SummaryCard
             key={i}
             label={item.label}
-            value={item.value}
+            value={item.value || t("onboarding.completion.notSet")}
             emoji={item.emoji}
             delay={400 + i * 150}
             accentColor={Colors.rainbow[i % Colors.rainbow.length]}

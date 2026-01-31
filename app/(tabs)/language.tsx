@@ -9,6 +9,8 @@ import {
   Language,
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
+import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import { CreateProfileDTO } from "@/services/supabase/profiles";
 import { useAuthStore } from "@/stores/authStore";
 import { useProfileStore } from "@/stores/profileStore";
@@ -25,7 +27,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -40,6 +42,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LanguageScreen() {
+  const { t, locale } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
   const { user } = useAuthStore();
   const {
@@ -51,8 +54,45 @@ export default function LanguageScreen() {
     removeProfile,
   } = useProfileStore();
 
+  const getLocalizedLanguageName = useCallback(
+    (englishName: string) => {
+      const matchedLang = SUPPORTED_LANGUAGES.find(
+        (l) => l.name === englishName,
+      );
+      if (!matchedLang) return englishName;
+
+      // Try Intl.DisplayNames first
+      try {
+        const localized = new Intl.DisplayNames([locale], {
+          type: "language",
+        }).of(matchedLang.code);
+
+        if (localized && localized !== englishName) {
+          return localized.charAt(0).toUpperCase() + localized.slice(1);
+        }
+
+        if (locale.startsWith("en")) return englishName;
+      } catch (error) {
+        // Fallback below
+      }
+
+      // Fallback: Manual Map
+      // Normalize locale (e.g. 'hi-IN' -> 'hi')
+      const simpleLocale = locale.split("-")[0];
+      // @ts-ignore
+      const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
+      if (manualName) return manualName;
+
+      // Final valid fallback: Native Name
+      return matchedLang.nativeName || englishName;
+    },
+    [locale],
+  );
+
   // Accent Playground State
-  const [testPhrase, setTestPhrase] = useState("Hello, how are you?");
+  const [testPhrase, setTestPhrase] = useState(
+    t("language_screen.sections.default_test_phrase"),
+  );
   const [speechRate, setSpeechRate] = useState(1.0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -151,10 +191,10 @@ export default function LanguageScreen() {
 
       <View className="px-4 mb-6">
         <Text className="text-xl font-bold text-black text-left">
-          Language Preferences
+          {t("language_screen.title")}
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
-          Choose your native & target languages and preferred accent.
+          {t("language_screen.subtitle")}
         </Text>
       </View>
 
@@ -196,7 +236,8 @@ export default function LanguageScreen() {
                       {profile.name}
                     </Text>
                     <Text className="text-sm font-medium text-gray-500">
-                      {profile.native_language} → {profile.target_language}
+                      {getLocalizedLanguageName(profile.native_language)} →{" "}
+                      {getLocalizedLanguageName(profile.target_language)}
                     </Text>
                   </View>
                 </View>
@@ -253,7 +294,7 @@ export default function LanguageScreen() {
           >
             <Plus size={24} color="#6b7280" />
             <Text className="text-gray-500 font-bold text-base">
-              Create New Profile
+              {t("language_screen.create_profile_btn")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -271,8 +312,12 @@ export default function LanguageScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-xl font-bold text-black">
-                New Learning Profile
+              <Text
+                className="text-xl font-bold text-black flex-1 mr-4"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {t("language_screen.modals.create_title")}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -293,7 +338,7 @@ export default function LanguageScreen() {
                 <View className="flex-row items-center gap-2 mb-2">
                   <Globe size={18} color="#374151" />
                   <Text className="text-gray-700 text-base font-semibold capitalize">
-                    Learning Preferences
+                    {t("language_screen.sections.learning_preferences")}
                   </Text>
                 </View>
 
@@ -311,10 +356,10 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        I want to learn
+                        {t("language_screen.modals.sections.target_label")}
                       </Text>
                       <Text className="text-gray-900 font-semibold text-base">
-                        {newTargetLang.name}
+                        {getLocalizedLanguageName(newTargetLang.name)}
                       </Text>
                     </View>
                     <ChevronDown size={20} color="#111827" />
@@ -333,10 +378,14 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        Sophie teaches in
+                        {t("language_screen.modals.sections.medium_label")}
                       </Text>
                       <Text className="text-gray-900 font-semibold text-base">
-                        {newMediumLang?.name || "Same as Native"}
+                        {newMediumLang?.name
+                          ? getLocalizedLanguageName(newMediumLang.name)
+                          : t(
+                              "language_screen.modals.sections.medium_placeholder",
+                            )}
                       </Text>
                     </View>
                     <ChevronDown size={20} color="#111827" />
@@ -361,11 +410,11 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        Preferred accent
+                        {t("language_screen.modals.sections.accent_label")}
                       </Text>
                       <View className="flex-row items-center gap-1">
                         <Text className="text-gray-900 font-semibold text-base">
-                          {newAccent}
+                          {t(`accent_picker.accents.${newAccent}`)}
                         </Text>
                       </View>
                     </View>
@@ -379,7 +428,7 @@ export default function LanguageScreen() {
                 <View className="flex-row items-center gap-2 mb-4">
                   <Volume2 size={18} color="#374151" />
                   <Text className="text-gray-700 text-base font-semibold capitalize">
-                    Accent Playground
+                    {t("language_screen.sections.accent_playground")}
                   </Text>
                 </View>
 
@@ -387,7 +436,7 @@ export default function LanguageScreen() {
                   value={testPhrase}
                   onChangeText={setTestPhrase}
                   className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4 p-0 text-sm"
-                  placeholder="Type your text here..."
+                  placeholder={t("language_screen.sections.text_placeholder")}
                   placeholderTextColor="gray"
                   textAlignVertical="center"
                   style={{ includeFontPadding: false }}
@@ -397,7 +446,7 @@ export default function LanguageScreen() {
                 <View className="mt-2">
                   <View className="flex-row items-center justify-between mb-2">
                     <Text className="text-gray-900 text-base font-semibold capitalize">
-                      Speed
+                      {t("language_screen.sections.speed_label")}
                     </Text>
                     <View className="flex-row items-center gap-2">
                       <Text className="text-gray-700 font-bold text-sm bg-gray-100 px-2 py-1 rounded-lg">
@@ -449,8 +498,7 @@ export default function LanguageScreen() {
                 </View>
 
                 <Text className="text-center text-gray-500 text-sm mt-4 leading-normal">
-                  Test selected accent and adjust speaking speed. Tap Play to
-                  preview.
+                  {t("language_screen.sections.playground_hint")}
                 </Text>
               </View>
             </ScrollView>
@@ -467,8 +515,12 @@ export default function LanguageScreen() {
                   className="flex-1"
                   containerClassName="items-center justify-center"
                 >
-                  <Text className="text-black font-bold text-lg">
-                    Create Profile
+                  <Text
+                    className="text-black font-bold text-lg"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {t("language_screen.modals.create_button")}
                   </Text>
                 </RainbowBorder>
               </TouchableOpacity>
@@ -494,13 +546,13 @@ export default function LanguageScreen() {
               ? newTargetLang.code
               : newMediumLang?.code
         }
-        title={`Select ${
+        title={
           pickerType === "native"
-            ? "Your Native"
+            ? t("language_picker.select_native")
             : pickerType === "target"
-              ? "Target"
-              : "Instruction"
-        } Language`}
+              ? t("language_picker.select_target")
+              : t("language_picker.select_instruction")
+        }
       />
 
       {/* Accent Picker Modal */}

@@ -3,6 +3,7 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import { getLanguageByCode } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useThemeStore } from "@/stores/themeStore";
@@ -15,7 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function PreferencesScreen() {
   const { user, updateProfile } = useAuthStore();
   const { theme, setTheme, loadTheme } = useThemeStore();
-  const { setLanguage } = useLanguageStore();
+  const { currentLanguage, setLanguage } = useLanguageStore();
+  const { t } = useTranslation();
 
   // Load saved theme on mount
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function PreferencesScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <ProfileHeader title="Preferences" />
+      <ProfileHeader title={t("profile.preferences_screen.title")} />
 
       <ScrollView
         className="flex-1"
@@ -70,13 +72,16 @@ export default function PreferencesScreen() {
         {/* Identity Section */}
         <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Account Info
+            {t("profile.preferences_screen.accountInfo")}
           </Text>
 
           {/* Name Card - Read Only */}
           <ProfileSettingCard
-            title="Name"
-            subtitle={user?.user_metadata?.full_name || "Not set"}
+            title={t("profile.preferences_screen.name")}
+            subtitle={
+              user?.user_metadata?.full_name ||
+              t("profile.preferences_screen.notSet")
+            }
             icon={<User size={20} color={getRainbowColorScheme(0).iconColor} />}
             colorScheme={getRainbowColorScheme(0)}
             showArrow={false}
@@ -84,8 +89,8 @@ export default function PreferencesScreen() {
 
           {/* Email Card - Read Only */}
           <ProfileSettingCard
-            title="Email"
-            subtitle={user?.email || "Not set"}
+            title={t("profile.preferences_screen.email")}
+            subtitle={user?.email || t("profile.preferences_screen.notSet")}
             icon={<Mail size={20} color={getRainbowColorScheme(1).iconColor} />}
             colorScheme={getRainbowColorScheme(1)}
             showArrow={false}
@@ -95,13 +100,16 @@ export default function PreferencesScreen() {
         {/* Localization Section */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Languages
+            {t("profile.preferences_screen.languages")}
           </Text>
 
           {/* Country Card - Read Only */}
           <ProfileSettingCard
-            title="Country"
-            subtitle={user?.user_metadata?.country || "Not set"}
+            title={t("profile.preferences_screen.country")}
+            subtitle={
+              user?.user_metadata?.country ||
+              t("profile.preferences_screen.notSet")
+            }
             icon={
               <MapPin size={20} color={getRainbowColorScheme(2).iconColor} />
             }
@@ -111,10 +119,10 @@ export default function PreferencesScreen() {
 
           {/* Native Language Card */}
           <ProfileSettingCard
-            title="Native Language"
+            title={t("profile.preferences_screen.nativeLanguage")}
             subtitle={
               getLanguageByCode(user?.user_metadata?.native_language)?.name ||
-              "Select Language"
+              t("profile.preferences_screen.selectLanguage")
             }
             icon={
               <Globe size={20} color={getRainbowColorScheme(3).iconColor} />
@@ -125,13 +133,10 @@ export default function PreferencesScreen() {
 
           {/* Preferred Language Card */}
           <ProfileSettingCard
-            title="App Language"
+            title={t("profile.preferences_screen.appLanguage")}
             subtitle={
-              user?.user_metadata?.app_language === "hi"
-                ? "Hindi"
-                : user?.user_metadata?.app_language === "es"
-                  ? "Spanish"
-                  : "English"
+              getLanguageByCode(currentLanguage)?.name ||
+              t("profile.preferences_screen.selectLanguage")
             }
             icon={
               <Languages size={20} color={getRainbowColorScheme(4).iconColor} />
@@ -156,7 +161,7 @@ export default function PreferencesScreen() {
         onClose={() => setShowNativePicker(false)}
         onSelect={(lang) => handleUpdateNativeLanguage(lang.code)}
         selectedCode={user?.user_metadata?.native_language}
-        title="Select Native Language"
+        title={t("language_picker.select_native")}
       />
     </SafeAreaView>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { View } from "react-native";
@@ -5,14 +6,39 @@ import { SelectionCard } from "./SelectionCard";
 
 export const DiscoveryStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const sources = [
-    { id: "tiktok", title: "TikTok", emoji: "🎵" },
-    { id: "instagram", title: "Instagram", emoji: "📸" },
-    { id: "linkedin", title: "LinkedIn", emoji: "💼" },
-    { id: "youtube", title: "YouTube", emoji: "🎬" },
-    { id: "friend", title: "Family/Friend", emoji: "👨‍👩‍👧‍" },
-    { id: "other", title: "Other", emoji: "💬" },
+    {
+      id: "tiktok",
+      title: t("onboarding.options.discovery.tiktok"),
+      emoji: "🎵",
+    },
+    {
+      id: "instagram",
+      title: t("onboarding.options.discovery.instagram"),
+      emoji: "📸",
+    },
+    {
+      id: "linkedin",
+      title: t("onboarding.options.discovery.linkedin"),
+      emoji: "💼",
+    },
+    {
+      id: "youtube",
+      title: t("onboarding.options.discovery.youtube"),
+      emoji: "🎬",
+    },
+    {
+      id: "friend",
+      title: t("onboarding.options.discovery.friend"),
+      emoji: "👨‍👩‍👧‍",
+    },
+    {
+      id: "other",
+      title: t("onboarding.options.discovery.other"),
+      emoji: "💬",
+    },
   ];
 
   return (

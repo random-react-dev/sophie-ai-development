@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { View } from "react-native";
@@ -5,31 +6,32 @@ import { SelectionCard } from "./SelectionCard";
 
 export const LevelStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const levels = [
     {
       id: "zero",
-      title: "I know not a single word",
+      title: t("onboarding.options.level.zero"),
       level: 1,
     },
     {
       id: "words",
-      title: "I can only speak a few words",
+      title: t("onboarding.options.level.words"),
       level: 2,
     },
     {
       id: "phrases",
-      title: "I can only speak a few phrases",
+      title: t("onboarding.options.level.phrases"),
       level: 3,
     },
     {
       id: "basic_idea",
-      title: "I have the idea but not the vocabulary",
+      title: t("onboarding.options.level.basic_idea"),
       level: 4,
     },
     {
       id: "fluent",
-      title: "I am fluent, but need more practice",
+      title: t("onboarding.options.level.fluent"),
       level: 5,
     },
   ];

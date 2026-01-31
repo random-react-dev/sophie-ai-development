@@ -1,0 +1,645 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Chọn ngôn ngữ ứng dụng",
+    "chooseLearningLanguage": "Bạn muốn học ngôn ngữ nào?",
+    "continue": "Tiếp tục",
+    "saving": "Đang lưu...",
+    "startLearning": "Bắt đầu học",
+    "skip": "Bỏ qua",
+    "profileStep": {
+      "almostThere": "Sắp xong rồi!",
+      "nameLabel": "Tên của bạn",
+      "namePlaceholder": "Nhập tên của bạn",
+      "countryLabel": "Quốc gia",
+      "countryPlaceholder": "Chọn quốc gia của bạn",
+      "nativeLanguageLabel": "Ngôn ngữ mẹ đẻ",
+      "nativeLanguagePlaceholder": "Chọn ngôn ngữ mẹ đẻ",
+      "selectCountry": "Chọn quốc gia",
+      "selectNativeLanguage": "Ngôn ngữ mẹ đẻ"
+    },
+    "options": {
+      "goal": {
+        "student": "Tôi là sinh viên",
+        "traveler": "Tôi là khách du lịch",
+        "abroad": "Tôi sẽ / đang ở nước ngoài",
+        "job": "Tôi cần nó cho công việc",
+        "other": "Khác"
+      },
+      "level": {
+        "zero": "Tôi không biết một từ nào",
+        "words": "Tôi chỉ có thể nói vài từ",
+        "phrases": "Tôi chỉ có thể nói vài câu",
+        "basic_idea": "Tôi có ý tưởng nhưng không có từ vựng",
+        "fluent": "Tôi lưu loát, nhưng cần luyện tập thêm"
+      },
+      "fluency": {
+        "norush": "Không vội, tôi có thể từ từ",
+        "consistent": "Tôi muốn kiên định và luyện tập hàng ngày",
+        "phrases": "Tôi chỉ cần một vài câu",
+        "conversations": "Tôi cần có những cuộc trò chuyện chung",
+        "desperate": "Tôi khao khát được lưu loát, ngay bây giờ."
+      },
+      "duration": {
+        "less_1_month": "Dưới 1 tháng",
+        "less_6_months": "Dưới 6 tháng",
+        "less_2_years": "Dưới 2 năm",
+        "less_5_years": "Dưới 5 năm",
+        "less_10_years": "Dưới 10 năm",
+        "more": "Hơn"
+      },
+      "confidence": {
+        "1": "Hoảng sợ",
+        "2": "Rất lo lắng",
+        "3": "Lo âu",
+        "4": "Không chắc chắn",
+        "5": "Trung lập",
+        "6": "Hy vọng",
+        "7": "Tự tin",
+        "8": "Không thể ngăn cản"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "Sợ mắc lỗi",
+          "desc": "Tôi lo lắng về việc nói sai"
+        },
+        "consistency": {
+          "title": "Thiếu kiên định",
+          "desc": "Tôi gặp khó khăn trong việc luyện tập thường xuyên"
+        },
+        "practice": {
+          "title": "Thiếu người luyện tập cùng",
+          "desc": "Tôi không có bạn đàm thoại"
+        },
+        "other": {
+          "title": "Khác",
+          "desc": "Có điều gì đó đang kìm hãm tôi"
+        }
+      },
+      "focus": {
+        "listening": "Nghe",
+        "speaking": "Nói",
+        "pronunciation": "Phát âm",
+        "vocabulary": "Từ vựng",
+        "grammar": "Ngữ pháp",
+        "reading": "Đọc",
+        "writing": "Viết"
+      },
+      "discovery": {
+        "tiktok": "TikTok",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "friend": "Gia đình/Bạn bè",
+        "other": "Khác"
+      }
+    },
+    "titles": {
+      "goal": "Mục tiêu chính trong cuộc sống của bạn là gì?",
+      "fluency": "Bạn muốn thành thạo nhanh như thế nào?",
+      "duration": "Bạn đã học ngôn ngữ này bao lâu rồi?",
+      "level": "Điều nào mô tả đúng nhất về bạn?",
+      "confidence": "Bạn tự tin đến mức nào?",
+      "barriers": "Tại sao bạn không tự tin?",
+      "focus": "Bạn muốn tập trung vào điều gì đầu tiên?",
+      "discovery": "Làm thế nào bạn biết đến chúng tôi?"
+    },
+    "completion": {
+      "title": "Đã xong!",
+      "subtitle": "Lộ trình học tập cá nhân của bạn đã sẵn sàng",
+      "videoLabel": "Gặp gỡ Huấn luyện viên Ngôn ngữ AI của bạn",
+      "primaryGoal": "Mục tiêu chính",
+      "learningPace": "Tốc độ học",
+      "currentLevel": "Cấp độ hiện tại",
+      "notSet": "Chưa thiết lập"
+    }
+  },
+  "profile": {
+    "title": "Hồ Sơ Của Tôi",
+    "menu": {
+      "preferences": {
+        "title": "Tùy Chọn",
+        "subtitle": "Ngôn ngữ, quốc gia và hơn thế nữa"
+      },
+      "account": {
+        "title": "Tài Khoản",
+        "subtitle": "Đăng ký và thanh toán"
+      },
+      "security": {
+        "title": "Bảo Mật",
+        "subtitle": "Mật khẩu và xác thực"
+      },
+      "progress": {
+        "title": "Tiến Độ",
+        "subtitle": "Theo dõi hành trình học tập của bạn"
+      },
+      "support": {
+        "title": "Hỗ Trợ",
+        "subtitle": "Trợ giúp, chính sách và phản hồi"
+      },
+      "social": {
+        "title": "Mạng Xã Hội",
+        "subtitle": "Kết nối với chúng tôi"
+      },
+      "logout": "Đăng Xuất",
+      "setName": "Đặt Tên",
+      "avatarSuccess": "Cập nhật ảnh đại diện thành công!",
+      "avatarError": "Không thể tải lên ảnh đại diện.",
+      "nameError": "Không thể cập nhật tên.",
+      "logoutConfirm": {
+        "title": "Đăng Xuất",
+        "message": "Bạn có chắc chắn muốn đăng xuất không?",
+        "cancel": "Hủy",
+        "confirm": "Đăng Xuất"
+      }
+    },
+    "preferences_screen": {
+      "title": "Tùy chọn",
+      "accountInfo": "Thông tin tài khoản",
+      "name": "Tên",
+      "email": "Email",
+      "languages": "Ngôn ngữ",
+      "country": "Quốc gia",
+      "nativeLanguage": "Ngôn ngữ mẹ đẻ",
+      "appLanguage": "Ngôn ngữ ứng dụng",
+      "selectLanguage": "Chọn ngôn ngữ",
+      "notSet": "Chưa thiết lập"
+    },
+    "account_screen": {
+      "title": "Tài khoản",
+      "subscription": "Đăng ký",
+      "status": "Trạng thái",
+      "freeTrial": "Dùng thử miễn phí",
+      "upgradeToPro": "Nâng cấp lên Pro",
+      "payment": "Thanh toán",
+      "paymentMethods": "Phương thức thanh toán",
+      "billingHistory": "Lịch sử thanh toán",
+      "accountInfo": "Thông tin tài khoản",
+      "email": "Email",
+      "memberSince": "Thành viên từ",
+      "na": "N/A",
+      "comingSoon": "Sắp ra mắt"
+    },
+    "subscription_screen": {
+      "title": "Nâng cấp lên Pro",
+      "choosePlan": "Chọn Gói của Bạn",
+      "subtitle": "Mở khóa toàn bộ tiềm năng của Sophie AI và làm chủ bất kỳ ngôn ngữ nào.",
+      "plans": {
+        "mg": {
+          "name": "M và G",
+          "description": "Hoàn hảo cho việc luyện tập thông thường.",
+          "features": {
+            "0": "Bao gồm tất cả ngôn ngữ",
+            "1": "Luyện tập 5 phút/ngày",
+            "2": "Phản hồi cơ bản từ gia sư AI"
+          }
+        },
+        "launch": {
+          "name": "Gói Khởi động",
+          "description": "Dành cho người học nghiêm túc muốn nói chuyện tự tin.",
+          "badge": "Phổ biến nhất",
+          "features": {
+            "0": "1 ngôn ngữ tùy chọn",
+            "1": "Luyện tập 15 phút/ngày",
+            "2": "Phản hồi AI ưu tiên",
+            "3": "Không quảng cáo"
+          }
+        },
+        "sbb": {
+          "name": "SBB",
+          "description": "Huấn luyện nâng cao cho công việc & thi cử.",
+          "features": {
+            "0": "Ngôn ngữ không giới hạn",
+            "1": "Thời gian không giới hạn",
+            "2": "Phân tích AI nâng cao",
+            "3": "Lộ trình cá nhân hóa"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "Đăng ký Ngay",
+        "getStarted": "Bắt đầu",
+        "month": "tháng",
+        "day7": "7 ngày"
+      },
+      "footer": "Tất cả các gói bao gồm quyền truy cập gia sư AI 24/7 và Theo dõi Tiến độ. Hủy bất kỳ lúc nào từ cài đặt của bạn."
+    },
+    "security_screen": {
+      "title": "Bảo mật",
+      "subtitle": "Bảo vệ tài khoản của bạn",
+      "auth_section": "Xác thực",
+      "change_password": {
+        "title": "Đổi mật khẩu",
+        "subtitle": "Cập nhật mật khẩu thường xuyên"
+      },
+      "two_factor": {
+        "title": "Xác thực hai yếu tố",
+        "status": "Chưa kích hoạt"
+      },
+      "tips_section": "Mẹo bảo mật",
+      "tips": {
+        "strong_password": {
+          "title": "Sử dụng mật khẩu mạnh",
+          "body": "Kết hợp chữ cái, số và ký tự đặc biệt để bảo vệ tối đa."
+        },
+        "enable_2fa": {
+          "title": "Bật xác thực hai yếu tố",
+          "body": "Một lớp bảo mật bổ sung cho tài khoản của bạn. Sắp ra mắt!"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "Đổi mật khẩu",
+      "new_password": "Mật khẩu mới",
+      "new_password_placeholder": "Nhập mật khẩu mới",
+      "confirm_password": "Xác nhận mật khẩu",
+      "confirm_password_placeholder": "Xác nhận mật khẩu mới",
+      "update_button": "Cập nhật mật khẩu",
+      "error_length": "Mật khẩu phải có ít nhất 6 ký tự.",
+      "error_match": "Mật khẩu không khớp.",
+      "success_message": "Mật khẩu của bạn đã được cập nhật thành công.",
+      "error_generic": "Cập nhật mật khẩu thất bại."
+    },
+    "progress_screen": {
+      "title": "Tiến độ",
+      "overview": "Tổng quan",
+      "speaking": "Nói",
+      "words": "Từ vựng",
+      "sessions": "Phiên",
+      "detailed_stats": "Thống kê chi tiết",
+      "coming_soon": "Sắp ra mắt",
+      "coming_soon_body": "Phân tích học tập chi tiết và theo dõi tiến độ sẽ có trong bản cập nhật tương lai."
+    },
+    "support_screen": {
+      "title": "Hỗ trợ",
+      "legal": "Pháp lý",
+      "privacy_policy": "Chính sách bảo mật",
+      "terms_of_service": "Điều khoản dịch vụ",
+      "contact_us": "Liên hệ với chúng tôi",
+      "email_support": "Hỗ trợ qua Email",
+      "send_feedback": "Gửi phản hồi",
+      "help_improve": "Giúp chúng tôi cải thiện",
+      "whatsapp_support": "Hỗ trợ WhatsApp",
+      "whatsapp_subtitle": "Trò chuyện với chúng tôi trên WhatsApp",
+      "whatsapp_message": "Xin chào Đội ngũ Sophie! 👋 Tôi đang sử dụng ứng dụng Sophie AI và rất muốn kết nối với các bạn.",
+      "contact_alert_title": "Liên hệ với chúng tôi",
+      "contact_alert_body": "Gửi email cho chúng tôi tại support@fluentai.com nếu có bất kỳ câu hỏi hoặc phản hồi nào.",
+      "feedback_alert_title": "Sắp ra mắt",
+      "feedback_alert_body": "Tính năng phản hồi trong ứng dụng sẽ sớm ra mắt.",
+      "danger_zone": "Vùng nguy hiểm",
+      "delete_account": "Xóa tài khoản",
+      "delete_account_subtitle": "Xóa vĩnh viễn tài khoản của bạn",
+      "delete_account_alert_title": "Xóa tài khoản",
+      "delete_account_alert_body": "Tính năng này sắp ra mắt. Dữ liệu của bạn được an toàn.",
+      "app_info": "Thông tin ứng dụng",
+      "version": "Phiên bản",
+      "build": "Bản dựng",
+      "prototype": "nguyên mẫu"
+    },
+    "privacy_policy_screen": {
+      "title": "Chính sách bảo mật",
+      "last_updated": "Cập nhật lần cuối: 13 tháng 1 năm 2026",
+      "section1_title": "1. Thông tin chúng tôi thu thập",
+      "section1_body": "Chúng tôi thu thập thông tin để cung cấp dịch vụ tốt hơn cho tất cả người dùng. Điều này bao gồm chi tiết tài khoản như tên, email và ngôn ngữ ưa thích của bạn, cũng như dữ liệu sử dụng để cải thiện các mô hình AI của chúng tôi.",
+      "section2_title": "2. Cách chúng tôi sử dụng dữ liệu",
+      "section2_body": "Dữ liệu của bạn được sử dụng để cá nhân hóa trải nghiệm học tập, theo dõi tiến độ và tinh chỉnh độ chính xác của AI. Chúng tôi không bán dữ liệu cá nhân của bạn cho bên thứ ba.",
+      "section3_title": "3. Tương tác AI",
+      "section3_body": "Các cuộc hội thoại và đầu vào được cung cấp trong ứng dụng được xử lý để tạo phản hồi AI. Dữ liệu này có thể được sử dụng ẩn danh để đào tạo và cải thiện các mô hình học ngôn ngữ.",
+      "section4_title": "4. Bảo mật dữ liệu",
+      "section4_body": "Chúng tôi thực hiện các biện pháp bảo mật tiêu chuẩn ngành để bảo vệ thông tin của bạn khỏi truy cập trái phép, thay đổi, tiết lộ hoặc phá hủy.",
+      "section5_title": "5. Quyền của bạn",
+      "section5_body": "Bạn có quyền truy cập, sửa hoặc xóa thông tin cá nhân của mình bất kỳ lúc nào thông qua cài đặt tài khoản hoặc bằng cách liên hệ với đội ngũ hỗ trợ của chúng tôi.",
+      "section6_title": "6. Thông tin liên hệ",
+      "section6_body": "Nếu bạn có bất kỳ câu hỏi nào về Chính sách bảo mật này, vui lòng liên hệ với chúng tôi tại support@fluentai.com."
+    },
+    "terms_screen": {
+      "title": "Điều khoản Dịch vụ",
+      "last_updated": "Cập nhật lần cuối: 13 tháng 1 năm 2026",
+      "section1_title": "1. Chấp nhận các điều khoản",
+      "section1_body": "Bằng cách truy cập và sử dụng ứng dụng này, bạn đồng ý tuân thủ các Điều khoản Dịch vụ này. Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, bạn không thể sử dụng dịch vụ của chúng tôi.",
+      "section2_title": "2. Sử dụng Dịch vụ",
+      "section2_body": "Bạn đồng ý chỉ sử dụng ứng dụng này cho mục đích học ngôn ngữ cá nhân, phi thương mại. Bạn không được sử dụng các dịch vụ cho bất kỳ mục đích bất hợp pháp hoặc trái phép nào.",
+      "section3_title": "3. Hành vi của Người dùng",
+      "section3_body": "Người dùng được mong đợi tương tác với trợ lý AI một cách tôn trọng. Mọi nỗ lực khai thác, gây hại hoặc bỏ qua chức năng dự kiến của ứng dụng đều bị nghiêm cấm.",
+      "section4_title": "4. Sở hữu trí tuệ",
+      "section4_body": "Ứng dụng, nội dung và các mô hình AI của nó được bảo vệ bởi bản quyền và các luật sở hữu trí tuệ khác. Bạn không được sao chép hoặc phân phối bất kỳ phần nào của dịch vụ mà không có sự cho phép.",
+      "section5_title": "5. Tuyên bố miễn trừ trách nhiệm AI",
+      "section5_body": "Dịch vụ của chúng tôi cung cấp nội dung do AI tạo ra cho mục đích giáo dục. Mặc dù chúng tôi cố gắng đảm bảo tính chính xác, AI đôi khi có thể cung cấp thông tin không chính xác. Người dùng được khuyến khích xác minh các chi tiết quan trọng.",
+      "section6_title": "6. Giới hạn trách nhiệm",
+      "section6_body": "Chúng tôi không chịu trách nhiệm cho bất kỳ thiệt hại trực tiếp, gián tiếp hoặc do hậu quả nào do việc bạn sử dụng ứng dụng hoặc bất kỳ thông tin nào do trợ lý AI cung cấp.",
+      "section7_title": "7. Thay đổi Điều khoản",
+      "section7_body": "Chúng tôi có quyền sửa đổi các điều khoản này bất kỳ lúc nào. Việc bạn tiếp tục sử dụng ứng dụng sau khi các thay đổi được đăng cấu thành sự chấp nhận của bạn đối với các điều khoản mới."
+    },
+    "social_screen": {
+      "title": "Mạng xã hội",
+      "section_title": "Kết nối với chúng tôi",
+      "instagram": "Instagram",
+      "instagram_subtitle": "Theo dõi chúng tôi trên Instagram",
+      "facebook": "Facebook",
+      "facebook_subtitle": "Tham gia cộng đồng của chúng tôi",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "Theo dõi chúng tôi trên X",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "Kết nối chuyên nghiệp",
+      "youtube": "YouTube",
+      "youtube_subtitle": "Đăng ký kênh của chúng tôi",
+      "tiktok": "TikTok",
+      "tiktok_subtitle": "Xem video mới nhất của chúng tôi",
+      "reddit": "Reddit",
+      "reddit_subtitle": "Tham gia thảo luận",
+      "error": "Lỗi",
+      "open_error": "Không thể mở {platform}. Vui lòng thử lại sau.",
+      "general_error": "Đã xảy ra lỗi khi cố gắng mở {platform}."
+    }
+  },
+  "scenarios_screen": {
+    "title": "Kịch bản Học tập",
+    "subtitle": "Thực hành các cuộc hội thoại thực tế",
+    "search_placeholder": "Tìm kiếm kịch bản...",
+    "create_button": "Tạo",
+    "create_your_own": "Tạo riêng của bạn",
+    "empty_search": "Không tìm thấy kết quả phù hợp",
+    "empty_list": "Không tìm thấy kịch bản",
+    "categories": {
+      "all": "Tất cả",
+      "food_drink": "Thực phẩm & Đồ uống",
+      "business": "Kinh doanh",
+      "social": "Xã hội",
+      "travel": "Du lịch",
+      "customer_service": "Dịch vụ Khách hàng",
+      "education": "Giáo dục"
+    },
+    "create_modal": {
+      "title": "Tạo Kịch bản",
+      "sophie_role_label": "Vai trò của Sophie",
+      "sophie_role_placeholder": "vd: Một chủ tiệm khó tính nhưng hay giúp đỡ",
+      "user_role_label": "Vai trò của Bạn",
+      "user_role_placeholder": "vd: Một khách hàng đang vội",
+      "topic_label": "Chủ đề",
+      "topic_placeholder": "vd: Mua một chiếc đồng hồ cổ",
+      "level_label": "Cấp độ",
+      "category_label": "Danh mục",
+      "category_placeholder": "Chọn một danh mục",
+      "context_label": "Bối cảnh / Tình huống",
+      "context_placeholder": "Mô tả bối cảnh...",
+      "start_button": "Bắt đầu Kịch bản",
+      "validation_title": "Thiếu Trường Bắt buộc",
+      "validation_message": "Vai trò của Sophie và Chủ đề là bắt buộc!"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "Gọi Cà phê",
+      "description": "Gọi một ly latte và bánh croissant tại một quán cà phê đông đúc.",
+      "sophieRole": "Nhân viên pha chế tại một quán cà phê trung tâm thành phố bận rộn",
+      "userRole": "Một khách hàng đang tìm bữa sáng",
+      "topic": "Cuộc sống hàng ngày",
+      "context": "Bạn đang ở một quán cà phê tên là \"The Morning Grind\". Bạn muốn gọi một ly cà phê và thứ gì đó để ăn."
+    },
+    "job-interview": {
+      "title": "Phỏng vấn xin việc",
+      "description": "Phỏng vấn cho vị trí kỹ sư phần mềm.",
+      "sophieRole": "Nhà tuyển dụng kỹ thuật cấp cao tại một công ty công nghệ",
+      "userRole": "Ứng viên ứng tuyển cho vai trò Nhà phát triển Frontend",
+      "topic": "Sự nghiệp",
+      "context": "Bạn đang trong cuộc phỏng vấn cho công việc mơ ước của mình. Sophie sẽ hỏi về kinh nghiệm và kỹ năng của bạn."
+    },
+    "asking-directions": {
+      "title": "Hỏi đường",
+      "description": "Bạn bị lạc ở Tokyo và cần tìm một ga tàu.",
+      "sophieRole": "Một cư dân địa phương nhiệt tình ở Tokyo",
+      "userRole": "Một du khách hơi bị lạc",
+      "topic": "Du lịch",
+      "context": "Bạn đang ở gần Giao lộ Shibuya và cần đến ga JR nhưng điện thoại của bạn đã hết pin."
+    },
+    "hotel-check-in": {
+      "title": "Nhận phòng khách sạn",
+      "description": "Làm thủ tục nhận phòng và yêu cầu phòng có view đẹp.",
+      "sophieRole": "Lễ tân tại một khách sạn 4 sao",
+      "userRole": "Một vị khách đến lưu trú ba đêm",
+      "topic": "Du lịch",
+      "context": "Bạn có một đặt phòng dưới tên của bạn. Bạn muốn xác nhận thời gian ăn sáng và hỏi xem có phòng nào có view đẹp không."
+    },
+    "political-debate": {
+      "title": "Tranh luận Chính trị",
+      "description": "Thảo luận về các chính sách môi trường và biến đổi khí hậu.",
+      "sophieRole": "Một người ủng hộ môi trường đầy nhiệt huyết",
+      "userRole": "Một công dân hoài nghi hoặc nhà hoạch định chính sách đối lập",
+      "topic": "Các vấn đề hiện tại",
+      "context": "Tham gia vào một cuộc thảo luận sâu sắc về sự cân bằng giữa tăng trưởng kinh tế và bảo vệ môi trường."
+    }
+  },
+  "common": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "error": "Lỗi",
+    "warning": "Cảnh báo",
+    "incomplete": "Chưa hoàn thành",
+    "incompleteMessage": "Vui lòng nhập tên của bạn và chọn quốc gia.",
+    "errorMessage": "Không thể lưu tùy chọn. Vui lòng thử lại.",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "Sophie đang nói...",
+      "preparing": "Đang chuẩn bị câu trả lời... {{progress}}%",
+      "thinking": "Sophie đang suy nghĩ...",
+      "listening": "Đang nghe...",
+      "connecting": "Đang kết nối...",
+      "reconnecting": "Đang kết nối lại...",
+      "hold_mic": "Giữ mic để nói",
+      "error": "Lỗi"
+    },
+    "language_selector": {
+      "learning_label": "Đang học",
+      "select_label": "Chọn",
+      "explain_label": "Giải thích bằng",
+      "target_title": "Bạn muốn học gì?",
+      "native_title": "Ngôn ngữ mẹ đẻ của bạn là gì?"
+    },
+    "actions": {
+      "finish_report": "Hoàn thành & Nhận báo cáo",
+      "transcript": "Bản ghi",
+      "transcript_hidden": "Bản ghi bị ẩn"
+    },
+    "message_actions": {
+      "translate": "Dịch",
+      "hide": "Ẩn",
+      "save": "Lưu",
+      "translating": "Đang dịch..."
+    },
+    "prompts": {
+      "select_both_langs": "Chọn cả hai ngôn ngữ ở trên để bắt đầu bài học của bạn với Sophie.",
+      "hold_mic_start": "Giữ mic bên dưới để bắt đầu nói chuyện với Sophie."
+    },
+    "alerts": {
+      "end_session_title": "Kết thúc phiên",
+      "end_session_msg": "Quay lại thư viện kịch bản?",
+      "finish_title": "Kết thúc cuộc trò chuyện",
+      "finish_msg": "Bạn đã hoàn thành phiên thực hành này chưa?",
+      "reset_title": "Đặt lại trò chuyện",
+      "reset_msg": "Thao tác này sẽ xóa cuộc trò chuyện hiện tại và đặt lại Sophie. Tiếp tục?",
+      "error_title": "Lỗi",
+      "error_msg": "Dịch thất bại. Vui lòng thử lại.",
+      "success_title": "Thành công",
+      "vocab_added": "Đã thêm vào từ vựng của bạn!",
+      "cancel": "Hủy",
+      "yes": "Có",
+      "finish": "Kết thúc",
+      "reset": "Đặt lại"
+    }
+  },
+  "vocab_screen": {
+    "title": "Từ vựng của tôi",
+    "subtitle": "Các từ và cụm từ đã lưu của bạn",
+    "search_placeholder": "Tìm kiếm từ đã lưu...",
+    "add_button": "Thêm",
+    "all_filter": "Tất cả",
+    "all_folders": "Tất cả thư mục",
+    "empty_state": {
+      "no_matches": "Không tìm thấy kết quả nào",
+      "empty_title": "Từ vựng của bạn đang trống.",
+      "empty_subtitle": "Thêm cụm từ để bắt đầu học!",
+      "no_phrases": "Không có cụm từ nào"
+    },
+    "labels": {
+      "primary": "CHÍNH"
+    },
+    "actions": {
+      "listen": "Nghe",
+      "delete": "Xóa",
+      "close": "Đóng",
+      "save_translation": "Lưu bản dịch",
+      "change": "Thay đổi",
+      "save_phrase": "Lưu cụm từ",
+      "start_practice": "Bắt đầu với {{count}} cụm từ",
+      "start_practice_plural": "Bắt đầu với {{count}} cụm từ"
+    },
+    "modals": {
+      "add_title": "Thêm cụm từ",
+      "edit_title": "Chỉnh sửa cụm từ",
+      "label_language": "Ngôn ngữ",
+      "label_folder": "Thư mục (Tùy chọn)",
+      "label_phrase": "Cụm từ",
+      "placeholder_phrase": "Nhập từ hoặc cụm từ...",
+      "label_translation": "Bản dịch (Tùy chọn)",
+      "placeholder_translation": "Nhập ý nghĩa...",
+      "select_folder": "Chọn thư mục",
+      "selected_folder": "Thư mục đã chọn",
+      "practice_session_title": "Phiên thực hành"
+    },
+    "alerts": {
+      "delete_title": "Xóa cụm từ",
+      "delete_msg": "Bạn có chắc chắn muốn xóa cụm từ này không?",
+      "required_title": "Bắt buộc",
+      "required_msg": "Vui lòng nhập một cụm từ",
+      "error_title": "Lỗi",
+      "save_error": "Không thể lưu cụm từ",
+      "update_error": "Không thể cập nhật cụm từ",
+      "delete_error": "Không thể xóa mục",
+      "translation_title": "Bản dịch",
+      "translation_failed": "Dịch thất bại",
+      "playing_audio": "Đang phát âm thanh cho: \"{{text}}\""
+    }
+  },
+  "language_picker": {
+    "title": "Chọn Ngôn ngữ",
+    "search_placeholder": "Tìm kiếm ngôn ngữ...",
+    "no_results": "Không tìm thấy ngôn ngữ",
+    "select_native": "Chọn ngôn ngữ mẹ đẻ",
+    "select_target": "Chọn ngôn ngữ mục tiêu",
+    "select_instruction": "Chọn ngôn ngữ giảng dạy"
+  },
+  "tabs": {
+    "talk": "Trò chuyện",
+    "translate": "Dịch",
+    "vocab": "Từ vựng",
+    "scenarios": "Tình huống",
+    "profile": "Hồ sơ"
+  },
+  "translate_screen": {
+    "title": "Dịch",
+    "subtitle": "Dịch văn bản sang ngôn ngữ khác",
+    "swap_instruction": "Nhấn vào hoán đổi để đảo ngược",
+    "input_placeholder": "Nhập văn bản cần dịch...",
+    "actions": {
+      "translate": "Dịch",
+      "practice": "Luyện tập",
+      "save": "Lưu",
+      "copy": "Sao chép"
+    },
+    "empty_state": "Bản dịch sẽ xuất hiện tại đây...",
+    "modals": {
+      "source_picker_title": "Dịch từ",
+      "target_picker_title": "Dịch sang",
+      "save_folder_title": "Lưu vào Thư mục",
+      "folder_name_placeholder": "Tên thư mục...",
+      "create_button": "Tạo",
+      "create_new_folder": "Tạo thư mục mới",
+      "your_folders": "Thư mục của bạn",
+      "no_folders": "Chưa có thư mục nào! Hãy tạo một cái ở trên",
+      "save_to_vocab_button": "Lưu vào Từ vựng"
+    },
+    "alerts": {
+      "permission_required": "Yêu cầu quyền",
+      "mic_access": "Vui lòng bật quyền truy cập micrô để sử dụng nhập liệu bằng giọng nói.",
+      "error": "Lỗi",
+      "translate_failed": "Dịch thất bại. Vui lòng thử lại.",
+      "saved_title": "Đã lưu!",
+      "saved_message": "Đã thêm vào từ vựng của bạn",
+      "save_failed": "Lưu thất bại. Vui lòng thử lại.",
+      "copied_title": "Đã sao chép",
+      "copied_message": "Văn bản đã được sao chép vào bộ nhớ tạm"
+    }
+  },
+  "language_screen": {
+    "title": "Tùy chọn ngôn ngữ",
+    "subtitle": "Chọn ngôn ngữ mẹ đẻ, ngôn ngữ mục tiêu và giọng đọc ưa thích của bạn.",
+    "create_profile_btn": "Tạo hồ sơ mới",
+    "sections": {
+      "learning_preferences": "Tùy chọn học tập",
+      "accent_playground": "Thử nghiệm giọng đọc",
+      "text_placeholder": "Nhập văn bản của bạn vào đây...",
+      "default_test_phrase": "Xin chào, bạn khỏe không?",
+      "speed_label": "Tốc độ",
+      "playground_hint": "Kiểm tra giọng đọc đã chọn và điều chỉnh tốc độ nói. Nhấn Phát để xem trước."
+    },
+    "modals": {
+      "create_title": "Hồ sơ học tập mới",
+      "create_button": "Tạo hồ sơ",
+      "sections": {
+        "target_label": "Tôi muốn học",
+        "medium_label": "Sophie dạy bằng",
+        "medium_placeholder": "Giống như tiếng mẹ đẻ",
+        "accent_label": "Giọng đọc ưa thích"
+      }
+    }
+  },
+  "accent_picker": {
+    "title": "Chọn giọng đọc",
+    "english_suffix": "Anh",
+    "accents": {
+      "Indian": "Ấn Độ",
+      "Australian": "Úc",
+      "American": "Mỹ",
+      "British": "Anh"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "Ngày cuối cùng!",
+    "days_left_title": "Còn lại {{count}} ngày",
+    "last_day_subtitle": "Dùng thử miễn phí của bạn kết thúc hôm nay!",
+    "upgrade_subtitle": "Nâng cấp lên Sophie AI Pro để có trải nghiệm đầy đủ.",
+    "benefits_title": "Bạn sẽ nhận được",
+    "benefit_1": "Trò chuyện AI không giới hạn",
+    "benefit_2": "Mở khóa tất cả 10+ ngôn ngữ",
+    "benefit_3": "Công cụ từ vựng nâng cao",
+    "benefit_4": "Hỗ trợ ưu tiên",
+    "limited_time_offer": "Ưu đãi có hạn",
+    "off_text": "GIẢM {{percent}}%",
+    "claim_discount_msg": "Nhận giảm giá của bạn ngay hôm nay",
+    "upgrade_now_btn": "Nâng cấp ngay",
+    "claim_discount_btn": "Nhận giảm giá của tôi",
+    "maybe_later_btn": "Có thể để sau"
+  }
+}

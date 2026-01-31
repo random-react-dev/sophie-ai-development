@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { View } from "react-native";
@@ -5,31 +6,32 @@ import { SelectionCard } from "./SelectionCard";
 
 export const FluencyStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const speeds = [
     {
       id: "norush",
-      title: "No rush, I can take my time",
+      title: t("onboarding.options.fluency.norush"),
       level: 1,
     },
     {
       id: "consistent",
-      title: "I want to be consistent and practice daily",
+      title: t("onboarding.options.fluency.consistent"),
       level: 2,
     },
     {
       id: "phrases",
-      title: "I just need a couple of phrases",
+      title: t("onboarding.options.fluency.phrases"),
       level: 3,
     },
     {
       id: "conversations",
-      title: "I need to have general conversations",
+      title: t("onboarding.options.fluency.conversations"),
       level: 4,
     },
     {
       id: "desperate",
-      title: "I am desperate to be fluent, now.",
+      title: t("onboarding.options.fluency.desperate"),
       level: 5,
     },
   ];

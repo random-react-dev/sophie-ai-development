@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { View } from "react-native";
@@ -5,31 +6,32 @@ import { SelectionCard } from "./SelectionCard";
 
 export const BarrierStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const barriers = [
     {
       id: "mistakes",
-      title: "Fear of making mistakes",
+      title: t("onboarding.options.barrier.mistakes.title"),
       emoji: "😰",
-      description: "I worry about saying something wrong",
+      description: t("onboarding.options.barrier.mistakes.desc"),
     },
     {
       id: "consistency",
-      title: "Lack of consistency",
+      title: t("onboarding.options.barrier.consistency.title"),
       emoji: "📅",
-      description: "I struggle to practice regularly",
+      description: t("onboarding.options.barrier.consistency.desc"),
     },
     {
       id: "practice",
-      title: "Lack of someone to practice with",
+      title: t("onboarding.options.barrier.practice.title"),
       emoji: "🗣️",
-      description: "I don't have a conversation partner",
+      description: t("onboarding.options.barrier.practice.desc"),
     },
     {
       id: "other",
-      title: "Other",
+      title: t("onboarding.options.barrier.other.title"),
       emoji: "💬",
-      description: "Something else is holding me back",
+      description: t("onboarding.options.barrier.other.desc"),
     },
   ];
 
