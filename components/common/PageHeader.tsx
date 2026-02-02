@@ -19,14 +19,14 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
 
   return (
     <View className="bg-white pb-2 px-4 shadow-sm z-50">
-      <View className="h-16 flex-row items-center justify-between">
+      <View className="h-20 flex-row items-center justify-between">
         {/* Left: Support/Help Icon */}
         <TouchableOpacity
           onPress={openWhatsApp}
           activeOpacity={0.7}
-          className="w-10 h-10 rounded-full bg-blue-50 items-center justify-center border border-blue-100 shadow-sm"
+          className="size-11 rounded-full bg-blue-50 items-center justify-center border border-blue-100 shadow-sm"
         >
-          <Headset size={20} color="#3B82F6" />
+          <Headset size={22} color="#3B82F6" />
         </TouchableOpacity>
 
         {/* Center: Title & Wave */}
@@ -35,6 +35,7 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
             <Text className="text-lg font-bold text-gray-900 leading-none">
               {title}
             </Text>
+            {/* Rainbow Wave */}
             <View className="items-center justify-start">
               <RainbowWave
                 isListening={false}
@@ -53,7 +54,7 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
         <Link href="/profile" asChild>
           <TouchableOpacity
             activeOpacity={0.7}
-            className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 shadow-sm"
+            className="size-11 rounded-full overflow-hidden border border-gray-200 shadow-sm"
           >
             {user?.user_metadata?.avatar_url ? (
               <Image
@@ -62,7 +63,7 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
               />
             ) : (
               <View className="w-full h-full items-center justify-center bg-blue-50">
-                <Text className="text-base font-bold text-blue-500">
+                <Text className="text-lg font-bold text-blue-500">
                   {user?.email?.charAt(0).toUpperCase()}
                 </Text>
               </View>

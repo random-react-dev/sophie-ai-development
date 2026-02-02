@@ -1,8 +1,9 @@
 import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowWave } from "@/components/lesson/RainbowWave";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
-import { Check, Crown } from "lucide-react-native";
+import { Check } from "lucide-react-native";
 import React, { useEffect } from "react";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -115,16 +116,25 @@ export const TrialCountdownModal = () => {
 
           {/* Header with Icon */}
           <View className="items-center mb-5">
-            <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4">
-              <Crown size={36} color="white" />
-            </RainbowGradient>
-            <Text className="text-xl font-black text-gray-900 text-center">
+            <Text className="text-xl font-black text-gray-900 text-center leading-none">
               {isLastDay
                 ? t("trial_countdown_modal.last_day_title")
                 : t("trial_countdown_modal.days_left_title", {
                     count: remainingDays,
                   })}
             </Text>
+            {/* Rainbow Wave */}
+            <View className="items-center justify-start">
+              <RainbowWave
+                isListening={false}
+                isSpeaking={false}
+                isProcessing={true}
+                volumeLevel={0}
+                width={120}
+                height={40}
+                amplitudeScale={1.5}
+              />
+            </View>
             <Text className="text-gray-500 text-center mt-2 text-sm leading-6">
               {isLastDay
                 ? t("trial_countdown_modal.last_day_subtitle")

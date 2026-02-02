@@ -2,6 +2,7 @@ import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuthStore } from "@/stores/authStore";
 import {
   disabledColorScheme,
   getRainbowColorScheme,
@@ -30,12 +31,43 @@ export default function SupportScreen() {
   const { t } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
+  const { deleteAccount } = useAuthStore();
+
   const handleDeleteAccount = () => {
     showAlert(
       t("profile.support_screen.delete_account_alert_title"),
       t("profile.support_screen.delete_account_alert_body"),
-      undefined,
-      "info",
+      [
+        {
+          text: t("common.cancel") || "Cancel",
+          style: "cancel",
+          onPress: hideAlert,
+        },
+        {
+          text: t("common.delete") || "Delete",
+          style: "destructive",
+          onPress: async () => {
+            hideAlert();
+            try {
+              await deleteAccount();
+              // Navigation to login is handled by auth state change listener or manual redirect
+              router.replace("/(auth)/login");
+            } catch (error: any) {
+              console.error("Delete account error:", error);
+              // Wait for previous modal to close
+              setTimeout(() => {
+                showAlert(
+                  t("common.error") || "Error",
+                  error.message || "Failed to delete account",
+                  undefined,
+                  "error",
+                );
+              }, 500);
+            }
+          },
+        },
+      ],
+      "warning",
     );
   };
 
