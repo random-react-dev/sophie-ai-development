@@ -14,7 +14,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { Globe, RotateCcw } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -170,11 +170,28 @@ export default function TalkScreen() {
     return () => clearInterval(interval);
   }, [isPTTActive]);
 
+  // Handle Tab Focus (Pause/Resume Audio)
+  useFocusEffect(
+    useCallback(() => {
+      Logger.info(TAG, "Talk tab focused - resuming session");
+      audioStreamer.resumePlayback();
+
+      return () => {
+        Logger.info(TAG, "Talk tab blurred - pausing session");
+        audioStreamer.pausePlayback();
+      };
+    }, []),
+  );
+
+  // Initialize Session (Once on mount)
   useEffect(() => {
     let isMounted = true;
 
+    // Only initialize if we haven't already
+    if (isInitialized.current) return;
+
     const initSession = async () => {
-      if (!session || isInitialized.current) return;
+      if (!session) return;
 
       // Don't initialize until both languages are selected
       if (!targetLanguage || !nativeLanguage) {
@@ -199,7 +216,10 @@ export default function TalkScreen() {
           token = data.token;
         }
 
-        if (!isMounted) return;
+        if (!isMounted) {
+          isInitialized.current = false;
+          return;
+        }
 
         // Build instruction based on context
         let instruction: string;
@@ -236,6 +256,7 @@ Stay in character while teaching.`;
         setSessionStartTime(Date.now());
       } catch (err) {
         if (isMounted) {
+          isInitialized.current = false;
           const errorMessage =
             err instanceof Error ? err.message : "Unknown error";
           Logger.error(TAG, "Gemini session initialization error", err);
@@ -246,14 +267,13 @@ Stay in character while teaching.`;
 
     initSession();
 
+    // Cleanup only on unmount (not on blur)
     return () => {
       isMounted = false;
-      Logger.info(TAG, "Cleaning up Talk Hub...");
+      Logger.info(TAG, "Cleaning up Talk Hub (Component Unmount)...");
       geminiWebSocket.disconnect();
-      audioRecorder.stop().catch(() => {
-        /* ignore */
-      });
-      audioStreamer.clearQueue();
+      audioRecorder.stop().catch(() => {});
+      audioStreamer.dispose(); // Fully dispose on unmount
       isInitialized.current = false;
     };
   }, [
