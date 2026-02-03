@@ -539,7 +539,9 @@
       "delete_error": "آئٹم حذف کرنے میں ناکام",
       "translation_title": "ترجمہ",
       "translation_failed": "ترجمہ ناکام",
-      "playing_audio": "آڈیو چل رہا ہے: \"{{text}}\""
+      "playing_audio": "آڈیو چل رہا ہے: \"{{text}}\"",
+      "speech_error": "جملہ بولنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+      "connection_required": "صوفی سے منسلک ہونے کے لیے براہ کرم پہلے 'بات کریں' ٹیب پر جائیں۔"
     }
   },
   "language_screen": {

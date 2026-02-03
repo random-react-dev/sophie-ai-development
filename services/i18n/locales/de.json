@@ -539,7 +539,9 @@
       "delete_error": "Fehler beim Löschen des Elements",
       "translation_title": "Übersetzung",
       "translation_failed": "Übersetzung fehlgeschlagen",
-      "playing_audio": "Audio wird abgespielt für: \"{{text}}\""
+      "playing_audio": "Audio wird abgespielt für: \"{{text}}\"",
+      "speech_error": "Fehler beim Sprechen des Satzes. Bitte versuchen Sie es erneut.",
+      "connection_required": "Bitte besuchen Sie zuerst den Sprechen-Tab, um sich mit Sophie zu verbinden."
     }
   },
   "language_picker": {

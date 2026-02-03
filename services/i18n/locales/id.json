@@ -539,7 +539,9 @@
       "delete_error": "Gagal menghapus item",
       "translation_title": "Terjemahan",
       "translation_failed": "Terjemahan gagal",
-      "playing_audio": "Memutar audio untuk: \"{{text}}\""
+      "playing_audio": "Memutar audio untuk: \"{{text}}\"",
+      "speech_error": "Gagal mengucapkan frasa. Silakan coba lagi.",
+      "connection_required": "Silakan kunjungi tab Bicara terlebih dahulu untuk terhubung ke Sophie."
     }
   },
   "language_picker": {

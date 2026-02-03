@@ -538,7 +538,9 @@
       "update_error": "فشل في تحديث العبارة",
       "delete_error": "فشل في حذف العنصر",
       "translation_failed": "فشل الترجمة",
-      "playing_audio": "جاري تشغيل الصوت لـ: \"{{text}}\""
+      "playing_audio": "جاري تشغيل الصوت لـ: \"{{text}}\"",
+      "speech_error": "فشل في نطق العبارة. حاول مرة اخرى.",
+      "connection_required": "يرجى زيارة علامة تبويب التحدث أولاً للاتصال بـ Sophie."
     }
   },
   "language_screen": {

@@ -540,7 +540,9 @@
       "delete_error": "Failed to delete item",
       "translation_title": "Translation",
       "translation_failed": "Translation failed",
-      "playing_audio": "Playing audio for: \"{{text}}\""
+      "playing_audio": "Playing audio for: \"{{text}}\"",
+      "speech_error": "Failed to speak the phrase. Please try again.",
+      "connection_required": "Please visit the Talk tab first to connect to Sophie."
     }
   },
   "language_picker": {

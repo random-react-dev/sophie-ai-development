@@ -539,7 +539,9 @@
       "delete_error": "Det gick inte att ta bort objektet",
       "translation_title": "Översättning",
       "translation_failed": "Översättning misslyckades",
-      "playing_audio": "Spelar ljud för: \"{{text}}\""
+      "playing_audio": "Spelar ljud för: \"{{text}}\"",
+      "speech_error": "Misslyckades med att tala frasen. Vänligen försök igen.",
+      "connection_required": "Vänligen besök fliken Tala först för att ansluta till Sophie."
     }
   },
   "language_picker": {

@@ -525,7 +525,9 @@
       "delete_error": "Échec de la suppression de l'élément",
       "translation_title": "Traduction",
       "translation_failed": "Échec de la traduction",
-      "playing_audio": "Lecture audio pour : \"{{text}}\""
+      "playing_audio": "Lecture audio pour : \"{{text}}\"",
+      "speech_error": "Échec de la prononciation de la phrase. Veuillez réessayer.",
+      "connection_required": "Veuillez d'abord visiter l'onglet Parler pour vous connecter à Sophie."
     }
   },
   "language_picker": {

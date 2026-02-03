@@ -540,7 +540,9 @@
       "delete_error": "刪除項目失敗",
       "translation_title": "翻譯",
       "translation_failed": "翻譯失敗",
-      "playing_audio": "播放緊音訊：\"{{text}}\""
+      "playing_audio": "播放緊音訊：\"{{text}}\"",
+      "speech_error": "播放短語失敗。請重試。",
+      "connection_required": "請先瀏覽通話標籤頁以連線至 Sophie。"
     }
   },
   "language_picker": {

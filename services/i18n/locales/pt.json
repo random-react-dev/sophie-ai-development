@@ -539,7 +539,9 @@
       "delete_error": "Falha ao excluir item",
       "translation_title": "Tradução",
       "translation_failed": "Tradução falhou",
-      "playing_audio": "Reproduzindo áudio para: \"{{text}}\""
+      "playing_audio": "Reproduzindo áudio para: \"{{text}}\"",
+      "speech_error": "Falha ao falar a frase. Por favor, tente novamente.",
+      "connection_required": "Por favor, visite a guia Falar primeiro para se conectar à Sophie."
     }
   },
   "language_picker": {

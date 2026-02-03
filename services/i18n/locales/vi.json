@@ -539,7 +539,9 @@
       "delete_error": "Không thể xóa mục",
       "translation_title": "Bản dịch",
       "translation_failed": "Dịch thất bại",
-      "playing_audio": "Đang phát âm thanh cho: \"{{text}}\""
+      "playing_audio": "Đang phát âm thanh cho: \"{{text}}\"",
+      "speech_error": "Không thể nói cụm từ này. Vui lòng thử lại.",
+      "connection_required": "Vui lòng truy cập tab Nói chuyện trước để kết nối với Sophie."
     }
   },
   "language_picker": {

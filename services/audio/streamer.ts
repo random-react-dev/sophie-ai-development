@@ -36,13 +36,15 @@ class AudioStreamer {
   private responsesSinceReset = 0;
   private isAudioPrimed = false;
 
-  // Buffer accumulation
+  // Buffer accumulation (for native queue)
   private accumulatedSamples: Float32Array[] = [];
   private accumulatedLength = 0;
   private totalQueuedSamples = 0;
 
-  // History for restart capability
-  private fullResponseBuffer: Float32Array[] = [];
+  // Full response buffer for pause/resume
+  private currentResponseBuffer: Float32Array[] = [];
+  private isPaused = false;
+  private hasResponseCompleted = false; // True once finishSpeaking() has run
 
   private static instance: AudioStreamer;
   private constructor() {}
@@ -148,11 +150,10 @@ class AudioStreamer {
     this.chunkCount = 0;
     this.accumulatedSamples = [];
     this.accumulatedLength = 0;
-    this.chunkCount = 0;
-    this.accumulatedSamples = [];
-    this.accumulatedLength = 0;
     this.totalQueuedSamples = 0;
-    this.fullResponseBuffer = []; // Clear history for new response
+    this.currentResponseBuffer = []; // Clear buffer for new response
+    this.isPaused = false;
+    this.hasResponseCompleted = false;
 
     Logger.info(TAG, `Prepared for response #${this.responseId}`);
   }
@@ -259,8 +260,8 @@ class AudioStreamer {
         float32Array[i] = int16Array[i] / 32768;
       }
 
-      // Store in full history for restart capability
-      this.fullResponseBuffer.push(float32Array);
+      // Store in response buffer for pause/resume capability
+      this.currentResponseBuffer.push(float32Array);
 
       this.chunkCount++;
 
@@ -298,16 +299,8 @@ class AudioStreamer {
    * Flush accumulated samples into a single AudioBuffer and queue it.
    */
   private flushAccumulatedBuffer(): void {
-    // If we can't queue (paused/stopped), just clear the accumulator.
-    // The data is already saved in this.fullResponseBuffer for restart/resume.
-    if (!this.audioContext || !this.queueSource) {
-      this.accumulatedSamples.length = 0;
-      this.accumulatedSamples = [];
-      this.accumulatedLength = 0;
+    if (!this.audioContext || !this.queueSource || this.accumulatedLength === 0)
       return;
-    }
-
-    if (this.accumulatedLength === 0) return;
 
     // Merge all accumulated samples
     const merged = new Float32Array(this.accumulatedLength);
@@ -415,6 +408,12 @@ class AudioStreamer {
       this.finishTimeout = null;
     }
 
+    // Mark response as completed (so pausePlayback knows not to preserve buffer)
+    this.hasResponseCompleted = true;
+
+    // Clear the response buffer after speaking is done
+    this.currentResponseBuffer = [];
+
     this.resetState();
     this.speakingStateCallback?.(false);
   }
@@ -431,10 +430,7 @@ class AudioStreamer {
     }
     this.accumulatedSamples = [];
     this.accumulatedLength = 0;
-    this.accumulatedSamples = [];
-    this.accumulatedLength = 0;
     this.totalQueuedSamples = 0;
-    this.fullResponseBuffer = [];
   }
 
   handleInterruption(): void {
@@ -455,29 +451,46 @@ class AudioStreamer {
     Logger.info(TAG, "Clearing audio queue");
     this.handleInterruption();
     this.isInterrupted = false;
+    this.currentResponseBuffer = []; // Also clear response buffer
   }
 
   /**
-   * Pause playback by ramping down volume and suspending the audio context.
-   * Keeps the queue intact.
+   * Pause playback: fade out and stop source, but keep currentResponseBuffer intact
+   * ONLY if the response hasn't finished yet.
    */
-  /**
-   * Pause playback by ramping down volume and stopping the source.
-   * This resets the playback position so it will restart on resume.
-   */
-  async pausePlayback(): Promise<void> {
-    if (!this.audioContext || !this.gainNode || !this.isPlaying) return;
+  pausePlayback(): void {
+    // If response has already completed, there's nothing to resume later
+    if (this.hasResponseCompleted) {
+      Logger.debug(
+        TAG,
+        "pausePlayback: response already completed, clearing buffer",
+      );
+      this.currentResponseBuffer = [];
+      this.isPaused = false;
+      return;
+    }
 
-    Logger.info(TAG, "Pausing playback (fade out & reset)");
+    if (!this.audioContext || !this.gainNode || !this.isPlaying) {
+      Logger.debug(TAG, "pausePlayback: nothing to pause");
+      return;
+    }
 
-    // Ramp down volume
+    Logger.info(TAG, "Pausing playback mid-response (fade out & stop)");
+
+    // Cancel any pending finish timeout (we'll reschedule on resume)
+    if (this.finishTimeout) {
+      clearTimeout(this.finishTimeout);
+      this.finishTimeout = null;
+    }
+
+    // Fade out
     const currentTime = this.audioContext.currentTime;
     this.gainNode.gain.cancelScheduledValues(currentTime);
     this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, currentTime);
-    this.gainNode.gain.linearRampToValueAtTime(0, currentTime + 0.3); // 300ms fade out
+    this.gainNode.gain.linearRampToValueAtTime(0, currentTime + 0.3);
 
-    // Stop source after fade out (this resets position)
-    setTimeout(async () => {
+    // Stop source after fade (async, but we don't await)
+    setTimeout(() => {
       if (this.queueSource) {
         try {
           this.queueSource.stop();
@@ -485,80 +498,111 @@ class AudioStreamer {
         } catch {
           /* ignore */
         }
-        this.queueSource = null; // Force recreation on resume
+        this.queueSource = null;
       }
       this.isPlaying = false;
-
-      // We don't necessarily need to suspend context if we destroyed the source,
-      // but suspending saves battery if usage is prolonged.
-      // For quick tab switches, keeping it running involves less latency.
-      // Let's NOT suspend context here to make resume faster, since we stopped the source.
+      this.isPaused = true;
+      this.speakingStateCallback?.(false);
+      Logger.info(TAG, "Playback paused");
     }, 350);
   }
 
   /**
-   * Resume playback by re-creating source and playing from START.
+   * Resume playback: re-create source, re-enqueue entire currentResponseBuffer from start,
+   * and set a proper finish timeout.
+   * Only resumes if we were actually paused mid-response.
    */
-  async resumePlayback(): Promise<void> {
-    if (!this.audioContext || !this.gainNode) return;
+  resumePlayback(): void {
+    if (!this.audioContext || !this.gainNode) {
+      Logger.debug(TAG, "resumePlayback: no audio context");
+      return;
+    }
+
+    // Don't resume if response already completed (nothing to play)
+    if (this.hasResponseCompleted) {
+      Logger.debug(
+        TAG,
+        "resumePlayback: response already completed, skipping resume",
+      );
+      return;
+    }
+
+    // Only resume if we have buffered audio from a paused response
+    if (!this.isPaused || this.currentResponseBuffer.length === 0) {
+      Logger.debug(
+        TAG,
+        "resumePlayback: not paused or no buffered audio to resume",
+      );
+      return;
+    }
 
     Logger.info(TAG, "Resuming playback (restart from beginning)");
 
+    // Resume context if suspended
     if (this.audioContext.state === "suspended") {
-      await this.audioContext.resume();
+      this.audioContext.resume();
     }
 
-    // Capture current volume state for fade-in
-    this.gainNode.gain.value = 0;
-
-    // 1. Re-create the source (since we stopped/destroyed it on pause)
+    // Create fresh source
     this.createFreshQueueSource();
+    if (!this.queueSource) return;
 
-    // 2. Re-enqueue the ENTIRE history
-    if (this.fullResponseBuffer.length > 0 && this.queueSource) {
-      // We can optimize by merging into larger chunks if needed, but enqueueBuffer handles arrays fine.
-      // Let's enable batch processing if the buffer is huge, but for now simple loop is fine.
-      // Or better: merge into one big buffer if possible? No, streaming chunks is fine.
-
-      // Strategy: We can re-use flushAccumulatedBuffer logic but we need to pass data.
-      // Implementing simple merge for efficiency:
-
-      const totalLen = this.fullResponseBuffer.reduce(
-        (acc, c) => acc + c.length,
-        0,
-      );
-      if (totalLen > 0) {
-        const merged = new Float32Array(totalLen);
-        let offset = 0;
-        for (const chunk of this.fullResponseBuffer) {
-          merged.set(chunk, offset);
-          offset += chunk.length;
-        }
-
-        const audioBuffer = this.audioContext.createBuffer(
-          1,
-          totalLen,
-          SAMPLE_RATE,
-        );
-        audioBuffer.getChannelData(0).set(merged);
-        this.queueSource.enqueueBuffer(audioBuffer);
-
-        Logger.info(
-          TAG,
-          `Re-queued ${this.fullResponseBuffer.length} chunks (${(totalLen / SAMPLE_RATE).toFixed(1)}s) for restart`,
-        );
-      }
+    // Merge and re-enqueue entire response buffer
+    const totalLen = this.currentResponseBuffer.reduce(
+      (acc, c) => acc + c.length,
+      0,
+    );
+    const merged = new Float32Array(totalLen);
+    let offset = 0;
+    for (const chunk of this.currentResponseBuffer) {
+      merged.set(chunk, offset);
+      offset += chunk.length;
     }
 
-    // 3. Start playback
+    const audioBuffer = this.audioContext.createBuffer(
+      1,
+      totalLen,
+      SAMPLE_RATE,
+    );
+    audioBuffer.getChannelData(0).set(merged);
+    this.queueSource.enqueueBuffer(audioBuffer);
+
+    Logger.info(
+      TAG,
+      `Re-queued ${this.currentResponseBuffer.length} chunks (${(totalLen / SAMPLE_RATE).toFixed(1)}s) for resume`,
+    );
+
+    // Apply fade-in
+    this.gainNode.gain.value = 0;
     const currentTime = this.audioContext.currentTime;
-    this.gainNode.gain.linearRampToValueAtTime(1.0, currentTime + 0.2); // 200ms fade in
+    this.gainNode.gain.linearRampToValueAtTime(
+      1.0,
+      currentTime + FADE_IN_DURATION,
+    );
 
-    if (this.queueSource && this.fullResponseBuffer.length > 0) {
-      this.queueSource.start();
-      this.isPlaying = true;
-      this.speakingStateCallback?.(true);
-    }
+    // Start playback
+    this.queueSource.start();
+    this.isPlaying = true;
+    this.isPaused = false;
+    this.speakingStateCallback?.(true);
+
+    // Set finish timeout based on full duration
+    const durationMs = (totalLen / SAMPLE_RATE) * 1000;
+    Logger.info(
+      TAG,
+      `Resumed playback will finish in ~${(durationMs / 1000).toFixed(1)}s`,
+    );
+
+    const currentResponseId = this.responseId;
+    this.finishTimeout = setTimeout(() => {
+      if (
+        this.responseId === currentResponseId &&
+        this.isPlaying &&
+        !this.isInterrupted
+      ) {
+        this.finishSpeaking();
+      }
+    }, durationMs + 500); // Small buffer for safety
   }
 
   dispose(): void {

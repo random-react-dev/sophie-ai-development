@@ -530,7 +530,9 @@
       "delete_error": "항목 삭제 실패",
       "translation_title": "번역",
       "translation_failed": "번역 실패",
-      "playing_audio": "\"{{text}}\" 오디오 재생 중"
+      "playing_audio": "\"{{text}}\" 오디오 재생 중",
+      "speech_error": "문구를 말하지 못했습니다. 다시 시도해 주세요.",
+      "connection_required": "Sophie에 연결하려면 먼저 대화 탭을 방문하세요."
     }
   },
   "language_picker": {

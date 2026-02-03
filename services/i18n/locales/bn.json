@@ -537,7 +537,9 @@
       "delete_error": "আইটেম মুছতে ব্যর্থ",
       "translation_title": "অনুবাদ",
       "translation_failed": "অনুবাদ ব্যর্থ হয়েছে",
-      "playing_audio": "\"{{text}}\"-এর জন্য অডিও চালানো হচ্ছে"
+      "playing_audio": "\"{{text}}\"-এর জন্য অডিও চালানো হচ্ছে",
+      "speech_error": "বাক্যটি বলতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "connection_required": "Sophie-এর সাথে সংযোগ করতে অনুগ্রহ করে প্রথমে 'কথা বলুন' ট্যাবে যান।"
     }
   },
   "language_picker": {

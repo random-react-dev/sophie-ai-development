@@ -540,7 +540,9 @@
       "delete_error": "删除项目失败",
       "translation_title": "翻译",
       "translation_failed": "翻译失败",
-      "playing_audio": "正在播放音频：\"{{text}}\""
+      "playing_audio": "正在播放音频：\"{{text}}\"",
+      "speech_error": "播放短语失败。请重试。",
+      "connection_required": "请先访问通话标签页以连接到Sophie。"
     }
   },
   "language_picker": {

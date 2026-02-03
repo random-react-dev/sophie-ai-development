@@ -539,7 +539,9 @@
       "delete_error": "Imeshindwa kufuta kipengee",
       "translation_title": "Tafsiri",
       "translation_failed": "Tafsiri imeshindwa",
-      "playing_audio": "Inacheza sauti kwa: \"{{text}}\""
+      "playing_audio": "Inacheza sauti kwa: \"{{text}}\"",
+      "speech_error": "Imeshindikana kutamka neno. Tafadhali jaribu tena.",
+      "connection_required": "Tafadhali tembelea kichupo cha Kuongea kwanza ili kuungana na Sophie."
     }
   },
   "language_picker": {

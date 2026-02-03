@@ -539,7 +539,9 @@
       "delete_error": "आइटम हटाने में विफल",
       "translation_title": "अनुवाद",
       "translation_failed": "अनुवाद विफल",
-      "playing_audio": "इसके लिए ऑडियो चलाया जा रहा है: \"{{text}}\""
+      "playing_audio": "इसके लिए ऑडियो चलाया जा रहा है: \"{{text}}\"",
+      "speech_error": "वाक्यांश बोलने में विफल। कृपया पुन: प्रयास करें।",
+      "connection_required": "Sophie से जुड़ने के लिए कृपया पहले 'बात करें' टैब पर जाएं।"
     }
   },
   "language_picker": {

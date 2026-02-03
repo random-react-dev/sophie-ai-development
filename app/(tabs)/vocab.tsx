@@ -9,7 +9,9 @@ import {
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
+import { audioStreamer } from "@/services/audio/streamer";
 import { translateText } from "@/services/gemini/translate";
+import { geminiWebSocket } from "@/services/gemini/websocket";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import {
   VocabularyFolder,
@@ -136,6 +138,9 @@ export default function VocabScreen() {
   const [selectedActionItem, setSelectedActionItem] =
     useState<VocabularyItem | null>(null);
 
+  // Speaking state for mic visual feedback
+  const [speakingItemId, setSpeakingItemId] = useState<string | null>(null);
+
   // Use useFocusEffect to refresh data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
@@ -143,6 +148,19 @@ export default function VocabScreen() {
       // fetchFolders is called within fetchVocabulary now, but keeping distinct functions in store is good
     }, [fetchVocabulary]),
   );
+
+  // Subscribe to audio speaking state for mic visual feedback
+  useEffect(() => {
+    const handleSpeakingState = (isSpeaking: boolean) => {
+      if (!isSpeaking) {
+        setSpeakingItemId(null);
+      }
+    };
+    audioStreamer.setSpeakingStateCallback(handleSpeakingState);
+    return () => {
+      audioStreamer.setSpeakingStateCallback(() => {});
+    };
+  }, []);
 
   const getLocalizedLanguageName = useCallback(
     (englishName: string) => {
@@ -205,14 +223,39 @@ export default function VocabScreen() {
     });
   }, [items, searchQuery, selectedLanguage, selectedFolderFilter, ALL_LABEL]);
 
-  const handlePlay = (text: string) => {
+  /**
+   * Speak the phrase aloud using Text-to-Speech via Gemini WebSocket.
+   * Toggle behavior: tap to play, tap again to stop.
+   * Requires the user to have connected via the Talk tab first.
+   */
+  const handlePlay = (item: VocabularyItem) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    showAlert(
-      t("vocab_screen.actions.listen"),
-      t("vocab_screen.alerts.playing_audio", { text }),
-      undefined,
-      "info",
-    );
+
+    // If this item is already speaking, stop playback
+    if (speakingItemId === item.id) {
+      audioStreamer.handleInterruption();
+      setSpeakingItemId(null);
+      return;
+    }
+
+    if (!geminiWebSocket.isReady()) {
+      showAlert(
+        t("vocab_screen.alerts.error_title"),
+        t("vocab_screen.alerts.connection_required"),
+        undefined,
+        "warning",
+      );
+      return;
+    }
+
+    // Stop any currently playing audio before starting new one
+    if (speakingItemId) {
+      audioStreamer.handleInterruption();
+    }
+
+    // Set speaking item for visual feedback and start playback
+    setSpeakingItemId(item.id || null);
+    geminiWebSocket.speakPhrase(item.phrase, item.language || "English", true); // Audio-only, skip conversation
   };
 
   const handleDelete = async (id: string) => {
@@ -321,7 +364,7 @@ export default function VocabScreen() {
 
     switch (action) {
       case "play":
-        handlePlay(selectedActionItem.phrase);
+        handlePlay(selectedActionItem);
         break;
       case "translate":
         handleTranslateItem(selectedActionItem);
@@ -650,10 +693,16 @@ export default function VocabScreen() {
                 <View className="flex-row items-center gap-3">
                   {/* Mic Icon */}
                   <TouchableOpacity
-                    onPress={() => handlePlay(item.phrase)}
-                    className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
+                    onPress={() => handlePlay(item)}
+                    className={`w-8 h-8 rounded-full items-center justify-center ${
+                      speakingItemId === item.id ? "bg-blue-100" : "bg-gray-100"
+                    }`}
                   >
-                    <FontAwesome name="microphone" size={14} color="black" />
+                    <FontAwesome
+                      name={speakingItemId === item.id ? "stop" : "microphone"}
+                      size={14}
+                      color={speakingItemId === item.id ? "#3b82f6" : "black"}
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => showActionMenu(item)}

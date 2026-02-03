@@ -534,7 +534,9 @@
       "delete_error": "Impossibile eliminare l'elemento",
       "translation_title": "Traduzione",
       "translation_failed": "Traduzione fallita",
-      "playing_audio": "Riproduzione audio per: \"{{text}}\""
+      "playing_audio": "Riproduzione audio per: \"{{text}}\"",
+      "speech_error": "Errore nella pronuncia della frase. Riprova per favore.",
+      "connection_required": "Visita prima la scheda Parla per connetterti a Sophie."
     }
   },
   "language_picker": {

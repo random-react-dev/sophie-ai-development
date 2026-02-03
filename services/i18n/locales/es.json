@@ -525,7 +525,9 @@
       "delete_error": "Error al eliminar el elemento",
       "translation_title": "Traducción",
       "translation_failed": "Error de traducción",
-      "playing_audio": "Reproduciendo audio para: \"{{text}}\""
+      "playing_audio": "Reproduciendo audio para: \"{{text}}\"",
+      "speech_error": "Error al pronunciar la frase. Por favor, inténtelo de nuevo.",
+      "connection_required": "Por favor, visite primero la pestaña Hablar para conectar con Sophie."
     }
   },
   "language_picker": {

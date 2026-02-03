@@ -2,8 +2,7 @@ import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
-import LanguageSelectorModal from "@/components/tutor/LanguageSelectorModal";
-import { Language } from "@/constants/languages";
+import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { audioRecorder } from "@/services/audio/recorder";
 import { audioStreamer } from "@/services/audio/streamer";
 import { translateText } from "@/services/gemini/translate";
@@ -12,11 +11,17 @@ import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
-import { useLearningStore } from "@/stores/learningStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Globe, RotateCcw } from "lucide-react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { RotateCcw } from "lucide-react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Alert,
   FlatList,
@@ -126,24 +131,33 @@ export default function TalkScreen() {
     practicePhrase,
     setPracticePhrase,
   } = useScenarioStore();
-  const {
-    targetLanguage,
-    nativeLanguage,
-    setTargetLanguage,
-    setNativeLanguage,
-  } = useLearningStore();
+  const { activeProfile, fetchProfiles } = useProfileStore();
   const { session, user } = useAuthStore();
   const flatListRef = useRef<FlatList>(null);
-  const isInitialized = useRef(false);
+  const isInitialized = useRef<boolean>(false);
   const router = useRouter();
   const { t } = useTranslation();
 
+  // Derive target and native languages from active profile
+  const targetLanguage = useMemo((): Language | null => {
+    if (!activeProfile?.target_language) return null;
+    return (
+      SUPPORTED_LANGUAGES.find(
+        (l) => l.name === activeProfile.target_language,
+      ) || null
+    );
+  }, [activeProfile?.target_language]);
+
+  const nativeLanguage = useMemo((): Language | null => {
+    // Use medium_language for explanations if set, otherwise use native_language
+    const langName =
+      activeProfile?.medium_language || activeProfile?.native_language;
+    if (!langName) return null;
+    return SUPPORTED_LANGUAGES.find((l) => l.name === langName) || null;
+  }, [activeProfile?.medium_language, activeProfile?.native_language]);
+
   // Session tracking
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
-
-  // Language picker state
-  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [pickerMode, setPickerMode] = useState<"target" | "native">("target");
 
   // Recording timer state
   const [recordingTime, setRecordingTime] = useState(0);
@@ -151,9 +165,16 @@ export default function TalkScreen() {
   // Alert modal state for reset confirmation
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
-  // Check if both languages are selected
+  // Check if both languages are selected (profile exists)
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
+
+  // Fetch profiles on mount to ensure activeProfile is loaded
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchProfiles();
+    }
+  }, [session?.user?.id, fetchProfiles]);
 
   // Recording timer effect
   useEffect(() => {
@@ -170,14 +191,16 @@ export default function TalkScreen() {
     return () => clearInterval(interval);
   }, [isPTTActive]);
 
-  // Handle Tab Focus (Pause/Resume Audio)
+  // Handle Tab Focus: Pause audio when leaving, resume (replay from start) on return
   useFocusEffect(
     useCallback(() => {
-      Logger.info(TAG, "Talk tab focused - resuming session");
+      // On focus: Resume playback if there was a paused response
+      Logger.info(TAG, "Talk tab focused");
       audioStreamer.resumePlayback();
 
       return () => {
-        Logger.info(TAG, "Talk tab blurred - pausing session");
+        // On blur: Pause Sophie (fade out, but keep buffer for resume)
+        Logger.info(TAG, "Talk tab blurred - pausing audio");
         audioStreamer.pausePlayback();
       };
     }, []),
@@ -403,7 +426,10 @@ Stay in character while teaching.`;
 
   const handleSaveVocabulary = useCallback(
     async (text: string) => {
-      const success = await saveToVocabulary({ phrase: text });
+      const success = await saveToVocabulary({
+        phrase: text,
+        language: targetLanguage?.name,
+      });
       if (success) {
         showAlert(
           t("talk_screen.alerts.success_title"),
@@ -413,7 +439,7 @@ Stay in character while teaching.`;
         );
       }
     },
-    [showAlert, t],
+    [showAlert, t, targetLanguage],
   );
 
   // Message type for FlatList
@@ -442,22 +468,19 @@ Stay in character while teaching.`;
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <PageHeader />
 
-      {/* Language Selection */}
+      {/* Language Selection - Dynamic from Profile */}
       <View className="px-6 py-2 flex-row justify-center items-center gap-4">
         {/* Target Language (what to learn) */}
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => {
-            setPickerMode("target");
-            setShowLanguagePicker(true);
-          }}
+          onPress={() => router.push("/(tabs)/language")}
           className="items-center"
         >
           <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
             {targetLanguage ? (
               <Text className="text-2xl">{targetLanguage.flag}</Text>
             ) : (
-              <Globe size={20} color="#9ca3af" />
+              <Text className="text-2xl">🌐</Text>
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
@@ -473,17 +496,14 @@ Stay in character while teaching.`;
         {/* Native Language (explanations) */}
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => {
-            setPickerMode("native");
-            setShowLanguagePicker(true);
-          }}
+          onPress={() => router.push("/(tabs)/language")}
           className="items-center"
         >
           <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
             {nativeLanguage ? (
               <Text className="text-2xl">{nativeLanguage.flag}</Text>
             ) : (
-              <Globe size={20} color="#9ca3af" />
+              <Text className="text-2xl">🌐</Text>
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
@@ -640,27 +660,7 @@ Stay in character while teaching.`;
       {/* Pad for the Tab Bar Mic Button */}
       {/* <View className="h-20" /> */}
 
-      {/* Language Selector Modal */}
-      <LanguageSelectorModal
-        visible={showLanguagePicker}
-        onClose={() => setShowLanguagePicker(false)}
-        onSelect={(lang) => {
-          if (pickerMode === "target") {
-            setTargetLanguage(lang);
-          } else {
-            setNativeLanguage(lang);
-          }
-          setShowLanguagePicker(false);
-        }}
-        selectedCode={
-          pickerMode === "target" ? targetLanguage?.code : nativeLanguage?.code
-        }
-        title={
-          pickerMode === "target"
-            ? t("talk_screen.language_selector.target_title")
-            : t("talk_screen.language_selector.native_title")
-        }
-      />
+      {/* Language selection is now managed from the Profile page (/(tabs)/language) */}
 
       {/* Reset Confirmation Modal */}
       <AlertModal
