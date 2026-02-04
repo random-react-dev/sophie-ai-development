@@ -14,7 +14,10 @@
       "countryPlaceholder": "உங்கள் நாட்டைத் தேர்ந்தெடுக்கவும்",
       "nativeLanguageLabel": "தாய்மொழி",
       "nativeLanguagePlaceholder": "உங்கள் தாய்மொழியைத் தேர்ந்தெடுக்கவும்",
+      "learningLanguageLabel": "கற்க வேண்டிய மொழி",
+      "learningLanguagePlaceholder": "நீங்கள் கற்க விரும்பும் மொழியைத் தேர்ந்தெடுக்கவும்",
       "selectCountry": "நாட்டைத் தேர்ந்தெடுக்கவும்",
+      "selectLearningLanguage": "கற்றல் மொழியைத் தேர்ந்தெடுக்கவும்",
       "selectNativeLanguage": "தாய்மொழி"
     },
     "options": {

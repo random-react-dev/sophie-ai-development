@@ -14,7 +14,10 @@
       "countryPlaceholder": "اپنا ملک منتخب کریں",
       "nativeLanguageLabel": "مادری زبان",
       "nativeLanguagePlaceholder": "اپنی مادری زبان منتخب کریں",
+      "learningLanguageLabel": "سیکھنے کی زبان",
+      "learningLanguagePlaceholder": "وہ زبان منتخب کریں جو آپ سیکھنا چاہتے ہیں",
       "selectCountry": "ملک منتخب کریں",
+      "selectLearningLanguage": "سیکھنے کی زبان منتخب کریں",
       "selectNativeLanguage": "مادری زبان"
     },
     "options": {

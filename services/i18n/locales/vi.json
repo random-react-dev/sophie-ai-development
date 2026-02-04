@@ -14,8 +14,11 @@
       "countryPlaceholder": "Chọn quốc gia của bạn",
       "nativeLanguageLabel": "Ngôn ngữ mẹ đẻ",
       "nativeLanguagePlaceholder": "Chọn ngôn ngữ mẹ đẻ",
+      "learningLanguageLabel": "Ngôn ngữ muốn học",
+      "learningLanguagePlaceholder": "Chọn ngôn ngữ bạn muốn học",
       "selectCountry": "Chọn quốc gia",
-      "selectNativeLanguage": "Ngôn ngữ mẹ đẻ"
+      "selectNativeLanguage": "Ngôn ngữ mẹ đẻ",
+      "selectLearningLanguage": "Chọn ngôn ngữ học"
     },
     "options": {
       "goal": {

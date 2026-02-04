@@ -14,7 +14,10 @@
       "countryPlaceholder": "Selecione seu país",
       "nativeLanguageLabel": "Língua nativa",
       "nativeLanguagePlaceholder": "Selecione sua língua nativa",
+      "learningLanguageLabel": "Idioma para aprender",
+      "learningLanguagePlaceholder": "Selecione o idioma que você quer aprender",
       "selectCountry": "Selecione o País",
+      "selectLearningLanguage": "Escolha o idioma de aprendizado",
       "selectNativeLanguage": "Língua Nativa"
     },
     "options": {

@@ -14,7 +14,10 @@
       "countryPlaceholder": "اختر دولتك",
       "nativeLanguageLabel": "اللغة الأم",
       "nativeLanguagePlaceholder": "اختر لغتك الأم",
+      "learningLanguageLabel": "اللغة التي تريد تعلمها",
+      "learningLanguagePlaceholder": "اختر اللغة التي تريد تعلمها",
       "selectCountry": "اختر الدولة",
+      "selectLearningLanguage": "اختر لغة التعلم",
       "selectNativeLanguage": "اللغة الأم"
     },
     "options": {

@@ -14,7 +14,10 @@
       "countryPlaceholder": "国を選択してください",
       "nativeLanguageLabel": "母国語",
       "nativeLanguagePlaceholder": "母国語を選択してください",
+      "learningLanguageLabel": "学習したい言語",
+      "learningLanguagePlaceholder": "学習したい言語を選択してください",
       "selectCountry": "国を選択",
+      "selectLearningLanguage": "学習言語を選択",
       "selectNativeLanguage": "母国語"
     },
     "options": {

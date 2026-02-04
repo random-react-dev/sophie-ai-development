@@ -14,7 +14,10 @@
       "countryPlaceholder": "Pilih negara Anda",
       "nativeLanguageLabel": "Bahasa Ibu",
       "nativeLanguagePlaceholder": "Pilih bahasa ibu Anda",
+      "learningLanguageLabel": "Bahasa yang Ingin Dipelajari",
+      "learningLanguagePlaceholder": "Pilih bahasa yang ingin Anda pelajari",
       "selectCountry": "Pilih Negara",
+      "selectLearningLanguage": "Pilih Bahasa Pembelajaran",
       "selectNativeLanguage": "Bahasa Ibu"
     },
     "options": {

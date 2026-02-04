@@ -14,7 +14,10 @@
       "countryPlaceholder": "Chagua nchi yako",
       "nativeLanguageLabel": "Lugha ya Asili",
       "nativeLanguagePlaceholder": "Chagua lugha yako ya asili",
+      "learningLanguageLabel": "Lugha ya Kujifunza",
+      "learningLanguagePlaceholder": "Chagua lugha unayotaka kujifunza",
       "selectCountry": "Chagua Nchi",
+      "selectLearningLanguage": "Chagua Lugha ya Kujifunza",
       "selectNativeLanguage": "Lugha ya Asili"
     },
     "options": {
