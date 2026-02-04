@@ -197,11 +197,13 @@ export default function OnboardingScreen() {
         }
       }
 
-      // Sub-step 2 validation: check all required fields
-      if (!data.learningLanguage || !data.name || !data.country) {
+
+      // Sub-step 3 validation: check profile details (name, country)
+      // Note: learningLanguage is validated in goToNextSubStep before reaching here
+      if (!data.name || !data.country) {
         showAlert(
           t("common.incomplete"),
-          "Please fill in all fields before continuing.",
+          t("onboarding.fillAllFields"),
           undefined,
           "warning",
         );

@@ -184,13 +184,24 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     useImperativeHandle(ref, () => ({
       subStep,
       goToNextSubStep: () => {
+        // Sub-step 1 (App Language) → Sub-step 2 (Learning Language)
         if (subStep === 1 && currentLanguage) {
           setSubStep(2);
           return true;
         }
-        return false; // Sub-step 2 has no next, go to main step 2
+        // Sub-step 2 (Learning Language) → Sub-step 3 (Profile Details)
+        if (subStep === 2 && data.learningLanguage) {
+          setSubStep(3);
+          return true;
+        }
+        // Sub-step 3 has no next sub-step, signal to advance main step
+        return false;
       },
       goToPrevSubStep: () => {
+        if (subStep === 3) {
+          setSubStep(2);
+          return true;
+        }
         if (subStep === 2) {
           setSubStep(1);
           return true;
