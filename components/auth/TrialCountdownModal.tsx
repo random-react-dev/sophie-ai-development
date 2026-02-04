@@ -132,7 +132,7 @@ export const TrialCountdownModal = () => {
                 volumeLevel={0}
                 width={120}
                 height={40}
-                amplitudeScale={1.5}
+                amplitudeScale={3.5}
               />
             </View>
             <Text className="text-gray-500 text-center mt-2 text-sm leading-6">

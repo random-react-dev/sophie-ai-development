@@ -1,4 +1,5 @@
 import { RainbowWave } from "@/components/lesson/RainbowWave";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
@@ -12,9 +13,14 @@ interface PageHeaderProps {
 
 export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   const openWhatsApp = () => {
-    Linking.openURL("https://wa.me/9898456150");
+    const message = encodeURIComponent(
+      t("profile.support_screen.whatsapp_message"),
+    );
+    const url = "https://wa.me/9898456150?text=" + message;
+    Linking.openURL(url);
   };
 
   return (
@@ -44,7 +50,7 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
                 volumeLevel={0}
                 width={120}
                 height={40}
-                amplitudeScale={1.5}
+                amplitudeScale={3.5}
               />
             </View>
           </View>

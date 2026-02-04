@@ -52,26 +52,33 @@ export const RainbowWave = React.memo(
     useEffect(() => {
       // Base amplitude from InteractiveRainbowWave: height * 0.24 = 38.4
       const baseAmplitude = height * 0.24 * amplitudeScale;
-      const breathingAmplitude = baseAmplitude * 0.8; // Define breathing amplitude explicitly for smoother transitions
 
-      let targetAmplitude = baseAmplitude;
+      // Idle state: nearly flat with very subtle shimmer (5% of base amplitude)
+      let targetAmplitude = baseAmplitude * 0.05;
 
       if (isSpeaking) {
-        targetAmplitude = baseAmplitude * 1.5; // Slightly larger when speaking
+        targetAmplitude = baseAmplitude * 1.5; // Visible waves when speaking
       } else if (isProcessing) {
-        targetAmplitude = baseAmplitude * 0.8; // Gentle breathing
+        targetAmplitude = baseAmplitude * 0.3; // Gentle breathing when processing
       } else if (isListening) {
+        // Voice-reactive amplitude
         targetAmplitude = Math.max(
-          baseAmplitude,
+          baseAmplitude * 0.3, // Minimum visible amplitude when listening
           baseAmplitude + volumeLevel * 40,
         );
       }
-      // Idle state: use baseAmplitude (same as InteractiveRainbowWave)
 
-      if (Math.abs(amplitude.value - targetAmplitude) > 0.1) {
-        amplitude.value = withTiming(targetAmplitude, { duration: 150 });
-      }
-    }, [isListening, isSpeaking, isProcessing, volumeLevel, amplitude]);
+      // Always animate to target - withTiming will cancel any in-progress animation
+      amplitude.value = withTiming(targetAmplitude, { duration: 150 });
+    }, [
+      isListening,
+      isSpeaking,
+      isProcessing,
+      volumeLevel,
+      amplitude,
+      height,
+      amplitudeScale,
+    ]);
 
     const animatedProps = useAnimatedProps(() => {
       const numPeaks = 8;
