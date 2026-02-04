@@ -106,6 +106,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
   updateProfile: async (data: UserProfileUpdate) => {
+    console.log("[AuthStore] updateProfile called with:", data);
     set({ isLoading: true });
     try {
       const { error } = await updateUserProfile(data);

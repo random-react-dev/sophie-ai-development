@@ -53,8 +53,10 @@ export default function ProfileScreen() {
       setIsAvatarUploading(true);
       try {
         const publicUrl = await uploadAvatar(user.id, result.assets[0].uri);
+
         if (publicUrl) {
           await updateProfile({ avatar_url: publicUrl });
+
           showAlert(
             t("common.success"),
             t("profile.menu.avatarSuccess"),
@@ -62,6 +64,7 @@ export default function ProfileScreen() {
             "success",
           );
         } else {
+          console.error("[Avatar] Upload returned null URL");
           showAlert(
             t("common.error"),
             t("profile.menu.avatarError"),
@@ -69,7 +72,8 @@ export default function ProfileScreen() {
             "error",
           );
         }
-      } catch {
+      } catch (err) {
+        console.error("[Avatar] Error in handleAvatarUpload:", err);
         showAlert("Error", "An unexpected error occurred.", undefined, "error");
       } finally {
         setIsAvatarUploading(false);
@@ -147,7 +151,7 @@ export default function ProfileScreen() {
                 {isAvatarUploading ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Camera size={14} color="white" />
+                  <Camera size={12} color="white" />
                 )}
               </View>
             </TouchableOpacity>

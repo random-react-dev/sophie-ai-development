@@ -14,7 +14,10 @@
       "countryPlaceholder": "আপনার দেশ নির্বাচন করুন",
       "nativeLanguageLabel": "মাতৃভাষা",
       "nativeLanguagePlaceholder": "আপনার মাতৃভাষা নির্বাচন করুন",
+      "learningLanguageLabel": "শেখার ভাষা",
+      "learningLanguagePlaceholder": "আপনি যে ভাষাটি শিখতে চান তা নির্বাচন করুন",
       "selectCountry": "দেশ নির্বাচন করুন",
+      "selectLearningLanguage": "শেখার ভাষা নির্বাচন করুন",
       "selectNativeLanguage": "মাতৃভাষা"
     },
     "options": {

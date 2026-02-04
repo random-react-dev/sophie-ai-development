@@ -14,8 +14,11 @@
       "countryPlaceholder": "选择你的国家",
       "nativeLanguageLabel": "母语",
       "nativeLanguagePlaceholder": "选择你的母语",
+      "learningLanguageLabel": "学习语言",
+      "learningLanguagePlaceholder": "选择你想学的语言",
       "selectCountry": "选择国家",
-      "selectNativeLanguage": "母语"
+      "selectNativeLanguage": "母语",
+      "selectLearningLanguage": "选择学习语言"
     },
     "options": {
       "goal": {

@@ -14,7 +14,10 @@
       "countryPlaceholder": "Выберите вашу страну",
       "nativeLanguageLabel": "Родной язык",
       "nativeLanguagePlaceholder": "Выберите ваш родной язык",
+      "learningLanguageLabel": "Язык для изучения",
+      "learningLanguagePlaceholder": "Выберите язык, который хотите изучать",
       "selectCountry": "Выберите страну",
+      "selectLearningLanguage": "Выберите язык обучения",
       "selectNativeLanguage": "Родной язык"
     },
     "options": {

@@ -19,6 +19,11 @@ interface RainbowWaveProps {
   width?: number;
   height?: number;
   amplitudeScale?: number;
+  /**
+   * When true, renders a static (non-animated) rainbow line.
+   * Useful for decorative purposes in headers/modals.
+   */
+  static?: boolean;
 }
 
 export const RainbowWave = React.memo(
@@ -30,6 +35,7 @@ export const RainbowWave = React.memo(
     width: customWidth,
     height: customHeight = 160,
     amplitudeScale = 1.0,
+    static: isStatic = false,
   }: RainbowWaveProps) => {
     const { width: windowWidth } = useWindowDimensions();
     const width = customWidth || windowWidth;
@@ -41,37 +47,51 @@ export const RainbowWave = React.memo(
     // 0.09 * 60 = 5.4 radians per second
     // 2π / 5.4 ≈ 1.16 seconds for full cycle
     useEffect(() => {
+      // Skip animation if static mode
+      if (isStatic) return;
+
       phase.value = withRepeat(
         withTiming(2 * Math.PI, { duration: 1160, easing: Easing.linear }),
         -1,
         false,
       );
-    }, [phase]);
+    }, [phase, isStatic]);
 
     // Amplitude responds to voice states while maintaining base amplitude
     useEffect(() => {
+      // Skip if static mode
+      if (isStatic) return;
+
       // Base amplitude from InteractiveRainbowWave: height * 0.24 = 38.4
       const baseAmplitude = height * 0.24 * amplitudeScale;
-      const breathingAmplitude = baseAmplitude * 0.8; // Define breathing amplitude explicitly for smoother transitions
 
-      let targetAmplitude = baseAmplitude;
+      // Idle state: nearly flat with very subtle shimmer (5% of base amplitude)
+      let targetAmplitude = baseAmplitude * 0.05;
 
       if (isSpeaking) {
-        targetAmplitude = baseAmplitude * 1.5; // Slightly larger when speaking
+        targetAmplitude = baseAmplitude * 1.5; // Visible waves when speaking
       } else if (isProcessing) {
-        targetAmplitude = baseAmplitude * 0.8; // Gentle breathing
+        targetAmplitude = baseAmplitude * 0.3; // Gentle breathing when processing
       } else if (isListening) {
+        // Voice-reactive amplitude
         targetAmplitude = Math.max(
-          baseAmplitude,
+          baseAmplitude * 0.3, // Minimum visible amplitude when listening
           baseAmplitude + volumeLevel * 40,
         );
       }
-      // Idle state: use baseAmplitude (same as InteractiveRainbowWave)
 
-      if (Math.abs(amplitude.value - targetAmplitude) > 0.1) {
-        amplitude.value = withTiming(targetAmplitude, { duration: 150 });
-      }
-    }, [isListening, isSpeaking, isProcessing, volumeLevel, amplitude]);
+      // Always animate to target - withTiming will cancel any in-progress animation
+      amplitude.value = withTiming(targetAmplitude, { duration: 150 });
+    }, [
+      isListening,
+      isSpeaking,
+      isProcessing,
+      volumeLevel,
+      amplitude,
+      height,
+      amplitudeScale,
+      isStatic,
+    ]);
 
     const animatedProps = useAnimatedProps(() => {
       const numPeaks = 8;
@@ -101,6 +121,36 @@ export const RainbowWave = React.memo(
       };
     });
 
+    // Static path for non-animated mode - render a gentle wave (not flat)
+    // Uses the same wave algorithm but with fixed phase and gentle amplitude
+    const generateStaticPath = () => {
+      const numPeaks = 8;
+      const frequency = (Math.PI * numPeaks) / width;
+      // Gentle amplitude for static wave - 30% of base for natural look
+      const staticAmplitude = height * 0.24 * amplitudeScale * 0.3;
+      const staticPhase = Math.PI / 4; // Fixed phase offset for nice curve shape
+
+      const STEP = 2;
+      const numPoints = Math.ceil(width / STEP) + 1;
+      const pathParts = new Array(numPoints);
+      pathParts[0] = `M 0 ${height / 2}`;
+
+      let idx = 1;
+      for (let x = STEP; x <= width; x += STEP) {
+        const nx = x / width;
+        // Envelope function - exactly like animated version
+        const envelope = Math.pow(Math.sin(nx * Math.PI), 1.5);
+        const y =
+          height / 2 +
+          envelope * staticAmplitude * Math.sin(frequency * x - staticPhase);
+        pathParts[idx++] = `L ${x} ${y}`;
+      }
+
+      return pathParts.join(" ");
+    };
+
+    const staticPath = isStatic ? generateStaticPath() : "";
+
     return (
       <View style={{ width: customWidth || "100%", height }}>
         <Svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`}>
@@ -115,15 +165,27 @@ export const RainbowWave = React.memo(
               <Stop offset="1" stopColor="#9400D3" />
             </LinearGradient>
           </Defs>
-          {/* Main wave path - matching InteractiveRainbowWave exactly */}
-          <AnimatedPath
-            animatedProps={animatedProps}
-            stroke="url(#rainbow)"
-            strokeWidth={4}
-            fill="transparent"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          {isStatic ? (
+            // Static mode: render a simple horizontal line
+            <Path
+              d={staticPath}
+              stroke="url(#rainbow)"
+              strokeWidth={4}
+              fill="transparent"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ) : (
+            // Animated mode: render animated wave path
+            <AnimatedPath
+              animatedProps={animatedProps}
+              stroke="url(#rainbow)"
+              strokeWidth={4}
+              fill="transparent"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
         </Svg>
       </View>
     );

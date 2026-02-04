@@ -14,7 +14,10 @@
       "countryPlaceholder": "Välj ditt land",
       "nativeLanguageLabel": "Modersmål",
       "nativeLanguagePlaceholder": "Välj ditt modersmål",
+      "learningLanguageLabel": "Språk att lära sig",
+      "learningLanguagePlaceholder": "Välj språk du vill lära dig",
       "selectCountry": "Välj land",
+      "selectLearningLanguage": "Välj inlärningsspråk",
       "selectNativeLanguage": "Modersmål"
     },
     "options": {

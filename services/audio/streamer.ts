@@ -35,6 +35,7 @@ class AudioStreamer {
   private responseId = 0;
   private responsesSinceReset = 0;
   private isAudioPrimed = false;
+  private playbackStartTime = 0; // Track when playback actually started (Date.now())
 
   // Buffer accumulation (for native queue)
   private accumulatedSamples: Float32Array[] = [];
@@ -154,6 +155,7 @@ class AudioStreamer {
     this.currentResponseBuffer = []; // Clear buffer for new response
     this.isPaused = false;
     this.hasResponseCompleted = false;
+    this.playbackStartTime = 0; // Reset playback start time
 
     Logger.info(TAG, `Prepared for response #${this.responseId}`);
   }
@@ -348,6 +350,7 @@ class AudioStreamer {
 
     this.isPlaying = true;
     this.hasStartedPlayback = true;
+    this.playbackStartTime = Date.now(); // Record when playback started
     this.bufferProgressCallback?.(100); // Clear progress
     Logger.info(TAG, "Sophie started speaking");
     this.speakingStateCallback?.(true);
@@ -376,11 +379,14 @@ class AudioStreamer {
     // Capture response ID for staleness check
     const currentResponseId = this.responseId;
 
-    // Schedule finish based on audio duration
-    const durationMs = (this.totalQueuedSamples / SAMPLE_RATE) * 1000;
+    // Calculate REMAINING duration (total - already played)
+    const totalDurationMs = (this.totalQueuedSamples / SAMPLE_RATE) * 1000;
+    const elapsedMs =
+      this.playbackStartTime > 0 ? Date.now() - this.playbackStartTime : 0;
+    const remainingMs = Math.max(0, totalDurationMs - elapsedMs);
     Logger.info(
       TAG,
-      `Playback will finish in ~${(durationMs / 1000).toFixed(1)}s`,
+      `Playback will finish in ~${(remainingMs / 1000).toFixed(1)}s (total: ${(totalDurationMs / 1000).toFixed(1)}s, elapsed: ${(elapsedMs / 1000).toFixed(1)}s)`,
     );
 
     if (this.finishTimeout) {
@@ -395,7 +401,7 @@ class AudioStreamer {
       ) {
         this.finishSpeaking();
       }
-    }, durationMs + 1000);
+    }, remainingMs + 100); // Use remaining duration + small buffer
   }
 
   private finishSpeaking(): void {
@@ -602,7 +608,7 @@ class AudioStreamer {
       ) {
         this.finishSpeaking();
       }
-    }, durationMs + 500); // Small buffer for safety
+    }, durationMs + 100); // Reduced buffer for faster UI response
   }
 
   dispose(): void {

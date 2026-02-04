@@ -152,13 +152,21 @@ export default function VocabScreen() {
   // Subscribe to audio speaking state for mic visual feedback
   useEffect(() => {
     const handleSpeakingState = (isSpeaking: boolean) => {
+      // IMPORTANT: Also update the global store so Talk page UI updates correctly
+      const { useConversationStore } = require("@/stores/conversationStore");
+      useConversationStore.getState().setSpeaking(isSpeaking);
+
       if (!isSpeaking) {
         setSpeakingItemId(null);
       }
     };
     audioStreamer.setSpeakingStateCallback(handleSpeakingState);
     return () => {
-      audioStreamer.setSpeakingStateCallback(() => {});
+      // Restore the original store callback when leaving this screen
+      audioStreamer.setSpeakingStateCallback((isSpeaking) => {
+        const { useConversationStore } = require("@/stores/conversationStore");
+        useConversationStore.getState().setSpeaking(isSpeaking);
+      });
     };
   }, []);
 
