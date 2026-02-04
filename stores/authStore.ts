@@ -111,16 +111,25 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { error } = await updateUserProfile(data);
       if (error) throw error;
 
-      // Refresh session to get updated user metadata immediately
-      // This ensures avatar_url and other metadata changes reflect in UI
-      const { data: refreshData, error: refreshError } =
-        await supabase.auth.refreshSession();
-      if (refreshError) {
-        console.warn("Session refresh warning:", refreshError.message);
-      }
-      if (refreshData?.user) {
-        set({ user: refreshData.user });
-      }
+      // Optimistically update local user state with new metadata
+      // refreshSession may return stale data due to Supabase propagation delay
+      set((state) => {
+        if (!state.user) return state;
+        return {
+          user: {
+            ...state.user,
+            user_metadata: {
+              ...state.user.user_metadata,
+              ...data, // Merge the new profile data
+            },
+          },
+        };
+      });
+
+      // Also refresh session in background for consistency
+      supabase.auth.refreshSession().catch((err) => {
+        console.warn("Session refresh warning:", err);
+      });
     } finally {
       set({ isLoading: false });
     }

@@ -59,7 +59,9 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
             {user?.user_metadata?.avatar_url ? (
               <Image
                 source={{ uri: user.user_metadata.avatar_url }}
-                className="w-full h-full"
+                style={{ width: "100%", height: "100%" }}
+                contentFit="cover"
+                cachePolicy="none"
               />
             ) : (
               <View className="w-full h-full items-center justify-center bg-blue-50">

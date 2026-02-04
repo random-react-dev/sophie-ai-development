@@ -129,9 +129,11 @@ export default function ProfileScreen() {
               <View className="w-24 h-24 rounded-full bg-blue-100 overflow-hidden border-4 border-white shadow-lg">
                 {user?.user_metadata?.avatar_url ? (
                   <Image
+                    key={user.user_metadata.avatar_url}
                     source={{ uri: user.user_metadata.avatar_url }}
-                    className="w-full h-full"
-                    transition={200}
+                    style={{ width: "100%", height: "100%" }}
+                    contentFit="cover"
+                    cachePolicy="none"
                   />
                 ) : (
                   <View className="w-full h-full items-center justify-center">
