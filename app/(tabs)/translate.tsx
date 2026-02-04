@@ -10,7 +10,9 @@ import {
   Language,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
+import { audioStreamer } from "@/services/audio/streamer";
 import { translateText } from "@/services/gemini/translate";
+import { geminiWebSocket } from "@/services/gemini/websocket";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
@@ -79,6 +81,7 @@ export default function TranslateScreen() {
   const [saveFolderId, setSaveFolderId] = useState<string | null>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -260,6 +263,43 @@ export default function TranslateScreen() {
     setRomanization(item.romanization);
     // Note: We don't automatically switch languages to match history item
     // because that might be confusing if user just wants to see the result
+  };
+
+  /**
+   * Speak the translated text using Text-to-Speech via Gemini WebSocket.
+   */
+  const handleSpeak = () => {
+    if (!translatedText) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    // If already speaking, stop playback
+    if (isSpeaking) {
+      audioStreamer.handleInterruption();
+      setIsSpeaking(false);
+      return;
+    }
+
+    if (!geminiWebSocket.isReady()) {
+      showAlert(
+        t("vocab_screen.alerts.error_title"),
+        t("vocab_screen.alerts.connection_required"),
+        undefined,
+        "warning",
+      );
+      return;
+    }
+
+    setIsSpeaking(true);
+    geminiWebSocket.speakPhrase(translatedText, targetLang.name, true);
+
+    // Reset speaking state when audio finishes (approximate timeout)
+    // The WebSocket doesn't provide a direct "finished" callback for TTS,
+    // so we use a reasonable timeout based on text length
+    const estimatedDuration = Math.max(2000, translatedText.length * 80);
+    setTimeout(() => {
+      setIsSpeaking(false);
+    }, estimatedDuration);
   };
 
   return (
@@ -479,11 +519,18 @@ export default function TranslateScreen() {
                       >
                         <Copy size={18} color="#374151" />
                       </TouchableOpacity>
+                      {/* Text to speech */}
                       <TouchableOpacity
                         activeOpacity={0.7}
-                        className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+                        onPress={handleSpeak}
+                        className={`w-10 h-10 rounded-full items-center justify-center ${
+                          isSpeaking ? "bg-blue-100" : "bg-gray-100"
+                        }`}
                       >
-                        <Volume2 size={18} color="#374151" />
+                        <Volume2
+                          size={18}
+                          color={isSpeaking ? "#3b82f6" : "#374151"}
+                        />
                       </TouchableOpacity>
                       <TouchableOpacity
                         activeOpacity={0.7}

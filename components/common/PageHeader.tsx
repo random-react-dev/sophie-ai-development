@@ -46,11 +46,12 @@ export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
               <RainbowWave
                 isListening={false}
                 isSpeaking={false}
-                isProcessing={true}
+                isProcessing={false}
                 volumeLevel={0}
                 width={120}
                 height={40}
                 amplitudeScale={3.5}
+                static={true}
               />
             </View>
           </View>
