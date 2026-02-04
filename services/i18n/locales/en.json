@@ -6,6 +6,7 @@
     "saving": "Saving...",
     "startLearning": "Start Learning",
     "skip": "Skip for now",
+    "fillAllFields": "Please fill in all fields before continuing.",
     "profileStep": {
       "almostThere": "Almost there!",
       "nameLabel": "Your Name",
@@ -14,8 +15,11 @@
       "countryPlaceholder": "Select your country",
       "nativeLanguageLabel": "Native Language",
       "nativeLanguagePlaceholder": "Select your native language",
+      "learningLanguageLabel": "Language to Learn",
+      "learningLanguagePlaceholder": "Select language you want to learn",
       "selectCountry": "Select Country",
-      "selectNativeLanguage": "Native Language"
+      "selectNativeLanguage": "Native Language",
+      "selectLearningLanguage": "Choose Learning Language"
     },
     "options": {
       "goal": {

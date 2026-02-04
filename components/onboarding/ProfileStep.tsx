@@ -159,6 +159,9 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     // State for Native Language modal (must be at top, before any returns)
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
+    // State for Learning Language modal
+    const [learningLangModalVisible, setLearningLangModalVisible] = useState(false);
+
     // State for Country modal
     const [countryModalVisible, setCountryModalVisible] = useState(false);
 
@@ -166,24 +169,32 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     const contentHeightRef = React.useRef(0);
     const containerHeightRef = React.useRef(0);
 
-    // Get selected language display name
+    // Get selected language display names
     const getSelectedLanguageName = () => {
       const lang = APP_LANGUAGES.find((l) => l.code === data.nativeLanguage);
       return lang ? lang.name : "Select your native language";
+    };
+
+    const getSelectedLearningLanguageName = () => {
+      const lang = APP_LANGUAGES.find((l) => l.code === data.learningLanguage);
+      return lang ? lang.name : "Select learning language";
     };
 
     // Expose sub-step controls to parent
     useImperativeHandle(ref, () => ({
       subStep,
       goToNextSubStep: () => {
+        // Sub-step 1 (App Language) → Sub-step 2 (Learning Language)
         if (subStep === 1 && currentLanguage) {
           setSubStep(2);
           return true;
         }
+        // Sub-step 2 (Learning Language) → Sub-step 3 (Profile Details)
         if (subStep === 2 && data.learningLanguage) {
           setSubStep(3);
           return true;
         }
+        // Sub-step 3 has no next sub-step, signal to advance main step
         return false;
       },
       goToPrevSubStep: () => {
@@ -195,7 +206,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           setSubStep(1);
           return true;
         }
-        return false;
+        return false; // Sub-step 1 has no previous
       },
     }));
 
@@ -320,6 +331,29 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
+          {/* Learning Language */}
+          <View className="mb-4">
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+              {t("onboarding.profileStep.learningLanguageLabel")}
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
+              onPress={() => setLearningLangModalVisible(true)}
+            >
+              <Text
+                className={`flex-1 text-base ${data.learningLanguage ? "text-gray-800" : "text-gray-400"
+                  }`}
+                numberOfLines={1}
+              >
+                {data.learningLanguage
+                  ? getSelectedLearningLanguageName()
+                  : t("onboarding.profileStep.learningLanguagePlaceholder")}
+              </Text>
+              <ChevronDown size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+
           {/* Name */}
           <View className="mb-4">
             <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
@@ -344,9 +378,8 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setCountryModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-sm ${
-                  data.country ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={`flex-1 text-sm ${data.country ? "text-gray-800" : "text-gray-400"
+                  }`}
                 numberOfLines={1}
               >
                 {data.country || t("onboarding.profileStep.countryPlaceholder")}
@@ -366,9 +399,8 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setLanguageModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-sm ${
-                  data.nativeLanguage ? "text-gray-800" : "text-gray-400"
-                }`}
+                className={`flex-1 text-sm ${data.nativeLanguage ? "text-gray-800" : "text-gray-400"
+                  }`}
                 numberOfLines={1}
               >
                 {data.nativeLanguage
@@ -424,6 +456,58 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
                     onPress={() => {
                       updateData({ country: item.name });
                       setCountryModalVisible(false);
+                    }}
+                  />
+                )}
+              />
+            </SafeAreaView>
+          </View>
+        </Modal>
+
+        {/* Learning Language Modal */}
+        <Modal
+          visible={learningLangModalVisible}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setLearningLangModalVisible(false)}
+        >
+          <View className="flex-1 bg-white">
+            <SafeAreaView className="flex-1">
+              {/* Header */}
+              <View className="px-4 py-6 bg-white border-b border-gray-100">
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-1 pr-4">
+                    <Text className="text-2xl font-bold text-gray-900">
+                      {t("onboarding.profileStep.selectLearningLanguage")}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setLearningLangModalVisible(false)}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                  >
+                    <Ionicons name="close" size={24} color="black" />
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Language List */}
+              <FlatList
+                data={APP_LANGUAGES}
+                keyExtractor={(item) => item.code}
+                contentContainerStyle={{
+                  paddingTop: 16,
+                  paddingHorizontal: 16,
+                  paddingBottom: 100,
+                }}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View className="h-3" />}
+                renderItem={({ item }) => (
+                  <LanguageItem
+                    lang={item}
+                    isSelected={data.learningLanguage === item.code}
+                    onPress={() => {
+                      updateData({ learningLanguage: item.code });
+                      setLearningLangModalVisible(false);
                     }}
                   />
                 )}

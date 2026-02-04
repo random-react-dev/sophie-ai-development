@@ -1,7 +1,7 @@
 // Gemini API translation service - direct API call
 // Based on working reference: /Users/niravramani/dyad-apps/sparkling-lynx-roll/realtalk/src/lib/gemini.ts
 
-const GEMINI_MODEL = 'models/gemini-2.0-flash-exp';
+const GEMINI_MODEL = 'models/gemini-2.5-flash';
 
 export interface TranslationResult {
     translation: string;

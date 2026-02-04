@@ -109,23 +109,28 @@ export const useAuthStore = create<AuthState>((set) => ({
     console.log("[AuthStore] updateProfile called with:", data);
     set({ isLoading: true });
     try {
-      const {
-        data: { user },
-        error,
-      } = await updateUserProfile(data);
-
-      console.log("[AuthStore] updateUserProfile response - error:", error);
-      console.log("[AuthStore] updateUserProfile response - user:", user?.id);
-      console.log("[AuthStore] New user_metadata:", user?.user_metadata);
-
+      const { error } = await updateUserProfile(data);
       if (error) throw error;
-      if (user) {
-        console.log(
-          "[AuthStore] Setting new user in store with avatar_url:",
-          user.user_metadata?.avatar_url,
-        );
-        set({ user }); // Update local user state immediately
-      }
+
+      // Optimistically update local user state with new metadata
+      // refreshSession may return stale data due to Supabase propagation delay
+      set((state) => {
+        if (!state.user) return state;
+        return {
+          user: {
+            ...state.user,
+            user_metadata: {
+              ...state.user.user_metadata,
+              ...data, // Merge the new profile data
+            },
+          },
+        };
+      });
+
+      // Also refresh session in background for consistency
+      supabase.auth.refreshSession().catch((err) => {
+        console.warn("Session refresh warning:", err);
+      });
     } finally {
       set({ isLoading: false });
     }
@@ -221,12 +226,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
 
     supabase.auth.onAuthStateChange(
-      (_event: AuthChangeEvent, session: Session | null) => {
+      async (event: AuthChangeEvent, session: Session | null) => {
         const newUser = session?.user ?? null;
+
+        // When session becomes invalid or user is signed out (including token refresh failures),
+        // clear all user data to ensure a clean state for the next login.
+        if (event === "SIGNED_OUT") {
+          await clearUserData();
+        }
+
         set((state) => ({
           session,
           user: newUser,
-          showTrialPopup: _event === "SIGNED_IN" ? true : state.showTrialPopup,
+          showTrialPopup: event === "SIGNED_IN" ? true : state.showTrialPopup,
         }));
       },
     );

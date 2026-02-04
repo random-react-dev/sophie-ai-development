@@ -130,41 +130,22 @@ export default function ProfileScreen() {
               onPress={handleAvatarUpload}
               className="relative"
             >
-              <View className="w-24 h-24 rounded-full bg-blue-50 overflow-hidden border-4 border-white shadow-lg">
-                {(() => {
-                  const avatarUrl = user?.user_metadata?.avatar_url;
-
-                  if (avatarUrl) {
-                    return (
-                      <Image
-                        key={avatarUrl} // Force re-mount on URL change
-                        source={{ uri: avatarUrl }}
-                        style={{ width: "100%", height: "100%" }}
-                        className="w-full h-full"
-                        contentFit="cover"
-                        cachePolicy="none" // Disable caching to force fresh load
-                        transition={200}
-                        onLoad={() => {}}
-                        onError={(e) =>
-                          console.warn(
-                            "[Avatar] Load error:",
-                            e.error,
-                            "URL:",
-                            avatarUrl,
-                          )
-                        }
-                      />
-                    );
-                  }
-
-                  return (
-                    <View className="w-full h-full items-center justify-center">
-                      <Text className="text-2xl font-bold text-blue-500">
-                        {user?.email?.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  );
-                })()}
+              <View className="w-24 h-24 rounded-full bg-blue-100 overflow-hidden border-4 border-white shadow-lg">
+                {user?.user_metadata?.avatar_url ? (
+                  <Image
+                    key={user.user_metadata.avatar_url}
+                    source={{ uri: user.user_metadata.avatar_url }}
+                    style={{ width: "100%", height: "100%" }}
+                    contentFit="cover"
+                    cachePolicy="none"
+                  />
+                ) : (
+                  <View className="w-full h-full items-center justify-center">
+                    <Text className="text-2xl font-bold text-blue-500">
+                      {user?.email?.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
               </View>
               <View className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full border-2 border-white shadow-md">
                 {isAvatarUploading ? (
