@@ -106,14 +106,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
   updateProfile: async (data: UserProfileUpdate) => {
+    console.log("[AuthStore] updateProfile called with:", data);
     set({ isLoading: true });
     try {
       const {
         data: { user },
         error,
       } = await updateUserProfile(data);
+
+      console.log("[AuthStore] updateUserProfile response - error:", error);
+      console.log("[AuthStore] updateUserProfile response - user:", user?.id);
+      console.log("[AuthStore] New user_metadata:", user?.user_metadata);
+
       if (error) throw error;
       if (user) {
+        console.log(
+          "[AuthStore] Setting new user in store with avatar_url:",
+          user.user_metadata?.avatar_url,
+        );
         set({ user }); // Update local user state immediately
       }
     } finally {
