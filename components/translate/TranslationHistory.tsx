@@ -1,19 +1,37 @@
-import React from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
-import { Trash2, ArrowRight } from "lucide-react-native";
-import { useTranslationHistoryStore, TranslationHistoryItem } from "@/stores/translationHistoryStore";
+import {
+  TranslationHistoryItem,
+  useTranslationHistoryStore,
+} from "@/stores/translationHistoryStore";
 import * as Haptics from "expo-haptics";
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Trash2,
+  X,
+} from "lucide-react-native";
+import React, { useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 interface TranslationHistoryProps {
   onSelect: (item: TranslationHistoryItem) => void;
 }
 
-export const TranslationHistory: React.FC<TranslationHistoryProps> = ({ onSelect }) => {
+export const TranslationHistory: React.FC<TranslationHistoryProps> = ({
+  onSelect,
+}) => {
   const { history, clearHistory, removeEntry } = useTranslationHistoryStore();
+  const [isVisible, setIsVisible] = useState(true);
 
   if (history.length === 0) {
     return null;
   }
+
+  const handleToggleVisibility = () => {
+    Haptics.selectionAsync();
+    setIsVisible(!isVisible);
+  };
 
   const handleClearAll = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -32,70 +50,111 @@ export const TranslationHistory: React.FC<TranslationHistoryProps> = ({ onSelect
 
   const renderItem = ({ item }: { item: TranslationHistoryItem }) => (
     <TouchableOpacity
-      activeOpacity={0.7}
+      activeOpacity={0.8}
       onPress={() => handleSelect(item)}
-      className="bg-white p-4 rounded-xl border border-gray-100 mb-3 shadow-sm"
+      className="mb-3"
     >
-      <View className="flex-row justify-between items-start mb-2">
-        <View className="flex-row items-center gap-2">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-            {item.sourceLang}
-          </Text>
-          <ArrowRight size={12} color="#9ca3af" />
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-            {item.targetLang}
-          </Text>
+      <View className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {/* Header with Language Tags */}
+        <View className="flex-row items-center justify-between px-4 pt-3 pb-2">
+          <View className="flex-row items-center gap-2">
+            <View className="bg-blue-50 px-2.5 py-1 rounded-full">
+              <Text className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+                {item.sourceLang}
+              </Text>
+            </View>
+            <ArrowRight size={10} color="#9ca3af" />
+            <View className="bg-purple-50 px-2.5 py-1 rounded-full">
+              <Text className="text-[10px] font-bold text-purple-600 uppercase tracking-wider">
+                {item.targetLang}
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={() => handleRemoveItem(item.id)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            className="w-6 h-6 items-center justify-center rounded-full bg-gray-50"
+          >
+            <X size={12} color="#9ca3af" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => handleRemoveItem(item.id)}
-          className="p-1 -mr-2 -mt-2"
-        >
-          <Trash2 size={14} color="#ef4444" opacity={0.5} />
-        </TouchableOpacity>
-      </View>
 
-      <View className="mb-2">
-        <Text className="text-gray-900 text-base font-medium mb-1" numberOfLines={2}>
-          {item.sourceText}
-        </Text>
-        <Text className="text-blue-600 text-lg font-semibold" numberOfLines={2}>
-          {item.translatedText}
-        </Text>
-        {item.romanization && (
-          <Text className="text-gray-500 text-sm italic mt-1">
-            {item.romanization}
+        {/* Content */}
+        <View className="px-4 pb-4">
+          <Text className="text-gray-600 text-sm mb-1.5" numberOfLines={1}>
+            {item.sourceText}
           </Text>
-        )}
+          <Text
+            className="text-gray-900 text-base font-semibold"
+            numberOfLines={2}
+          >
+            {item.translatedText}
+          </Text>
+          {item.romanization && (
+            <Text className="text-gray-400 text-sm italic mt-1">
+              {item.romanization}
+            </Text>
+          )}
+        </View>
       </View>
-      
-      {/* Fallback for date formatting if date-fns causes issues, but it should be fine if installed. 
-          If not, simple JS date. */}
-      {/* <Text className="text-gray-300 text-xs text-right mt-1">
-        {new Date(item.timestamp).toLocaleDateString()}
-      </Text> */}
     </TouchableOpacity>
   );
 
   return (
-    <View className="mt-8 mb-20 px-4">
-      <View className="flex-row items-center justify-between mb-4">
-        <View className="h-[1px] flex-1 bg-gray-200" />
-        <Text className="mx-4 text-gray-400 font-medium text-sm">Recent Translations</Text>
-        <View className="h-[1px] flex-1 bg-gray-200" />
-      </View>
+    <View className="mt-10 mb-20">
+      {/* Section Header */}
+      <TouchableOpacity
+        onPress={handleToggleVisibility}
+        activeOpacity={0.7}
+        className="flex-row items-center justify-between mb-4"
+      >
+        <View className="flex-row items-center gap-2">
+          <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
+            <Clock size={16} color="#6b7280" />
+          </View>
+          <View>
+            <Text className="text-gray-900 font-bold text-base">
+              Recent Translations
+            </Text>
+            <Text className="text-gray-400 text-xs">
+              {history.length} {history.length === 1 ? "item" : "items"}
+            </Text>
+          </View>
+        </View>
 
-      <View className="flex-row justify-end mb-2">
-        <TouchableOpacity onPress={handleClearAll}>
-          <Text className="text-xs font-bold text-red-400">Clear History</Text>
-        </TouchableOpacity>
-      </View>
+        <View className="flex-row items-center gap-2">
+          {/* Clear All Button */}
+          <TouchableOpacity
+            onPress={handleClearAll}
+            className="px-3 py-2 rounded-full bg-red-50"
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center gap-1.5">
+              <Trash2 size={12} color="#ef4444" />
+              <Text className="text-xs font-bold text-red-500">Clear</Text>
+            </View>
+          </TouchableOpacity>
 
-      <FlatList
-        data={history}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        scrollEnabled={false} // Since it's inside a ScrollView in parent
-      />
+          {/* Expand/Collapse Chevron */}
+          <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
+            {isVisible ? (
+              <ChevronUp size={16} color="#6b7280" />
+            ) : (
+              <ChevronDown size={16} color="#6b7280" />
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      {/* History List - Conditionally Rendered */}
+      {isVisible && (
+        <FlatList
+          data={history}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          scrollEnabled={false}
+        />
+      )}
     </View>
   );
 };

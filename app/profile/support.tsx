@@ -5,10 +5,11 @@ import {
   disabledColorScheme,
   getRainbowColorScheme,
 } from "@/utils/rainbowColors";
+import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { FileText, Mail, MessageCircle, Scale } from "lucide-react-native";
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Linking, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SupportScreen() {
@@ -102,6 +103,26 @@ export default function SupportScreen() {
                 "info",
               )
             }
+          />
+
+          {/* WhatsApp Support Card */}
+          <ProfileSettingCard
+            title="WhatsApp Support"
+            subtitle="Chat with us on WhatsApp"
+            icon={<FontAwesome name="whatsapp" size={20} color="#25D366" />}
+            colorScheme={{
+              iconColor: "#25D366",
+              iconBgColor: "bg-green-50",
+              borderColor: "border-green-200",
+            }}
+            onPress={() => {
+              const phoneNumber = "919898456150";
+              const message = encodeURIComponent(
+                "Hi Sophie Team! 👋 I'm using the Sophie AI app and would love to connect with you.",
+              );
+              const url = `https://wa.me/${phoneNumber}?text=${message}`;
+              Linking.openURL(url);
+            }}
           />
         </View>
 
