@@ -1,0 +1,649 @@
+{
+  "onboarding": {
+    "chooseLanguage": "Pilih Bahasa Aplikasi",
+    "chooseLearningLanguage": "Bahasa apa yang ingin Anda pelajari?",
+    "continue": "Lanjutkan",
+    "saving": "Menyimpan...",
+    "startLearning": "Mulai Belajar",
+    "skip": "Lewati",
+    "profileStep": {
+      "almostThere": "Hampir selesai!",
+      "nameLabel": "Nama Anda",
+      "namePlaceholder": "Masukkan nama Anda",
+      "countryLabel": "Negara",
+      "countryPlaceholder": "Pilih negara Anda",
+      "nativeLanguageLabel": "Bahasa Ibu",
+      "nativeLanguagePlaceholder": "Pilih bahasa ibu Anda",
+      "selectCountry": "Pilih Negara",
+      "selectNativeLanguage": "Bahasa Ibu"
+    },
+    "options": {
+      "goal": {
+        "student": "Saya seorang pelajar",
+        "traveler": "Saya seorang pelancong",
+        "abroad": "Saya akan / sedang di luar negeri",
+        "job": "Saya membutuhkannya untuk pekerjaan saya",
+        "other": "Lainnya"
+      },
+      "level": {
+        "zero": "Saya tidak tahu satu kata pun",
+        "words": "Saya hanya bisa mengucapkan beberapa kata",
+        "phrases": "Saya hanya bisa mengucapkan beberapa kalimat",
+        "basic_idea": "Saya punya ide tapi tidak punya kosakata",
+        "fluent": "Saya lancar, tapi butuh lebih banyak latihan"
+      },
+      "fluency": {
+        "norush": "Tidak terburu-buru, saya bisa santai",
+        "consistent": "Saya ingin konsisten dan berlatih setiap hari",
+        "phrases": "Saya hanya butuh beberapa kalimat",
+        "conversations": "Saya perlu melakukan percakapan umum",
+        "desperate": "Saya sangat ingin lancar, sekarang."
+      },
+      "duration": {
+        "less_1_month": "Kurang dari 1 bulan",
+        "less_6_months": "Kurang dari 6 bulan",
+        "less_2_years": "Kurang dari 2 tahun",
+        "less_5_years": "Kurang dari 5 tahun",
+        "less_10_years": "Kurang dari 10 tahun",
+        "more": "Lebih"
+      },
+      "confidence": {
+        "1": "Ketakutan",
+        "2": "Sangat gugup",
+        "3": "Cemas",
+        "4": "Tidak yakin",
+        "5": "Netral",
+        "6": "Penuh harapan",
+        "7": "Percaya diri",
+        "8": "Tak terhentikan"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "Takut membuat kesalahan",
+          "desc": "Saya khawatir salah bicara"
+        },
+        "consistency": {
+          "title": "Kurang konsisten",
+          "desc": "Saya kesulitan berlatih secara teratur"
+        },
+        "practice": {
+          "title": "Kurang teman berlatih",
+          "desc": "Saya tidak punya teman bicara"
+        },
+        "other": {
+          "title": "Lainnya",
+          "desc": "Ada hal lain yang menahan saya"
+        }
+      },
+      "focus": {
+        "listening": "Mendengarkan",
+        "speaking": "Berbicara",
+        "pronunciation": "Pengucapan",
+        "vocabulary": "Kosakata",
+        "grammar": "Tata bahasa",
+        "reading": "Membaca",
+        "writing": "Menulis"
+      },
+      "discovery": {
+        "tiktok": "TikTok",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "friend": "Keluarga/Teman",
+        "other": "Lainnya"
+      }
+    },
+    "titles": {
+      "goal": "Apa tujuan utama Anda dalam hidup?",
+      "fluency": "Seberapa cepat Anda ingin fasih?",
+      "duration": "Sudah berapa lama Anda belajar bahasa ini?",
+      "level": "Mana yang paling menggambarkan Anda?",
+      "confidence": "Seberapa percaya diri Anda?",
+      "barriers": "Mengapa Anda tidak percaya diri?",
+      "focus": "Apa yang ingin Anda fokuskan terlebih dahulu?",
+      "discovery": "Bagaimana Anda mengetahui tentang kami?"
+    },
+    "completion": {
+      "title": "Semua siap!",
+      "subtitle": "Jalur pembelajaran pribadi Anda sudah siap",
+      "videoLabel": "Temui Pelatih Bahasa AI Anda",
+      "primaryGoal": "Tujuan Utama",
+      "learningPace": "Kecepatan Belajar",
+      "currentLevel": "Tingkat Saat Ini",
+      "notSet": "Belum diatur"
+    }
+  },
+  "profile": {
+    "title": "Profil Saya",
+    "menu": {
+      "preferences": {
+        "title": "Preferensi",
+        "subtitle": "Bahasa, negara, dan lainnya"
+      },
+      "account": {
+        "title": "Akun",
+        "subtitle": "Langganan dan tagihan"
+      },
+      "security": {
+        "title": "Keamanan",
+        "subtitle": "Kata sandi dan otentikasi"
+      },
+      "progress": {
+        "title": "Kemajuan",
+        "subtitle": "Lacak perjalanan belajar Anda"
+      },
+      "support": {
+        "title": "Dukungan",
+        "subtitle": "Bantuan, kebijakan, dan umpan balik"
+      },
+      "social": {
+        "title": "Media Sosial",
+        "subtitle": "Terhubung dengan kami"
+      },
+      "logout": "Keluar",
+      "setName": "Atur Nama",
+      "avatarSuccess": "Avatar berhasil diperbarui!",
+      "avatarError": "Gagal mengunggah avatar.",
+      "nameError": "Gagal memperbarui nama.",
+      "logoutConfirm": {
+        "title": "Keluar",
+        "message": "Apakah Anda yakin ingin keluar?",
+        "cancel": "Batal",
+        "confirm": "Keluar"
+      }
+    },
+    "preferences_screen": {
+      "title": "Preferensi",
+      "accountInfo": "Info Akun",
+      "name": "Nama",
+      "email": "Email",
+      "languages": "Bahasa",
+      "country": "Negara",
+      "nativeLanguage": "Bahasa Asli",
+      "appLanguage": "Bahasa Aplikasi",
+      "selectLanguage": "Pilih Bahasa",
+      "notSet": "Belum diatur"
+    },
+    "account_screen": {
+      "title": "Akun",
+      "subscription": "Langganan",
+      "status": "Status",
+      "freeTrial": "Uji Coba Gratis",
+      "upgradeToPro": "Tingkatkan ke Pro",
+      "payment": "Pembayaran",
+      "paymentMethods": "Metode Pembayaran",
+      "billingHistory": "Riwayat Tagihan",
+      "accountInfo": "Info Akun",
+      "email": "Email",
+      "memberSince": "Anggota Sejak",
+      "na": "T/A",
+      "comingSoon": "Segera Hadir"
+    },
+    "subscription_screen": {
+      "title": "Tingkatkan ke Pro",
+      "choosePlan": "Pilih Paket Anda",
+      "subtitle": "Buka potensi penuh Sophie AI dan kuasai bahasa apa pun.",
+      "plans": {
+        "mg": {
+          "name": "M dan G",
+          "description": "Sempurna untuk latihan santai.",
+          "features": {
+            "0": "Semua bahasa termasuk",
+            "1": "Latihan 5 menit/hari",
+            "2": "Umpan balik tutor AI dasar"
+          }
+        },
+        "launch": {
+          "name": "Paket Peluncuran",
+          "description": "Untuk pembelajar serius yang ingin berbicara dengan percaya diri.",
+          "badge": "Paling Populer",
+          "features": {
+            "0": "1 bahasa pilihan",
+            "1": "Latihan 15 menit/hari",
+            "2": "Umpan balik AI prioritas",
+            "3": "Tanpa iklan"
+          }
+        },
+        "sbb": {
+          "name": "SBB",
+          "description": "Pelatihan tingkat lanjut untuk bisnis & ujian.",
+          "features": {
+            "0": "Bahasa tak terbatas",
+            "1": "Waktu tak terbatas",
+            "2": "Analitik AI tingkat lanjut",
+            "3": "Jalur yang dipersonalisasi"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "Berlangganan Sekarang",
+        "getStarted": "Mulai",
+        "month": "bulan",
+        "day7": "7 hari"
+      },
+      "footer": "Semua paket mencakup akses tutor AI 24/7 dan Pelacakan Kemajuan. Batalkan kapan saja dari pengaturan Anda."
+    },
+    "security_screen": {
+      "title": "Keamanan",
+      "subtitle": "Lindungi akun Anda",
+      "auth_section": "Otentikasi",
+      "change_password": {
+        "title": "Ganti Kata Sandi",
+        "subtitle": "Perbarui kata sandi Anda secara berkala"
+      },
+      "two_factor": {
+        "title": "Otentikasi Dua Faktor",
+        "status": "Tidak Diaktifkan"
+      },
+      "tips_section": "Tips Keamanan",
+      "tips": {
+        "strong_password": {
+          "title": "Gunakan kata sandi kuat",
+          "body": "Campurkan huruf, angka, dan karakter khusus untuk perlindungan maksimal."
+        },
+        "enable_2fa": {
+          "title": "Aktifkan autentikasi dua faktor",
+          "body": "Lapisan keamanan ekstra untuk akun Anda. Segera hadir!"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "Ganti Kata Sandi",
+      "new_password": "Kata Sandi Baru",
+      "new_password_placeholder": "Masukkan kata sandi baru",
+      "confirm_password": "Konfirmasi Kata Sandi",
+      "confirm_password_placeholder": "Konfirmasi kata sandi baru",
+      "update_button": "Perbarui Kata Sandi",
+      "error_length": "Kata sandi harus minimal 6 karakter.",
+      "error_match": "Kata sandi tidak cocok.",
+      "success_message": "Kata sandi Anda telah berhasil diperbarui.",
+      "error_generic": "Gagal memperbarui kata sandi."
+    },
+    "progress_screen": {
+      "title": "Kemajuan",
+      "overview": "Ringkasan",
+      "speaking": "Berbicara",
+      "words": "Kata",
+      "sessions": "Sesi",
+      "detailed_stats": "Statistik Terperinci",
+      "coming_soon": "Segera Hadir",
+      "coming_soon_body": "Analisis pembelajaran terperinci dan pelacakan kemajuan akan tersedia dalam pembaruan mendatang."
+    },
+    "support_screen": {
+      "title": "Dukungan",
+      "legal": "Hukum",
+      "privacy_policy": "Kebijakan Privasi",
+      "terms_of_service": "Ketentuan Layanan",
+      "contact_us": "Hubungi Kami",
+      "email_support": "Dukungan Email",
+      "send_feedback": "Kirim Umpan Balik",
+      "help_improve": "Bantu kami meningkatkan",
+      "whatsapp_support": "Dukungan WhatsApp",
+      "whatsapp_subtitle": "Mengobrol dengan kami di WhatsApp",
+      "whatsapp_message": "Hai Tim Sophie! 👋 Saya menggunakan aplikasi Sophie AI dan ingin terhubung dengan Anda.",
+      "contact_alert_title": "Hubungi Kami",
+      "contact_alert_body": "Email kami di support@fluentai.com untuk pertanyaan atau umpan balik.",
+      "feedback_alert_title": "Segera Hadir",
+      "feedback_alert_body": "Fitur umpan balik dalam aplikasi akan segera tersedia.",
+      "danger_zone": "Zona Bahaya",
+      "delete_account": "Hapus Akun",
+      "delete_account_subtitle": "Hapus akun Anda secara permanen",
+      "delete_account_alert_title": "Hapus Akun",
+      "delete_account_alert_body": "Fitur ini segera hadir. Data Anda aman.",
+      "app_info": "Info Aplikasi",
+      "version": "Versi",
+      "build": "Bangun",
+      "prototype": "Prototipe"
+    },
+    "privacy_policy_screen": {
+      "title": "Kebijakan Privasi",
+      "last_updated": "Terakhir Diperbarui: 13 Januari 2026",
+      "section1_title": "1. Informasi yang Kami Kumpulkan",
+      "section1_body": "Kami mengumpulkan informasi untuk memberikan layanan yang lebih baik kepada semua pengguna kami. Ini mencakup detail akun seperti nama, email, dan bahasa pilihan Anda, serta data penggunaan untuk meningkatkan model AI kami.",
+      "section2_title": "2. Bagaimana Kami Menggunakan Data",
+      "section2_body": "Data Anda digunakan untuk mempersonalisasi pengalaman belajar Anda, melacak kemajuan, dan menyempurnakan keakuratan AI kami. Kami tidak menjual data pribadi Anda kepada pihak ketiga.",
+      "section3_title": "3. Interaksi AI",
+      "section3_body": "Percakapan dan input yang diberikan dalam aplikasi diproses untuk menghasilkan respons AI. Data ini dapat digunakan secara anonim untuk melatih dan meningkatkan model pembelajaran bahasa.",
+      "section4_title": "4. Keamanan Data",
+      "section4_body": "Kami menerapkan langkah-langkah keamanan standar industri untuk melindungi informasi Anda dari akses, pengubahan, pengungkapan, atau penghancuran yang tidak sah.",
+      "section5_title": "5. Hak Anda",
+      "section5_body": "Anda memiliki hak untuk mengakses, memperbaiki, atau menghapus informasi pribadi Anda kapan saja melalui pengaturan akun atau dengan menghubungi tim dukungan kami.",
+      "section6_title": "6. Informasi Kontak",
+      "section6_body": "Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami di support@fluentai.com."
+    },
+    "terms_screen": {
+      "title": "Ketentuan Layanan",
+      "last_updated": "Terakhir Diperbarui: 13 Januari 2026",
+      "section1_title": "1. Penerimaan Ketentuan",
+      "section1_body": "Dengan mengakses dan menggunakan aplikasi ini, Anda setuju untuk terikat oleh Ketentuan Layanan ini. Jika Anda tidak setuju dengan bagian mana pun dari ketentuan ini, Anda tidak boleh menggunakan layanan kami.",
+      "section2_title": "2. Penggunaan Layanan",
+      "section2_body": "Anda setuju untuk menggunakan aplikasi ini hanya untuk tujuan pembelajaran bahasa pribadi dan non-komersial. Anda tidak boleh menggunakan layanan untuk tujuan ilegal atau tidak sah.",
+      "section3_title": "3. Perilaku Pengguna",
+      "section3_body": "Pengguna diharapkan berinteraksi dengan asisten AI dengan hormat. Setiap upaya untuk mengeksploitasi, membahayakan, atau menyalahgunakan fungsionalitas aplikasi yang dimaksudkan sangat dilarang.",
+      "section4_title": "4. Kekayaan Intelektual",
+      "section4_body": "Aplikasi, kontennya, dan model AI dilindungi oleh hak cipta dan undang-undang kekayaan intelektual lainnya. Anda tidak boleh mereproduksi atau mendistribusikan bagian mana pun dari layanan tanpa izin.",
+      "section5_title": "5. Penafian AI",
+      "section5_body": "Layanan kami menyediakan konten yang dihasilkan AI untuk tujuan pendidikan. Meskipun kami berusaha untuk akurasi, AI terkadang dapat memberikan informasi yang salah. Pengguna didorong untuk memverifikasi detail penting.",
+      "section6_title": "6. Batasan Tanggung Jawab",
+      "section6_body": "Kami tidak bertanggung jawab atas kerusakan langsung, tidak langsung, atau konsekuensial yang diakibatkan oleh penggunaan aplikasi oleh Anda atau informasi apa pun yang diberikan oleh asisten AI.",
+      "section7_title": "7. Perubahan Ketentuan",
+      "section7_body": "Kami berhak untuk mengubah ketentuan ini kapan saja. Penggunaan aplikasi yang berkelanjutan oleh Anda setelah perubahan dipublikasikan merupakan penerimaan Anda terhadap ketentuan baru."
+    },
+    "social_screen": {
+      "title": "Media Sosial",
+      "section_title": "Terhubung Dengan Kami",
+      "instagram": "Instagram",
+      "instagram_subtitle": "Ikuti kami di Instagram",
+      "facebook": "Facebook",
+      "facebook_subtitle": "Bergabung dengan komunitas kami",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "Ikuti kami di X",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "Terhubung secara profesional",
+      "youtube": "YouTube",
+      "youtube_subtitle": "Berlangganan saluran kami",
+      "tiktok": "TikTok",
+      "tiktok_subtitle": "Tonton video terbaru kami",
+      "reddit": "Reddit",
+      "reddit_subtitle": "Bergabung dalam diskusi",
+      "error": "Kesalahan",
+      "open_error": "Tidak dapat membuka {platform}. Silakan coba lagi nanti.",
+      "general_error": "Terjadi kesalahan saat mencoba membuka {platform}."
+    }
+  },
+  "scenarios_screen": {
+    "title": "Skenario Pembelajaran",
+    "subtitle": "Latih percakapan kehidupan nyata",
+    "search_placeholder": "Cari skenario...",
+    "create_button": "Buat",
+    "create_your_own": "Buat Sendiri",
+    "empty_search": "Tidak ada kecocokan ditemukan",
+    "empty_list": "Skenario tidak ditemukan",
+    "categories": {
+      "all": "Semua",
+      "food_drink": "Makanan & Minuman",
+      "business": "Bisnis",
+      "social": "Sosial",
+      "travel": "Perjalanan",
+      "customer_service": "Layanan Pelanggan",
+      "education": "Pendidikan"
+    },
+    "create_modal": {
+      "title": "Buat Skenario",
+      "sophie_role_label": "Peran Sophie",
+      "sophie_role_placeholder": "cth. Penjaga toko yang galak tapi membantu",
+      "user_role_label": "Peran Anda",
+      "user_role_placeholder": "cth. Pelanggan yang sedang terburu-buru",
+      "topic_label": "Topik",
+      "topic_placeholder": "cth. Membeli jam tangan vintage",
+      "level_label": "Level",
+      "category_label": "Kategori",
+      "category_placeholder": "Pilih kategori",
+      "context_label": "Konteks / Situasi",
+      "context_placeholder": "Jelaskan pengaturannya...",
+      "start_button": "Mulai Skenario",
+      "validation_title": "Kolom Wajib Hilang",
+      "validation_message": "Peran Sophie dan Topik wajib diisi!"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "Memesan Kopi",
+      "description": "Pesan latte dan croissant di kafe yang ramai.",
+      "sophieRole": "Barista di kafe pusat kota yang sibuk",
+      "userRole": "Seorang pelanggan mencari sarapan",
+      "topic": "Kehidupan Sehari-hari",
+      "context": "Anda berada di kafe bernama \"The Morning Grind\". Anda ingin memesan kopi dan makanan."
+    },
+    "job-interview": {
+      "title": "Wawancara Kerja",
+      "description": "Wawancara untuk posisi insinyur perangkat lunak.",
+      "sophieRole": "Perekrut Teknis Senior di perusahaan teknologi",
+      "userRole": "Kandidat melamar peran Pengembang Frontend",
+      "topic": "Karier",
+      "context": "Anda sedang dalam wawancara untuk pekerjaan impian Anda. Sophie akan bertanya tentang pengalaman dan keterampilan Anda."
+    },
+    "asking-directions": {
+      "title": "Menanyakan Arah",
+      "description": "Anda tersesat di Tokyo dan perlu menemukan stasiun kereta.",
+      "sophieRole": "Penduduk lokal yang membantu di Tokyo",
+      "userRole": "Seorang turis yang sedikit tersesat",
+      "topic": "Perjalanan",
+      "context": "Anda berada di dekat Persimpangan Shibuya dan perlu menuju stasiun JR tetapi baterai ponsel Anda habis."
+    },
+    "hotel-check-in": {
+      "title": "Check-in Hotel",
+      "description": "Check-in dan minta kamar dan pemandangan.",
+      "sophieRole": "Resepsionis meja depan di hotel bintang 4",
+      "userRole": "Seorang tamu yang tiba untuk menginap tiga malam",
+      "topic": "Perjalanan",
+      "context": "Anda memiliki reservasi atas nama Anda. Anda ingin mengonfirmasi waktu sarapan dan bertanya apakah ada kamar dengan pemandangan bagus yang tersedia."
+    },
+    "political-debate": {
+      "title": "Debat Politik",
+      "description": "Diskusikan kebijakan lingkungan dan perubahan iklim.",
+      "sophieRole": "Seorang advokat lingkungan yang bersemangat",
+      "userRole": "Warga negara yang skeptis atau pembuat kebijakan oposisi",
+      "topic": "Masalah Terkini",
+      "context": "Terlibat dalam diskusi mendalam tentang keseimbangan antara pertumbuhan ekonomi dan perlindungan lingkungan."
+    }
+  },
+  "common": {
+    "save": "Simpan",
+    "cancel": "Batal",
+    "error": "Kesalahan",
+    "warning": "Peringatan",
+    "incomplete": "Tidak Lengkap",
+    "incompleteMessage": "Silakan masukkan nama Anda dan pilih negara.",
+    "errorMessage": "Gagal menyimpan preferensi. Silakan coba lagi.",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "Sophie Berbicara...",
+      "preparing": "Menyiapkan respons... {{progress}}%",
+      "thinking": "Sophie sedang berpikir...",
+      "listening": "Mendengarkan...",
+      "connecting": "Menghubungkan...",
+      "reconnecting": "Menghubungkan kembali...",
+      "hold_mic": "Tahan mikrofon untuk berbicara",
+      "error": "Kesalahan"
+    },
+    "language_selector": {
+      "learning_label": "Belajar",
+      "select_label": "Pilih",
+      "explain_label": "Jelaskan dalam",
+      "target_title": "Apa yang ingin Anda pelajari?",
+      "native_title": "Apa bahasa ibu Anda?"
+    },
+    "actions": {
+      "finish_report": "Selesai & Dapatkan Laporan",
+      "transcript": "Transkrip",
+      "transcript_hidden": "Transkrip Disembunyikan"
+    },
+    "message_actions": {
+      "translate": "Terjemahkan",
+      "hide": "Sembunyikan",
+      "save": "Simpan",
+      "translating": "Menerjemahkan..."
+    },
+    "prompts": {
+      "select_both_langs": "Pilih kedua bahasa di atas untuk memulai pelajaran Anda dengan Sophie.",
+      "hold_mic_start": "Tahan mikrofon di bawah ini untuk mulai berbicara dengan Sophie."
+    },
+    "alerts": {
+      "end_session_title": "Akhiri Sesi",
+      "end_session_msg": "Kembali ke perpustakaan skenario?",
+      "finish_title": "Selesaikan Percakapan",
+      "finish_msg": "Apakah Anda selesai dengan sesi latihan ini?",
+      "reset_title": "Atur Ulang Obrolan",
+      "reset_msg": "Ini akan menghapus percakapan saat ini dan mengatur ulang Sophie. Lanjutkan?",
+      "error_title": "Kesalahan",
+      "error_msg": "Gagal menerjemahkan. Silakan coba lagi.",
+      "success_title": "Berhasil",
+      "vocab_added": "Ditambahkan ke kosakata Anda!",
+      "cancel": "Batal",
+      "yes": "Ya",
+      "finish": "Selesai",
+      "reset": "Atur Ulang"
+    }
+  },
+  "vocab_screen": {
+    "title": "Kosakata Saya",
+    "subtitle": "Kata & frasa tersimpan Anda",
+    "search_placeholder": "Cari kata tersimpan...",
+    "add_button": "Tambah",
+    "all_filter": "Semua",
+    "all_folders": "Semua Folder",
+    "empty_state": {
+      "no_matches": "Tidak ada kecocokan ditemukan",
+      "empty_title": "Kosakata Anda kosong.",
+      "empty_subtitle": "Tambahkan frasa untuk mulai belajar!",
+      "no_phrases": "Tidak ada frasa tersedia"
+    },
+    "labels": {
+      "primary": "UTAMA"
+    },
+    "actions": {
+      "listen": "Dengar",
+      "delete": "Hapus",
+      "close": "Tutup",
+      "save_translation": "Simpan Terjemahan",
+      "change": "Ubah",
+      "save_phrase": "Simpan Frasa",
+      "start_practice": "Mulai dengan {{count}} Frasa",
+      "start_practice_plural": "Mulai dengan {{count}} Frasa"
+    },
+    "modals": {
+      "add_title": "Tambah Frasa",
+      "edit_title": "Edit Frasa",
+      "label_language": "Bahasa",
+      "label_folder": "Folder (Opsional)",
+      "label_phrase": "Frasa",
+      "placeholder_phrase": "Masukkan kata atau frasa...",
+      "label_translation": "Terjemahan (Opsional)",
+      "placeholder_translation": "Masukkan arti...",
+      "select_folder": "Pilih folder",
+      "selected_folder": "Folder Terpilih",
+      "practice_session_title": "Sesi Latihan"
+    },
+    "alerts": {
+      "delete_title": "Hapus Frasa",
+      "delete_msg": "Apakah Anda yakin ingin menghapus frasa ini?",
+      "required_title": "Wajib",
+      "required_msg": "Silakan masukkan frasa",
+      "error_title": "Kesalahan",
+      "save_error": "Gagal menyimpan frasa",
+      "update_error": "Gagal memperbarui frasa",
+      "delete_error": "Gagal menghapus item",
+      "translation_title": "Terjemahan",
+      "translation_failed": "Terjemahan gagal",
+      "playing_audio": "Memutar audio untuk: \"{{text}}\"",
+      "speech_error": "Gagal mengucapkan frasa. Silakan coba lagi.",
+      "connection_required": "Silakan kunjungi tab Bicara terlebih dahulu untuk terhubung ke Sophie."
+    }
+  },
+  "language_picker": {
+    "title": "Pilih Bahasa",
+    "search_placeholder": "Cari bahasa...",
+    "no_results": "Bahasa tidak ditemukan",
+    "select_native": "Pilih Bahasa Ibu",
+    "select_target": "Pilih Bahasa Target",
+    "select_instruction": "Pilih Bahasa Instruksi"
+  },
+  "tabs": {
+    "talk": "Bicara",
+    "translate": "Terjemahkan",
+    "vocab": "Kosakata",
+    "scenarios": "Skenario",
+    "profile": "Profil"
+  },
+  "translate_screen": {
+    "title": "Terjemahan",
+    "subtitle": "Terjemahkan teks ke bahasa lain",
+    "swap_instruction": "Ketuk tukar untuk membalikkan",
+    "input_placeholder": "Masukkan teks untuk diterjemahkan...",
+    "actions": {
+      "translate": "Terjemahkan",
+      "practice": "Latih",
+      "save": "Simpan",
+      "copy": "Salin"
+    },
+    "empty_state": "Terjemahan akan muncul di sini...",
+    "modals": {
+      "source_picker_title": "Terjemahkan dari",
+      "target_picker_title": "Terjemahkan ke",
+      "save_folder_title": "Simpan ke Folder",
+      "folder_name_placeholder": "Nama folder...",
+      "create_button": "Buat",
+      "create_new_folder": "Buat Folder Baru",
+      "your_folders": "Folder Anda",
+      "no_folders": "Belum ada folder! Buat satu di atas",
+      "save_to_vocab_button": "Simpan ke Kosakata"
+    },
+    "alerts": {
+      "permission_required": "Izin Diperlukan",
+      "mic_access": "Harap aktifkan akses mikrofon untuk menggunakan input suara.",
+      "error": "Kesalahan",
+      "translate_failed": "Gagal menerjemahkan. Coba lagi.",
+      "saved_title": "Disimpan!",
+      "saved_message": "Ditambahkan ke kosakata Anda",
+      "save_failed": "Gagal menyimpan. Coba lagi.",
+      "copied_title": "Disalin",
+      "copied_message": "Teks disalin ke papan klip"
+    }
+  },
+  "language_screen": {
+    "title": "Preferensi Bahasa",
+    "subtitle": "Pilih bahasa asli & target serta aksen pilihan Anda.",
+    "create_profile_btn": "Buat Profil Baru",
+    "sections": {
+      "learning_preferences": "Preferensi Belajar",
+      "accent_playground": "Uji Coba Aksen",
+      "text_placeholder": "Ketik teks Anda di sini...",
+      "default_test_phrase": "Halo, apa kabar?",
+      "speed_label": "Kecepatan",
+      "playground_hint": "Uji aksen yang dipilih dan sesuaikan kecepatan bicara. Ketuk Putar untuk pratinjau."
+    },
+    "modals": {
+      "create_title": "Profil Belajar Baru",
+      "create_button": "Buat Profil",
+      "sections": {
+        "target_label": "Saya ingin belajar",
+        "medium_label": "Sophie mengajar dalam",
+        "medium_placeholder": "Sama dengan Bahasa Asli",
+        "accent_label": "Aksen pilihan"
+      },
+      "duplicate_profile_error": "Anda sudah memiliki profil untuk pasangan bahasa ini!",
+      "create_error": "Gagal membuat profil. Silakan coba lagi."
+    }
+  },
+  "accent_picker": {
+    "title": "Pilih Aksen",
+    "english_suffix": "Inggris",
+    "accents": {
+      "Indian": "India",
+      "Australian": "Australia",
+      "American": "Amerika",
+      "British": "Inggris"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "Hari Terakhir!",
+    "days_left_title": "{{count}} Hari Tersisa",
+    "last_day_subtitle": "Uji coba gratis Anda berakhir hari ini!",
+    "upgrade_subtitle": "Tingkatkan ke Sophie AI Pro untuk pengalaman penuh.",
+    "benefits_title": "Apa yang Anda dapatkan",
+    "benefit_1": "Percakapan AI tanpa batas",
+    "benefit_2": "Semua 10+ bahasa terbuka",
+    "benefit_3": "Alat kosakata lanjutan",
+    "benefit_4": "Dukungan prioritas",
+    "limited_time_offer": "Penawaran Terbatas",
+    "off_text": "DISKON {{percent}}%",
+    "claim_discount_msg": "Klaim diskon Anda hari ini",
+    "upgrade_now_btn": "Tingkatkan Sekarang",
+    "claim_discount_btn": "Klaim Diskon Saya",
+    "maybe_later_btn": "Mungkin nanti"
+  }
+}

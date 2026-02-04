@@ -71,18 +71,8 @@ const AnimatedBorderLine: React.FC<{ visible: boolean }> = ({ visible }) => {
 };
 
 // Step configuration with titles for OnboardingHeader
-const stepConfig: Record<number, { title: string; subtitle?: string }> = {
-  1: { title: "" }, // ProfileStep handles its own header
-  2: { title: "What's your main goal in life?" },
-  3: { title: "How quickly do you want to become fluent?" },
-  4: { title: "How long have you been studying this language?" },
-  5: { title: "Which best describes you?" },
-  6: { title: "How confident are you?" },
-  7: { title: "Why are you not confident?" },
-  8: { title: "What do you want to focus on first?" },
-  9: { title: "How did you find us?" },
-  10: { title: "" }, // CompletionStep has its own centered header
-};
+// Step configuration moved inside component to support dynamic translation
+// const stepConfig... removed
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -187,7 +177,8 @@ export default function OnboardingScreen() {
 
         resetOnboarding();
         // 4. Navigate to Language Tab to show the new profile
-        router.replace("/(tabs)/language");
+        // 4. Navigate to Talk Tab to start conversing
+        router.replace("/(tabs)/talk");
       } catch {
         showAlert(
           t("common.error"),
@@ -272,6 +263,32 @@ export default function OnboardingScreen() {
     }
   };
 
+  // Dynamic step configuration
+  const getStepConfig = (step: number) => {
+    switch (step) {
+      case 2:
+        return { title: t("onboarding.titles.goal") };
+      case 3:
+        return { title: t("onboarding.titles.fluency") };
+      case 4:
+        return { title: t("onboarding.titles.duration") };
+      case 5:
+        return { title: t("onboarding.titles.level") };
+      case 6:
+        return { title: t("onboarding.titles.confidence") };
+      case 7:
+        return { title: t("onboarding.titles.barriers") };
+      case 8:
+        return { title: t("onboarding.titles.focus") };
+      case 9:
+        return { title: t("onboarding.titles.discovery") };
+      default:
+        return null;
+    }
+  };
+
+  const currentStepConfig = getStepConfig(currentStep);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-row items-center justify-between px-4 py-2 pt-4 gap-3">
@@ -312,10 +329,10 @@ export default function OnboardingScreen() {
           scrollEventThrottle={16}
         >
           {/* Render OnboardingHeader for steps with titles */}
-          {stepConfig[currentStep]?.title && (
+          {currentStepConfig?.title && (
             <OnboardingHeader
-              title={stepConfig[currentStep].title}
-              subtitle={stepConfig[currentStep].subtitle}
+              title={currentStepConfig.title}
+              subtitle={undefined}
             />
           )}
           {renderStep()}
@@ -346,7 +363,7 @@ export default function OnboardingScreen() {
             containerClassName="items-center justify-center"
             innerBackgroundClassName="bg-white"
           >
-            <Text className="text-gray-900 font-bold text-lg">
+            <Text className="text-gray-900 font-bold text-base">
               {isSaving
                 ? t("onboarding.saving")
                 : currentStep === 10
@@ -361,7 +378,9 @@ export default function OnboardingScreen() {
             className="items-center mt-4"
             disabled={isSaving}
           >
-            <Text className="text-gray-400 font-medium">{t("onboarding.skip")}</Text>
+            <Text className="text-gray-400 font-medium">
+              {t("onboarding.skip")}
+            </Text>
           </TouchableOpacity>
         )}
       </View>

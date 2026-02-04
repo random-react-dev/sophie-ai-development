@@ -23,8 +23,8 @@ export const useLanguageStore = create<LanguageState>()(
       onRehydrateStorage: () => (state) => {
         state?.setHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );
 
 // Atomic Selectors

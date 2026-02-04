@@ -1,9 +1,9 @@
-import { safeGoBack } from "@/utils/navigation";
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthInput } from "@/components/auth/AuthInput";
 import { AlertModal } from "@/components/common/AlertModal";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
+import { safeGoBack } from "@/utils/navigation";
 import { Link, router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import React, { useState } from "react";
@@ -65,10 +65,10 @@ export default function ForgotPasswordScreen() {
             <View className="bg-white rounded-3xl p-6 mt-8 shadow-sm border border-gray-100">
               {/* Title */}
               <View className="items-center mb-8">
-                <Text className="text-3xl font-bold text-gray-900">
+                <Text className="text-2xl font-bold text-gray-900">
                   Reset Password
                 </Text>
-                <Text className="text-gray-500 mt-1 w-full text-center">
+                <Text className="text-gray-500 text-sm mt-1 w-full text-center">
                   Enter your email to receive reset instructions
                 </Text>
               </View>
@@ -112,7 +112,7 @@ export default function ForgotPasswordScreen() {
 
             {/* Terms */}
             <View className="items-center pb-6">
-              <Text className="text-gray-400 text-sm text-center w-full">
+              <Text className="text-gray-400 text-xs text-center w-full">
                 By continuing, you agree to our{" "}
                 <Text className="text-gray-600 font-bold">
                   Terms of Service

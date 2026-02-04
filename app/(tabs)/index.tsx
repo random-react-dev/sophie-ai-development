@@ -7,6 +7,7 @@ import {
   CEFR_LEVELS,
   Scenario,
 } from "@/constants/scenarios";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -71,11 +72,58 @@ export default function RoleplayScreen() {
     selectScenario,
   } = useScenarioStore();
   useAuthStore(); // Kept for potential auth state side effects
+  const { t } = useTranslation();
   const router = useRouter();
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
+  const translatedScenarios = useMemo(() => {
+    const getCategoryLabel = (cat: string) => {
+      switch (cat) {
+        case "Food & Drink":
+          return t("scenarios_screen.categories.food_drink");
+        case "Business":
+          return t("scenarios_screen.categories.business");
+        case "Social":
+          return t("scenarios_screen.categories.social");
+        case "Travel":
+          return t("scenarios_screen.categories.travel");
+        case "Customer Service":
+          return t("scenarios_screen.categories.customer_service");
+        case "Education":
+          return t("scenarios_screen.categories.education");
+        default:
+          return cat;
+      }
+    };
+
+    return scenarios.map((s) => {
+      // Don't translate custom scenarios
+      if (s.category === "Custom") {
+        return s;
+      }
+      return {
+        ...s,
+        title: t(`scenarios_data.${s.id}.title`, { defaultValue: s.title }),
+        description: t(`scenarios_data.${s.id}.description`, {
+          defaultValue: s.description,
+        }),
+        // category: getCategoryLabel(s.category), // Keeping original category for filtering
+        sophieRole: t(`scenarios_data.${s.id}.sophieRole`, {
+          defaultValue: s.sophieRole,
+        }),
+        userRole: t(`scenarios_data.${s.id}.userRole`, {
+          defaultValue: s.userRole,
+        }),
+        topic: t(`scenarios_data.${s.id}.topic`, { defaultValue: s.topic }),
+        context: t(`scenarios_data.${s.id}.context`, {
+          defaultValue: s.context,
+        }),
+      };
+    });
+  }, [scenarios, t]);
+
   const filteredScenarios = useMemo(() => {
-    return scenarios.filter((s) => {
+    return translatedScenarios.filter((s) => {
       const matchesSearch =
         s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -83,7 +131,7 @@ export default function RoleplayScreen() {
         selectedCategory === "All" || s.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [scenarios, searchQuery, selectedCategory]);
+  }, [translatedScenarios, searchQuery, selectedCategory]);
 
   const handleStartScenario = (scenario: Scenario) => {
     selectScenario(scenario);
@@ -94,12 +142,13 @@ export default function RoleplayScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <PageHeader />
 
+      {/* title and subtitle */}
       <View className="px-4 mb-8">
-        <Text className="text-3xl font-bold text-black text-left">
-          Learning Scenarios
+        <Text className="text-xl font-bold text-black text-left">
+          {t("scenarios_screen.title")}
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
-          Practice real-life conversations
+          {t("scenarios_screen.subtitle")}
         </Text>
       </View>
 
@@ -108,8 +157,8 @@ export default function RoleplayScreen() {
         <View className="flex-1 h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
           <Feather name="search" size={20} color="gray" />
           <TextInput
-            placeholder="Search scenarios..."
-            className="flex-1 ml-3 text-gray-900 font-medium text-base p-0"
+            placeholder={t("scenarios_screen.search_placeholder")}
+            className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="gray"
@@ -130,7 +179,9 @@ export default function RoleplayScreen() {
             innerBackgroundClassName="bg-white"
           >
             <Plus size={20} color="black" />
-            <Text className="text-black font-bold text-base">Create</Text>
+            <Text className="text-black font-bold text-base">
+              {t("scenarios_screen.create_button")}
+            </Text>
           </RainbowBorder>
         </TouchableOpacity>
       </View>
@@ -144,6 +195,22 @@ export default function RoleplayScreen() {
         >
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
+            const catLabel =
+              cat === "All"
+                ? t("scenarios_screen.categories.all")
+                : cat === "Food & Drink"
+                  ? t("scenarios_screen.categories.food_drink")
+                  : cat === "Business"
+                    ? t("scenarios_screen.categories.business")
+                    : cat === "Social"
+                      ? t("scenarios_screen.categories.social")
+                      : cat === "Travel"
+                        ? t("scenarios_screen.categories.travel")
+                        : cat === "Customer Service"
+                          ? t("scenarios_screen.categories.customer_service")
+                          : cat === "Education"
+                            ? t("scenarios_screen.categories.education")
+                            : cat;
 
             if (isSelected) {
               return (
@@ -158,7 +225,10 @@ export default function RoleplayScreen() {
                     className="flex-1"
                     containerClassName="px-5 py-2"
                   >
-                    <Text className="font-bold text-sm text-black">{cat}</Text>
+                    {/* category name */}
+                    <Text className="font-bold text-sm text-black">
+                      {catLabel}
+                    </Text>
                   </RainbowBorder>
                 </TouchableOpacity>
               );
@@ -171,7 +241,9 @@ export default function RoleplayScreen() {
                 onPress={() => setSelectedCategory(cat)}
                 className="px-5 py-2 rounded-full border border-gray-300 bg-white"
               >
-                <Text className="font-bold text-sm text-gray-600">{cat}</Text>
+                <Text className="font-bold text-sm text-gray-600">
+                  {catLabel}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -226,15 +298,42 @@ export default function RoleplayScreen() {
                 activeOpacity={0.7}
                 className={`mb-4 p-4 rounded-2xl shadow-lg flex-row items-center ${bgColor}`}
               >
-                <View className="w-12 h-12 rounded-xl items-center justify-center transform scale-110">
-                  <Icon size={28} color="gray" />
+                <View className="w-12 h-12 rounded-full items-center justify-center bg-blue-100/60">
+                  <Icon size={24} color="#3b82f6" />
                 </View>
                 <View className="flex-1 ml-6">
-                  <Text className="text-xl font-bold text-black">
+                  <Text className="text-base font-bold text-black">
                     {item.title}
                   </Text>
-                  <Text className="text-gray-400 text-base font-medium">
-                    {item.category}
+                  <Text className="text-gray-400 text-sm font-medium">
+                    {item.category === "Custom"
+                      ? item.category
+                      : item.category === "Food & Drink"
+                        ? t("scenarios_screen.categories.food_drink", {
+                            defaultValue: "Food & Drink",
+                          })
+                        : item.category === "Business"
+                          ? t("scenarios_screen.categories.business", {
+                              defaultValue: "Business",
+                            })
+                          : item.category === "Social"
+                            ? t("scenarios_screen.categories.social", {
+                                defaultValue: "Social",
+                              })
+                            : item.category === "Travel"
+                              ? t("scenarios_screen.categories.travel", {
+                                  defaultValue: "Travel",
+                                })
+                              : item.category === "Customer Service"
+                                ? t(
+                                    "scenarios_screen.categories.customer_service",
+                                    { defaultValue: "Customer Service" },
+                                  )
+                                : item.category === "Education"
+                                  ? t("scenarios_screen.categories.education", {
+                                      defaultValue: "Education",
+                                    })
+                                  : item.category}
                   </Text>
                   <Text
                     className="text-gray-400 text-sm font-medium"
@@ -257,8 +356,8 @@ export default function RoleplayScreen() {
                 <Star size={24} color="#6b7280" />
               </View>
               <View className="flex-1 ml-6">
-                <Text className="text-xl font-bold text-gray-500">
-                  Create Your Own
+                <Text className="text-base font-bold text-gray-500">
+                  {t("scenarios_screen.create_your_own")}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -266,7 +365,7 @@ export default function RoleplayScreen() {
           ListEmptyComponent={
             <View className="items-center my-10">
               <Text className="text-gray-400 font-medium italic">
-                No scenarios found
+                {t("scenarios_screen.empty_list")}
               </Text>
             </View>
           }
@@ -289,6 +388,7 @@ function CreateScenarioModal({
   onClose: () => void;
 }) {
   const { addCustomScenario, selectScenario } = useScenarioStore();
+  const { t } = useTranslation();
   const router = useRouter();
   const [sophieRole, setSophieRole] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -304,8 +404,8 @@ function CreateScenarioModal({
   const handleCreate = () => {
     if (!sophieRole || !topic) {
       showAlert(
-        "Required Fields Missing",
-        "Sophie's Role and Topic are required!",
+        t("scenarios_screen.create_modal.validation_title"),
+        t("scenarios_screen.create_modal.validation_message"),
         [{ text: "OK", style: "default" }],
         "warning",
       );
@@ -345,8 +445,8 @@ function CreateScenarioModal({
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-2xl font-bold text-black">
-                Create Scenario
+              <Text className="text-xl font-bold text-black">
+                {t("scenarios_screen.create_modal.title")}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -392,13 +492,16 @@ function CreateScenarioModal({
                 showsVerticalScrollIndicator={false}
               >
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                    Sophie&apos;s Role <Text className="text-red-500">*</Text>
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                    {t("scenarios_screen.create_modal.sophie_role_label")}{" "}
+                    <Text className="text-red-500">*</Text>
                   </Text>
                   <TextInput
-                    placeholder="e.g. A grumpy but helpful shopkeeper"
+                    placeholder={t(
+                      "scenarios_screen.create_modal.sophie_role_placeholder",
+                    )}
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
+                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium text-sm h-14 p-0"
                     value={sophieRole}
                     onChangeText={setSophieRole}
                     textAlignVertical="center"
@@ -407,13 +510,15 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                    Your Role
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                    {t("scenarios_screen.create_modal.user_role_label")}
                   </Text>
                   <TextInput
-                    placeholder="e.g. A customer in a hurry"
+                    placeholder={t(
+                      "scenarios_screen.create_modal.user_role_placeholder",
+                    )}
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
+                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium text-sm h-14 p-0"
                     value={userRole}
                     onChangeText={setUserRole}
                     textAlignVertical="center"
@@ -422,13 +527,16 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                    Topic <Text className="text-red-500">*</Text>
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                    {t("scenarios_screen.create_modal.topic_label")}{" "}
+                    <Text className="text-red-500">*</Text>
                   </Text>
                   <TextInput
-                    placeholder="e.g. Buying a vintage watch"
+                    placeholder={t(
+                      "scenarios_screen.create_modal.topic_placeholder",
+                    )}
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium h-14 p-0"
+                    className="bg-gray-50 rounded-2xl px-4 text-gray-900 border border-gray-100 font-medium text-sm h-14 p-0"
                     value={topic}
                     onChangeText={setTopic}
                     textAlignVertical="center"
@@ -437,8 +545,8 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                    Level
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                    {t("scenarios_screen.create_modal.level_label")}
                   </Text>
                   <View className="flex-row flex-wrap gap-1.5">
                     {CEFR_LEVELS.map((l) => {
@@ -482,8 +590,8 @@ function CreateScenarioModal({
 
                 {/* Category Dropdown */}
                 <View className="mb-6">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                    Category
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                    {t("scenarios_screen.create_modal.category_label")}
                   </Text>
                   <TouchableOpacity
                     activeOpacity={0.7}
@@ -501,7 +609,7 @@ function CreateScenarioModal({
                         innerBackgroundClassName="bg-white"
                         containerClassName="px-4 h-16 flex-row justify-between items-center"
                       >
-                        <View className="flex-row items-center gap-3">
+                        <View className="flex-1 flex-row items-center gap-3">
                           {category ? (
                             <View className="w-8 h-8 rounded-full bg-white border border-gray-50 items-center justify-center shadow-sm">
                               {category === "Food & Drink" && (
@@ -529,9 +637,42 @@ function CreateScenarioModal({
                             </View>
                           )}
                           <Text
-                            className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"}`}
+                            numberOfLines={1}
+                            className={`flex-1 font-bold text-base ${category ? "text-gray-900" : "text-gray-400"}`}
                           >
-                            {category || "Select a category"}
+                            {category
+                              ? (() => {
+                                  const catLabel =
+                                    category === "Food & Drink"
+                                      ? t(
+                                          "scenarios_screen.categories.food_drink",
+                                        )
+                                      : category === "Business"
+                                        ? t(
+                                            "scenarios_screen.categories.business",
+                                          )
+                                        : category === "Social"
+                                          ? t(
+                                              "scenarios_screen.categories.social",
+                                            )
+                                          : category === "Travel"
+                                            ? t(
+                                                "scenarios_screen.categories.travel",
+                                              )
+                                            : category === "Customer Service"
+                                              ? t(
+                                                  "scenarios_screen.categories.customer_service",
+                                                )
+                                              : category === "Education"
+                                                ? t(
+                                                    "scenarios_screen.categories.education",
+                                                  )
+                                                : category;
+                                  return catLabel;
+                                })()
+                              : t(
+                                  "scenarios_screen.create_modal.category_placeholder",
+                                )}
                           </Text>
                         </View>
                         <ChevronDown
@@ -542,7 +683,7 @@ function CreateScenarioModal({
                       </RainbowBorder>
                     ) : (
                       <View className="bg-white rounded-2xl px-4 h-16 flex-row justify-between items-center border border-gray-300">
-                        <View className="flex-row items-center gap-3">
+                        <View className="flex-1 flex-row items-center gap-3">
                           {category ? (
                             <View className="size-8 rounded-full bg-gray-100 items-center justify-center">
                               {category === "Food & Drink" && (
@@ -570,9 +711,42 @@ function CreateScenarioModal({
                             </View>
                           )}
                           <Text
-                            className={`font-bold text-base ${category ? "text-gray-900" : "text-gray-400"}`}
+                            numberOfLines={1}
+                            className={`flex-1 font-bold text-base ${category ? "text-gray-900" : "text-gray-400"}`}
                           >
-                            {category || "Select a category"}
+                            {category
+                              ? (() => {
+                                  const catLabel =
+                                    category === "Food & Drink"
+                                      ? t(
+                                          "scenarios_screen.categories.food_drink",
+                                        )
+                                      : category === "Business"
+                                        ? t(
+                                            "scenarios_screen.categories.business",
+                                          )
+                                        : category === "Social"
+                                          ? t(
+                                              "scenarios_screen.categories.social",
+                                            )
+                                          : category === "Travel"
+                                            ? t(
+                                                "scenarios_screen.categories.travel",
+                                              )
+                                            : category === "Customer Service"
+                                              ? t(
+                                                  "scenarios_screen.categories.customer_service",
+                                                )
+                                              : category === "Education"
+                                                ? t(
+                                                    "scenarios_screen.categories.education",
+                                                  )
+                                                : category;
+                                  return catLabel;
+                                })()
+                              : t(
+                                  "scenarios_screen.create_modal.category_placeholder",
+                                )}
                           </Text>
                         </View>
                         <ChevronDown size={18} color="#6b7280" />
@@ -631,16 +805,42 @@ function CreateScenarioModal({
                                   <RainbowGradient className="flex-1 opacity-20" />
                                 </View>
                               )}
-                              <View className="flex-row items-center gap-2.5">
+                              <View className="flex-1 flex-row items-center gap-2.5">
                                 <View
                                   className={`size-8 rounded-full items-center justify-center ${isSelected ? "bg-white border border-gray-200 shadow-sm" : "bg-gray-100"}`}
                                 >
                                   {getCategoryIcon()}
                                 </View>
                                 <Text
-                                  className={`font-semibold text-sm ${isSelected ? "text-gray-900" : "text-gray-700"}`}
+                                  className={`flex-1 font-semibold text-sm ${isSelected ? "text-gray-900" : "text-gray-700"}`}
                                 >
-                                  {cat}
+                                  {cat === "All"
+                                    ? t("scenarios_screen.categories.all")
+                                    : cat === "Food & Drink"
+                                      ? t(
+                                          "scenarios_screen.categories.food_drink",
+                                        )
+                                      : cat === "Business"
+                                        ? t(
+                                            "scenarios_screen.categories.business",
+                                          )
+                                        : cat === "Social"
+                                          ? t(
+                                              "scenarios_screen.categories.social",
+                                            )
+                                          : cat === "Travel"
+                                            ? t(
+                                                "scenarios_screen.categories.travel",
+                                              )
+                                            : cat === "Customer Service"
+                                              ? t(
+                                                  "scenarios_screen.categories.customer_service",
+                                                )
+                                              : cat === "Education"
+                                                ? t(
+                                                    "scenarios_screen.categories.education",
+                                                  )
+                                                : cat}
                                 </Text>
                               </View>
                             </TouchableOpacity>
@@ -652,13 +852,15 @@ function CreateScenarioModal({
                 </View>
 
                 <View className="mb-10">
-                  <Text className="text-gray-500 text-base font-semibold capitalize mb-2 ml-1">
-                    Context / Situation
+                  <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                    {t("scenarios_screen.create_modal.context_label")}
                   </Text>
                   <TextInput
-                    placeholder="Describe the setting..."
+                    placeholder={t(
+                      "scenarios_screen.create_modal.context_placeholder",
+                    )}
                     placeholderTextColor="gray"
-                    className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium h-32 text-start align-top"
+                    className="bg-gray-50 rounded-2xl px-4 py-4 text-gray-900 border border-gray-100 font-medium text-sm h-32 text-start align-top"
                     multiline
                     value={context}
                     onChangeText={setContext}
@@ -681,7 +883,7 @@ function CreateScenarioModal({
                   containerClassName="items-center justify-center flex-1"
                 >
                   <Text className="text-black font-bold text-lg">
-                    Start Scenario
+                    {t("scenarios_screen.create_modal.start_button")}
                   </Text>
                 </RainbowBorder>
               </TouchableOpacity>

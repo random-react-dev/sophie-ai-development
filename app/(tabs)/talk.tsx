@@ -2,8 +2,7 @@ import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
-import LanguageSelectorModal from "@/components/tutor/LanguageSelectorModal";
-import { Language } from "@/constants/languages";
+import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { audioRecorder } from "@/services/audio/recorder";
 import { audioStreamer } from "@/services/audio/streamer";
 import { translateText } from "@/services/gemini/translate";
@@ -12,13 +11,28 @@ import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
-import { useLearningStore } from "@/stores/learningStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useRouter } from "expo-router";
-import { Globe, RotateCcw } from "lucide-react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
+import { RotateCcw } from "lucide-react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  Alert,
+  FlatList,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useTranslation } from "@/hooks/useTranslation";
 
 import { MessageBubble } from "@/components/common/MessageBubble";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -117,23 +131,33 @@ export default function TalkScreen() {
     practicePhrase,
     setPracticePhrase,
   } = useScenarioStore();
-  const {
-    targetLanguage,
-    nativeLanguage,
-    setTargetLanguage,
-    setNativeLanguage,
-  } = useLearningStore();
+  const { activeProfile, fetchProfiles } = useProfileStore();
   const { session, user } = useAuthStore();
   const flatListRef = useRef<FlatList>(null);
-  const isInitialized = useRef(false);
+  const isInitialized = useRef<boolean>(false);
   const router = useRouter();
+  const { t } = useTranslation();
+
+  // Derive target and native languages from active profile
+  const targetLanguage = useMemo((): Language | null => {
+    if (!activeProfile?.target_language) return null;
+    return (
+      SUPPORTED_LANGUAGES.find(
+        (l) => l.name === activeProfile.target_language,
+      ) || null
+    );
+  }, [activeProfile?.target_language]);
+
+  const nativeLanguage = useMemo((): Language | null => {
+    // Use medium_language for explanations if set, otherwise use native_language
+    const langName =
+      activeProfile?.medium_language || activeProfile?.native_language;
+    if (!langName) return null;
+    return SUPPORTED_LANGUAGES.find((l) => l.name === langName) || null;
+  }, [activeProfile?.medium_language, activeProfile?.native_language]);
 
   // Session tracking
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
-
-  // Language picker state
-  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [pickerMode, setPickerMode] = useState<"target" | "native">("target");
 
   // Recording timer state
   const [recordingTime, setRecordingTime] = useState(0);
@@ -141,9 +165,16 @@ export default function TalkScreen() {
   // Alert modal state for reset confirmation
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
-  // Check if both languages are selected
+  // Check if both languages are selected (profile exists)
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
+
+  // Fetch profiles on mount to ensure activeProfile is loaded
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchProfiles();
+    }
+  }, [session?.user?.id, fetchProfiles]);
 
   // Recording timer effect
   useEffect(() => {
@@ -160,11 +191,30 @@ export default function TalkScreen() {
     return () => clearInterval(interval);
   }, [isPTTActive]);
 
+  // Handle Tab Focus: Pause audio when leaving, resume (replay from start) on return
+  useFocusEffect(
+    useCallback(() => {
+      // On focus: Resume playback if there was a paused response
+      Logger.info(TAG, "Talk tab focused");
+      audioStreamer.resumePlayback();
+
+      return () => {
+        // On blur: Pause Sophie (fade out, but keep buffer for resume)
+        Logger.info(TAG, "Talk tab blurred - pausing audio");
+        audioStreamer.pausePlayback();
+      };
+    }, []),
+  );
+
+  // Initialize Session (Once on mount)
   useEffect(() => {
     let isMounted = true;
 
+    // Only initialize if we haven't already
+    if (isInitialized.current) return;
+
     const initSession = async () => {
-      if (!session || isInitialized.current) return;
+      if (!session) return;
 
       // Don't initialize until both languages are selected
       if (!targetLanguage || !nativeLanguage) {
@@ -189,7 +239,10 @@ export default function TalkScreen() {
           token = data.token;
         }
 
-        if (!isMounted) return;
+        if (!isMounted) {
+          isInitialized.current = false;
+          return;
+        }
 
         // Build instruction based on context
         let instruction: string;
@@ -226,6 +279,7 @@ Stay in character while teaching.`;
         setSessionStartTime(Date.now());
       } catch (err) {
         if (isMounted) {
+          isInitialized.current = false;
           const errorMessage =
             err instanceof Error ? err.message : "Unknown error";
           Logger.error(TAG, "Gemini session initialization error", err);
@@ -236,14 +290,13 @@ Stay in character while teaching.`;
 
     initSession();
 
+    // Cleanup only on unmount (not on blur)
     return () => {
       isMounted = false;
-      Logger.info(TAG, "Cleaning up Talk Hub...");
+      Logger.info(TAG, "Cleaning up Talk Hub (Component Unmount)...");
       geminiWebSocket.disconnect();
-      audioRecorder.stop().catch(() => {
-        /* ignore */
-      });
-      audioStreamer.clearQueue();
+      audioRecorder.stop().catch(() => {});
+      audioStreamer.dispose(); // Fully dispose on unmount
       isInitialized.current = false;
     };
   }, [
@@ -256,23 +309,23 @@ Stay in character while teaching.`;
   ]);
 
   const getStatusText = (): string => {
-    if (isSpeaking) return "Sophie Speaking...";
+    if (isSpeaking) return t("talk_screen.status.speaking");
     // Show buffering progress during processing
     if (isProcessing && bufferProgress > 0 && bufferProgress < 100) {
-      return `Preparing response... ${bufferProgress}%`;
+      return t("talk_screen.status.preparing", { progress: bufferProgress });
     }
-    if (isProcessing) return "Sophie is thinking...";
-    if (isListening) return "Listening...";
+    if (isProcessing) return t("talk_screen.status.thinking");
+    if (isListening) return t("talk_screen.status.listening");
 
     switch (connectionState) {
       case "connecting":
-        return "Connecting...";
+        return t("talk_screen.status.connecting");
       case "reconnecting":
-        return "Reconnecting...";
+        return t("talk_screen.status.reconnecting");
       case "error":
-        return error || "Error";
+        return error || t("talk_screen.status.error");
       default:
-        return "Hold mic to speak";
+        return t("talk_screen.status.hold_mic");
     }
   };
 
@@ -284,10 +337,17 @@ Stay in character while teaching.`;
 
   const handleFinish = () => {
     if (messages.length === 0) {
-      showAlert("End Session", "Go back to scenario library?", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Yes", onPress: () => router.push("/(tabs)") },
-      ]);
+      showAlert(
+        t("talk_screen.alerts.end_session_title"),
+        t("talk_screen.alerts.end_session_msg"),
+        [
+          { text: t("talk_screen.alerts.cancel"), style: "cancel" },
+          {
+            text: t("talk_screen.alerts.yes"),
+            onPress: () => router.push("/(tabs)"),
+          },
+        ],
+      );
       return;
     }
 
@@ -298,12 +358,12 @@ Stay in character while teaching.`;
       : 0;
 
     showAlert(
-      "Finish Conversation",
-      "Are you done with this practice session?",
+      t("talk_screen.alerts.finish_title"),
+      t("talk_screen.alerts.finish_msg"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("talk_screen.alerts.cancel"), style: "cancel" },
         {
-          text: "Finish",
+          text: t("talk_screen.alerts.finish"),
           onPress: () => {
             router.push({
               pathname: "/report",
@@ -318,12 +378,12 @@ Stay in character while teaching.`;
 
   const handleReset = () => {
     showAlert(
-      "Reset Chat",
-      "This will clear the current conversation and reset Sophie. Continue?",
+      t("talk_screen.alerts.reset_title"),
+      t("talk_screen.alerts.reset_msg"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("talk_screen.alerts.cancel"), style: "cancel" },
         {
-          text: "Reset",
+          text: t("talk_screen.alerts.reset"),
           style: "destructive",
           onPress: async () => {
             await stopConversation();
@@ -344,20 +404,21 @@ Stay in character while teaching.`;
   };
 
   const handleTranslate = useCallback(
-    async (text: string) => {
+    async (text: string): Promise<string | null> => {
       try {
         const result = await translateText(text, "English");
         const displayText = result.romanization
           ? `${result.translation}\n\n${result.romanization}`
           : result.translation;
-        showAlert("Translation", displayText, undefined, "info");
+        return displayText;
       } catch {
         showAlert(
-          "Error",
-          "Failed to translate. Please try again.",
+          t("talk_screen.alerts.error_title"),
+          t("talk_screen.alerts.error_msg"),
           undefined,
           "error",
         );
+        return null;
       }
     },
     [showAlert],
@@ -365,12 +426,20 @@ Stay in character while teaching.`;
 
   const handleSaveVocabulary = useCallback(
     async (text: string) => {
-      const success = await saveToVocabulary({ phrase: text });
+      const success = await saveToVocabulary({
+        phrase: text,
+        language: targetLanguage?.name,
+      });
       if (success) {
-        showAlert("Success", "Added to your vocabulary!", undefined, "success");
+        showAlert(
+          t("talk_screen.alerts.success_title"),
+          t("talk_screen.alerts.vocab_added"),
+          undefined,
+          "success",
+        );
       }
     },
-    [showAlert],
+    [showAlert, t, targetLanguage],
   );
 
   // Message type for FlatList
@@ -399,26 +468,25 @@ Stay in character while teaching.`;
     <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
       <PageHeader />
 
-      {/* Language Selection */}
+      {/* Language Selection - Dynamic from Profile */}
       <View className="px-6 py-2 flex-row justify-center items-center gap-4">
         {/* Target Language (what to learn) */}
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => {
-            setPickerMode("target");
-            setShowLanguagePicker(true);
-          }}
+          onPress={() => router.push("/(tabs)/language")}
           className="items-center"
         >
           <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
             {targetLanguage ? (
               <Text className="text-2xl">{targetLanguage.flag}</Text>
             ) : (
-              <Globe size={20} color="#9ca3af" />
+              <Text className="text-2xl">🌐</Text>
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
-            {targetLanguage ? "Learning" : "Select"}
+            {targetLanguage
+              ? t("talk_screen.language_selector.learning_label")
+              : t("talk_screen.language_selector.select_label")}
           </Text>
         </TouchableOpacity>
 
@@ -428,21 +496,20 @@ Stay in character while teaching.`;
         {/* Native Language (explanations) */}
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => {
-            setPickerMode("native");
-            setShowLanguagePicker(true);
-          }}
+          onPress={() => router.push("/(tabs)/language")}
           className="items-center"
         >
           <View className="w-12 h-12 rounded-xl bg-white border border-gray-200 items-center justify-center shadow-sm">
             {nativeLanguage ? (
               <Text className="text-2xl">{nativeLanguage.flag}</Text>
             ) : (
-              <Globe size={20} color="#9ca3af" />
+              <Text className="text-2xl">🌐</Text>
             )}
           </View>
           <Text className="text-[10px] text-gray-500 mt-1 font-medium">
-            {nativeLanguage ? "Explain in" : "Select"}
+            {nativeLanguage
+              ? t("talk_screen.language_selector.explain_label")
+              : t("talk_screen.language_selector.select_label")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -452,9 +519,20 @@ Stay in character while teaching.`;
         {/* Conversation Area */}
         <View className="bg-white rounded-[40px] shadow-xl shadow-gray-200/50 border border-gray-100 h-[250px] overflow-hidden">
           {/* Premium Status Bar */}
-          <View className="flex-row items-center justify-end p-4 bg-gray-50/50 border-b border-gray-100">
+          <View className="bg-gray-50/50 border-b border-gray-100">
             {/* Actions Bar */}
-            <View className="flex-row items-center gap-3">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                gap: 12,
+                alignItems: "center",
+                minWidth: "100%",
+                justifyContent: "flex-end",
+              }}
+            >
               {/* Finish Button */}
               {messages.length > 0 && (
                 <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
@@ -466,7 +544,7 @@ Stay in character while teaching.`;
                   >
                     <Feather name="check-circle" size={12} color="black" />
                     <Text className="text-black font-bold text-xs">
-                      Finish & Get Report
+                      {t("talk_screen.actions.finish_report")}
                     </Text>
                   </RainbowBorder>
                 </TouchableOpacity>
@@ -484,14 +562,14 @@ Stay in character while teaching.`;
               {/* Transcript Toggle */}
               <View className="flex-row items-center bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
                 <Text className="text-black text-xs font-bold mr-2">
-                  Transcript
+                  {t("talk_screen.actions.transcript")}
                 </Text>
                 <CustomToggle
                   value={showTranscript}
                   onValueChange={setShowTranscript}
                 />
               </View>
-            </View>
+            </ScrollView>
           </View>
 
           <View className="flex-1 justify-center items-center relative">
@@ -529,7 +607,7 @@ Stay in character while teaching.`;
             <View className="flex-1 items-center justify-center">
               {/* Hide transcript */}
               {/* <Text className="text-gray-400 font-medium">
-                Transcript Hidden
+                {t("talk_screen.actions.transcript_hidden")}
               </Text> */}
             </View>
           ) : messages.length === 0 ? (
@@ -553,12 +631,11 @@ Stay in character while teaching.`;
               <View className="mt-4">
                 {!canStartConversation ? (
                   <Text className="text-black/60 font-medium text-center px-10 leading-5">
-                    Select both languages above to start your lesson with
-                    Sophie.
+                    {t("talk_screen.prompts.select_both_langs")}
                   </Text>
                 ) : (
                   <Text className="text-black/60 font-medium text-center px-10 leading-6">
-                    Hold the mic below to start speaking with Sophie.
+                    {t("talk_screen.prompts.hold_mic_start")}
                   </Text>
                 )}
               </View>
@@ -583,27 +660,7 @@ Stay in character while teaching.`;
       {/* Pad for the Tab Bar Mic Button */}
       {/* <View className="h-20" /> */}
 
-      {/* Language Selector Modal */}
-      <LanguageSelectorModal
-        visible={showLanguagePicker}
-        onClose={() => setShowLanguagePicker(false)}
-        onSelect={(lang) => {
-          if (pickerMode === "target") {
-            setTargetLanguage(lang);
-          } else {
-            setNativeLanguage(lang);
-          }
-          setShowLanguagePicker(false);
-        }}
-        selectedCode={
-          pickerMode === "target" ? targetLanguage?.code : nativeLanguage?.code
-        }
-        title={
-          pickerMode === "target"
-            ? "What do you want to learn?"
-            : "What's your native language?"
-        }
-      />
+      {/* Language selection is now managed from the Profile page (/(tabs)/language) */}
 
       {/* Reset Confirmation Modal */}
       <AlertModal

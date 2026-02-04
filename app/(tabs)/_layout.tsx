@@ -107,10 +107,15 @@ export default function TabLayout() {
           backgroundColor: "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#f1f5f9",
-          height: 58 + insets.bottom,
-          paddingBottom: insets.bottom,
-          paddingTop: 12,
+          // Use a safer height calculation that works across devices
+          height: 60 + (insets.bottom > 0 ? insets.bottom : 10),
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          paddingTop: 10,
           paddingHorizontal: 8,
+          // CRITICAL: Allow floating buttons to extend outside the tab bar
+          overflow: "visible",
+          // Ensure tab bar sits above other content if needed
+          zIndex: 50,
         },
         tabBarLabel: ({ children, color }) => (
           <Text
@@ -145,7 +150,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="translate"
         options={{
-          title: "Translate", // Keeping as is, not in prototype scope list but can update if needed
+          title: t("tabs.translate"),
           tabBarActiveTintColor: "#2563EB",
           tabBarIcon: ({ color }) => <Languages size={24} color={color} />,
         }}
@@ -201,13 +206,13 @@ export default function TabLayout() {
                 };
 
                 const getButtonColor = (): string => {
-                  if (isPTTActive) return "bg-red-500 shadow-red-200";
-                  if (isProcessing) return "bg-orange-500 shadow-orange-200";
-                  if (!isFocused) return "bg-gray-900 shadow-gray-400";
-                  if (!isConnected) return "bg-gray-600 shadow-gray-400";
+                  if (isPTTActive) return "bg-white shadow-red-200";
+                  if (isProcessing) return "bg-white shadow-orange-200";
+                  if (!isFocused) return "bg-white shadow-gray-200";
+                  if (!isConnected) return "bg-gray-100 shadow-gray-200";
                   return isPressing
-                    ? "bg-blue-400 shadow-blue-200"
-                    : "bg-blue-500 shadow-blue-200";
+                    ? "bg-gray-50 shadow-blue-200"
+                    : "bg-white shadow-blue-200";
                 };
 
                 return (
@@ -221,19 +226,6 @@ export default function TabLayout() {
                     }}
                     className="items-center justify-center -top-8"
                   >
-                    {/* Pulsing ring when recording ONLY */}
-                    {isPTTActive && (
-                      <Animated.View
-                        style={{
-                          position: "absolute",
-                          width: 80,
-                          height: 80,
-                          borderRadius: 24,
-                          backgroundColor: "rgba(239, 68, 68, 0.3)",
-                          transform: [{ scale: pulseAnim }],
-                        }}
-                      />
-                    )}
                     <Pressable
                       onPressIn={handlePressIn}
                       onPressOut={handlePressOut}
@@ -244,6 +236,7 @@ export default function TabLayout() {
                       <RainbowBorder
                         borderRadius={20}
                         borderWidth={3}
+                        innerBackgroundClassName=""
                         className="size-20"
                         style={{
                           // Subtle premium shadow when active
@@ -261,7 +254,11 @@ export default function TabLayout() {
                           name="mic"
                           size={26}
                           color={
-                            isFocused && !isPTTActive ? "#FFA500" : "black"
+                            isPTTActive
+                              ? "#ef4444"
+                              : isProcessing
+                                ? "black"
+                                : "black"
                           }
                         />
                       </RainbowBorder>

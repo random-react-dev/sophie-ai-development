@@ -7,11 +7,7 @@ import { useLanguageStore } from "@/stores/languageStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { Ionicons } from "@expo/vector-icons";
 import { ChevronDown } from "lucide-react-native";
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useState
-} from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   FlatList,
   Modal,
@@ -208,7 +204,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
       return (
         <View className="flex-1">
           <View className="mb-6 px-4">
-            <Text className="text-3xl font-bold text-gray-900 mb-2">
+            <Text className="text-xl font-bold text-gray-900 mb-2">
               {t("onboarding.chooseLanguage")}
             </Text>
           </View>
@@ -257,11 +253,65 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
       );
     }
 
-    // Sub-step 2: Profile Details (Name, Country, Native Language, Learning Language)
+    // Sub-step 2: Learning Language Selection
+    if (subStep === 2) {
+      return (
+        <View className="flex-1">
+          <View className="mb-6 px-4">
+            <Text className="text-xl font-bold text-gray-900 mb-2">
+              {t("onboarding.chooseLearningLanguage")}
+            </Text>
+          </View>
+
+          <FlatList
+            data={APP_LANGUAGES}
+            keyExtractor={(item) => item.code}
+            contentContainerStyle={{
+              paddingTop: 4,
+              paddingBottom: 100,
+              paddingHorizontal: 16,
+            }}
+            showsVerticalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            scrollEventThrottle={16}
+            onScroll={(event) => {
+              const scrollY = event.nativeEvent.contentOffset.y;
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              const isAtBottom =
+                scrollY + containerHeightRef.current >=
+                contentHeightRef.current - 10;
+              onScrollStateChange?.(isScrollable && !isAtBottom);
+            }}
+            onContentSizeChange={(width, height) => {
+              contentHeightRef.current = height;
+            }}
+            onLayout={(event) => {
+              containerHeightRef.current = event.nativeEvent.layout.height;
+              // Initial check
+              const isScrollable =
+                contentHeightRef.current > containerHeightRef.current;
+              onScrollStateChange?.(isScrollable);
+            }}
+            renderItem={({ item }) => (
+              <LanguageItem
+                lang={item}
+                isSelected={data.learningLanguage === item.code}
+                onPress={() => {
+                  updateData({ learningLanguage: item.code });
+                }}
+              />
+            )}
+          />
+        </View>
+      );
+    }
+
+    // Sub-step 3: Profile Details (Name, Country, Native Language)
     return (
       <View className="flex-1">
         <View className="mb-6 px-4">
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
+          <Text className="text-xl font-bold text-gray-900 mb-2">
             {t("onboarding.profileStep.almostThere")}
           </Text>
         </View>
@@ -317,7 +367,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setCountryModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${data.country ? "text-gray-800" : "text-gray-400"
+                className={`flex-1 text-sm ${data.country ? "text-gray-800" : "text-gray-400"
                   }`}
                 numberOfLines={1}
               >
@@ -338,7 +388,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setLanguageModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${data.nativeLanguage ? "text-gray-800" : "text-gray-400"
+                className={`flex-1 text-sm ${data.nativeLanguage ? "text-gray-800" : "text-gray-400"
                   }`}
                 numberOfLines={1}
               >
@@ -364,7 +414,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               <View className="px-4 py-6 bg-white border-b border-gray-100">
                 <View className="flex-row justify-between items-center">
                   <View className="flex-1 pr-4">
-                    <Text className="text-2xl font-bold text-gray-900">
+                    <Text className="text-xl font-bold text-gray-900">
                       {t("onboarding.profileStep.selectCountry")}
                     </Text>
                   </View>
@@ -468,7 +518,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               <View className="px-4 py-6 bg-white border-b border-gray-100">
                 <View className="flex-row justify-between items-center">
                   <View className="flex-1 pr-4">
-                    <Text className="text-2xl font-bold text-gray-900">
+                    <Text className="text-xl font-bold text-gray-900">
                       {t("onboarding.profileStep.selectNativeLanguage")}
                     </Text>
                   </View>

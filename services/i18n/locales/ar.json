@@ -1,0 +1,648 @@
+{
+  "onboarding": {
+    "chooseLanguage": "اختر لغة التطبيق",
+    "chooseLearningLanguage": "ما اللغة التي تريد تعلمها؟",
+    "continue": "متابعة",
+    "saving": "جاري الحفظ...",
+    "startLearning": "ابدأ التعلم",
+    "skip": "تخطى الآن",
+    "profileStep": {
+      "almostThere": "قاربت على الانتهاء!",
+      "nameLabel": "اسمك",
+      "namePlaceholder": "أدخل اسمك",
+      "countryLabel": "الدولة",
+      "countryPlaceholder": "اختر دولتك",
+      "nativeLanguageLabel": "اللغة الأم",
+      "nativeLanguagePlaceholder": "اختر لغتك الأم",
+      "selectCountry": "اختر الدولة",
+      "selectNativeLanguage": "اللغة الأم"
+    },
+    "options": {
+      "goal": {
+        "student": "أنا طالب",
+        "traveler": "أنا مسافر",
+        "abroad": "سأكون / أنا في الخارج",
+        "job": "أحتاج إليها لعملي",
+        "other": "آخر"
+      },
+      "level": {
+        "zero": "لا أعرف كلمة واحدة",
+        "words": "أستطيع قول بضع كلمات فقط",
+        "phrases": "أستطيع قول بضع جمل فقط",
+        "basic_idea": "لدي الفكرة ولكن ليس لدي المفردات",
+        "fluent": "أنا طليق، لكنني بحاجة إلى مزيد من الممارسة"
+      },
+      "fluency": {
+        "norush": "لا عجلة، يمكنني أخذ وقتي",
+        "consistent": "أريد أن أكون ثابتًا وأمارس يوميًا",
+        "phrases": "فقط أحتاج إلى بضع جمل",
+        "conversations": "أحتاج إلى إجراء محادثات عامة",
+        "desperate": "أنا يائس لأكون طليقًا، الآن."
+      },
+      "duration": {
+        "less_1_month": "أقل من شهر",
+        "less_6_months": "أقل من 6 أشهر",
+        "less_2_years": "أقل من سنتين",
+        "less_5_years": "أقل من 5 سنوات",
+        "less_10_years": "أقل من 10 سنوات",
+        "more": "أكثر"
+      },
+      "confidence": {
+        "1": "مرعوب",
+        "2": "متوتر جدًا",
+        "3": "قلق",
+        "4": "غير متأكد",
+        "5": "محايد",
+        "6": "متفائل",
+        "7": "واثق",
+        "8": "لا يمكن إيقافي"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "الخوف من ارتكاب الأخطاء",
+          "desc": "أقلق من قول شيء خاطئ"
+        },
+        "consistency": {
+          "title": "قلة الاستمرارية",
+          "desc": "أجد صعوبة في الممارسة بانتظام"
+        },
+        "practice": {
+          "title": "عدم وجود شخص للممارسة معه",
+          "desc": "ليس لدي شريك محادثة"
+        },
+        "other": {
+          "title": "آخر",
+          "desc": "شيء آخر يعيقني"
+        }
+      },
+      "focus": {
+        "listening": "الاستماع",
+        "speaking": "التحدث",
+        "pronunciation": "النطق",
+        "vocabulary": "المفردات",
+        "grammar": "القواعد",
+        "reading": "القراءة",
+        "writing": "الكتابة"
+      },
+      "discovery": {
+        "tiktok": "تيك توك",
+        "instagram": "إنستغرام",
+        "linkedin": "لينكد إن",
+        "youtube": "يوتيوب",
+        "friend": "العائلة / الصديق",
+        "other": "آخر"
+      }
+    },
+    "titles": {
+      "goal": "ما هو هدفك الرئيسي في الحياة؟",
+      "fluency": "ما مدى السرعة التي تريد أن تصبح طليقاً بها؟",
+      "duration": "منذ متى وانت تدرس هذه اللغة؟",
+      "level": "أي مما يلي يصفك بشكل أفضل؟",
+      "confidence": "ما مدى ثقتك بنفسك؟",
+      "barriers": "لماذا لست واثقاً؟",
+      "focus": "ما الذي تريد التركيز عليه أولاً؟",
+      "discovery": "كيف عرفت عنا؟"
+    },
+    "completion": {
+      "title": "كل شيء جاهز!",
+      "subtitle": "مسار التعلم المخصص الخاص بك جاهز",
+      "videoLabel": "قابل مدرب اللغة الخاص بك بالذكاء الاصطناعي",
+      "primaryGoal": "الهدف الرئيسي",
+      "learningPace": "وتيرة التعلم",
+      "currentLevel": "المستوى الحالي",
+      "notSet": "غير محدد"
+    }
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "menu": {
+      "preferences": {
+        "title": "التفضيلات",
+        "subtitle": "اللغة، الدولة، والمزيد"
+      },
+      "account": {
+        "title": "الحساب",
+        "subtitle": "الاشتراك والفوترة"
+      },
+      "security": {
+        "title": "الأمان",
+        "subtitle": "كلمة المرور والمصادقة"
+      },
+      "progress": {
+        "title": "التقدم",
+        "subtitle": "تتبع مسار تعلمك"
+      },
+      "support": {
+        "title": "الدعم",
+        "subtitle": "المساعدة، السياسات، والملاحظات"
+      },
+      "social": {
+        "title": "وسائل التواصل الاجتماعي",
+        "subtitle": "تواصل معنا"
+      },
+      "logout": "تسجيل الخروج",
+      "setName": "تحديد الاسم",
+      "avatarSuccess": "تم تحديث الصورة الشخصية بنجاح!",
+      "avatarError": "فشل في تحميل الصورة الشخصية.",
+      "nameError": "فشل في تحديث الاسم.",
+      "logoutConfirm": {
+        "title": "تسجيل الخروج",
+        "message": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+        "cancel": "إلغاء",
+        "confirm": "تسجيل الخروج"
+      }
+    },
+    "preferences_screen": {
+      "title": "التفضيلات",
+      "accountInfo": "معلومات الحساب",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "languages": "اللغات",
+      "country": "الدولة",
+      "nativeLanguage": "اللغة الأم",
+      "appLanguage": "لغة التطبيق",
+      "selectLanguage": "اختر اللغة",
+      "notSet": "غير محدد"
+    },
+    "account_screen": {
+      "title": "الحساب",
+      "subscription": "الاشتراك",
+      "status": "الحالة",
+      "freeTrial": "تجربة مجانية",
+      "upgradeToPro": "الترقية إلى برو",
+      "payment": "الدفع",
+      "paymentMethods": "طرق الدفع",
+      "billingHistory": "سجل الفواتير",
+      "accountInfo": "معلومات الحساب",
+      "email": "البريد الإلكتروني",
+      "memberSince": "عضو منذ",
+      "na": "غير متوفر",
+      "comingSoon": "قريباً"
+    },
+    "subscription_screen": {
+      "title": "الترقية إلى برو",
+      "choosePlan": "اختر خطتك",
+      "subtitle": "أطلق العنان للإمكانيات الكاملة لـ Sophie AI وأتقن أي لغة.",
+      "plans": {
+        "mg": {
+          "name": "إم و جي",
+          "description": "مثالي للممارسة العرضية.",
+          "features": {
+            "0": "جميع اللغات مشمولة",
+            "1": "5 دقائق/يوم ممارسة",
+            "2": "ملاحظات معلم الذكاء الاصطناعي الأساسية"
+          }
+        },
+        "launch": {
+          "name": "حزمة الإطلاق",
+          "description": "للمتعلمين الجادين الذين يرغبون في التحدث بثقة.",
+          "badge": "الأكثر شيوعاً",
+          "features": {
+            "0": "لغة واحدة من اختيارك",
+            "1": "15 دقيقة/يوم ممارسة",
+            "2": "ملاحظات الذكاء الاصطناعي ذات الأولوية",
+            "3": "بدون إعلانات"
+          }
+        },
+        "sbb": {
+          "name": "إس بي بي",
+          "description": "تدريب متقدم للأعمال والامتحانات.",
+          "features": {
+            "0": "لغات غير محدودة",
+            "1": "وقت غير محدود",
+            "2": "تحليلات الذكاء الاصطناعي المتقدمة",
+            "3": "مسارات مخصصة"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "اشترك الآن",
+        "getStarted": "ابدأ الآن",
+        "month": "شهر",
+        "day7": "7 أيام"
+      },
+      "footer": "تشمل جميع الخطط وصولاً لمعلم الذكاء الاصطناعي على مدار الساعة وتتبع التقدم. يمكنك الإلغاء في أي وقت من إعداداتك."
+    },
+    "security_screen": {
+      "title": "الأمان",
+      "subtitle": "احمِ حسابك",
+      "auth_section": "المصادقة",
+      "change_password": {
+        "title": "تغيير كلمة المرور",
+        "subtitle": "قم بتحديث كلمة المرور بانتظام"
+      },
+      "two_factor": {
+        "title": "المصادقة الثنائية",
+        "status": "غير مفعل"
+      },
+      "tips_section": "نصائح أمنية",
+      "tips": {
+        "strong_password": {
+          "title": "استخدم كلمة مرور قوية",
+          "body": "استخدم مزيجاً من الحروف والأرقام والرموز لحماية قصوى."
+        },
+        "enable_2fa": {
+          "title": "تفعيل المصادقة الثنائية",
+          "body": "طبقة أمان إضافية لحسابك. قريباً!"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "تغيير كلمة المرور",
+      "new_password": "كلمة مرور جديدة",
+      "new_password_placeholder": "أدخل كلمة مرور جديدة",
+      "confirm_password": "تأكيد كلمة المرور",
+      "confirm_password_placeholder": "تأكيد كلمة المرور الجديدة",
+      "update_button": "تحديث كلمة المرور",
+      "error_length": "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
+      "error_match": "كلمات المرور غير متطابقة.",
+      "success_message": "تم تحديث كلمة المرور بنجاح.",
+      "error_generic": "فشل تحديث كلمة المرور."
+    },
+    "progress_screen": {
+      "title": "التقدم",
+      "overview": "نظرة عامة",
+      "speaking": "التحدث",
+      "words": "كلمات",
+      "sessions": "جلسات",
+      "detailed_stats": "إحصائيات مفصلة",
+      "coming_soon": "قريبا",
+      "coming_soon_body": "سيتوفر تحليل تعليمي مفصل وتتبع للتقدم في تحديث مستقبلي."
+    },
+    "support_screen": {
+      "title": "الدعم",
+      "legal": "قانوني",
+      "privacy_policy": "سياسة الخصوصية",
+      "terms_of_service": "شروط الخدمة",
+      "contact_us": "اتصل بنا",
+      "email_support": "دعم البريد الإلكتروني",
+      "send_feedback": "إرسال ملاحظات",
+      "help_improve": "ساعدنا على التحسن",
+      "whatsapp_support": "دعم واتساب",
+      "whatsapp_subtitle": "دردش معنا على واتساب",
+      "whatsapp_message": "مرحباً فريق صوفي! 👋 أنا أستخدم تطبيق صوفي للذكاء الاصطناعي وأود التواصل معكم.",
+      "contact_alert_title": "اتصل بنا",
+      "contact_alert_body": "راسلنا على support@fluentai.com لأي أسئلة أو ملاحظات.",
+      "feedback_alert_title": "قريبا",
+      "feedback_alert_body": "ستتوفر ميزة الملاحظات داخل التطبيق قريباً.",
+      "danger_zone": "منطقة الخطر",
+      "delete_account": "حذف الحساب",
+      "delete_account_subtitle": "حذف حسابك بشكل دائم",
+      "delete_account_alert_title": "حذف الحساب",
+      "delete_account_alert_body": "هذه الميزة قادمة قريباً. بياناتك آمنة.",
+      "app_info": "معلومات التطبيق",
+      "version": "الإصدار",
+      "build": "النسخة",
+      "prototype": "النموذج الأولي"
+    },
+    "privacy_policy_screen": {
+      "title": "سياسة الخصوصية",
+      "last_updated": "آخر تحديث: 13 يناير 2026",
+      "section1_title": "1. المعلومات التي نجمعها",
+      "section1_body": "نحن نجمع المعلومات لتقديم خدمات أفضل لجميع مستخدمينا. يتضمن ذلك تفاصيل الحساب مثل اسمك وبريدك الإلكتروني واللغات المفضلة، بالإضافة إلى بيانات الاستخدام لتحسين نماذج الذكاء الاصطناعي الخاصة بنا.",
+      "section2_title": "2. كيف نستخدم البيانات",
+      "section2_body": "تُستخدم بياناتك لتخصيص تجربة التعلم الخاصة بك، وتتبع التقدم، وتحسين دقة الذكاء الاصطناعي لدينا. نحن لا نبيع بياناتك الشخصية لأطراف ثالثة.",
+      "section3_title": "3. تفاعل الذكاء الاصطناعي",
+      "section3_body": "تتم معالجة المحادثات والمدخلات المقدمة داخل التطبيق لإنشاء استجابات الذكاء الاصطناعي. قد يتم استخدام هذه البيانات بطريقة مجهولة لتدريب وتحسين نماذج تعلم اللغة.",
+      "section4_title": "4. أمن البيانات",
+      "section4_body": "نحن ننفذ تدابير أمنية متوافقة مع معايير الصناعة لحماية معلوماتك من الوصول غير المصرح به أو التغيير أو الكشف أو التدمير.",
+      "section5_title": "5. حقوقك",
+      "section5_body": "لديك الحق في الوصول إلى معلوماتك الشخصية أو تصحيحها أو حذفها في أي وقت من خلال إعدادات الحساب أو عن طريق الاتصال بفريق الدعم لدينا.",
+      "section6_title": "6. معلومات الاتصال",
+      "section6_body": "إذا كان لديك أي أسئلة حول سياسة الخصوصية هذه، يرجى الاتصال بنا على support@fluentai.com."
+    },
+    "terms_screen": {
+      "title": "شروط الخدمة",
+      "last_updated": "آخر تحديث: 13 يناير 2026",
+      "section1_title": "1. قبول الشروط",
+      "section1_body": "من خلال الوصول إلى هذا التطبيق واستخدامه، فإنك توافق على الالتزام بشروط الخدمة هذه. إذا كنت لا توافق على أي جزء من هذه الشروط، فلا يجوز لك استخدام خدماتنا.",
+      "section2_title": "2. استخدام الخدمة",
+      "section2_body": "أنت توافق على استخدام هذا التطبيق لأغراض تعلم اللغة الشخصية وغير التجارية فقط. يجب عليك عدم استخدام الخدمات لأي غرض غير قانوني أو غير مصرح به.",
+      "section3_title": "3. سلوك المستخدم",
+      "section3_body": "يُتوقع من المستخدمين التفاعل مع مساعد الذكاء الاصطناعي باحترام. يُحظر بشدة أي محاولة لاستغلال وظائف التطبيق المقصودة أو الإضرار بها أو تجاوزها.",
+      "section4_title": "4. الملكية الفكرية",
+      "section4_body": "التطبيق ومحتواه ونماذج الذكاء الاصطناعي محمية بموجب حقوق الطبع والنشر وقوانين الملكية الفكرية الأخرى. لا يجوز لك إعادة إنتاج أو توزيع أي جزء من الخدمة دون إذن.",
+      "section5_title": "5. إخلاء المسؤولية عن الذكاء الاصطناعي",
+      "section5_body": "توفر خدمتنا محتوى تم إنشاؤه بواسطة الذكاء الاصطناعي للأغراض التعليمية. بينما نسعى جاهدين لتحقيق الدقة، قد يقدم الذكاء الاصطناعي أحيانًا معلومات غير صحيحة. يتم تشجيع المستخدمين على التحقق من التفاصيل المهمة.",
+      "section6_title": "6. حدود المسؤولية",
+      "section6_body": "نحن لسنا مسؤولين عن أي أضرار مباشرة أو غير مباشرة أو تبعية ناتجة عن استخدامك للتطبيق أو أي معلومات يقدمها مساعد الذكاء الاصطناعي.",
+      "section7_title": "7. التغييرات في الشروط",
+      "section7_body": "نحن نحتفظ بالحق في تعديل هذه الشروط في أي وقت. يشكل استخدامك المستمر للتطبيق بعد نشر التغييرات موافقتك على الشروط الجديدة."
+    },
+    "social_screen": {
+      "title": "وسائل التواصل الاجتماعي",
+      "section_title": "تواصل معنا",
+      "instagram": "إنستغرام",
+      "instagram_subtitle": "تابعنا على إنستغرام",
+      "facebook": "فيسبوك",
+      "facebook_subtitle": "انضم إلى مجتمعنا",
+      "twitter": "X (تويتر)",
+      "twitter_subtitle": "تابعنا على X",
+      "linkedin": "لينكد إن",
+      "linkedin_subtitle": "تواصل مهنيا",
+      "youtube": "يوتيوب",
+      "youtube_subtitle": "اشترك في قناتنا",
+      "tiktok": "تيك توك",
+      "tiktok_subtitle": "شاهد أحدث مقاطع الفيديو لدينا",
+      "reddit": "ريديت",
+      "reddit_subtitle": "انضم إلى المناقشة",
+      "error": "خطأ",
+      "open_error": "تعذر فتح {platform}. الرجاء المحاولة مرة أخرى لاحقًا.",
+      "general_error": "حدث خطأ أثناء محاولة فتح {platform}."
+    }
+  },
+  "scenarios_screen": {
+    "title": "سيناريوهات التعلم",
+    "subtitle": "تدرب على محادثات الحياة الواقعية",
+    "search_placeholder": "البحث عن سيناريوهات...",
+    "create_button": "إنشاء",
+    "create_your_own": "أنشئ خاصتك",
+    "empty_search": "لم يتم العثور على تطابقات",
+    "empty_list": "لم يتم العثور على سيناريوهات",
+    "categories": {
+      "all": "الكل",
+      "food_drink": "طعام و شراب",
+      "business": "أعمال",
+      "social": "اجتماعي",
+      "travel": "سفر",
+      "customer_service": "خدمة العملاء",
+      "education": "تعليم"
+    },
+    "create_modal": {
+      "title": "إنشاء سيناريو",
+      "sophie_role_label": "دور صوفي",
+      "sophie_role_placeholder": "مثال: صاحب متجر غاضب ولكنه متعاون",
+      "user_role_label": "دورك",
+      "user_role_placeholder": "مثال: عميل في عجلة من أمره",
+      "topic_label": "الموضوع",
+      "topic_placeholder": "مثال: شراء ساعة عتيقة",
+      "level_label": "المستوى",
+      "category_label": "الفئة",
+      "category_placeholder": "اختر فئة",
+      "context_label": "السياق / الوضع",
+      "context_placeholder": "صف الإعداد...",
+      "start_button": "بدء السيناريو",
+      "validation_title": "حقول مطلوبة مفقودة",
+      "validation_message": "دور صوفي والموضوع مطلوبان!"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "طلب قهوة",
+      "description": "اطلب لاتيه وكرواسون في مقهى مزدحم.",
+      "sophieRole": "باريستا في مقهى مزدحم بوسط المدينة",
+      "userRole": "زبون يبحث عن الإفطار",
+      "topic": "الحياة اليومية",
+      "context": "أنت في مقهى يسمى \"طحن الصباح\". تريد طلب قهوة وشيء للأكل."
+    },
+    "job-interview": {
+      "title": "مقابلة عمل",
+      "description": "مقابلة لوظيفة مهندس برمجيات.",
+      "sophieRole": "مُوظِّف تقني أول في شركة تكنولوجيا",
+      "userRole": "مرشح يتقدم لدور مطور واجهة أمامية",
+      "topic": "مهنة",
+      "context": "أنت في مقابلة لوظيفة أحلامك. ستسألك صوفي عن خبرتك ومهاراتك."
+    },
+    "asking-directions": {
+      "title": "سؤال عن الاتجاهات",
+      "description": "أنت تائه في طوكيو وتحتاج للعثور على محطة قطار.",
+      "sophieRole": "مقيم محلي متعاون في طوكيو",
+      "userRole": "سائح تائه قليلاً",
+      "topic": "سفر",
+      "context": "أنت بالقرب من تقاطع شيبويا وتحتاج للوصول إلى محطة JR لكن بطارية هاتفك نفدت."
+    },
+    "hotel-check-in": {
+      "title": "تسجيل الدخول في الفندق",
+      "description": "سجل الدخول واطلب غرفة وإطلالة.",
+      "sophieRole": "موظف استقبال في فندق 4 نجوم",
+      "userRole": "ضيف يصل لإقامة لمدة ثلاث ليالٍ",
+      "topic": "سفر",
+      "context": "لديك حجز باسمك. تريد تأكيد مواعيد الإفطار والسؤال عما إذا كانت هناك غرفة ذات إطلالة جميلة متاحة."
+    },
+    "political-debate": {
+      "title": "نقاش سياسي",
+      "description": "ناقش السياسات البيئية وتغير المناخ.",
+      "sophieRole": "مدافع شغوف عن البيئة",
+      "userRole": "مواطن متشكك أو صانع سياسات معارض",
+      "topic": "أحداث جارية",
+      "context": "شارك في نقاش عميق حول التوازن بين النمو الاقتصادي وحماية البيئة."
+    }
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "error": "خطأ",
+    "warning": "تحذير",
+    "incomplete": "غير مكتمل",
+    "incompleteMessage": "الرجاء إدخال اسمك واختيار دولة.",
+    "errorMessage": "فشل حفظ تفضيلاتك. يرجى المحاولة مرة أخرى.",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "صوفي تتحدث...",
+      "preparing": "جارٍ إعداد الرد... {{progress}}%",
+      "thinking": "صوفي تفكر...",
+      "listening": "جارٍ الاستماع...",
+      "connecting": "جارٍ الاتصال...",
+      "reconnecting": "جارٍ إعادة الاتصال...",
+      "hold_mic": "اضغط باستمرار على الميكروفون للتحدث",
+      "error": "خطأ"
+    },
+    "language_selector": {
+      "learning_label": "تعلم",
+      "select_label": "تحديد",
+      "explain_label": "شرح بـ",
+      "target_title": "ماذا تريد أن تتعلم؟",
+      "native_title": "ما هي لغتك الأم؟"
+    },
+    "actions": {
+      "finish_report": "إنهاء والحصول على التقرير",
+      "transcript": "نص",
+      "transcript_hidden": "النص مخفي"
+    },
+    "message_actions": {
+      "translate": "ترجمة",
+      "hide": "إخفاء",
+      "save": "حفظ",
+      "translating": "جاري الترجمة..."
+    },
+    "prompts": {
+      "select_both_langs": "حدد كلتا اللغتين أعلاه لبدء درسك مع صوفي.",
+      "hold_mic_start": "اضغط باستمرار على الميكروفون أدناه لبدء التحدث مع صوفي."
+    },
+    "alerts": {
+      "end_session_title": "إنهاء الجلسة",
+      "end_session_msg": "العودة إلى مكتبة السيناريوهات؟",
+      "finish_title": "إنهاء المحادثة",
+      "finish_msg": "هل انتهيت من جلسة التدريب هذه؟",
+      "reset_title": "إعادة تعيين الدردشة",
+      "reset_msg": "سيؤدي هذا إلى مسح المحادثة الحالية وإعادة تعيين صوفي. متابعة؟",
+      "error_title": "خطأ",
+      "error_msg": "فشل الترجمة. الرجاء المحاولة مرة أخرى.",
+      "success_title": "نجاح",
+      "vocab_added": "تمت الإضافة إلى مفرداتك!",
+      "cancel": "إلغاء",
+      "yes": "نعم",
+      "finish": "إنهاء",
+      "reset": "إعادة تعيين"
+    }
+  },
+  "vocab_screen": {
+    "title": "مفرداتي",
+    "subtitle": "كلماتك وعباراتك المحفوظة",
+    "search_placeholder": "بحث في الكلمات المحفوظة...",
+    "add_button": "إضافة",
+    "all_filter": "الكل",
+    "all_folders": "كل المجلدات",
+    "empty_state": {
+      "no_matches": "لم يتم العثور على تطابقات",
+      "empty_title": "مفرداتك فارغة.",
+      "empty_subtitle": "أضف عبارات لبدء التعلم!",
+      "no_phrases": "لا توجد عبارات متاحة"
+    },
+    "labels": {
+      "primary": "أساسي"
+    },
+    "actions": {
+      "listen": "استمع",
+      "delete": "حذف",
+      "close": "إغلاق",
+      "save_translation": "حفظ الترجمة",
+      "change": "تغيير",
+      "save_phrase": "حفظ العبارة",
+      "start_practice": "ابدأ بـ {{count}} عبارة",
+      "start_practice_plural": "ابدأ بـ {{count}} عبارة"
+    },
+    "modals": {
+      "add_title": "إضافة عبارة",
+      "edit_title": "تعديل عبارة",
+      "label_language": "اللغة",
+      "label_folder": "المجلد (اختياري)",
+      "label_phrase": "العبارة",
+      "placeholder_phrase": "أدخل كلمة أو عبارة...",
+      "label_translation": "الترجمة (اختياري)",
+      "placeholder_translation": "أدخل المعنى...",
+      "select_folder": "اختر مجلدًا",
+      "selected_folder": "المجلد المحدد",
+      "practice_session_title": "جلسة تدريب"
+    },
+    "alerts": {
+      "delete_title": "حذف العبارة",
+      "delete_msg": "هل أنت متأكد أنك تريد حذف هذه العبارة؟",
+      "required_title": "مطلوب",
+      "required_msg": "يرجى إدخال عبارة",
+      "error_title": "خطأ",
+      "save_error": "فشل في حفظ العبارة",
+      "update_error": "فشل في تحديث العبارة",
+      "delete_error": "فشل في حذف العنصر",
+      "translation_failed": "فشل الترجمة",
+      "playing_audio": "جاري تشغيل الصوت لـ: \"{{text}}\"",
+      "speech_error": "فشل في نطق العبارة. حاول مرة اخرى.",
+      "connection_required": "يرجى زيارة علامة تبويب التحدث أولاً للاتصال بـ Sophie."
+    }
+  },
+  "language_screen": {
+    "title": "تفضيلات اللغة",
+    "subtitle": "اختر لغتك الأم واللغة المستهدفة واللهجة المفضلة.",
+    "create_profile_btn": "إنشاء ملف تعريف جديد",
+    "sections": {
+      "learning_preferences": "تفضيلات التعلم",
+      "accent_playground": "اختبار اللهجة",
+      "text_placeholder": "اكتب نصك هنا...",
+      "default_test_phrase": "مرحبا كيف حالك؟",
+      "speed_label": "السرعة",
+      "playground_hint": "اختبر اللهجة المحددة واضبط سرعة التحدث. اضغط على تشغيل للمعاينة."
+    },
+    "modals": {
+      "create_title": "ملف تعريف تعلم جديد",
+      "create_button": "إنشاء ملف تعريف",
+      "sections": {
+        "target_label": "أريد أن أتعلم",
+        "medium_label": "صوفي تدرس بـ",
+        "medium_placeholder": "نفس اللغة الأم",
+        "accent_label": "اللهجة المفضلة"
+      },
+      "duplicate_profile_error": "لديك بالفعل ملف تعريف لزوج اللغة هذا!",
+      "create_error": "فشل إنشاء الملف الشخصي. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "language_picker": {
+    "title": "اختر اللغة",
+    "search_placeholder": "البحث عن اللغات...",
+    "no_results": "لم يتم العثور على لغات",
+    "select_native": "اختر اللغة الأم",
+    "select_target": "اختر اللغة المستهدفة",
+    "select_instruction": "اختر لغة التدريس"
+  },
+  "tabs": {
+    "talk": "تحدث",
+    "translate": "ترجمة",
+    "vocab": "مفردات",
+    "scenarios": "سيناريوهات",
+    "profile": "الملف الشخصي"
+  },
+  "translate_screen": {
+    "title": "ترجمة",
+    "subtitle": "ترجمة النص إلى لغة أخرى",
+    "swap_instruction": "اضغط للتبديل لعكس الاتجاه",
+    "input_placeholder": "أدخل النص للترجمة...",
+    "actions": {
+      "translate": "ترجمة",
+      "practice": "ممارسة",
+      "save": "حفظ",
+      "copy": "نسخ"
+    },
+    "empty_state": "ستظهر الترجمة هنا...",
+    "modals": {
+      "source_picker_title": "ترجمة من",
+      "target_picker_title": "ترجمة إلى",
+      "save_folder_title": "حفظ في مجلد",
+      "folder_name_placeholder": "اسم المجلد...",
+      "create_button": "إنشاء",
+      "create_new_folder": "إنشاء مجلد جديد",
+      "your_folders": "مجلداتك",
+      "no_folders": "لا توجد مجلدات بعد! أنشئ واحدًا أعلاه",
+      "save_to_vocab_button": "حفظ في المفردات"
+    },
+    "alerts": {
+      "permission_required": "الإذن مطلوب",
+      "mic_access": "يرجى تمكين الوصول إلى الميكروفون لاستخدام الإدخال الصوتي.",
+      "error": "خطأ",
+      "translate_failed": "فشلت الترجمة. يرجى المحاولة مرة أخرى.",
+      "saved_title": "تم الحفظ!",
+      "saved_message": "تمت الإضافة إلى مفرداتك",
+      "save_failed": "فشل الحفظ. يرجى المحاولة مرة أخرى.",
+      "copied_title": "تم النسخ",
+      "copied_message": "تم نسخ النص إلى الحافظة"
+    }
+  },
+  "accent_picker": {
+    "title": "اختر اللكنة",
+    "english_suffix": "الإنجليزية",
+    "accents": {
+      "Indian": "هندي",
+      "Australian": "أسترالي",
+      "American": "أمريكي",
+      "British": "بريطاني"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "اليوم الأخير!",
+    "days_left_title": "{{count}} أيام متبقية",
+    "last_day_subtitle": "تنتهي تجربتك المجانية اليوم!",
+    "upgrade_subtitle": "قم بالترقية إلى صوفي AI برو للحصول على التجربة الكاملة.",
+    "benefits_title": "ما ستحصل عليه",
+    "benefit_1": "محادثات ذكاء اصطناعي غير محدودة",
+    "benefit_2": "فتح جميع اللغات الـ 10+",
+    "benefit_3": "أدوات مفردات متقدمة",
+    "benefit_4": "دعم ذو أولوية",
+    "limited_time_offer": "عرض لفترة محدودة",
+    "off_text": "خصم {{percent}}%",
+    "claim_discount_msg": "طالب بخصمك اليوم",
+    "upgrade_now_btn": "ترقية الآن",
+    "claim_discount_btn": "المطالبة بخصمي",
+    "maybe_later_btn": "ربما لاحقاً"
+  }
+}

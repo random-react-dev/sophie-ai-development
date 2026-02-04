@@ -1,6 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { useTranslation } from "@/hooks/useTranslation";
 import { uploadAvatar } from "@/services/supabase/storage";
 import { useAuthStore } from "@/stores/authStore";
 import { getRainbowColorScheme } from "@/utils/rainbowColors";
@@ -13,8 +14,8 @@ import {
   HelpCircle,
   LogOut,
   Settings,
+  Share2,
   Shield,
-  Trash2,
   User,
 } from "lucide-react-native";
 import React, { useState } from "react";
@@ -29,6 +30,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, signOut, updateProfile } = useAuthStore();
 
   // Local State
@@ -41,7 +43,7 @@ export default function ProfileScreen() {
 
   const handleAvatarUpload = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
@@ -54,13 +56,18 @@ export default function ProfileScreen() {
         if (publicUrl) {
           await updateProfile({ avatar_url: publicUrl });
           showAlert(
-            "Success",
-            "Avatar updated successfully!",
+            t("common.success"),
+            t("profile.menu.avatarSuccess"),
             undefined,
             "success",
           );
         } else {
-          showAlert("Error", "Failed to upload avatar.", undefined, "error");
+          showAlert(
+            t("common.error"),
+            t("profile.menu.avatarError"),
+            undefined,
+            "error",
+          );
         }
       } catch {
         showAlert("Error", "An unexpected error occurred.", undefined, "error");
@@ -76,18 +83,23 @@ export default function ProfileScreen() {
       await updateProfile({ full_name: name });
       setIsEditingName(false);
     } catch {
-      showAlert("Error", "Failed to update name.", undefined, "error");
+      showAlert(
+        t("common.error"),
+        t("profile.menu.nameError"),
+        undefined,
+        "error",
+      );
     }
   };
 
   const handleLogout = () => {
     showAlert(
-      "Log Out",
-      "Are you sure you want to log out?",
+      t("profile.menu.logoutConfirm.title"),
+      t("profile.menu.logoutConfirm.message"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("profile.menu.logoutConfirm.cancel"), style: "cancel" },
         {
-          text: "Log Out",
+          text: t("profile.menu.logoutConfirm.confirm"),
           style: "destructive",
           onPress: async () => {
             await signOut();
@@ -99,19 +111,10 @@ export default function ProfileScreen() {
     );
   };
 
-  const handleDeleteAccount = () => {
-    showAlert(
-      "Delete Account",
-      "This feature is coming soon. Your data is safe.",
-      undefined,
-      "info",
-    );
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <ProfileHeader title="My Profile" />
+      <ProfileHeader title={t("profile.title")} />
 
       <View className="flex-1 justify-between">
         {/* Profile Card */}
@@ -132,7 +135,7 @@ export default function ProfileScreen() {
                   />
                 ) : (
                   <View className="w-full h-full items-center justify-center">
-                    <Text className="text-3xl font-bold text-blue-500">
+                    <Text className="text-2xl font-bold text-blue-500">
                       {user?.email?.charAt(0).toUpperCase()}
                     </Text>
                   </View>
@@ -165,7 +168,8 @@ export default function ProfileScreen() {
                   onPress={() => setIsEditingName(true)}
                 >
                   <Text className="text-xl font-bold text-gray-900 text-center">
-                    {user?.user_metadata?.full_name || "Set Name"}
+                    {user?.user_metadata?.full_name ||
+                      t("profile.menu.setName")}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -186,8 +190,8 @@ export default function ProfileScreen() {
         <View className="mx-4 mt-3">
           {/* Preferences Card */}
           <ProfileSettingCard
-            title="Preferences"
-            subtitle="Language, country, and more"
+            title={t("profile.menu.preferences.title")}
+            subtitle={t("profile.menu.preferences.subtitle")}
             icon={
               <Settings size={20} color={getRainbowColorScheme(0).iconColor} />
             }
@@ -197,8 +201,8 @@ export default function ProfileScreen() {
 
           {/* Account Card */}
           <ProfileSettingCard
-            title="Account"
-            subtitle="Subscription and billing"
+            title={t("profile.menu.account.title")}
+            subtitle={t("profile.menu.account.subtitle")}
             icon={<User size={20} color={getRainbowColorScheme(1).iconColor} />}
             colorScheme={getRainbowColorScheme(1)}
             onPress={() => router.push("/profile/account")}
@@ -206,8 +210,8 @@ export default function ProfileScreen() {
 
           {/* Security Card */}
           <ProfileSettingCard
-            title="Security"
-            subtitle="Password and authentication"
+            title={t("profile.menu.security.title")}
+            subtitle={t("profile.menu.security.subtitle")}
             icon={
               <Shield size={20} color={getRainbowColorScheme(2).iconColor} />
             }
@@ -217,8 +221,8 @@ export default function ProfileScreen() {
 
           {/* Progress Card */}
           <ProfileSettingCard
-            title="Progress"
-            subtitle="Track your learning journey"
+            title={t("profile.menu.progress.title")}
+            subtitle={t("profile.menu.progress.subtitle")}
             icon={
               <BarChart3 size={20} color={getRainbowColorScheme(3).iconColor} />
             }
@@ -228,8 +232,8 @@ export default function ProfileScreen() {
 
           {/* Support Card */}
           <ProfileSettingCard
-            title="Support"
-            subtitle="Help, policies, and feedback"
+            title={t("profile.menu.support.title")}
+            subtitle={t("profile.menu.support.subtitle")}
             icon={
               <HelpCircle
                 size={20}
@@ -239,6 +243,24 @@ export default function ProfileScreen() {
             colorScheme={getRainbowColorScheme(4)}
             onPress={() => router.push("/profile/support")}
           />
+
+          {/* Social Media Card */}
+          <ProfileSettingCard
+            title={t("profile.menu.social.title")}
+            subtitle={t("profile.menu.social.subtitle")}
+            icon={
+              <Share2
+                size={20}
+                color="#9333EA" // Purple-600
+              />
+            }
+            colorScheme={{
+              iconColor: "#9333EA",
+              iconBgColor: "bg-purple-50",
+              borderColor: "border-purple-300", // Stronger purple border as requested
+            }}
+            onPress={() => router.push("/profile/social")}
+          />
         </View>
 
         {/* Actions Section */}
@@ -246,37 +268,13 @@ export default function ProfileScreen() {
           <View className="mx-4">
             {/* Log Out Card */}
             <ProfileSettingCard
-              title="Log Out"
+              title={t("profile.menu.logout")}
               icon={<LogOut size={20} color="#ef4444" />}
               iconBgColor="bg-red-50"
               textColor="text-red-500"
               showArrow={false}
               onPress={handleLogout}
             />
-          </View>
-
-          {/* Danger Zone Section */}
-          <View className="mx-4">
-            {/* Delete Account Card */}
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleDeleteAccount}
-              className="bg-white rounded-2xl p-4 flex-row items-center justify-between shadow-sm border border-red-200"
-            >
-              <View className="flex-row items-center gap-4">
-                <View className="w-11 h-11 rounded-xl bg-red-50 items-center justify-center">
-                  <Trash2 size={20} color="#ef4444" />
-                </View>
-                <View>
-                  <Text className="text-base font-semibold text-red-500">
-                    Delete Account
-                  </Text>
-                  <Text className="text-xs text-gray-400 mt-0.5">
-                    Permanently remove your account
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
           </View>
         </View>
       </View>

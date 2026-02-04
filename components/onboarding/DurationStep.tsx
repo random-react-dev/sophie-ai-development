@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { View } from "react-native";
@@ -5,14 +6,35 @@ import { SelectionCard } from "./SelectionCard";
 
 export const DurationStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const durations = [
-    { id: "less_1_month", title: "Less than 1 month", level: 1 },
-    { id: "less_6_months", title: "Less than 6 months", level: 2 },
-    { id: "less_2_years", title: "Less than 2 years", level: 3 },
-    { id: "less_5_years", title: "Less than 5 years", level: 4 },
-    { id: "less_10_years", title: "Less than 10 years", level: 5 },
-    { id: "more", title: "More", level: 6 },
+    {
+      id: "less_1_month",
+      title: t("onboarding.options.duration.less_1_month"),
+      level: 1,
+    },
+    {
+      id: "less_6_months",
+      title: t("onboarding.options.duration.less_6_months"),
+      level: 2,
+    },
+    {
+      id: "less_2_years",
+      title: t("onboarding.options.duration.less_2_years"),
+      level: 3,
+    },
+    {
+      id: "less_5_years",
+      title: t("onboarding.options.duration.less_5_years"),
+      level: 4,
+    },
+    {
+      id: "less_10_years",
+      title: t("onboarding.options.duration.less_10_years"),
+      level: 5,
+    },
+    { id: "more", title: t("onboarding.options.duration.more"), level: 6 },
   ];
 
   return (

@@ -1,0 +1,650 @@
+{
+  "onboarding": {
+    "chooseLanguage": "揀選應用程式語言",
+    "chooseLearningLanguage": "你想學咩語言？",
+    "continue": "繼續",
+    "saving": "儲存緊...",
+    "startLearning": "開始學習",
+    "skip": "跳過",
+    "profileStep": {
+      "almostThere": "差唔多搞掂！",
+      "nameLabel": "你個名",
+      "namePlaceholder": "輸入你個名",
+      "countryLabel": "國家",
+      "countryPlaceholder": "揀選你嘅國家",
+      "nativeLanguageLabel": "母語",
+      "nativeLanguagePlaceholder": "揀選你嘅母語",
+      "selectCountry": "揀選國家",
+      "selectNativeLanguage": "母語"
+    },
+    "options": {
+      "goal": {
+        "student": "我係學生",
+        "traveler": "我係旅行者",
+        "abroad": "我將/在外國",
+        "job": "工作需要",
+        "other": "其他"
+      },
+      "level": {
+        "zero": "我一個字都唔識",
+        "words": "我只能講幾個詞",
+        "phrases": "我只能講幾句",
+        "basic_idea": "我有諗法但詞彙唔夠",
+        "fluent": "我好流利，但需要更多練習"
+      },
+      "fluency": {
+        "norush": "唔急，我可以慢慢嚟",
+        "consistent": "我想堅持每日練習",
+        "phrases": "我只需要幾個短語",
+        "conversations": "我需要進行一般對話",
+        "desperate": "我渴望而家就流利。"
+      },
+      "duration": {
+        "less_1_month": "唔夠1個月",
+        "less_6_months": "唔夠6個月",
+        "less_2_years": "唔夠2年",
+        "less_5_years": "唔夠5年",
+        "less_10_years": "唔夠10年",
+        "more": "更多"
+      },
+      "confidence": {
+        "1": "恐懼",
+        "2": "好緊張",
+        "3": "焦慮",
+        "4": "唔確定",
+        "5": "中立",
+        "6": "充滿希望",
+        "7": "自信",
+        "8": "勢不可擋"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "驚講錯嘢",
+          "desc": "我擔心講錯嘢"
+        },
+        "consistency": {
+          "title": "缺乏一致性",
+          "desc": "我好難經常練習"
+        },
+        "practice": {
+          "title": "缺乏練習對象",
+          "desc": "我冇對話拍檔"
+        },
+        "other": {
+          "title": "其他",
+          "desc": "其他阻礙我嘅原因"
+        }
+      },
+      "focus": {
+        "listening": "聽力",
+        "speaking": "口語",
+        "pronunciation": "發音",
+        "vocabulary": "詞彙",
+        "grammar": "語法",
+        "reading": "閱讀",
+        "writing": "寫作"
+      },
+      "discovery": {
+        "tiktok": "TikTok",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "friend": "家人/朋友",
+        "other": "其他"
+      }
+    },
+    "titles": {
+      "goal": "你人生嘅主要目標係咩？",
+      "fluency": "你想幾快學識講？",
+      "duration": "你學咗呢種語言幾耐？",
+      "level": "邊個最形容得你貼切？",
+      "confidence": "你有幾大信心？",
+      "barriers": "點解你冇信心？",
+      "focus": "你想專注學咩先？",
+      "discovery": "你係點樣搵到我哋？"
+    },
+    "completion": {
+      "title": "搞掂！",
+      "subtitle": "你嘅個人學習路徑准備好啦",
+      "videoLabel": "見下你嘅AI語言教練",
+      "primaryGoal": "主要目標",
+      "learningPace": "學習進度",
+      "currentLevel": "目前水平",
+      "notSet": "未設置"
+    }
+  },
+  "profile": {
+    "title": "我嘅個人檔案",
+    "menu": {
+      "preferences": {
+        "title": "設定",
+        "subtitle": "語言、國家同埋其他"
+      },
+      "account": {
+        "title": "帳戶",
+        "subtitle": "訂閱同帳單"
+      },
+      "security": {
+        "title": "安全",
+        "subtitle": "密碼同認證"
+      },
+      "progress": {
+        "title": "進度",
+        "subtitle": "追蹤你嘅學習旅程"
+      },
+      "support": {
+        "title": "支援",
+        "subtitle": "幫助、政策同反饋"
+      },
+      "social": {
+        "title": "社交媒體",
+        "subtitle": "聯絡我哋"
+      },
+      "logout": "登出",
+      "setName": "設定名",
+      "avatarSuccess": "頭像更新成功！",
+      "avatarError": "上傳頭像失敗。",
+      "nameError": "更新名失敗。",
+      "logoutConfirm": {
+        "title": "登出",
+        "message": "你確定要登出？",
+        "cancel": "取消",
+        "confirm": "登出"
+      }
+    },
+    "preferences_screen": {
+      "title": "設定",
+      "accountInfo": "帳戶資料",
+      "name": "名",
+      "email": "電郵",
+      "languages": "語言",
+      "country": "國家",
+      "nativeLanguage": "母語",
+      "appLanguage": "App 語言",
+      "selectLanguage": "選擇語言",
+      "notSet": "未設定"
+    },
+    "account_screen": {
+      "title": "帳戶",
+      "subscription": "訂閱",
+      "status": "狀態",
+      "freeTrial": "免費試用",
+      "upgradeToPro": "升級至 Pro",
+      "payment": "付款",
+      "paymentMethods": "付款方式",
+      "billingHistory": "賬單記錄",
+      "accountInfo": "帳戶資料",
+      "email": "電郵",
+      "memberSince": "加入日期",
+      "na": "不適用",
+      "comingSoon": "即將推出"
+    },
+    "subscription_screen": {
+      "title": "升級至 Pro",
+      "choosePlan": "選擇你的計劃",
+      "subtitle": "釋放 Sophie AI 的全部潛力並掌握任何語言。",
+      "plans": {
+        "mg": {
+          "name": "M 和 G",
+          "description": "適合隨時練習。",
+          "features": {
+            "0": "包含所有語言",
+            "1": "每日 5 分鐘練習",
+            "2": "基本 AI 導師反饋"
+          }
+        },
+        "launch": {
+          "name": "啟動包",
+          "description": "適合想自信開口說話的認真學習者。",
+          "badge": "最受歡迎",
+          "features": {
+            "0": "自選 1 種語言",
+            "1": "每日 15 分鐘練習",
+            "2": "優先 AI 反饋",
+            "3": "無廣告"
+          }
+        },
+        "sbb": {
+          "name": "專業商務版",
+          "description": "針對商業和考試的高級輔導。",
+          "features": {
+            "0": "無限語言",
+            "1": "無限時間",
+            "2": "高級 AI 分析",
+            "3": "個性化路徑"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "立即訂閱",
+        "getStarted": "開始使用",
+        "month": "月",
+        "day7": "7 天"
+      },
+      "footer": "所有計劃均包括 24/7 AI 導師服務及進度追蹤。隨時可在設定中取消。"
+    },
+
+    "security_screen": {
+      "title": "保安",
+      "subtitle": "保護您嘅帳戶",
+      "auth_section": "身份驗證",
+      "change_password": {
+        "title": "更改密碼",
+        "subtitle": "定期更新您嘅密碼"
+      },
+      "two_factor": {
+        "title": "雙重認證",
+        "status": "未啟用"
+      },
+      "tips_section": "保安提示",
+      "tips": {
+        "strong_password": {
+          "title": "使用強力密碼",
+          "body": "混合使用字母、數字同特殊符號以獲得最大保護。"
+        },
+        "enable_2fa": {
+          "title": "啟用雙重認證",
+          "body": "為您嘅帳戶提供額外嘅保安層。即將推出！"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "更改密碼",
+      "new_password": "新密碼",
+      "new_password_placeholder": "輸入新密碼",
+      "confirm_password": "確認密碼",
+      "confirm_password_placeholder": "確認新密碼",
+      "update_button": "更新密碼",
+      "error_length": "密碼長度必須至少為6個字元。",
+      "error_match": "密碼唔匹配。",
+      "success_message": "你嘅密碼已成功更新。",
+      "error_generic": "更密碼失敗。"
+    },
+    "progress_screen": {
+      "title": "進度",
+      "overview": "概覽",
+      "speaking": "講嘢",
+      "words": "單詞",
+      "sessions": "課程",
+      "detailed_stats": "詳細統計",
+      "coming_soon": "即將推出",
+      "coming_soon_body": "詳細嘅學習分析同進度追蹤將會喺未來嘅更新中提供。"
+    },
+    "support_screen": {
+      "title": "支援",
+      "legal": "法律",
+      "privacy_policy": "私隱政策",
+      "terms_of_service": "服務條款",
+      "contact_us": "聯絡我們",
+      "email_support": "電郵支援",
+      "send_feedback": "發送意見",
+      "help_improve": "幫我哋改進",
+      "whatsapp_support": "WhatsApp 支援",
+      "whatsapp_subtitle": "喺 WhatsApp 同我哋傾偈",
+      "whatsapp_message": "你好 Sophie 團隊！👋 我用緊 Sophie AI app，好想同你哋聯絡。",
+      "contact_alert_title": "聯絡我們",
+      "contact_alert_body": "如有任何問題或意見，請電郵至 support@fluentai.com。",
+      "feedback_alert_title": "即將推出",
+      "feedback_alert_body": "App 內意見反映功能將會好快推出。",
+      "danger_zone": "危險區域",
+      "delete_account": "刪除帳戶",
+      "delete_account_subtitle": "永久刪除你嘅帳戶",
+      "delete_account_alert_title": "刪除帳戶",
+      "delete_account_alert_body": "呢個功能好快會有。你嘅資料好安全。",
+      "app_info": "App 資訊",
+      "version": "版本",
+      "build": "構建",
+      "prototype": "原型"
+    },
+    "privacy_policy_screen": {
+      "title": "私隱政策",
+      "last_updated": "最後更新：2026年1月13日",
+      "section1_title": "1. 我哋收集嘅資料",
+      "section1_body": "我哋收集資料係為咗向所有用戶提供更好嘅服務。其中包括帳戶詳細資料（例如你嘅姓名、電郵同首選語言）以及用於改進我哋 AI 模型嘅使用數據。",
+      "section2_title": "2. 我哋點樣使用數據",
+      "section2_body": "你嘅數據用於個性化你嘅學習體驗、追蹤進度並提高我哋 AI 嘅準確性。我哋唔會將你嘅個人數據出售畀第三方。",
+      "section3_title": "3. AI 互動",
+      "section3_body": "喺應用程式中提供嘅對話同輸入將被處理以生成 AI 回應。呢啲數據可能會以匿名方式用於訓練同改進語言學習模型。",
+      "section4_title": "4. 數據安全",
+      "section4_body": "我哋實施行業標準嘅安全措施，以保護你嘅資料免受未經授權嘅存取、更改、披露或破壞。",
+      "section5_title": "5. 你嘅權利",
+      "section5_body": "你有權隨時透過帳戶設定或聯絡我哋嘅支援團隊存取、更正或刪除你嘅個人資料。",
+      "section6_title": "6. 聯絡資料",
+      "section6_body": "如果你對本私隱政策有任何疑問，請透過 support@fluentai.com 聯絡我哋。"
+    },
+    "terms_screen": {
+      "title": "服務條款",
+      "last_updated": "最後更新：2026年1月13日",
+      "section1_title": "1. 條款接受",
+      "section1_body": "透過存取同使用此應用程式，你同意受呢啲服務條款嘅約束。如果你唔同意呢啲條款嘅任何部分，則唔可以使用我哋嘅服務。",
+      "section2_title": "2. 服務使用",
+      "section2_body": "你同意僅出於個人、非商業語言學習目的使用此應用程式。你唔可以將服務用於任何非法或未經授權嘅目的。",
+      "section3_title": "3. 用戶行為",
+      "section3_body": "用戶應尊重咁同 AI 助手互動。嚴禁任何試圖利用、損害或繞過應用程式預期功能嘅行為。",
+      "section4_title": "4. 知識產權",
+      "section4_body": "該應用程式、其內容同 AI 模型受版權同其他知識產權法嘅保護。未經許可，你唔可以複製或分發服務嘅任何部分。",
+      "section5_title": "5. AI 免責聲明",
+      "section5_body": "我哋嘅服務出於教育目的提供 AI 生成嘅內容。雖然我哋致力於準確性，但 AI 偶爾可能會提供唔正確嘅資訊。鼓勵用戶驗證重要細節。",
+      "section6_title": "6. 責任限制",
+      "section6_body": "對於因你使用應用程式或 AI 助手提供嘅任何資訊而造成嘅任何直接、間接或後果性損害，我哋概不負責。",
+      "section7_title": "7. 條款變更",
+      "section7_body": "我哋保留隨時修改呢啲條款嘅權利。喺發布更改後繼續使用應用程式即表示你接受新條款。"
+    },
+    "social_screen": {
+      "title": "社交媒體",
+      "section_title": "同我哋聯絡",
+      "instagram": "Instagram",
+      "instagram_subtitle": "喺 Instagram 追蹤我哋",
+      "facebook": "Facebook",
+      "facebook_subtitle": "加入我哋嘅社群",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "喺 X 追蹤我哋",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "建立專業聯繫",
+      "youtube": "YouTube",
+      "youtube_subtitle": "訂閱我哋嘅頻道",
+      "tiktok": "抖音 (TikTok)",
+      "tiktok_subtitle": "睇我哋嘅最新影片",
+      "reddit": "Reddit",
+      "reddit_subtitle": "參與討論",
+      "error": "錯誤",
+      "open_error": "打唔開 {platform}。請稍後再試。",
+      "general_error": "嘗試打開 {platform} 嗰陣發生錯誤。"
+    }
+  },
+  "scenarios_screen": {
+    "title": "學習場景",
+    "subtitle": "練習真實對話",
+    "search_placeholder": "搜尋場景...",
+    "create_button": "建立",
+    "create_your_own": "建立你自己的",
+    "empty_search": "搵唔到配對",
+    "empty_list": "搵唔到場景",
+    "categories": {
+      "all": "全部",
+      "food_drink": "飲食",
+      "business": "商業",
+      "social": "社交",
+      "travel": "旅遊",
+      "customer_service": "客戶服務",
+      "education": "教育"
+    },
+    "create_modal": {
+      "title": "建立場景",
+      "sophie_role_label": "Sophie嘅角色",
+      "sophie_role_placeholder": "例如：脾氣暴躁但樂於助人嘅店主",
+      "user_role_label": "你嘅角色",
+      "user_role_placeholder": "例如：趕時間嘅顧客",
+      "topic_label": "話題",
+      "topic_placeholder": "例如：買復古手錶",
+      "level_label": "等級",
+      "category_label": "類別",
+      "category_placeholder": "揀一個類別",
+      "context_label": "背景 / 情境",
+      "context_placeholder": "描述設定...",
+      "start_button": "開始場景",
+      "validation_title": "缺少必填欄位",
+      "validation_message": "Sophie嘅角色同話題係必填嘅！"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "叫咖啡",
+      "description": "喺一間好忙嘅咖啡室叫一杯鮮奶咖啡同一個牛角包。",
+      "sophieRole": "繁忙市中心咖啡室嘅咖啡師",
+      "userRole": "搵早餐嘅顧客",
+      "topic": "日常生活",
+      "context": "你喺一間叫做「The Morning Grind」嘅咖啡室。你想叫一杯咖啡同少少嘢食。"
+    },
+    "job-interview": {
+      "title": "求職面試",
+      "description": "軟件工程師職位嘅面試。",
+      "sophieRole": "科技公司嘅高級技術招聘人員",
+      "userRole": "申請前端開發人員職位嘅候選人",
+      "topic": "職業",
+      "context": "你而家面試緊你夢寐以求嘅工作。Sophie會問你關於你嘅經驗同技能。"
+    },
+    "asking-directions": {
+      "title": "問路",
+      "description": "你喺東京迷路，需要搵火車站。",
+      "sophieRole": "東京一位熱心嘅當地居民",
+      "userRole": "有少少迷路嘅遊客",
+      "topic": "旅遊",
+      "context": "你喺涉谷十字路口附近，需要去JR站，但你部電話無電。"
+    },
+    "hotel-check-in": {
+      "title": "酒店登記入住",
+      "description": "辦理登記入住並要求房間同景觀。",
+      "sophieRole": "四星級酒店嘅前台接待員",
+      "userRole": "入住三晚嘅客人",
+      "topic": "旅遊",
+      "context": "你有預訂。你想確認早餐時間，同問吓有無風景靚嘅房。"
+    },
+    "political-debate": {
+      "title": "政治辯論",
+      "description": "討論環境政策同氣候變化。",
+      "sophieRole": "充滿熱誠嘅環境擁護者",
+      "userRole": "持懷疑態度嘅市民或反對派決策者",
+      "topic": "時事",
+      "context": "就經濟增長同環境保護之間嘅平衡進行深入討論。"
+    }
+  },
+  "common": {
+    "save": "儲存",
+    "cancel": "取消",
+    "error": "錯誤",
+    "warning": "警告",
+    "incomplete": "未完成",
+    "incompleteMessage": "請輸入你個名同揀選國家。",
+    "errorMessage": "儲存設定失敗。請重試。",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "Sophie 講緊嘢...",
+      "preparing": "準備緊回覆... {{progress}}%",
+      "thinking": "Sophie 諗緊嘢...",
+      "listening": "聽緊...",
+      "connecting": "連線中...",
+      "reconnecting": "重新連線中...",
+      "hold_mic": "撳住咪高峰講嘢",
+      "error": "錯誤"
+    },
+    "language_selector": {
+      "learning_label": "學緊",
+      "select_label": "選擇",
+      "explain_label": "用嚟解釋",
+      "target_title": "你想學咩？",
+      "native_title": "你嘅母語係咩？"
+    },
+    "actions": {
+      "finish_report": "完成並獲取報告",
+      "transcript": "文字記錄",
+      "transcript_hidden": "文字記錄隱藏"
+    },
+    "message_actions": {
+      "translate": "翻譯",
+      "hide": "隱藏",
+      "save": "儲存",
+      "translating": "翻譯緊..."
+    },
+    "prompts": {
+      "select_both_langs": "選擇上面兩種語言開始同 Sophie 上堂。",
+      "hold_mic_start": "撳住下面個咪高峰開始同 Sophie 傾偈。"
+    },
+    "alerts": {
+      "end_session_title": "結束會話",
+      "end_session_msg": "返去場景庫？",
+      "finish_title": "結束對話",
+      "finish_msg": "你完成咗呢次練習未？",
+      "reset_title": "重置傾偈",
+      "reset_msg": "呢個會清除而家嘅對話同重置 Sophie。繼續？",
+      "error_title": "錯誤",
+      "error_msg": "翻譯失敗。請再試一次。",
+      "success_title": "成功",
+      "vocab_added": "已加入你嘅詞彙表！",
+      "cancel": "取銷",
+      "yes": "係",
+      "finish": "完成",
+      "reset": "重置"
+    }
+  },
+  "vocab_screen": {
+    "title": "我嘅詞彙表",
+    "subtitle": "你儲存咗嘅生字同句子",
+    "search_placeholder": "搜尋儲存咗嘅生字...",
+    "add_button": "新增",
+    "all_filter": "全部",
+    "all_folders": "所有資料夾",
+    "empty_state": {
+      "no_matches": "搵唔到符合嘅資料",
+      "empty_title": "你嘅單字簿係空嘅。",
+      "empty_subtitle": "新增短語開始學習啦！",
+      "no_phrases": "冇可用嘅短語"
+    },
+    "labels": {
+      "primary": "主要"
+    },
+    "actions": {
+      "listen": "聽",
+      "delete": "刪除",
+      "close": "關閉",
+      "save_translation": "儲存翻譯",
+      "change": "更改",
+      "save_phrase": "儲存短語",
+      "start_practice": "由 {{count}} 個短語開始",
+      "start_practice_plural": "由 {{count}} 個短語開始"
+    },
+    "modals": {
+      "add_title": "新增句子",
+      "edit_title": "編輯句子",
+      "label_language": "語言",
+      "label_folder": "資料夾（可選）",
+      "label_phrase": "句子",
+      "placeholder_phrase": "輸入生字或句子...",
+      "label_translation": "翻譯（可選）",
+      "placeholder_translation": "輸入意思...",
+      "select_folder": "揀一個資料夾",
+      "selected_folder": "已揀資料夾",
+      "practice_session_title": "練習環節"
+    },
+    "alerts": {
+      "delete_title": "刪除句子",
+      "delete_msg": "你係咪肯定要刪除呢句句子？",
+      "required_title": "必須",
+      "required_msg": "請輸入句子",
+      "error_title": "錯誤",
+      "save_error": "儲存句子失敗",
+      "update_error": "更新句子失敗",
+      "delete_error": "刪除項目失敗",
+      "translation_title": "翻譯",
+      "translation_failed": "翻譯失敗",
+      "playing_audio": "播放緊音訊：\"{{text}}\"",
+      "speech_error": "播放短語失敗。請重試。",
+      "connection_required": "請先瀏覽通話標籤頁以連線至 Sophie。"
+    }
+  },
+  "language_picker": {
+    "title": "選擇語言",
+    "search_placeholder": "搜索語言...",
+    "no_results": "未找到語言",
+    "select_native": "選擇母語",
+    "select_target": "選擇目標語言",
+    "select_instruction": "選擇教學語言"
+  },
+  "tabs": {
+    "talk": "傾偈",
+    "translate": "翻譯",
+    "vocab": "詞彙",
+    "scenarios": "場景",
+    "profile": "個人檔案"
+  },
+  "translate_screen": {
+    "title": "翻譯",
+    "subtitle": "將文本翻譯成另一種語言",
+    "swap_instruction": "點擊交換以反轉方向",
+    "input_placeholder": "輸入要翻譯的文本...",
+    "actions": {
+      "translate": "翻譯",
+      "practice": "練習",
+      "save": "保存",
+      "copy": "複製"
+    },
+    "empty_state": "翻譯將出現在這裡...",
+    "modals": {
+      "source_picker_title": "源語言",
+      "target_picker_title": "目標語言",
+      "save_folder_title": "保存到文件夾",
+      "folder_name_placeholder": "文件夾名稱...",
+      "create_button": "創建",
+      "create_new_folder": "創建新文件夾",
+      "your_folders": "您的文件夾",
+      "no_folders": "還沒有文件夾！在上方創建一個",
+      "save_to_vocab_button": "保存到詞彙表"
+    },
+    "alerts": {
+      "permission_required": "需要權限",
+      "mic_access": "請啟用麥克風訪問權限以使用語音輸入。",
+      "error": "錯誤",
+      "translate_failed": "翻譯失敗。請重試。",
+      "saved_title": "已保存！",
+      "saved_message": "已添加到您的詞彙表",
+      "save_failed": "保存失敗。請重試。",
+      "copied_title": "已複製",
+      "copied_message": "文字已複製到剪貼簿"
+    }
+  },
+  "language_screen": {
+    "title": "語言偏好",
+    "subtitle": "選擇您的母語、目標語言同首選口音。",
+    "create_profile_btn": "建立新個人檔案",
+    "sections": {
+      "learning_preferences": "學習偏好",
+      "accent_playground": "口音測試",
+      "text_placeholder": "喺呢度輸入文字...",
+      "default_test_phrase": "雷好，食咗飯未？",
+      "speed_label": "語速",
+      "playground_hint": "測試所選口音同調整語速。點擊播放進行預覽。"
+    },
+    "modals": {
+      "create_title": "新學習檔案",
+      "create_button": "建立檔案",
+      "sections": {
+        "target_label": "我想學",
+        "medium_label": "Sophie 教學語言",
+        "medium_placeholder": "同母語一樣",
+        "accent_label": "首選口音"
+      },
+      "duplicate_profile_error": "你有咗呢個語言對嘅檔案啦！",
+      "create_error": "建立檔案失敗。請再試一次。"
+    }
+  },
+  "accent_picker": {
+    "title": "揀選口音",
+    "english_suffix": "英文",
+    "accents": {
+      "Indian": "印度",
+      "Australian": "澳洲",
+      "American": "美國",
+      "British": "英國"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "最後一日！",
+    "days_left_title": "剩餘 {{count}} 日",
+    "last_day_subtitle": "你嘅免費試用今日結束！",
+    "upgrade_subtitle": "升級至蘇菲 AI Pro 以獲得完整體驗。",
+    "benefits_title": "你會獲得",
+    "benefit_1": "無限 AI 對話",
+    "benefit_2": "解鎖所有 10+ 種語言",
+    "benefit_3": "高級詞彙工具",
+    "benefit_4": "優先支援",
+    "limited_time_offer": "限時優惠",
+    "off_text": "{{percent}}% 折扣",
+    "claim_discount_msg": "立即領取折扣",
+    "upgrade_now_btn": "立即升級",
+    "claim_discount_btn": "領取我嘅折扣",
+    "maybe_later_btn": "或者遲啲"
+  }
+}

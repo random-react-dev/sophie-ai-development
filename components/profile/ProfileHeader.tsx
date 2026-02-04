@@ -24,7 +24,9 @@ export default function ProfileHeader({ title }: ProfileHeaderProps) {
 
       {/* Center - Title */}
       <View className="flex-1 items-center">
-        <Text className="text-xl font-bold text-gray-900">{title}</Text>
+        <Text className="text-xl font-bold w-full text-gray-900 text-center">
+          {title}
+        </Text>
       </View>
 
       {/* Right - Empty spacer for balance */}

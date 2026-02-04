@@ -1,6 +1,7 @@
 import { AuthInput } from "@/components/auth/AuthInput";
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { RainbowBorder } from "@/components/common/Rainbow";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -26,6 +27,7 @@ export default function ChangePasswordModal({
   visible,
   onClose,
 }: ChangePasswordModalProps) {
+  const { t } = useTranslation();
   const { changePassword } = useAuthStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,15 +39,20 @@ export default function ChangePasswordModal({
   const handleSubmit = async () => {
     if (password.length < 6) {
       showAlert(
-        "Error",
-        "Password must be at least 6 characters long.",
+        t("common.error"),
+        t("profile.change_password_modal.error_length"),
         undefined,
         "error",
       );
       return;
     }
     if (password !== confirmPassword) {
-      showAlert("Error", "Passwords do not match.", undefined, "error");
+      showAlert(
+        t("common.error"),
+        t("profile.change_password_modal.error_match"),
+        undefined,
+        "error",
+      );
       return;
     }
 
@@ -53,11 +60,11 @@ export default function ChangePasswordModal({
     try {
       await changePassword(password);
       showAlert(
-        "Success",
-        "Your password has been updated successfully.",
+        t("common.success"),
+        t("profile.change_password_modal.success_message"),
         [
           {
-            text: "OK",
+            text: t("common.ok"),
             onPress: () => {
               setPassword("");
               setConfirmPassword("");
@@ -69,8 +76,10 @@ export default function ChangePasswordModal({
       );
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to update password.";
-      showAlert("Error", errorMessage, undefined, "error");
+        error instanceof Error
+          ? error.message
+          : t("profile.change_password_modal.error_generic");
+      showAlert(t("common.error"), errorMessage, undefined, "error");
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +101,8 @@ export default function ChangePasswordModal({
             >
               <View className="flex-row justify-between items-center px-4 py-5 border-b border-gray-100">
                 <View className="flex-1 pr-4">
-                  <Text className="text-2xl font-bold text-gray-900">
-                    Change Password
+                  <Text className="text-xl font-bold text-gray-900">
+                    {t("profile.change_password_modal.title")}
                   </Text>
                 </View>
                 <Pressable
@@ -109,23 +118,27 @@ export default function ChangePasswordModal({
                 contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
               >
                 <View className="mb-6">
-                  <Text className="text-gray-500 font-medium mb-2 ml-1">
-                    New Password
+                  <Text className="text-gray-500 font-medium text-sm mb-2">
+                    {t("profile.change_password_modal.new_password")}
                   </Text>
                   <AuthInput
-                    placeholder="Enter new password"
+                    placeholder={t(
+                      "profile.change_password_modal.new_password_placeholder",
+                    )}
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
                   />
                 </View>
 
-                <View className="mb-8">
-                  <Text className="text-gray-500 font-medium mb-2 ml-1">
-                    Confirm Password
+                <View className="mb-6">
+                  <Text className="text-gray-500 font-medium text-sm mb-2">
+                    {t("profile.change_password_modal.confirm_password")}
                   </Text>
                   <AuthInput
-                    placeholder="Confirm new password"
+                    placeholder={t(
+                      "profile.change_password_modal.confirm_password_placeholder",
+                    )}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
                     secureTextEntry
@@ -139,8 +152,8 @@ export default function ChangePasswordModal({
                 >
                   {isLoading || !password || !confirmPassword ? (
                     <View className="w-full h-14 bg-gray-100 rounded-full items-center justify-center">
-                      <Text className="text-gray-400 font-bold text-lg">
-                        Update Password
+                      <Text className="text-gray-400 font-bold text-base">
+                        {t("profile.change_password_modal.update_button")}
                       </Text>
                     </View>
                   ) : (
@@ -154,8 +167,8 @@ export default function ChangePasswordModal({
                         {isLoading ? (
                           <ActivityIndicator color="black" />
                         ) : (
-                          <Text className="text-black font-bold text-lg">
-                            Update Password
+                          <Text className="text-black font-bold text-base">
+                            {t("profile.change_password_modal.update_button")}
                           </Text>
                         )}
                       </View>

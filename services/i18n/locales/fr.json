@@ -20,6 +20,82 @@
       "selectNativeLanguage": "Langue maternelle",
       "selectLearningLanguage": "Choisir la langue d'apprentissage"
     },
+    "options": {
+      "goal": {
+        "student": "Je suis étudiant",
+        "traveler": "Je suis voyageur",
+        "abroad": "Je vais / je suis à l'étranger",
+        "job": "J'en ai besoin pour mon travail",
+        "other": "Autre"
+      },
+      "level": {
+        "zero": "Je ne connais pas un seul mot",
+        "words": "Je ne peux dire que quelques mots",
+        "phrases": "Je ne peux dire que quelques phrases",
+        "basic_idea": "J'ai l'idée mais pas le vocabulaire",
+        "fluent": "Je parle couramment, mais j'ai besoin de pratiquer"
+      },
+      "fluency": {
+        "norush": "Pas de précipitation, je peux prendre mon temps",
+        "consistent": "Je veux être constant et pratiquer quotidiennement",
+        "phrases": "J'ai juste besoin de quelques phrases",
+        "conversations": "J'ai besoin d'avoir des conversations générales",
+        "desperate": "Je veux devenir courant désespérément, maintenant."
+      },
+      "duration": {
+        "less_1_month": "Moins de 1 mois",
+        "less_6_months": "Moins de 6 mois",
+        "less_2_years": "Moins de 2 ans",
+        "less_5_years": "Moins de 5 ans",
+        "less_10_years": "Moins de 10 ans",
+        "more": "Plus"
+      },
+      "confidence": {
+        "1": "Terrifié",
+        "2": "Très nerveux",
+        "3": "Anxieux",
+        "4": "Incertain",
+        "5": "Neutre",
+        "6": "Espérant",
+        "7": "Confiant",
+        "8": "Imbattable"
+      },
+      "barrier": {
+        "mistakes": {
+          "title": "Peur de faire des erreurs",
+          "desc": "J'ai peur de dire quelque chose de faux"
+        },
+        "consistency": {
+          "title": "Manque de constance",
+          "desc": "J'ai du mal à pratiquer régulièrement"
+        },
+        "practice": {
+          "title": "Manque de quelqu'un avec qui pratiquer",
+          "desc": "Je n'ai pas de partenaire de conversation"
+        },
+        "other": {
+          "title": "Autre",
+          "desc": "Autre chose me retient"
+        }
+      },
+      "focus": {
+        "listening": "Écoute",
+        "speaking": "Parler",
+        "pronunciation": "Prononciation",
+        "vocabulary": "Vocabulaire",
+        "grammar": "Grammaire",
+        "reading": "Lecture",
+        "writing": "Écriture"
+      },
+      "discovery": {
+        "tiktok": "TikTok",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "friend": "Famille/Ami",
+        "other": "Autre"
+      }
+    },
     "titles": {
       "goal": "Quel est votre objectif principal dans la vie ?",
       "fluency": "À quelle vitesse voulez-vous devenir courant ?",
@@ -29,6 +105,330 @@
       "barriers": "Pourquoi n'êtes-vous pas confiant ?",
       "focus": "Sur quoi voulez-vous vous concentrer en premier ?",
       "discovery": "Comment nous avez-vous trouvés ?"
+    },
+    "completion": {
+      "title": "Tout est prêt !",
+      "subtitle": "Votre parcours d'apprentissage personnalisé est prêt",
+      "videoLabel": "Rencontrez votre coach linguistique IA",
+      "primaryGoal": "Objectif principal",
+      "learningPace": "Rythme d'apprentissage",
+      "currentLevel": "Niveau actuel",
+      "notSet": "Non défini"
+    }
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "menu": {
+      "preferences": {
+        "title": "Préférences",
+        "subtitle": "Langue, pays et plus"
+      },
+      "account": {
+        "title": "Compte",
+        "subtitle": "Abonnement et facturation"
+      },
+      "security": {
+        "title": "Sécurité",
+        "subtitle": "Mot de passe et authentification"
+      },
+      "progress": {
+        "title": "Progrès",
+        "subtitle": "Suivez votre parcours d'apprentissage"
+      },
+      "support": {
+        "title": "Support",
+        "subtitle": "Aide, politiques et commentaires"
+      },
+      "social": {
+        "title": "Réseaux Sociaux",
+        "subtitle": "Connectez-vous avec nous"
+      },
+      "logout": "Se Déconnecter",
+      "setName": "Définir le Nom",
+      "avatarSuccess": "Avatar mis à jour avec succès !",
+      "avatarError": "Échec du téléchargement de l'avatar.",
+      "nameError": "Échec de la mise à jour du nom.",
+      "logoutConfirm": {
+        "title": "Se Déconnecter",
+        "message": "Êtes-vous sûr de vouloir vous déconnecter ?",
+        "cancel": "Annuler",
+        "confirm": "Se Déconnecter"
+      }
+    },
+    "preferences_screen": {
+      "title": "Préférences",
+      "accountInfo": "Informations du Compte",
+      "name": "Nom",
+      "email": "E-mail",
+      "languages": "Langues",
+      "country": "Pays",
+      "nativeLanguage": "Langue Maternelle",
+      "appLanguage": "Langue de l'App",
+      "selectLanguage": "Choisir la Langue",
+      "notSet": "Non défini"
+    },
+    "account_screen": {
+      "title": "Compte",
+      "subscription": "Abonnement",
+      "status": "Statut",
+      "freeTrial": "Essai Gratuit",
+      "upgradeToPro": "Passer à Pro",
+      "payment": "Paiement",
+      "paymentMethods": "Méthodes de Paiement",
+      "billingHistory": "Historique de Facturation",
+      "accountInfo": "Infos du Compte",
+      "email": "E-mail",
+      "memberSince": "Membre depuis",
+      "na": "N/A",
+      "comingSoon": "Bientôt disponible"
+    },
+    "subscription_screen": {
+      "title": "Passer à Pro",
+      "choosePlan": "Choisissez votre formule",
+      "subtitle": "Libérez tout le potentiel de Sophie AI et maîtrisez n'importe quelle langue.",
+      "plans": {
+        "mg": {
+          "name": "M et G",
+          "description": "Parfait pour une pratique occasionnelle.",
+          "features": {
+            "0": "Toutes les langues incluses",
+            "1": "5 min/jour de pratique",
+            "2": "Retours basiques du tuteur IA"
+          }
+        },
+        "launch": {
+          "name": "Pack de Lancement",
+          "description": "Pour les apprenants sérieux qui veulent parler avec assurance.",
+          "badge": "Le plus populaire",
+          "features": {
+            "0": "1 langue au choix",
+            "1": "15 min/jour de pratique",
+            "2": "Retours IA prioritaires",
+            "3": "Pas de publicités"
+          }
+        },
+        "sbb": {
+          "name": "SBB",
+          "description": "Coaching avancé pour les affaires et les examens.",
+          "features": {
+            "0": "Langues illimitées",
+            "1": "Temps illimité",
+            "2": "Analyses IA avancées",
+            "3": "Parcours personnalisés"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "S'abonner maintenant",
+        "getStarted": "Commencer",
+        "month": "mois",
+        "day7": "7 jours"
+      },
+      "footer": "Tous les plans incluent un accès tuteur IA 24/7 et le suivi des progrès. Annulez à tout moment dans vos paramètres."
+    },
+    "security_screen": {
+      "title": "Sécurité",
+      "subtitle": "Protégez votre compte",
+      "auth_section": "Authentification",
+      "change_password": {
+        "title": "Changer le mot de passe",
+        "subtitle": "Mettez régulièrement à jour votre mot de passe"
+      },
+      "two_factor": {
+        "title": "Authentification à deux facteurs",
+        "status": "Non activé"
+      },
+      "tips_section": "Conseils de sécurité",
+      "tips": {
+        "strong_password": {
+          "title": "Utilisez un mot de passe fort",
+          "body": "Mélangez lettres, chiffres et caractères spéciaux pour une protection maximale."
+        },
+        "enable_2fa": {
+          "title": "Activer l'authentification à deux facteurs",
+          "body": "Une couche de sécurité supplémentaire pour votre compte. Bientôt disponible !"
+        }
+      }
+    },
+    "change_password_modal": {
+      "title": "Changer le mot de passe",
+      "new_password": "Nouveau mot de passe",
+      "new_password_placeholder": "Entrez le nouveau mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "confirm_password_placeholder": "Confirmez le nouveau mot de passe",
+      "update_button": "Mettre à jour le mot de passe",
+      "error_length": "Le mot de passe doit contenir au moins 6 caractères.",
+      "error_match": "Les mots de passe ne correspondent pas.",
+      "success_message": "Votre mot de passe a été mis à jour avec succès.",
+      "error_generic": "Échec de la mise à jour du mot de passe."
+    },
+    "progress_screen": {
+      "title": "Progrès",
+      "overview": "Aperçu",
+      "speaking": "Parler",
+      "words": "Mots",
+      "sessions": "Sessions",
+      "detailed_stats": "Statistiques détaillées",
+      "coming_soon": "Bientôt disponible",
+      "coming_soon_body": "L'analyse détaillée de l'apprentissage et le suivi des progrès seront disponibles dans une future mise à jour."
+    },
+    "support_screen": {
+      "title": "Support",
+      "legal": "Légal",
+      "privacy_policy": "Politique de Confidentialité",
+      "terms_of_service": "Conditions d'Utilisation",
+      "contact_us": "Contactez-nous",
+      "email_support": "Support par Email",
+      "send_feedback": "Envoyer des Commentaires",
+      "help_improve": "Aidez-nous à améliorer",
+      "whatsapp_support": "Support WhatsApp",
+      "whatsapp_subtitle": "Discutez avec nous sur WhatsApp",
+      "whatsapp_message": "Bonjour l'équipe Sophie ! 👋 J'utilise l'application Sophie AI et j'aimerais vous contacter.",
+      "contact_alert_title": "Contactez-nous",
+      "contact_alert_body": "Envoyez-nous un email à support@fluentai.com pour toute question ou retour d'information.",
+      "feedback_alert_title": "Bientôt disponible",
+      "feedback_alert_body": "La fonctionnalité de commentaires in-app sera bientôt disponible.",
+      "danger_zone": "Zone de Danger",
+      "delete_account": "Supprimer le Compte",
+      "delete_account_subtitle": "Supprimer définitivement votre compte",
+      "delete_account_alert_title": "Supprimer le Compte",
+      "delete_account_alert_body": "Cette fonctionnalité sera bientôt disponible. Vos données sont en sécurité.",
+      "app_info": "Info de l'App",
+      "version": "Version",
+      "build": "Build",
+      "prototype": "Prototype"
+    },
+    "privacy_policy_screen": {
+      "title": "Politique de Confidentialité",
+      "last_updated": "Dernière mise à jour : 13 janvier 2026",
+      "section1_title": "1. Informations collectées",
+      "section1_body": "Nous collectons des informations pour fournir de meilleurs services à tous nos utilisateurs. Cela inclut les détails du compte comme votre nom, votre email et vos langues préférées, ainsi que les données d'utilisation pour améliorer nos modèles d'IA.",
+      "section2_title": "2. Comment nous utilisons les données",
+      "section2_body": "Vos données sont utilisées pour personnaliser votre expérience d'apprentissage, suivre vos progrès et affiner la précision de notre IA. Nous ne vendons pas vos données personnelles à des tiers.",
+      "section3_title": "3. Interaction IA",
+      "section3_body": "Les conversations et les entrées fournies dans l'application sont traitées pour générer des réponses IA. Ces données peuvent être utilisées de manière anonyme pour entraîner et améliorer les modèles d'apprentissage des langues.",
+      "section4_title": "4. Sécurité des données",
+      "section4_body": "Nous mettons en œuvre des mesures de sécurité conformes aux normes de l'industrie pour protéger vos informations contre l'accès non autorisé, l'altération, la divulgation ou la destruction.",
+      "section5_title": "5. Vos droits",
+      "section5_body": "Vous avez le droit d'accéder, de corriger ou de supprimer vos informations personnelles à tout moment via les paramètres du compte ou en contactant notre équipe de support.",
+      "section6_title": "6. Informations de contact",
+      "section6_body": "Si vous avez des questions sur cette Politique de Confidentialité, veuillez nous contacter à support@fluentai.com."
+    },
+    "terms_screen": {
+      "title": "Conditions d'Utilisation",
+      "last_updated": "Dernière mise à jour : 13 janvier 2026",
+      "section1_title": "1. Acceptation des Conditions",
+      "section1_body": "En accédant et en utilisant cette application, vous acceptez d'être lié par ces Conditions d'Utilisation. Si vous n'acceptez pas une partie de ces conditions, vous ne pouvez pas utiliser nos services.",
+      "section2_title": "2. Utilisation du Service",
+      "section2_body": "Vous acceptez d'utiliser cette application uniquement à des fins personnelles et non commerciales d'apprentissage des langues. Vous ne devez pas utiliser les services à des fins illégales ou non autorisées.",
+      "section3_title": "3. Conduite de l'Utilisateur",
+      "section3_body": "Les utilisateurs sont censés interagir avec l'assistant IA de manière respectueuse. Toute tentative d'exploiter, de nuire ou de contourner la fonctionnalité prévue de l'application est strictement interdite.",
+      "section4_title": "4. Propriété Intellectuelle",
+      "section4_body": "L'application, son contenu et les modèles d'IA sont protégés par le droit d'auteur et d'autres lois sur la propriété intellectuelle. Vous ne pouvez reproduire ou distribuer aucune partie du service sans autorisation.",
+      "section5_title": "5. Avertissement IA",
+      "section5_body": "Notre service fournit du contenu généré par l'IA à des fins éducatives. Bien que nous nous efforcions d'assurer l'exactitude, l'IA peut parfois fournir des informations incorrectes. Les utilisateurs sont encouragés à vérifier les détails importants.",
+      "section6_title": "6. Limitation de Responsabilité",
+      "section6_body": "Nous ne sommes pas responsables des dommages directs, indirects ou consécutifs résultant de votre utilisation de l'application ou de toute information fournie par l'assistant IA.",
+      "section7_title": "7. Modifications des Conditions",
+      "section7_body": "Nous nous réservons le droit de modifier ces conditions à tout moment. Votre utilisation continue de l'application après la publication des modifications constitue votre acceptation des nouvelles conditions."
+    },
+    "social_screen": {
+      "title": "Réseaux Sociaux",
+      "section_title": "Connectez-vous avec Nous",
+      "instagram": "Instagram",
+      "instagram_subtitle": "Suivez-nous sur Instagram",
+      "facebook": "Facebook",
+      "facebook_subtitle": "Rejoignez notre communauté",
+      "twitter": "X (Twitter)",
+      "twitter_subtitle": "Suivez-nous sur X",
+      "linkedin": "LinkedIn",
+      "linkedin_subtitle": "Connectez-vous professionnellement",
+      "youtube": "YouTube",
+      "youtube_subtitle": "Abonnez-vous à notre chaîne",
+      "tiktok": "TikTok",
+      "tiktok_subtitle": "Regardez nos dernières vidéos",
+      "reddit": "Reddit",
+      "reddit_subtitle": "Rejoignez la discussion",
+      "error": "Erreur",
+      "open_error": "Impossible d'ouvrir {platform}. Veuillez réessayer plus tard.",
+      "general_error": "Une erreur s'est produite lors de la tentative d'ouverture de {platform}."
+    }
+  },
+  "scenarios_screen": {
+    "title": "Scénarios d'Apprentissage",
+    "subtitle": "Pratiquez des conversations réelles",
+    "search_placeholder": "Rechercher des scénarios...",
+    "create_button": "Créer",
+    "create_your_own": "Créez le vôtre",
+    "empty_search": "Aucune correspondance trouvée",
+    "empty_list": "Aucun scénario trouvé",
+    "categories": {
+      "all": "Tous",
+      "food_drink": "Nourriture et Boissons",
+      "business": "Affaires",
+      "social": "Social",
+      "travel": "Voyage",
+      "customer_service": "Service Client",
+      "education": "Éducation"
+    },
+    "create_modal": {
+      "title": "Créer un Scénario",
+      "sophie_role_label": "Rôle de Sophie",
+      "sophie_role_placeholder": "ex. Un commerçant grincheux mais serviable",
+      "user_role_label": "Votre Rôle",
+      "user_role_placeholder": "ex. Un client pressé",
+      "topic_label": "Sujet",
+      "topic_placeholder": "ex. Acheter une montre vintage",
+      "level_label": "Niveau",
+      "category_label": "Catégorie",
+      "category_placeholder": "Sélectionnez une catégorie",
+      "context_label": "Contexte / Situation",
+      "context_placeholder": "Décrivez le cadre...",
+      "start_button": "Démarrer le Scénario",
+      "validation_title": "Champs Requis Manquants",
+      "validation_message": "Le Rôle de Sophie et le Sujet sont requis !"
+    }
+  },
+  "scenarios_data": {
+    "ordering-coffee": {
+      "title": "Commander un Café",
+      "description": "Commandez un café au lait et un croissant dans un café animé.",
+      "sophieRole": "Barista dans un café animé du centre-ville",
+      "userRole": "Un client cherchant un petit-déjeuner",
+      "topic": "Vie Quotidienne",
+      "context": "Vous êtes dans un café appelé \"The Morning Grind\". Vous voulez commander un café et quelque chose à manger."
+    },
+    "job-interview": {
+      "title": "Entretien d'Embauche",
+      "description": "Entretien pour un poste d'ingénieur logiciel.",
+      "sophieRole": "Recruteur Technique Senior dans une entreprise technologique",
+      "userRole": "Candidat postulant pour un rôle de Développeur Frontend",
+      "topic": "Carrière",
+      "context": "Vous êtes en entretien pour le job de vos rêves. Sophie vous posera des questions sur votre expérience et vos compétences."
+    },
+    "asking-directions": {
+      "title": "Demander son Chemin",
+      "description": "Vous êtes perdu à Tokyo et devez trouver une gare.",
+      "sophieRole": "Un résident local serviable à Tokyo",
+      "userRole": "Un touriste un peu perdu",
+      "topic": "Voyage",
+      "context": "Vous êtes près du carrefour de Shibuya et devez vous rendre à la gare JR mais la batterie de votre téléphone est vide."
+    },
+    "hotel-check-in": {
+      "title": "Enregistrement à l'Hôtel",
+      "description": "Enregistrez-vous et demandez une chambre et une vue.",
+      "sophieRole": "Réceptionniste dans un hôtel 4 étoiles",
+      "userRole": "Un client arrivant pour un séjour de trois nuits",
+      "topic": "Voyage",
+      "context": "Vous avez une réservation à votre nom. Vous voulez confirmer les heures du petit-déjeuner et demander s'il y a une chambre avec une belle vue disponible."
+    },
+    "political-debate": {
+      "title": "Débat Politique",
+      "description": "Discuter des politiques environnementales et du changement climatique.",
+      "sophieRole": "Un défenseur passionné de l'environnement",
+      "userRole": "Un citoyen sceptique ou un législateur opposant",
+      "topic": "Affaires Courantes",
+      "context": "Engagez une discussion approfondie sur l'équilibre entre la croissance économique et la protection de l'environnement."
     }
   },
   "common": {
@@ -38,12 +438,201 @@
     "warning": "Attention",
     "incomplete": "Incomplet",
     "incompleteMessage": "Veuillez entrer votre nom et sélectionner un pays.",
-    "errorMessage": "Échec de l'enregistrement de vos préférences. Veuillez réessayer."
+    "errorMessage": "Échec de l'enregistrement de vos préférences. Veuillez réessayer.",
+    "success": "Succès",
+    "ok": "OK"
+  },
+  "talk_screen": {
+    "status": {
+      "speaking": "Sophie Parle...",
+      "preparing": "Préparation de la réponse... {{progress}}%",
+      "thinking": "Sophie réfléchit...",
+      "listening": "Écoute...",
+      "connecting": "Connexion...",
+      "reconnecting": "Reconnexion...",
+      "hold_mic": "Maintenez le micro pour parler",
+      "error": "Erreur"
+    },
+    "language_selector": {
+      "learning_label": "Apprentissage",
+      "select_label": "Sélectionner",
+      "explain_label": "Expliquer en",
+      "target_title": "Que voulez-vous apprendre ?",
+      "native_title": "Quelle est votre langue maternelle ?"
+    },
+    "actions": {
+      "finish_report": "Terminer et Obtenir le Rapport",
+      "transcript": "Transcription",
+      "transcript_hidden": "Transcription Masquée"
+    },
+    "message_actions": {
+      "translate": "Traduire",
+      "hide": "Masquer",
+      "save": "Enregistrer",
+      "translating": "En cours de traduction..."
+    },
+    "alerts": {
+      "cancel": "Annuler",
+      "yes": "Oui",
+      "finish": "Terminer",
+      "reset": "Réinitialiser"
+    }
+  },
+  "vocab_screen": {
+    "title": "Mon Vocabulaire",
+    "subtitle": "Vos mots et phrases enregistrés",
+    "search_placeholder": "Rechercher des mots enregistrés...",
+    "add_button": "Ajouter",
+    "all_filter": "Tout",
+    "all_folders": "Tous les Dossiers",
+    "empty_state": {
+      "no_matches": "Aucun résultat trouvé",
+      "empty_title": "Votre vocabulaire est vide.",
+      "empty_subtitle": "Ajoutez des phrases pour apprendre !",
+      "no_phrases": "Aucune phrase disponible"
+    },
+    "labels": {
+      "primary": "PRIMAIRE"
+    },
+    "actions": {
+      "listen": "Écouter",
+      "delete": "Supprimer",
+      "close": "Fermer",
+      "save_translation": "Enregistrer la Traduction",
+      "change": "Modifier",
+      "save_phrase": "Enregistrer la phrase",
+      "start_practice": "Commencer avec {{count}} Phrase",
+      "start_practice_plural": "Commencer avec {{count}} Phrases"
+    },
+    "modals": {
+      "add_title": "Ajouter une Phrase",
+      "edit_title": "Modifier la Phrase",
+      "label_language": "Langue",
+      "label_folder": "Dossier (Optionnel)",
+      "label_phrase": "Phrase",
+      "placeholder_phrase": "Entrez un mot ou une phrase...",
+      "label_translation": "Traduction (Optionnel)",
+      "placeholder_translation": "Entrez la signification...",
+      "select_folder": "Choisir un dossier",
+      "selected_folder": "Dossier sélectionné",
+      "practice_session_title": "Session d'entraînement"
+    },
+    "alerts": {
+      "delete_title": "Supprimer la Phrase",
+      "delete_msg": "Êtes-vous sûr de vouloir supprimer cette phrase ?",
+      "required_title": "Requis",
+      "required_msg": "Veuillez entrer une phrase",
+      "error_title": "Erreur",
+      "save_error": "Échec de l'enregistrement de la phrase",
+      "update_error": "Échec de la mise à jour de la phrase",
+      "delete_error": "Échec de la suppression de l'élément",
+      "translation_title": "Traduction",
+      "translation_failed": "Échec de la traduction",
+      "playing_audio": "Lecture audio pour : \"{{text}}\"",
+      "speech_error": "Échec de la prononciation de la phrase. Veuillez réessayer.",
+      "connection_required": "Veuillez d'abord visiter l'onglet Parler pour vous connecter à Sophie."
+    }
+  },
+  "language_picker": {
+    "title": "Choisir la Langue",
+    "search_placeholder": "Rechercher des langues...",
+    "no_results": "Aucune langue trouvée",
+    "select_native": "Choisir la langue maternelle",
+    "select_target": "Choisir la langue cible",
+    "select_instruction": "Choisir la langue d'enseignement"
   },
   "tabs": {
     "talk": "Parler",
+    "translate": "Traduire",
     "vocab": "Vocabulaire",
     "scenarios": "Scénarios",
     "profile": "Profil"
+  },
+  "translate_screen": {
+    "title": "Traduction",
+    "subtitle": "Traduire du texte dans une autre langue",
+    "swap_instruction": "Appuyez sur échanger pour inverser",
+    "input_placeholder": "Entrez le texte à traduire...",
+    "actions": {
+      "translate": "Traduire",
+      "practice": "Pratiquer",
+      "save": "Enregistrer",
+      "copy": "Copier"
+    },
+    "empty_state": "La traduction apparaîtra ici...",
+    "modals": {
+      "source_picker_title": "Traduire de",
+      "target_picker_title": "Traduire vers",
+      "save_folder_title": "Enregistrer dans un dossier",
+      "folder_name_placeholder": "Nom du dossier...",
+      "create_button": "Créer",
+      "create_new_folder": "Créer un nouveau dossier",
+      "your_folders": "Vos dossiers",
+      "no_folders": "Pas encore de dossiers ! Créez-en un ci-dessus",
+      "save_to_vocab_button": "Enregistrer dans le vocabulaire"
+    },
+    "alerts": {
+      "permission_required": "Permission requise",
+      "mic_access": "Veuillez activer l'accès au microphone.",
+      "error": "Erreur",
+      "translate_failed": "Échec de la traduction. Réessayez.",
+      "saved_title": "Enregistré !",
+      "saved_message": "Ajouté à votre vocabulaire",
+      "save_failed": "Échec de l'enregistrement. Réessayez.",
+      "copied_title": "Copié",
+      "copied_message": "Texte copié dans le presse-papiers"
+    }
+  },
+  "language_screen": {
+    "title": "Préférences linguistiques",
+    "subtitle": "Choisissez vos langues maternelle et cible et votre accent préféré.",
+    "create_profile_btn": "Créer un nouveau profil",
+    "sections": {
+      "learning_preferences": "Préférences d'apprentissage",
+      "accent_playground": "Test d'accent",
+      "text_placeholder": "Tapez votre texte ici...",
+      "default_test_phrase": "Bonjour, comment allez-vous ?",
+      "speed_label": "Vitesse",
+      "playground_hint": "Testez l'accent sélectionné et ajustez la vitesse. Appuyez sur Lecture pour prévisualiser."
+    },
+    "modals": {
+      "create_title": "Nouveau profil d'apprentissage",
+      "create_button": "Créer le profil",
+      "sections": {
+        "target_label": "Je veux apprendre",
+        "medium_label": "Sophie enseigne en",
+        "medium_placeholder": "Identique à la langue maternelle",
+        "accent_label": "Accent préféré"
+      },
+      "duplicate_profile_error": "Vous avez déjà un profil pour cette paire de langues !",
+      "create_error": "Échec de la création du profil. Veuillez réessayer."
+    }
+  },
+  "accent_picker": {
+    "title": "Sélectionner un accent",
+    "english_suffix": "Anglais",
+    "accents": {
+      "Indian": "Indien",
+      "Australian": "Australien",
+      "American": "Américain",
+      "British": "Britannique"
+    }
+  },
+  "trial_countdown_modal": {
+    "last_day_title": "Dernier jour !",
+    "days_left_title": "{{count}} jours restants",
+    "last_day_subtitle": "Votre essai gratuit se termine aujourd'hui !",
+    "upgrade_subtitle": "Passez à Sophie AI Pro pour l'expérience complète.",
+    "benefits_title": "Ce que vous obtiendrez",
+    "benefit_1": "Conversations IA illimitées",
+    "benefit_2": "Tous les 10+ langues débloquées",
+    "benefit_3": "Outils de vocabulaire avancés",
+    "benefit_4": "Support prioritaire",
+    "limited_time_offer": "Offre à durée limitée",
+    "off_text": "{{percent}}% de réduction",
+    "claim_discount_msg": "Réclamez votre réduction aujourd'hui",
+    "upgrade_now_btn": "Mettre à niveau maintenant",
+    "claim_discount_btn": "Réclamer ma réduction",
+    "maybe_later_btn": "Peut-être plus tard"
   }
 }

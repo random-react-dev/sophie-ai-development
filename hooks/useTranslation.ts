@@ -1,5 +1,5 @@
-import { useCurrentLanguage } from "@/stores/languageStore";
 import i18n from "@/services/i18n";
+import { useCurrentLanguage } from "@/stores/languageStore";
 import { useCallback } from "react";
 
 export function useTranslation() {
@@ -15,7 +15,7 @@ export function useTranslation() {
     (key: string, options?: object) => {
       return i18n.t(key, options);
     },
-    [currentLanguage] // Re-create t function when language changes
+    [currentLanguage], // Re-create t function when language changes
   );
 
   return { t, locale: currentLanguage };

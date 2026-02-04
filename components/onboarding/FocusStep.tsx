@@ -1,4 +1,5 @@
 import { RainbowBorder } from "@/components/common/Rainbow";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -99,15 +100,16 @@ const FocusTag: React.FC<FocusTagProps> = ({
 
 export const FocusStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const areas = [
-    { label: "Listening", emoji: "👂" },
-    { label: "Speaking", emoji: "🗣️" },
-    { label: "Pronunciation", emoji: "🎯" },
-    { label: "Vocabulary", emoji: "📚" },
-    { label: "Grammar", emoji: "📝" },
-    { label: "Reading", emoji: "📖" },
-    { label: "Writing", emoji: "✍️" },
+    { label: t("onboarding.options.focus.listening"), emoji: "👂" },
+    { label: t("onboarding.options.focus.speaking"), emoji: "🗣️" },
+    { label: t("onboarding.options.focus.pronunciation"), emoji: "🎯" },
+    { label: t("onboarding.options.focus.vocabulary"), emoji: "📚" },
+    { label: t("onboarding.options.focus.grammar"), emoji: "📝" },
+    { label: t("onboarding.options.focus.reading"), emoji: "📖" },
+    { label: t("onboarding.options.focus.writing"), emoji: "✍️" },
   ];
 
   const toggleArea = (area: string) => {

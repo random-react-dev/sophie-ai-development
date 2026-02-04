@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import React from "react";
 import { View } from "react-native";
@@ -5,13 +6,18 @@ import { SelectionCard } from "./SelectionCard";
 
 export const GoalStep = () => {
   const { data, updateData } = useOnboardingStore();
+  const { t } = useTranslation();
 
   const goals = [
-    { id: "student", title: "I am a student", emoji: "🎓" },
-    { id: "traveler", title: "I am a traveler", emoji: "✈️" },
-    { id: "abroad", title: "I will / am abroad", emoji: "🌍" },
-    { id: "job", title: "I need it for my job", emoji: "💼" },
-    { id: "other", title: "Other", emoji: "💬" },
+    { id: "student", title: t("onboarding.options.goal.student"), emoji: "🎓" },
+    {
+      id: "traveler",
+      title: t("onboarding.options.goal.traveler"),
+      emoji: "✈️",
+    },
+    { id: "abroad", title: t("onboarding.options.goal.abroad"), emoji: "🌍" },
+    { id: "job", title: t("onboarding.options.goal.job"), emoji: "💼" },
+    { id: "other", title: t("onboarding.options.goal.other"), emoji: "💬" },
   ];
 
   return (

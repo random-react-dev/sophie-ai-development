@@ -1,7 +1,7 @@
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import AccentPickerModal from "@/components/language/AccentPickerModal";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
 import {
@@ -9,6 +9,8 @@ import {
   Language,
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
+import { useTranslation } from "@/hooks/useTranslation";
+import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import { CreateProfileDTO } from "@/services/supabase/profiles";
 import { useAuthStore } from "@/stores/authStore";
 import { useProfileStore } from "@/stores/profileStore";
@@ -25,7 +27,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -40,6 +42,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LanguageScreen() {
+  const { t, locale } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
   const { user } = useAuthStore();
   const {
@@ -51,8 +54,45 @@ export default function LanguageScreen() {
     removeProfile,
   } = useProfileStore();
 
+  const getLocalizedLanguageName = useCallback(
+    (englishName: string) => {
+      const matchedLang = SUPPORTED_LANGUAGES.find(
+        (l) => l.name === englishName,
+      );
+      if (!matchedLang) return englishName;
+
+      // Try Intl.DisplayNames first
+      try {
+        const localized = new Intl.DisplayNames([locale], {
+          type: "language",
+        }).of(matchedLang.code);
+
+        if (localized && localized !== englishName) {
+          return localized.charAt(0).toUpperCase() + localized.slice(1);
+        }
+
+        if (locale.startsWith("en")) return englishName;
+      } catch (error) {
+        // Fallback below
+      }
+
+      // Fallback: Manual Map
+      // Normalize locale (e.g. 'hi-IN' -> 'hi')
+      const simpleLocale = locale.split("-")[0];
+      // @ts-ignore
+      const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
+      if (manualName) return manualName;
+
+      // Final valid fallback: Native Name
+      return matchedLang.nativeName || englishName;
+    },
+    [locale],
+  );
+
   // Accent Playground State
-  const [testPhrase, setTestPhrase] = useState("Hello, how are you?");
+  const [testPhrase, setTestPhrase] = useState(
+    t("language_screen.sections.default_test_phrase"),
+  );
   const [speechRate, setSpeechRate] = useState(1.0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -71,6 +111,46 @@ export default function LanguageScreen() {
   const [pickerType, setPickerType] = useState<
     "native" | "target" | "medium" | "accent" | null
   >(null);
+
+  // Sync with user preference or active profile when modal opens
+  useEffect(() => {
+    if (isCreateModalVisible) {
+      let defaultNative: Language | undefined;
+
+      // 1. Try Global User Preference (Code)
+      const globalNativeCode = user?.user_metadata?.native_language;
+      if (globalNativeCode) {
+        defaultNative = SUPPORTED_LANGUAGES.find(
+          (l) => l.code === globalNativeCode,
+        );
+      }
+
+      // 2. Fallback to Active Profile (Name)
+      if (!defaultNative && activeProfile?.native_language) {
+        defaultNative = SUPPORTED_LANGUAGES.find(
+          (l) => l.name === activeProfile.native_language,
+        );
+      }
+
+      // 3. Apply Default
+      if (defaultNative) {
+        setNewNativeLang(defaultNative);
+        setNewMediumLang(null); // Default to "Same as Native"
+
+        // 4. Ensure Target != Native
+        if (defaultNative.code === newTargetLang.code) {
+          // If default target (Hindi) matches native, switch to English or Spanish
+          const fallbackTarget =
+            defaultNative.code === "en"
+              ? SUPPORTED_LANGUAGES.find((l) => l.code === "es")
+              : SUPPORTED_LANGUAGES.find((l) => l.code === "en");
+          if (fallbackTarget) {
+            setNewTargetLang(fallbackTarget);
+          }
+        }
+      }
+    }
+  }, [isCreateModalVisible, activeProfile, user]);
 
   useEffect(() => {
     if (user) {
@@ -98,6 +178,24 @@ export default function LanguageScreen() {
     const mediumName = newMediumLang ? newMediumLang.name : newNativeLang.name;
     const profileName = `Learning ${newTargetLang.name}`;
 
+    // Validate: Check if profile already exists
+    const duplicateProfile = profiles.find(
+      (p) =>
+        p.target_language === newTargetLang.name &&
+        (p.medium_language === mediumName ||
+          (!p.medium_language && p.native_language === mediumName)),
+    );
+
+    if (duplicateProfile) {
+      showAlert(
+        t("common.error"),
+        t("language_screen.modals.duplicate_profile_error"),
+        undefined,
+        "error",
+      );
+      return;
+    }
+
     const newProfileData: CreateProfileDTO = {
       name: profileName,
       native_language: newNativeLang.name,
@@ -112,8 +210,8 @@ export default function LanguageScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } else {
       showAlert(
-        "Error",
-        "Failed to create profile. Please try again.",
+        t("common.error"),
+        t("language_screen.modals.create_error"),
         undefined,
         "error",
       );
@@ -150,11 +248,11 @@ export default function LanguageScreen() {
       <PageHeader />
 
       <View className="px-4 mb-6">
-        <Text className="text-3xl font-bold text-black text-left">
-          Language Preferences
+        <Text className="text-xl font-bold text-black text-left">
+          {t("language_screen.title")}
         </Text>
         <Text className="text-gray-500 text-base font-medium mt-1 text-left">
-          Choose your native & target languages and preferred accent.
+          {t("language_screen.subtitle")}
         </Text>
       </View>
 
@@ -164,72 +262,90 @@ export default function LanguageScreen() {
           {/* <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">
             My Language Profile
           </Text> */}
-          {profiles.map((profile) => (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              key={profile.id}
-              onPress={() => handleSwitchProfile(profile.id)}
-              className={`mb-4 rounded-2xl border flex-row items-center justify-between overflow-hidden relative shadow-lg ${
-                profile.is_active
-                  ? "bg-white border-transparent"
-                  : "bg-white border-gray-100"
-              }`}
-            >
-              {profile.is_active && (
-                <View className="absolute inset-0">
-                  <RainbowGradient className="flex-1 opacity-20" />
-                </View>
-              )}
-              <View className="flex-row items-center gap-4 flex-1 p-5">
-                <View className="w-12 h-12 rounded-full items-center justify-center">
-                  {(() => {
-                    const targetLang = SUPPORTED_LANGUAGES.find(
-                      (l) => l.name === profile.target_language,
-                    );
-                    if (targetLang) {
+          {profiles.map((profile) => {
+            // Inner content only - no container styling
+            const ProfileInner = () => (
+              <>
+                <View className="flex-row items-center gap-4 flex-1">
+                  <View className="w-12 h-12 rounded-full items-center justify-center">
+                    {(() => {
+                      const targetLang = SUPPORTED_LANGUAGES.find(
+                        (l) => l.name === profile.target_language,
+                      );
+                      if (targetLang) {
+                        return (
+                          <CircleFlag
+                            countryCode={targetLang.countryCode}
+                            size={32}
+                          />
+                        );
+                      }
                       return (
-                        <CircleFlag
-                          countryCode={targetLang.countryCode}
-                          size={32}
+                        <Folder
+                          size={24}
+                          color={profile.is_active ? "#111827" : "#3b82f6"}
+                          strokeWidth={2}
                         />
                       );
-                    }
-                    return (
-                      <Folder
-                        size={24}
-                        color={profile.is_active ? "#111827" : "#3b82f6"}
-                        strokeWidth={2}
-                      />
-                    );
-                  })()}
-                </View>
-                <View>
-                  <Text className="text-lg font-bold text-gray-900">
-                    {profile.name}
-                  </Text>
-                  <Text className="text-sm font-medium text-gray-500">
-                    {profile.native_language} → {profile.target_language}
-                  </Text>
-                </View>
-              </View>
-
-              <View className="pr-5">
-                {profile.is_active ? (
-                  <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center">
-                    <CheckCircle2 size={20} color="white" />
+                    })()}
                   </View>
-                ) : (
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => handleDeleteProfile(profile.id)}
-                    className="w-10 h-10 rounded-full bg-red-50 items-center justify-center"
+                  <View>
+                    <Text className="text-base font-bold text-gray-900">
+                      {profile.name}
+                    </Text>
+                    <Text className="text-sm font-medium text-gray-500">
+                      {getLocalizedLanguageName(
+                        profile.medium_language || profile.native_language,
+                      )}{" "}
+                      → {getLocalizedLanguageName(profile.target_language)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View>
+                  {profile.is_active ? (
+                    <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center">
+                      <CheckCircle2 size={20} color="white" />
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => handleDeleteProfile(profile.id)}
+                      className="w-10 h-10 rounded-full bg-red-50 items-center justify-center"
+                    >
+                      <Trash2 size={20} color="#ef4444" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </>
+            );
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                key={profile.id}
+                onPress={() => handleSwitchProfile(profile.id)}
+                className="mb-4 shadow-lg rounded-2xl bg-white"
+                // Remove border from here as it's handled inside for inactive, or via Rainbow for active
+              >
+                {profile.is_active ? (
+                  <RainbowBorder
+                    borderWidth={2}
+                    borderRadius={16} // Rounded-2xl ~ 16px
+                    className="w-full"
+                    containerClassName="flex-row items-center justify-between p-5" // Removed w-full to fix overflow
+                    innerBackgroundClassName="bg-white"
                   >
-                    <Trash2 size={20} color="#ef4444" />
-                  </TouchableOpacity>
+                    <ProfileInner />
+                  </RainbowBorder>
+                ) : (
+                  <View className="w-full flex-row items-center justify-between p-5 border border-gray-100 rounded-2xl bg-white">
+                    <ProfileInner />
+                  </View>
                 )}
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
 
           <TouchableOpacity
             activeOpacity={0.7}
@@ -238,7 +354,7 @@ export default function LanguageScreen() {
           >
             <Plus size={24} color="#6b7280" />
             <Text className="text-gray-500 font-bold text-base">
-              Create New Profile
+              {t("language_screen.create_profile_btn")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -256,8 +372,12 @@ export default function LanguageScreen() {
         >
           <SafeAreaView className="flex-1">
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
-              <Text className="text-2xl font-bold text-black">
-                New Learning Profile
+              <Text
+                className="text-xl font-bold text-black flex-1 mr-4"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {t("language_screen.modals.create_title")}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -278,7 +398,7 @@ export default function LanguageScreen() {
                 <View className="flex-row items-center gap-2 mb-2">
                   <Globe size={18} color="#374151" />
                   <Text className="text-gray-700 text-base font-semibold capitalize">
-                    Learning Preferences
+                    {t("language_screen.sections.learning_preferences")}
                   </Text>
                 </View>
 
@@ -296,10 +416,10 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        I want to learn
+                        {t("language_screen.modals.sections.target_label")}
                       </Text>
                       <Text className="text-gray-900 font-semibold text-base">
-                        {newTargetLang.name}
+                        {getLocalizedLanguageName(newTargetLang.name)}
                       </Text>
                     </View>
                     <ChevronDown size={20} color="#111827" />
@@ -313,15 +433,19 @@ export default function LanguageScreen() {
                     className="flex-row items-center py-4"
                   >
                     <CircleFlag
-                      countryCode={newMediumLang?.countryCode || "in"}
+                      countryCode={
+                        newMediumLang?.countryCode || newNativeLang.countryCode
+                      }
                       size={28}
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        Sophie teaches in
+                        {t("language_screen.modals.sections.medium_label")}
                       </Text>
                       <Text className="text-gray-900 font-semibold text-base">
-                        {newMediumLang?.name || "Same as Native"}
+                        {newMediumLang?.name
+                          ? getLocalizedLanguageName(newMediumLang.name)
+                          : getLocalizedLanguageName(newNativeLang.name)}
                       </Text>
                     </View>
                     <ChevronDown size={20} color="#111827" />
@@ -346,11 +470,11 @@ export default function LanguageScreen() {
                     />
                     <View className="flex-1 ml-3">
                       <Text className="text-gray-500 text-sm">
-                        Preferred accent
+                        {t("language_screen.modals.sections.accent_label")}
                       </Text>
                       <View className="flex-row items-center gap-1">
                         <Text className="text-gray-900 font-semibold text-base">
-                          {newAccent}
+                          {t(`accent_picker.accents.${newAccent}`)}
                         </Text>
                       </View>
                     </View>
@@ -364,15 +488,15 @@ export default function LanguageScreen() {
                 <View className="flex-row items-center gap-2 mb-4">
                   <Volume2 size={18} color="#374151" />
                   <Text className="text-gray-700 text-base font-semibold capitalize">
-                    Accent Playground
+                    {t("language_screen.sections.accent_playground")}
                   </Text>
                 </View>
 
                 <TextInput
                   value={testPhrase}
                   onChangeText={setTestPhrase}
-                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4 p-0"
-                  placeholder="Type your text here..."
+                  className="h-12 shadow-lg rounded-full flex-row items-center px-4 bg-white mb-4 p-0 text-sm"
+                  placeholder={t("language_screen.sections.text_placeholder")}
                   placeholderTextColor="gray"
                   textAlignVertical="center"
                   style={{ includeFontPadding: false }}
@@ -382,7 +506,7 @@ export default function LanguageScreen() {
                 <View className="mt-2">
                   <View className="flex-row items-center justify-between mb-2">
                     <Text className="text-gray-900 text-base font-semibold capitalize">
-                      Speed
+                      {t("language_screen.sections.speed_label")}
                     </Text>
                     <View className="flex-row items-center gap-2">
                       <Text className="text-gray-700 font-bold text-sm bg-gray-100 px-2 py-1 rounded-lg">
@@ -434,8 +558,7 @@ export default function LanguageScreen() {
                 </View>
 
                 <Text className="text-center text-gray-500 text-sm mt-4 leading-normal">
-                  Test selected accent and adjust speaking speed. Tap Play to
-                  preview.
+                  {t("language_screen.sections.playground_hint")}
                 </Text>
               </View>
             </ScrollView>
@@ -452,8 +575,12 @@ export default function LanguageScreen() {
                   className="flex-1"
                   containerClassName="items-center justify-center"
                 >
-                  <Text className="text-black font-bold text-lg">
-                    Create Profile
+                  <Text
+                    className="text-black font-bold text-lg"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {t("language_screen.modals.create_button")}
                   </Text>
                 </RainbowBorder>
               </TouchableOpacity>
@@ -479,13 +606,13 @@ export default function LanguageScreen() {
               ? newTargetLang.code
               : newMediumLang?.code
         }
-        title={`Select ${
+        title={
           pickerType === "native"
-            ? "Your Native"
+            ? t("language_picker.select_native")
             : pickerType === "target"
-              ? "Target"
-              : "Instruction"
-        } Language`}
+              ? t("language_picker.select_target")
+              : t("language_picker.select_instruction")
+        }
       />
 
       {/* Accent Picker Modal */}

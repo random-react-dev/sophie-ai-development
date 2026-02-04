@@ -1,6 +1,7 @@
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   disabledColorScheme,
   getRainbowColorScheme,
@@ -12,11 +13,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SecurityScreen() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <ProfileHeader title="Security" />
+      <ProfileHeader title={t("profile.security_screen.title")} />
 
       <ScrollView
         className="flex-1"
@@ -38,13 +40,13 @@ export default function SecurityScreen() {
         {/* Security Items */}
         <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Authentication
+            {t("profile.security_screen.auth_section")}
           </Text>
 
           {/* Change Password Card */}
           <ProfileSettingCard
-            title="Change Password"
-            subtitle="Update your password regularly"
+            title={t("profile.security_screen.change_password.title")}
+            subtitle={t("profile.security_screen.change_password.subtitle")}
             icon={<Lock size={20} color={getRainbowColorScheme(0).iconColor} />}
             colorScheme={getRainbowColorScheme(0)}
             onPress={() => setShowPasswordModal(true)}
@@ -52,13 +54,13 @@ export default function SecurityScreen() {
 
           {/* Two-Factor Auth Card */}
           <ProfileSettingCard
-            title="Two-Factor Authentication"
+            title={t("profile.security_screen.two_factor.title")}
             icon={<Shield size={20} color={disabledColorScheme.iconColor} />}
             colorScheme={disabledColorScheme}
             showArrow={false}
             rightElement={
               <Text className="text-xs text-gray-400 font-medium">
-                Not Enabled
+                {t("profile.security_screen.two_factor.status")}
               </Text>
             }
           />
@@ -67,7 +69,7 @@ export default function SecurityScreen() {
         {/* Security Tips */}
         <View className="mx-4 mt-8">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 ml-1">
-            Security Tips
+            {t("profile.security_screen.tips_section")}
           </Text>
 
           <View className="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
@@ -77,11 +79,10 @@ export default function SecurityScreen() {
               </View>
               <View className="flex-1">
                 <Text className="text-gray-900 font-bold text-base">
-                  Use a strong password
+                  {t("profile.security_screen.tips.strong_password.title")}
                 </Text>
                 <Text className="text-gray-500 text-sm mt-1 leading-5">
-                  Mix letters, numbers, and special characters for maximum
-                  protection.
+                  {t("profile.security_screen.tips.strong_password.body")}
                 </Text>
               </View>
             </View>
@@ -92,10 +93,10 @@ export default function SecurityScreen() {
               </View>
               <View className="flex-1">
                 <Text className="text-gray-900 font-bold text-base">
-                  Enable two-factor auth
+                  {t("profile.security_screen.tips.enable_2fa.title")}
                 </Text>
                 <Text className="text-gray-500 text-sm mt-1 leading-5">
-                  An extra layer of security for your account. coming soon!
+                  {t("profile.security_screen.tips.enable_2fa.body")}
                 </Text>
               </View>
             </View>

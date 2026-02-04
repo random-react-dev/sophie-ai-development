@@ -1,5 +1,6 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import {
   disabledColorScheme,
@@ -14,11 +15,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function AccountScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       {/* Header */}
-      <ProfileHeader title="Account" />
+      <ProfileHeader title={t("profile.account_screen.title")} />
 
       <ScrollView
         className="flex-1"
@@ -40,12 +42,12 @@ export default function AccountScreen() {
         {/* Account Items */}
         <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Subscription
+            {t("profile.account_screen.subscription")}
           </Text>
 
           {/* Status Card */}
           <ProfileSettingCard
-            title="Status"
+            title={t("profile.account_screen.status")}
             icon={
               <Sparkles size={20} color={getRainbowColorScheme(0).iconColor} />
             }
@@ -54,7 +56,7 @@ export default function AccountScreen() {
             rightElement={
               <View className="bg-yellow-100 px-3 py-1 rounded-full">
                 <Text className="text-yellow-600 text-xs font-bold uppercase">
-                  Free Trial
+                  {t("profile.account_screen.freeTrial")}
                 </Text>
               </View>
             }
@@ -62,7 +64,7 @@ export default function AccountScreen() {
 
           {/* Upgrade to Pro Card */}
           <ProfileSettingCard
-            title="Upgrade to Pro"
+            title={t("profile.account_screen.upgradeToPro")}
             icon={
               <Crown size={20} color={getRainbowColorScheme(1).iconColor} />
             }
@@ -77,32 +79,32 @@ export default function AccountScreen() {
         {/* Payment Section */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Payment
+            {t("profile.account_screen.payment")}
           </Text>
 
           {/* Payment Methods Card */}
           <ProfileSettingCard
-            title="Payment Methods"
-            subtitle="Coming Soon"
+            title={t("profile.account_screen.paymentMethods")}
+            subtitle={t("profile.account_screen.comingSoon")}
             icon={<Wallet size={20} color={disabledColorScheme.iconColor} />}
             colorScheme={disabledColorScheme}
             showArrow={false}
             rightElement={
               <Text className="text-xs text-gray-400 font-medium">
-                Coming Soon
+                {t("profile.account_screen.comingSoon")}
               </Text>
             }
           />
 
           {/* Billing History Card */}
           <ProfileSettingCard
-            title="Billing History"
+            title={t("profile.account_screen.billingHistory")}
             icon={<Receipt size={20} color={disabledColorScheme.iconColor} />}
             colorScheme={disabledColorScheme}
             showArrow={false}
             rightElement={
               <Text className="text-xs text-gray-400 font-medium">
-                Coming Soon
+                {t("profile.account_screen.comingSoon")}
               </Text>
             }
           />
@@ -111,20 +113,24 @@ export default function AccountScreen() {
         {/* Account Info */}
         <View className="mx-4 mt-6">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            Account Info
+            {t("profile.account_screen.accountInfo")}
           </Text>
 
           <View className="bg-surface rounded-2xl p-4 shadow-sm">
             <View className="flex-row justify-between py-2">
-              <Text className="text-gray-500">Email</Text>
+              <Text className="text-gray-500">
+                {t("profile.account_screen.email")}
+              </Text>
               <Text className="text-gray-900 font-medium">{user?.email}</Text>
             </View>
             <View className="flex-row justify-between py-2 border-t border-gray-100">
-              <Text className="text-gray-500 w-full flex-1">Member Since</Text>
+              <Text className="text-gray-500 w-full flex-1">
+                {t("profile.account_screen.memberSince")}
+              </Text>
               <Text className="text-gray-900 font-medium">
                 {user?.created_at
                   ? new Date(user.created_at).toLocaleDateString()
-                  : "N/A"}
+                  : t("profile.account_screen.na")}
               </Text>
             </View>
           </View>
