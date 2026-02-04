@@ -1,7 +1,7 @@
 import { UserProfileUpdate, changePassword as authChangePassword, updateUserProfile } from '@/services/supabase/auth';
 import { supabase } from '@/services/supabase/client';
-import { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
 import { create } from 'zustand';
 import { useConversationStore } from './conversationStore';
@@ -132,10 +132,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
     signOut: async () => {
         set({ isLoading: true });
-        
+
         // Clear all user-specific data before signing out
         await clearUserData();
-        
+
         await supabase.auth.signOut();
         set({ user: null, session: null, isLoading: false });
     },
@@ -181,12 +181,19 @@ export const useAuthStore = create<AuthState>((set) => ({
             });
         }
 
-        supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+        supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
             const newUser = session?.user ?? null;
+
+            // When session becomes invalid or user is signed out (including token refresh failures),
+            // clear all user data to ensure a clean state for the next login.
+            if (event === 'SIGNED_OUT') {
+                await clearUserData();
+            }
+
             set((state) => ({
                 session,
                 user: newUser,
-                showTrialPopup: _event === 'SIGNED_IN' ? true : state.showTrialPopup
+                showTrialPopup: event === 'SIGNED_IN' ? true : state.showTrialPopup
             }));
         });
     }
