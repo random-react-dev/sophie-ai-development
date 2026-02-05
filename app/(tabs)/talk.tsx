@@ -130,6 +130,8 @@ export default function TalkScreen() {
     clearMessages,
     setHasGreeted,
     stopConversation,
+    sessionProfileId,
+    setSessionProfileId,
   } = useConversationStore();
   const {
     selectedScenario,
@@ -217,7 +219,7 @@ export default function TalkScreen() {
     let isMounted = true;
 
     // Only initialize if we haven't already
-    if (isInitialized.current) return;
+    // if (isInitialized.current) return; // REMOVED to allow re-init on language change
 
     const initSession = async () => {
       if (!session) return;
@@ -294,6 +296,25 @@ Stay in character while teaching.`;
       }
     };
 
+    // If language changes after initialization, force a re-init
+    // Check for Profile ID mismatch (Robust Fix for Background Switching)
+    if (activeProfile?.id && sessionProfileId !== activeProfile.id) {
+      Logger.info(
+        TAG,
+        `Profile Switch Detected (Old: ${sessionProfileId}, New: ${activeProfile.id}). Resetting...`,
+      );
+      stopConversation();
+      clearMessages();
+      setHasGreeted(false);
+      selectScenario(null);
+      setPracticePhrase(null);
+      geminiWebSocket.disconnect();
+      isInitialized.current = false;
+      setSessionStartTime(null);
+      setSessionProfileId(activeProfile.id);
+      // The effect will re-run with isInitialized=false and start fresh
+    }
+
     initSession();
 
     // Cleanup only on unmount (not on blur)
@@ -308,10 +329,9 @@ Stay in character while teaching.`;
   }, [
     session?.user?.id,
     session,
-    selectedScenario,
-    practicePhrase,
-    targetLanguage,
-    nativeLanguage,
+    targetLanguage, // Re-run when target language changes
+    nativeLanguage, // Re-run when native language changes
+    // Removed other deps to prevent unnecessary restarts on minor state changes
   ]);
 
   const getStatusText = (): string => {
