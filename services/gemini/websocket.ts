@@ -486,13 +486,16 @@ class GeminiWebSocket {
             }
           }
           // Only add text if transcription is not enabled or not received
-          // Skip in audio-only mode (Vocab TTS)
+          // Skip in audio-only mode (Vocab TTS)l
           if (part.text && !outputTranscription && !this.isAudioOnlyMode) {
-            Logger.info(
-              TAG,
-              `Received text from model: ${part.text.substring(0, 50)}...`,
-            );
-            store.addMessage("model", part.text);
+            const filteredText = filterTranscriptText(part.text);
+            if (filteredText) {
+              Logger.info(
+                TAG,
+                `Received text from model: ${filteredText.substring(0, 50)}...`,
+              );
+              store.addMessage("model", filteredText);
+            }
           }
         }
       }

@@ -105,7 +105,13 @@ Start by greeting the user in their native language (${
     targetLang.name
   } for the words being taught
 - Never make the user feel bad about mistakes
-- Be encouraging and celebrate progress`;
+- Be encouraging and celebrate progress
+
+## STRICT Rules (CRITICAL)
+- **NO Internal Monologue**: NEVER output your internal thought process, planning, or confirmation of instructions.
+- **NO Meta-Commentary**: Do NOT say "Okay, I will...", "My plan is...", "I'm setting up...", or "Understood".
+- **Immediate Start**: Start the roleplay or lesson IMMEDIATELY with the first spoken line content.
+- **Direct Action**: Just DO the lesson. Do not talk ABOUT doing the lesson.`;
 };
 
 export default function TalkScreen() {
