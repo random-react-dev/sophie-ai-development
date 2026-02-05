@@ -124,6 +124,33 @@ export default function OnboardingScreen() {
     [updateBorderVisibility],
   );
 
+  const isStepValid = (step: number) => {
+    switch (step) {
+      case 1:
+        return true; // Handled by ProfileStep validation
+      case 2:
+        return !!data.mainGoal;
+      case 3:
+        return !!data.fluencySpeed;
+      case 4:
+        return !!data.learningDuration;
+      case 5:
+        return !!data.speakingLevel;
+      case 6:
+        return true; // Always valid (slider default)
+      case 7:
+        return data.barriers && data.barriers.length > 0;
+      case 8:
+        return data.focusAreas && data.focusAreas.length > 0;
+      case 9:
+        return !!data.discoverySource;
+      case 10:
+        return true;
+      default:
+        return true;
+    }
+  };
+
   const handleContinue = async () => {
     if (currentStep === 10) {
       try {
@@ -197,7 +224,6 @@ export default function OnboardingScreen() {
         }
       }
 
-
       // Sub-step 3 validation: check profile details (name, country)
       // Note: learningLanguage is validated in goToNextSubStep before reaching here
       if (!data.name || !data.country) {
@@ -213,6 +239,7 @@ export default function OnboardingScreen() {
       // All sub-steps complete, advance to next main step
       nextStep();
     } else {
+      if (!isStepValid(currentStep)) return;
       nextStep();
     }
   };
@@ -290,6 +317,7 @@ export default function OnboardingScreen() {
   };
 
   const currentStepConfig = getStepConfig(currentStep);
+  const isButtonDisabled = isSaving || !isStepValid(currentStep);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -345,34 +373,45 @@ export default function OnboardingScreen() {
       <View className="p-4 bg-white">
         {/* Animated Border Line */}
         <AnimatedBorderLine visible={showBorder} />
+        <AnimatedBorderLine visible={showBorder} />
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleContinue}
-          disabled={isSaving}
+          disabled={isButtonDisabled}
           className="w-full h-16 rounded-full overflow-hidden"
-          style={{
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 3,
-          }}
+          style={
+            !isButtonDisabled
+              ? {
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 3 },
+                  shadowOpacity: 0.08,
+                  shadowRadius: 12,
+                  elevation: 3,
+                }
+              : {}
+          }
         >
-          <RainbowBorder
-            borderWidth={2}
-            borderRadius={9999}
-            className="flex-1"
-            containerClassName="items-center justify-center"
-            innerBackgroundClassName="bg-white"
-          >
-            <Text className="text-gray-900 font-bold text-base">
-              {isSaving
-                ? t("onboarding.saving")
-                : currentStep === 10
+          {isButtonDisabled ? (
+            <View className="flex-1 items-center justify-center bg-gray-100 rounded-full border border-gray-200">
+              <Text className="text-gray-400 font-bold text-base">
+                {isSaving ? t("onboarding.saving") : t("onboarding.continue")}
+              </Text>
+            </View>
+          ) : (
+            <RainbowBorder
+              borderWidth={2}
+              borderRadius={9999}
+              className="flex-1"
+              containerClassName="items-center justify-center"
+              innerBackgroundClassName="bg-white"
+            >
+              <Text className="text-gray-900 font-bold text-base">
+                {currentStep === 10
                   ? t("onboarding.startLearning")
                   : t("onboarding.continue")}
-            </Text>
-          </RainbowBorder>
+              </Text>
+            </RainbowBorder>
+          )}
         </TouchableOpacity>
         {currentStep === 9 && (
           <TouchableOpacity
