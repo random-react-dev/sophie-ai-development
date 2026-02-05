@@ -440,6 +440,7 @@
     "incompleteMessage": "Ange ditt namn och välj ett land.",
     "errorMessage": "Misslyckades med att spara inställningar. Försök igen.",
     "success": "Success",
+    "delete": "Ta bort",
     "ok": "OK"
   },
   "talk_screen": {

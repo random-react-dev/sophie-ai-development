@@ -441,6 +441,7 @@
     "incompleteMessage": "कृपया अपना नाम दर्ज करें और एक देश चुनें।",
     "errorMessage": "आपकी प्राथमिकताओं को सहेजने में विफल। कृपया पुन: प्रयास करें।",
     "success": "Success",
+    "delete": "हटाएं",
     "ok": "OK"
   },
   "talk_screen": {

@@ -440,6 +440,7 @@
     "incompleteMessage": "الرجاء إدخال اسمك واختيار دولة.",
     "errorMessage": "فشل حفظ تفضيلاتك. يرجى المحاولة مرة أخرى.",
     "success": "Success",
+    "delete": "حذف",
     "ok": "OK"
   },
   "talk_screen": {

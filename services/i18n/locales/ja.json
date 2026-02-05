@@ -440,6 +440,7 @@
     "incompleteMessage": "名前を入力し、国を選択してください。",
     "errorMessage": "設定を保存できませんでした。再試行してください。",
     "success": "Success",
+    "delete": "削除",
     "ok": "OK"
   },
   "talk_screen": {

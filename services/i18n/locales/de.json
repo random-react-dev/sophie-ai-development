@@ -440,6 +440,7 @@
     "incompleteMessage": "Bitte geben Sie Ihren Namen ein und wählen Sie ein Land.",
     "errorMessage": "Fehler beim Speichern Ihrer Einstellungen. Bitte versuchen Sie es erneut.",
     "success": "Erfolg",
+    "delete": "Löschen",
     "ok": "OK"
   },
   "talk_screen": {

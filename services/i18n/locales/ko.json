@@ -441,6 +441,7 @@
     "incompleteMessage": "이름을 입력하고 국가를 선택해주세요.",
     "errorMessage": "설정을 저장하지 못했습니다. 다시 시도해주세요.",
     "success": "Success",
+    "delete": "삭제",
     "ok": "OK"
   },
   "talk_screen": {

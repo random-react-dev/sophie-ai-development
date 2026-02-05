@@ -442,6 +442,7 @@
     "incompleteMessage": "Please enter your name and select a country.",
     "errorMessage": "Failed to save your preferences. Please try again.",
     "success": "Success",
+    "delete": "Delete",
     "ok": "OK"
   },
   "talk_screen": {

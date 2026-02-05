@@ -440,6 +440,7 @@
     "incompleteMessage": "Vui lòng nhập tên của bạn và chọn quốc gia.",
     "errorMessage": "Không thể lưu tùy chọn. Vui lòng thử lại.",
     "success": "Success",
+    "delete": "Xóa",
     "ok": "OK"
   },
   "talk_screen": {

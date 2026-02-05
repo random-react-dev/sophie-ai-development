@@ -440,6 +440,7 @@
     "incompleteMessage": "Por favor, insira seu nome e selecione um país.",
     "errorMessage": "Falha ao salvar suas preferências. Tente novamente.",
     "success": "Success",
+    "delete": "Excluir",
     "ok": "OK"
   },
   "talk_screen": {

@@ -440,6 +440,7 @@
     "incompleteMessage": "Silakan masukkan nama Anda dan pilih negara.",
     "errorMessage": "Gagal menyimpan preferensi. Silakan coba lagi.",
     "success": "Success",
+    "delete": "Hapus",
     "ok": "OK"
   },
   "talk_screen": {

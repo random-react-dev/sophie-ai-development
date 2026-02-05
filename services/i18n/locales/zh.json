@@ -441,6 +441,7 @@
     "incompleteMessage": "请输入你的名字并选择国家。",
     "errorMessage": "保存偏好设置失败。请重试。",
     "success": "Success",
+    "delete": "删除",
     "ok": "OK"
   },
   "talk_screen": {

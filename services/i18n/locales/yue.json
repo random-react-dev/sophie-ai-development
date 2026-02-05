@@ -441,6 +441,7 @@
     "incompleteMessage": "請輸入你個名同揀選國家。",
     "errorMessage": "儲存設定失敗。請重試。",
     "success": "Success",
+    "delete": "刪除",
     "ok": "OK"
   },
   "talk_screen": {
