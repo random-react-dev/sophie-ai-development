@@ -22,10 +22,10 @@
     },
     "options": {
       "goal": {
-        "student": "Sou estudante",
-        "traveler": "Sou viajante",
-        "abroad": "Vou / estou no exterior",
-        "job": "Preciso para o meu trabalho",
+        "student": "Como estudante",
+        "traveler": "Como viajante",
+        "abroad": "Estou/estarei morando no exterior",
+        "job": "Preciso disso para o meu trabalho",
         "other": "Outro"
       },
       "level": {
@@ -75,9 +75,12 @@
         },
         "other": {
           "title": "Outro",
-          "desc": "Algo mais me impede"
-        }
+          "desc": "Outra coisa está me impedindo"
+        },
+        "barrierLimitMessage": "Você pode selecionar até 3 barreiras.",
+        "limitReached": "Limite Atingido"
       },
+      "focusLimitMessage": "Você pode selecionar até 3 áreas de foco.",
       "focus": {
         "listening": "Escuta",
         "speaking": "Fala",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "Qual é o seu principal objetivo na vida?",
+      "goal": "Como você usará este novo idioma?",
       "fluency": "Quão rápido você quer se tornar fluente?",
       "duration": "Há quanto tempo você estuda este idioma?",
       "level": "Qual melhor descreve você?",
@@ -440,6 +443,7 @@
     "incompleteMessage": "Por favor, insira seu nome e selecione um país.",
     "errorMessage": "Falha ao salvar suas preferências. Tente novamente.",
     "success": "Success",
+    "delete": "Excluir",
     "ok": "OK"
   },
   "talk_screen": {

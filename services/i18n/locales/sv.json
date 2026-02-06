@@ -22,9 +22,9 @@
     },
     "options": {
       "goal": {
-        "student": "Jag är student",
-        "traveler": "Jag är resenär",
-        "abroad": "Jag ska / är utomlands",
+        "student": "Som student",
+        "traveler": "Som resenär",
+        "abroad": "Jag bor/kommer att bo utomlands",
         "job": "Jag behöver det för mitt jobb",
         "other": "Annat"
       },
@@ -78,6 +78,9 @@
           "desc": "Något annat håller mig tillbaka"
         }
       },
+      "barrierLimitMessage": "Du kan välja upp till 3 hinder.",
+      "limitReached": "Gräns nådd",
+      "focusLimitMessage": "Du kan välja upp till 3 fokusområden.",
       "focus": {
         "listening": "Hörförståelse",
         "speaking": "Tala",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "Vad är ditt främsta mål i livet?",
+      "goal": "Hur kommer du att använda detta nya språk?",
       "fluency": "Hur snabbt vill du bli flytande?",
       "duration": "Hur länge har du studerat detta språk?",
       "level": "Vilket beskriver dig bäst?",
@@ -440,6 +443,7 @@
     "incompleteMessage": "Ange ditt namn och välj ett land.",
     "errorMessage": "Misslyckades med att spara inställningar. Försök igen.",
     "success": "Success",
+    "delete": "Ta bort",
     "ok": "OK"
   },
   "talk_screen": {

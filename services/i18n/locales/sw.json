@@ -22,10 +22,10 @@
     },
     "options": {
       "goal": {
-        "student": "Mimi ni mwanafunzi",
-        "traveler": "Mimi ni msafiri",
-        "abroad": "Nita / niko nje ya nchi",
-        "job": "Nahitaji kwa kazi yangu",
+        "student": "Kama mwanafunzi",
+        "traveler": "Kama msafiri",
+        "abroad": "Ninaishi/nitaishi ng'ambo",
+        "job": "Naihitaji kwa kazi yangu",
         "other": "Nyingine"
       },
       "level": {
@@ -78,6 +78,9 @@
           "desc": "Kitu kingine kinanizuia"
         }
       },
+      "barrierLimitMessage": "Unaweza kuchagua hadi vizuizi 3.",
+      "limitReached": "Kikomo Kimefikiwa",
+      "focusLimitMessage": "Unaweza kuchagua hadi maeneo 3 ya kuzingatia.",
       "focus": {
         "listening": "Kusikiliza",
         "speaking": "Kuzungumza",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "Je, lengo lako kuu maishani ni lipi?",
+      "goal": "Utatumiaje lugha hii mpya?",
       "fluency": "Unataka kuwa fasaha kwa haraka kiasi gani?",
       "duration": "Umewahi kusoma lugha hii kwa muda gani?",
       "level": "Ni ipi inakuelezea vyema?",
@@ -440,6 +443,7 @@
     "incompleteMessage": "Tafadhali weka jina lako na uchague nchi.",
     "errorMessage": "Imeshindikana kuhifadhi mipangilio. Tafadhali jaribu tena.",
     "success": "Success",
+    "delete": "Futa",
     "ok": "OK"
   },
   "talk_screen": {

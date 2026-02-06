@@ -22,9 +22,9 @@
     },
     "options": {
       "goal": {
-        "student": "我係學生",
-        "traveler": "我係旅行者",
-        "abroad": "我將/在外國",
+        "student": "作為學生",
+        "traveler": "作為旅客",
+        "abroad": "我住喺/將會住喺外國",
         "job": "工作需要",
         "other": "其他"
       },
@@ -75,9 +75,12 @@
         },
         "other": {
           "title": "其他",
-          "desc": "其他阻礙我嘅原因"
+          "desc": "其他嘢阻住我"
         }
       },
+      "barrierLimitMessage": "最多可以揀3個障礙。",
+      "limitReached": "已達上限",
+      "focusLimitMessage": "最多可以揀3個重點。",
       "focus": {
         "listening": "聽力",
         "speaking": "口語",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "你人生嘅主要目標係咩？",
+      "goal": "你會點樣用呢種新語言？",
       "fluency": "你想幾快學識講？",
       "duration": "你學咗呢種語言幾耐？",
       "level": "邊個最形容得你貼切？",
@@ -441,6 +444,7 @@
     "incompleteMessage": "請輸入你個名同揀選國家。",
     "errorMessage": "儲存設定失敗。請重試。",
     "success": "Success",
+    "delete": "刪除",
     "ok": "OK"
   },
   "talk_screen": {

@@ -22,10 +22,10 @@
     },
     "options": {
       "goal": {
-        "student": "学生です",
-        "traveler": "旅行者です",
-        "abroad": "海外に住む予定/住んでいます",
-        "job": "仕事で必要です",
+        "student": "学生として",
+        "traveler": "旅行者として",
+        "abroad": "海外に住んでいる/住む予定",
+        "job": "仕事で必要",
         "other": "その他"
       },
       "level": {
@@ -76,8 +76,11 @@
         "other": {
           "title": "その他",
           "desc": "他にも理由があります"
-        }
+        },
+        "barrierLimitMessage": "最大3つまで選択できます。",
+        "limitReached": "上限に達しました"
       },
+      "focusLimitMessage": "最大3つの重点分野を選択できます。",
       "focus": {
         "listening": "リスニング",
         "speaking": "スピーキング",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "人生の主な目標は何ですか？",
+      "goal": "この新しい言語をどのように使いますか？",
       "fluency": "どれくらい早く流暢になりたいですか？",
       "duration": "この言語をどれくらい勉強していますか？",
       "level": "どれが一番あなたに当てはまりますか？",
@@ -440,6 +443,7 @@
     "incompleteMessage": "名前を入力し、国を選択してください。",
     "errorMessage": "設定を保存できませんでした。再試行してください。",
     "success": "Success",
+    "delete": "削除",
     "ok": "OK"
   },
   "talk_screen": {

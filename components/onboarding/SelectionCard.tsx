@@ -8,14 +8,9 @@ import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
-  withSpring
+  withSpring,
 } from "react-native-reanimated";
-import Svg, {
-  Circle,
-  Defs,
-  LinearGradient,
-  Stop
-} from "react-native-svg";
+import Svg, { Circle, Defs, LinearGradient, Stop } from "react-native-svg";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -138,7 +133,7 @@ function AnimatedBar({
       progress.value,
       [index * 0.1, index * 0.1 + 0.5],
       [0, 1],
-      "clamp"
+      "clamp",
     );
     return {
       transform: [{ scaleY: scale }],
@@ -152,9 +147,7 @@ function AnimatedBar({
       className={`w-1 rounded-full ${heightClass[barLevel]}`}
       style={[
         {
-          backgroundColor: isActive
-            ? barColors[barLevel - 1]
-            : "#e5e7eb",
+          backgroundColor: isActive ? barColors[barLevel - 1] : "#e5e7eb",
         },
         isActive ? barStyle : {},
       ]}
@@ -233,7 +226,7 @@ function DotPattern({
         progress.value,
         [index * 0.1, index * 0.1 + 0.5],
         [0, 1],
-        "clamp"
+        "clamp",
       );
       return {
         transform: [{ scale }],
@@ -385,8 +378,9 @@ export function SelectionCard({
       )}
       <View className="flex-1 justify-center py-1">
         <Text
-          className={`font-bold text-base ${selected ? "text-gray-900" : "text-gray-900"
-            }`}
+          className={`font-bold text-base ${
+            selected ? "text-gray-900" : "text-gray-900"
+          }`}
         >
           {title}
         </Text>
@@ -398,7 +392,12 @@ export function SelectionCard({
   );
 
   return (
-    <Pressable onPress={onSelect}>
+    <Pressable
+      onPress={onSelect}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ selected }}
+    >
       <Animated.View
         style={[
           animatedStyle,

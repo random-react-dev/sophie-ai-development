@@ -22,9 +22,9 @@
     },
     "options": {
       "goal": {
-        "student": "Tôi là sinh viên",
-        "traveler": "Tôi là khách du lịch",
-        "abroad": "Tôi sẽ / đang ở nước ngoài",
+        "student": "Như một sinh viên",
+        "traveler": "Như một khách du lịch",
+        "abroad": "Tôi đang/sẽ sống ở nước ngoài",
         "job": "Tôi cần nó cho công việc",
         "other": "Khác"
       },
@@ -76,8 +76,11 @@
         "other": {
           "title": "Khác",
           "desc": "Có điều gì đó đang kìm hãm tôi"
-        }
+        },
+        "barrierLimitMessage": "Bạn có thể chọn tối đa 3 rào cản.",
+        "limitReached": "Đã đạt giới hạn"
       },
+      "focusLimitMessage": "Bạn có thể chọn tối đa 3 lĩnh vực trọng tâm.",
       "focus": {
         "listening": "Nghe",
         "speaking": "Nói",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "Mục tiêu chính trong cuộc sống của bạn là gì?",
+      "goal": "Bạn sẽ sử dụng ngôn ngữ mới này như thế nào?",
       "fluency": "Bạn muốn thành thạo nhanh như thế nào?",
       "duration": "Bạn đã học ngôn ngữ này bao lâu rồi?",
       "level": "Điều nào mô tả đúng nhất về bạn?",
@@ -440,6 +443,7 @@
     "incompleteMessage": "Vui lòng nhập tên của bạn và chọn quốc gia.",
     "errorMessage": "Không thể lưu tùy chọn. Vui lòng thử lại.",
     "success": "Success",
+    "delete": "Xóa",
     "ok": "OK"
   },
   "talk_screen": {

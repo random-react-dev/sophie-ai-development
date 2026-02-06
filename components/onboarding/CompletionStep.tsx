@@ -266,11 +266,11 @@ const SophieIntroVideo: React.FC = () => {
     if (showControls) {
       controlsOpacity.value = withTiming(1, { duration: 200 });
 
-      // Auto-hide controls after 2 seconds if playing
+      // Auto-hide controls after 300ms only if playing
       if (isPlaying && !isVideoComplete) {
         hideControlsTimeout.current = setTimeout(() => {
           setShowControls(false);
-        }, 1000);
+        }, 300);
       }
     } else {
       controlsOpacity.value = withTiming(0, { duration: 200 });
@@ -283,37 +283,35 @@ const SophieIntroVideo: React.FC = () => {
     };
   }, [showControls, isPlaying, isVideoComplete]);
 
-  // Handle tap on video - toggle play/pause AND show controls with instant feedback
-  const handleVideoTap = async () => {
+  // Explicit cleanup on unmount to prevent memory leaks (Best Practice)
+  useEffect(() => {
+    return () => {
+      if (videoRef.current) {
+        // Stop playback and unload video resource
+        videoRef.current.setStatusAsync({ shouldPlay: false });
+        videoRef.current.unloadAsync();
+      }
+    };
+  }, []);
+
+  // Handle tap on video - TOGGLE CONTROLS ONLY
+  const handleVideoTap = () => {
     // Clear any pending hide timeout
     if (hideControlsTimeout.current) {
       clearTimeout(hideControlsTimeout.current);
     }
 
-    // Always show controls on tap
-    setShowControls(true);
-
-    // Toggle play/pause with instant visual feedback
-    if (videoRef.current) {
-      if (isPlaying) {
-        // Set state FIRST for instant icon update
-        setIsPlaying(false);
-        await videoRef.current.pauseAsync();
-      } else {
-        // If video completed, replay from start
-        if (isVideoComplete) {
-          await videoRef.current.setPositionAsync(0);
-          setIsVideoComplete(false);
-        }
-        // Set state FIRST for instant icon update
-        setIsPlaying(true);
-        await videoRef.current.playAsync();
-      }
-    }
+    // Toggle controls visibility
+    setShowControls((prev) => !prev);
   };
 
-  // Handle play/pause button with animation (when tapping the button directly)
+  // Handle play/pause button with animation
   const handlePlayPause = async () => {
+    // Clear timeout so controls don't disappear immediately after clicking pause
+    if (hideControlsTimeout.current) {
+      clearTimeout(hideControlsTimeout.current);
+    }
+
     // Animate button press
     buttonScale.value = withSpring(0.85, { damping: 15, stiffness: 400 });
     setTimeout(() => {
@@ -324,6 +322,8 @@ const SophieIntroVideo: React.FC = () => {
       if (isPlaying) {
         setIsPlaying(false);
         await videoRef.current.pauseAsync();
+        // Keep controls visible when paused
+        setShowControls(true);
       } else {
         if (isVideoComplete) {
           await videoRef.current.setPositionAsync(0);
@@ -331,6 +331,8 @@ const SophieIntroVideo: React.FC = () => {
         }
         setIsPlaying(true);
         await videoRef.current.playAsync();
+        // Controls will auto-hide via useEffect
+        setShowControls(true);
       }
     }
   };

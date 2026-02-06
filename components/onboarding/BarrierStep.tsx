@@ -4,7 +4,18 @@ import React from "react";
 import { View } from "react-native";
 import { SelectionCard } from "./SelectionCard";
 
-export const BarrierStep = () => {
+import { AlertButton } from "../common/AlertModal";
+
+interface BarrierStepProps {
+  onAlert: (
+    title: string,
+    message: string,
+    buttons?: AlertButton[],
+    type?: "error" | "success" | "warning" | "info",
+  ) => void;
+}
+
+export const BarrierStep = ({ onAlert }: BarrierStepProps) => {
   const { data, updateData } = useOnboardingStore();
   const { t } = useTranslation();
 
@@ -40,6 +51,17 @@ export const BarrierStep = () => {
     if (current.includes(id)) {
       updateData({ barriers: current.filter((b) => b !== id) });
     } else {
+      if (current.length >= 3) {
+        if (current.length >= 3) {
+          onAlert(
+            t("onboarding.options.limitReached"),
+            t("onboarding.options.barrierLimitMessage"),
+            undefined,
+            "warning",
+          );
+          return;
+        }
+      }
       updateData({ barriers: [...current, id] });
     }
   };

@@ -23,9 +23,9 @@
     },
     "options": {
       "goal": {
-        "student": "I am a student",
-        "traveler": "I am a traveler",
-        "abroad": "I will / am abroad",
+        "student": "As student",
+        "traveler": "As traveler",
+        "abroad": "I am/will be abroad for living",
         "job": "I need it for my job",
         "other": "Other"
       },
@@ -79,6 +79,8 @@
           "desc": "Something else is holding me back"
         }
       },
+      "barrierLimitMessage": "You can select up to 3 barriers.",
+      "limitReached": "Limit Reached",
       "focus": {
         "listening": "Listening",
         "speaking": "Speaking",
@@ -88,6 +90,7 @@
         "reading": "Reading",
         "writing": "Writing"
       },
+      "focusLimitMessage": "You can select up to 3 focus areas.",
       "discovery": {
         "tiktok": "TikTok",
         "instagram": "Instagram",
@@ -98,7 +101,7 @@
       }
     },
     "titles": {
-      "goal": "What's your main goal in life?",
+      "goal": "How will you use this new language?",
       "fluency": "How quickly do you want to become fluent?",
       "duration": "How long have you been studying this language?",
       "level": "Which best describes you?",
@@ -442,6 +445,7 @@
     "incompleteMessage": "Please enter your name and select a country.",
     "errorMessage": "Failed to save your preferences. Please try again.",
     "success": "Success",
+    "delete": "Delete",
     "ok": "OK"
   },
   "talk_screen": {
