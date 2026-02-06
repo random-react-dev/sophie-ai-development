@@ -9,9 +9,8 @@ import {
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
-import { audioStreamer } from "@/services/audio/streamer";
+import { stopSpeaking as stopTTSSpeaking, speakWord } from "@/services/audio/tts";
 import { translateText } from "@/services/gemini/translate";
-import { geminiWebSocket } from "@/services/gemini/websocket";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import {
   VocabularyFolder,
@@ -149,26 +148,7 @@ export default function VocabScreen() {
     }, [fetchVocabulary]),
   );
 
-  // Subscribe to audio speaking state for mic visual feedback
-  useEffect(() => {
-    const handleSpeakingState = (isSpeaking: boolean) => {
-      // IMPORTANT: Also update the global store so Talk page UI updates correctly
-      const { useConversationStore } = require("@/stores/conversationStore");
-      useConversationStore.getState().setSpeaking(isSpeaking);
 
-      if (!isSpeaking) {
-        setSpeakingItemId(null);
-      }
-    };
-    audioStreamer.setSpeakingStateCallback(handleSpeakingState);
-    return () => {
-      // Restore the original store callback when leaving this screen
-      audioStreamer.setSpeakingStateCallback((isSpeaking) => {
-        const { useConversationStore } = require("@/stores/conversationStore");
-        useConversationStore.getState().setSpeaking(isSpeaking);
-      });
-    };
-  }, []);
 
   const getLocalizedLanguageName = useCallback(
     (englishName: string) => {
@@ -232,38 +212,39 @@ export default function VocabScreen() {
   }, [items, searchQuery, selectedLanguage, selectedFolderFilter, ALL_LABEL]);
 
   /**
-   * Speak the phrase aloud using Text-to-Speech via Gemini WebSocket.
+   * Speak the phrase aloud using native device Text-to-Speech (expo-speech).
    * Toggle behavior: tap to play, tap again to stop.
-   * Requires the user to have connected via the Talk tab first.
+   * Works offline - no WebSocket connection required.
    */
   const handlePlay = (item: VocabularyItem) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // If this item is already speaking, stop playback
     if (speakingItemId === item.id) {
-      audioStreamer.handleInterruption();
+      void stopTTSSpeaking();
       setSpeakingItemId(null);
-      return;
-    }
-
-    if (!geminiWebSocket.isReady()) {
-      showAlert(
-        t("vocab_screen.alerts.error_title"),
-        t("vocab_screen.alerts.connection_required"),
-        undefined,
-        "warning",
-      );
       return;
     }
 
     // Stop any currently playing audio before starting new one
     if (speakingItemId) {
-      audioStreamer.handleInterruption();
+      void stopTTSSpeaking();
     }
 
     // Set speaking item for visual feedback and start playback
     setSpeakingItemId(item.id || null);
-    geminiWebSocket.speakPhrase(item.phrase, item.language || "English", true); // Audio-only, skip conversation
+
+    void speakWord(item.phrase, item.language, {
+      onStart: () => {
+        setSpeakingItemId(item.id || null);
+      },
+      onDone: () => {
+        setSpeakingItemId(null);
+      },
+      onError: () => {
+        setSpeakingItemId(null);
+      },
+    });
   };
 
   const handleDelete = async (id: string) => {
