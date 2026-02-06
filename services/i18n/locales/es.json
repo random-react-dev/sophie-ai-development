@@ -22,9 +22,9 @@
     },
     "options": {
       "goal": {
-        "student": "Soy estudiante",
-        "traveler": "Soy viajero",
-        "abroad": "Voy a / estoy en el extranjero",
+        "student": "Como estudiante",
+        "traveler": "Como viajero",
+        "abroad": "Vivo/viviré en el extranjero",
         "job": "Lo necesito para mi trabajo",
         "other": "Otro"
       },
@@ -78,6 +78,9 @@
           "desc": "Algo más me detiene"
         }
       },
+      "barrierLimitMessage": "Puedes seleccionar hasta 3 barreras.",
+      "limitReached": "Límite alcanzado",
+      "focusLimitMessage": "Puedes seleccionar hasta 3 áreas de enfoque.",
       "focus": {
         "listening": "Escucha",
         "speaking": "Habla",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "¿Cuál es tu objetivo principal en la vida?",
+      "goal": "¿Cómo usarás este nuevo idioma?",
       "fluency": "¿Qué tan rápido quieres volverte fluido?",
       "duration": "¿Cuánto tiempo llevas estudiando este idioma?",
       "level": "¿Cuál te describe mejor?",

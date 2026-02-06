@@ -89,6 +89,7 @@ export default function OnboardingScreen() {
 
   // Dynamic border state - shows when content is scrollable and not at bottom
   const [showBorder, setShowBorder] = useState(false);
+  const [profileSubStep, setProfileSubStep] = useState(1);
   const scrollViewRef = useRef<ScrollView>(null);
   const contentHeight = useRef(0);
   const containerHeight = useRef(0);
@@ -127,7 +128,23 @@ export default function OnboardingScreen() {
   const isStepValid = (step: number) => {
     switch (step) {
       case 1:
-        return true; // Handled by ProfileStep validation
+      case 1:
+        // ProfileStep validation based on sub-step
+        if (profileSubStep === 1) {
+          // Sub-step 1: App language selection
+          // Always true since we have a default, but good to check store
+          const { currentLanguage } = useLanguageStore.getState();
+          return !!currentLanguage;
+        }
+        if (profileSubStep === 2) {
+          // Sub-step 2: Learning language
+          return !!data.learningLanguage;
+        }
+        if (profileSubStep === 3) {
+          // Sub-step 3: Profile details (Name, Country, Native Language)
+          return !!data.name && !!data.country && !!data.nativeLanguage;
+        }
+        return true;
       case 2:
         return !!data.mainGoal;
       case 3:
@@ -267,6 +284,7 @@ export default function OnboardingScreen() {
           <ProfileStep
             ref={profileStepRef}
             onScrollStateChange={(shouldShow) => setShowBorder(shouldShow)}
+            onSubStepChange={setProfileSubStep}
           />
         );
       case 2:
@@ -280,9 +298,9 @@ export default function OnboardingScreen() {
       case 6:
         return <ConfidenceStep />;
       case 7:
-        return <BarrierStep />;
+        return <BarrierStep onAlert={showAlert} />;
       case 8:
-        return <FocusStep />;
+        return <FocusStep onAlert={showAlert} />;
       case 9:
         return <DiscoveryStep />;
       case 10:

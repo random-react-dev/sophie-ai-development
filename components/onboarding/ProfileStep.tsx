@@ -147,20 +147,27 @@ export interface ProfileStepRef {
 // Props interface for scroll state callback
 interface ProfileStepProps {
   onScrollStateChange?: (showBorder: boolean) => void;
+  onSubStepChange?: (subStep: number) => void;
 }
 
 export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
-  ({ onScrollStateChange }, ref) => {
+  ({ onScrollStateChange, onSubStepChange }, ref) => {
     const { data, updateData } = useOnboardingStore();
     const { t } = useTranslation();
     const { currentLanguage, setLanguage } = useLanguageStore();
     const [subStep, setSubStep] = useState(1);
 
+    // Notify parent of sub-step changes
+    React.useEffect(() => {
+      onSubStepChange?.(subStep);
+    }, [subStep, onSubStepChange]);
+
     // State for Native Language modal (must be at top, before any returns)
     const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
     // State for Learning Language modal
-    const [learningLangModalVisible, setLearningLangModalVisible] = useState(false);
+    const [learningLangModalVisible, setLearningLangModalVisible] =
+      useState(false);
 
     // State for Country modal
     const [countryModalVisible, setCountryModalVisible] = useState(false);
@@ -342,8 +349,9 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setLearningLangModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-base ${data.learningLanguage ? "text-gray-800" : "text-gray-400"
-                  }`}
+                className={`flex-1 text-base ${
+                  data.learningLanguage ? "text-gray-800" : "text-gray-400"
+                }`}
                 numberOfLines={1}
               >
                 {data.learningLanguage
@@ -378,8 +386,9 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setCountryModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-sm ${data.country ? "text-gray-800" : "text-gray-400"
-                  }`}
+                className={`flex-1 text-sm ${
+                  data.country ? "text-gray-800" : "text-gray-400"
+                }`}
                 numberOfLines={1}
               >
                 {data.country || t("onboarding.profileStep.countryPlaceholder")}
@@ -399,8 +408,9 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               onPress={() => setLanguageModalVisible(true)}
             >
               <Text
-                className={`flex-1 text-sm ${data.nativeLanguage ? "text-gray-800" : "text-gray-400"
-                  }`}
+                className={`flex-1 text-sm ${
+                  data.nativeLanguage ? "text-gray-800" : "text-gray-400"
+                }`}
                 numberOfLines={1}
               >
                 {data.nativeLanguage

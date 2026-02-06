@@ -32,7 +32,12 @@ const FocusTag: React.FC<FocusTagProps> = ({
   if (selected) {
     return (
       <Animated.View style={animatedStyle}>
-        <Pressable onPress={onPress}>
+        <Pressable
+          onPress={onPress}
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          accessibilityState={{ selected: true }}
+        >
           <RainbowBorder
             borderRadius={100}
             borderWidth={2}
@@ -68,6 +73,9 @@ const FocusTag: React.FC<FocusTagProps> = ({
   return (
     <AnimatedPressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: false }}
       style={[
         animatedStyle,
         {
@@ -98,7 +106,18 @@ const FocusTag: React.FC<FocusTagProps> = ({
   );
 };
 
-export const FocusStep = () => {
+import { AlertButton } from "../common/AlertModal";
+
+interface FocusStepProps {
+  onAlert: (
+    title: string,
+    message: string,
+    buttons?: AlertButton[],
+    type?: "error" | "success" | "warning" | "info",
+  ) => void;
+}
+
+export const FocusStep = ({ onAlert }: FocusStepProps) => {
   const { data, updateData } = useOnboardingStore();
   const { t } = useTranslation();
 
@@ -117,6 +136,15 @@ export const FocusStep = () => {
     if (current.includes(area)) {
       updateData({ focusAreas: current.filter((a) => a !== area) });
     } else {
+      if (current.length >= 3) {
+        onAlert(
+          t("onboarding.options.limitReached"),
+          t("onboarding.options.focusLimitMessage"),
+          undefined,
+          "warning",
+        );
+        return;
+      }
       updateData({ focusAreas: [...current, area] });
     }
   };

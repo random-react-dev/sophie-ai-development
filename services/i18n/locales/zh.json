@@ -22,9 +22,9 @@
     },
     "options": {
       "goal": {
-        "student": "我是学生",
-        "traveler": "我是旅行者",
-        "abroad": "我将/在国外",
+        "student": "作为学生",
+        "traveler": "作为旅行者",
+        "abroad": "我正在/将在国外生活",
         "job": "工作需要",
         "other": "其他"
       },
@@ -78,6 +78,9 @@
           "desc": "其他阻碍我的原因"
         }
       },
+      "barrierLimitMessage": "您最多可以选择3个障碍。",
+      "limitReached": "已达上限",
+      "focusLimitMessage": "您最多可以选择3个重点领域。",
       "focus": {
         "listening": "听力",
         "speaking": "口语",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "你生活中的主要目标是什么？",
+      "goal": "您将如何使用这门新语言？",
       "fluency": "你想多快变得流利？",
       "duration": "你学这门语言多久了？",
       "level": "哪个最能描述你？",

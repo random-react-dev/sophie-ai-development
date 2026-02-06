@@ -22,9 +22,9 @@
     },
     "options": {
       "goal": {
-        "student": "Saya seorang pelajar",
-        "traveler": "Saya seorang pelancong",
-        "abroad": "Saya akan / sedang di luar negeri",
+        "student": "Sebagai pelajar",
+        "traveler": "Sebagai pelancong",
+        "abroad": "Saya tinggal/akan tinggal di luar negeri",
         "job": "Saya membutuhkannya untuk pekerjaan saya",
         "other": "Lainnya"
       },
@@ -78,6 +78,9 @@
           "desc": "Ada hal lain yang menahan saya"
         }
       },
+      "barrierLimitMessage": "Anda dapat memilih hingga 3 hambatan.",
+      "limitReached": "Batas Tercapai",
+      "focusLimitMessage": "Anda dapat memilih hingga 3 area fokus.",
       "focus": {
         "listening": "Mendengarkan",
         "speaking": "Berbicara",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "Apa tujuan utama Anda dalam hidup?",
+      "goal": "Bagaimana Anda akan menggunakan bahasa baru ini?",
       "fluency": "Seberapa cepat Anda ingin fasih?",
       "duration": "Sudah berapa lama Anda belajar bahasa ini?",
       "level": "Mana yang paling menggambarkan Anda?",

@@ -22,10 +22,10 @@
     },
     "options": {
       "goal": {
-        "student": "저는 학생입니다",
-        "traveler": "저는 여행자입니다",
-        "abroad": "해외에 있거나 갈 예정입니다",
-        "job": "일 때문에 필요합니다",
+        "student": "학생으로서",
+        "traveler": "여행자로서",
+        "abroad": "해외에 거주 중이거나 거주할 예정입니다",
+        "job": "업무상 필요합니다",
         "other": "기타"
       },
       "level": {
@@ -78,6 +78,9 @@
           "desc": "다른 이유가 있습니다"
         }
       },
+      "barrierLimitMessage": "최대 3개까지 선택할 수 있습니다.",
+      "limitReached": "제한 도달",
+      "focusLimitMessage": "중점 분야는 최대 3개까지 선택할 수 있습니다.",
       "focus": {
         "listening": "듣기",
         "speaking": "말하기",
@@ -97,7 +100,7 @@
       }
     },
     "titles": {
-      "goal": "인생의 주된 목표는 무엇입니까?",
+      "goal": "이 새로운 언어를 어떻게 사용하실 건가요?",
       "fluency": "얼마나 빨리 유창해지고 싶으신가요?",
       "duration": "이 언어를 얼마나 오래 공부하셨나요?",
       "level": "본인을 가장 잘 설명하는 것은?",
