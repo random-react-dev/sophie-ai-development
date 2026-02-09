@@ -1,9 +1,17 @@
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/services/supabase/client";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
-import React, { useState } from "react";
+import React from "react";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
+
+// Configure Google Sign-In on component mount
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+});
 
 function GoogleLogo() {
   return (
@@ -37,17 +45,24 @@ function AppleLogo() {
 }
 
 export function SocialLoginButtons() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { signInWithGoogle, isLoading } = useAuthStore();
 
-  const handleOAuthSignIn = async (provider: "google" | "apple") => {
+  const handleGoogleSignIn = async () => {
     try {
-      setIsLoading(true);
+      await signInWithGoogle();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Sign in failed";
+      Alert.alert("Sign In Failed", message);
+    }
+  };
 
+  const handleAppleSignIn = async () => {
+    try {
       // Get the redirect URL for deep linking back to the app
       const redirectUrl = Linking.createURL("auth/callback");
 
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "apple",
         options: {
           redirectTo: redirectUrl,
           skipBrowserRedirect: true,
@@ -80,8 +95,6 @@ export function SocialLoginButtons() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Sign in failed";
       Alert.alert("Sign In Failed", message);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -95,7 +108,7 @@ export function SocialLoginButtons() {
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => handleOAuthSignIn("google")}
+        onPress={handleGoogleSignIn}
         disabled={isLoading}
         className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
       >
@@ -109,7 +122,7 @@ export function SocialLoginButtons() {
 
       {Platform.OS === "ios" && (
         <TouchableOpacity
-          onPress={() => handleOAuthSignIn("apple")}
+          onPress={handleAppleSignIn}
           disabled={isLoading}
           className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
         >

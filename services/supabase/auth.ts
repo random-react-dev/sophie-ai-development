@@ -1,4 +1,22 @@
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { supabase } from './client';
+
+export const signInWithGoogle = async () => {
+    await GoogleSignin.hasPlayServices();
+    const signInResult = await GoogleSignin.signIn();
+    const idToken = signInResult.data?.idToken;
+
+    if (!idToken) {
+        throw new Error('No ID token received from Google');
+    }
+
+    const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+    });
+
+    return { data, error };
+};
 
 export const signInWithEmail = async (email: string) => {
     const { data, error } = await supabase.auth.signInWithOtp({
