@@ -17,36 +17,54 @@ interface ScenarioState {
   addCustomScenario: (scenario: Scenario) => void;
 }
 
-export const useScenarioStore = create<ScenarioState>((set) => ({
-  scenarios: SCENARIOS,
-  selectedScenario: null,
-  practicePhrase: null,
-  customScenarios: [],
-  searchQuery: "",
-  selectedCategory: "All",
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-  scenarioSelectionTimestamp: 0,
+export const useScenarioStore = create<ScenarioState>()(
+  persist(
+    (set) => ({
+      scenarios: SCENARIOS,
+      selectedScenario: null,
+      practicePhrase: null,
+      customScenarios: [],
+      searchQuery: "",
+      selectedCategory: "All",
 
-  setSearchQuery: (searchQuery) => set({ searchQuery }),
-  setSelectedCategory: (selectedCategory) => set({ selectedCategory }),
-  selectScenario: (selectedScenario) =>
-    set({
-      selectedScenario,
-      practicePhrase: null, // Clear practice phrase when selecting a scenario
-      scenarioSelectionTimestamp: Date.now(),
+      scenarioSelectionTimestamp: 0,
+
+      setSearchQuery: (searchQuery) => set({ searchQuery }),
+      setSelectedCategory: (selectedCategory) => set({ selectedCategory }),
+      selectScenario: (selectedScenario) =>
+        set({
+          selectedScenario,
+          practicePhrase: null, // Clear practice phrase when selecting a scenario
+          scenarioSelectionTimestamp: Date.now(),
+        }),
+      setPracticePhrase: (practicePhrase) =>
+        set({
+          practicePhrase,
+          selectedScenario: null, // Clear scenario when practicing a phrase
+          scenarioSelectionTimestamp: Date.now(),
+        }),
+      addCustomScenario: (scenario) =>
+        set((state) => ({
+          customScenarios: [scenario, ...state.customScenarios],
+          scenarios: [scenario, ...state.scenarios],
+        })),
     }),
-  setPracticePhrase: (practicePhrase) =>
-    set({
-      practicePhrase,
-      selectedScenario: null, // Clear scenario when practicing a phrase
-      scenarioSelectionTimestamp: Date.now(),
-    }),
-  addCustomScenario: (scenario) =>
-    set((state) => ({
-      customScenarios: [scenario, ...state.customScenarios],
-      scenarios: [scenario, ...state.scenarios],
-    })),
-}));
+    {
+      name: "scenario-storage",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({ customScenarios: state.customScenarios }), // Only persist custom scenarios
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Merge persisted custom scenarios with static SCENARIOS
+          state.scenarios = [...state.customScenarios, ...SCENARIOS];
+        }
+      },
+    },
+  ),
+);
 
 // ============================================
 // Atomic Selectors - Reduce unnecessary re-renders
