@@ -114,6 +114,30 @@ Start by greeting the user in their native language (${
 - **Direct Action**: Just DO the lesson. Do not talk ABOUT doing the lesson.`;
 };
 
+// Build roleplay prompt with language context
+const buildRoleplayPrompt = (
+  targetLang: Language,
+  nativeLang: Language,
+): string => {
+  return `You are Sophie, a warm and encouraging AI language tutor helping the user practice via roleplay.
+
+## Context
+- User wants to learn: ${targetLang.name}
+- User's native language: ${nativeLang.name}
+
+## Your Persona
+- Be warm, patient, and encouraging
+- Stay STRICTLY in character for the roleplay
+- If the user struggles, gently help them (in character or as a helpful aside if absolutely necessary)
+- Keep responses short and conversational (2-3 sentences max)
+
+## STRICT Rules
+- **NO Internal Monologue**: NEVER output your internal thought process.
+- **NO Meta-Commentary**: Do NOT say "Okay, I will start...".
+- **Stay in Character**: You are the character defined in the scenario. act like it.
+- **Language**: Speak primarily in ${targetLang.name} suitable for the role. Use ${nativeLang.name} ONLY if the user is stuck or needs complex explanation.`;
+};
+
 export default function TalkScreen() {
   const {
     connectionState,
@@ -132,12 +156,15 @@ export default function TalkScreen() {
     stopConversation,
     sessionProfileId,
     setSessionProfileId,
+    activeScenarioTimestamp,
+    setActiveScenarioTimestamp,
   } = useConversationStore();
   const {
     selectedScenario,
     selectScenario,
     practicePhrase,
     setPracticePhrase,
+    scenarioSelectionTimestamp,
   } = useScenarioStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { session, user } = useAuthStore();
@@ -254,6 +281,7 @@ export default function TalkScreen() {
 
         // Build instruction based on context
         let instruction: string;
+        let initialPrompt: string | undefined;
 
         if (practicePhrase) {
           instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
@@ -261,8 +289,13 @@ export default function TalkScreen() {
 ## Special Focus
 The user wants to practice the phrase: "${practicePhrase}".
 Help them use this phrase naturally in conversation.`;
+          initialPrompt = `I want to practice saying "${practicePhrase}". Help me use it in a sentence.`;
         } else if (selectedScenario) {
-          instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
+          Logger.info(
+            TAG,
+            `Initializing for Scenario: ${selectedScenario.title}`,
+          );
+          instruction = `${buildRoleplayPrompt(targetLanguage, nativeLanguage)}
 
 ## Roleplay Scenario
 Scenario: ${selectedScenario.title}
@@ -273,15 +306,22 @@ Context: ${selectedScenario.context}
 Topic: ${selectedScenario.topic}
 
 Stay in character while teaching.`;
+          initialPrompt = `Start the roleplay now. You are ${selectedScenario.sophieRole}. Say your first line to set the scene.`;
         } else {
+          Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
           instruction = buildTutorPrompt(targetLanguage, nativeLanguage);
+          initialPrompt =
+            "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences.";
         }
+
+        Logger.info(TAG, `Generated Instruction Length: ${instruction.length}`);
+        Logger.info(TAG, `Initial Prompt: ${initialPrompt}`);
 
         Logger.info(
           TAG,
           `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`,
         );
-        geminiWebSocket.connect(token, instruction);
+        geminiWebSocket.connect(token, instruction, initialPrompt);
 
         // Start session timer when connection is established
         setSessionStartTime(Date.now());
@@ -315,6 +355,28 @@ Stay in character while teaching.`;
       // The effect will re-run with isInitialized=false and start fresh
     }
 
+    // Force re-init if scenario or practice phrase changes (including fresh selection of same scenario)
+    // Checks against store's active timestamp to handle unmounts/remounts correctly
+    if (scenarioSelectionTimestamp > activeScenarioTimestamp) {
+      Logger.info(
+        TAG,
+        `New Scenario Selection Detected (Ts: ${scenarioSelectionTimestamp}). Resetting conversation...`,
+      );
+      stopConversation();
+      clearMessages();
+      setHasGreeted(false);
+      geminiWebSocket.disconnect();
+      isInitialized.current = false;
+      setSessionStartTime(null);
+      setActiveScenarioTimestamp(scenarioSelectionTimestamp);
+    } else if (isInitialized.current) {
+      // If initialized and effect re-ran, must be a config change (e.g. language) that didn't trigger profile switch or timestamp
+      // Force reconnect to apply new config (e.g. prompt with new language)
+      Logger.info(TAG, "Config changed, reconnecting...");
+      geminiWebSocket.disconnect();
+      isInitialized.current = false;
+    }
+
     initSession();
 
     // Cleanup only on unmount (not on blur)
@@ -331,7 +393,9 @@ Stay in character while teaching.`;
     session,
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes
-    // Removed other deps to prevent unnecessary restarts on minor state changes
+    selectedScenario, // Re-run when scenario changes
+    practicePhrase, // Re-run when practice phrase changes
+    scenarioSelectionTimestamp, // Re-run when scenario is re-selected (even if same object)
   ]);
 
   const getStatusText = (): string => {

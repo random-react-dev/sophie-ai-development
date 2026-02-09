@@ -29,6 +29,7 @@ class GeminiWebSocket {
   private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private lastApiKey: string = "";
   private lastInstruction: string = "";
+  private lastInitialPrompt?: string; // Store initial prompt for reconnection
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
@@ -91,7 +92,7 @@ class GeminiWebSocket {
     };
   }
 
-  connect(apiKey: string, systemInstruction: string) {
+  connect(apiKey: string, systemInstruction: string, initialPrompt?: string) {
     // Clear any pending reconnect
     if (this.reconnectTimeoutId) {
       clearTimeout(this.reconnectTimeoutId);
@@ -111,6 +112,7 @@ class GeminiWebSocket {
     // Store for reconnection
     this.lastApiKey = apiKey;
     this.lastInstruction = systemInstruction;
+    this.lastInitialPrompt = initialPrompt; // Store initial prompt
 
     this.setConnectionState("connecting");
     Logger.info(TAG, `Connecting to Gemini Live API with model ${MODEL}...`);
@@ -218,7 +220,11 @@ class GeminiWebSocket {
     this.reconnectTimeoutId = setTimeout(() => {
       this.reconnectTimeoutId = null;
       if (this.lastApiKey && this.lastInstruction) {
-        this.connect(this.lastApiKey, this.lastInstruction);
+        this.connect(
+          this.lastApiKey,
+          this.lastInstruction,
+          this.lastInitialPrompt,
+        );
       }
     }, delay);
   }
@@ -328,6 +334,10 @@ class GeminiWebSocket {
     }
 
     Logger.info(TAG, "Requesting Sophie greeting...");
+    const defaultPrompt =
+      "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences.";
+    const text = this.lastInitialPrompt || defaultPrompt;
+
     const greetingMsg: GeminiClientContent = {
       clientContent: {
         turns: [
@@ -335,7 +345,7 @@ class GeminiWebSocket {
             role: "user",
             parts: [
               {
-                text: "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences.",
+                text,
               },
             ],
           },
@@ -448,8 +458,16 @@ class GeminiWebSocket {
       this.isSetupComplete = true;
       this.setConnectionState("connected");
 
-      if (!store.hasGreeted) {
+      // Always greet if we have a specific initial prompt (scenario/phrase)
+      // OR if we haven't greeted yet in this session
+      if (this.lastInitialPrompt || !store.hasGreeted) {
+        Logger.info(
+          TAG,
+          `Triggering greeting (Has prompt: ${!!this.lastInitialPrompt}, Has greeted: ${store.hasGreeted})`,
+        );
         this.initializeAndGreet(store);
+        // Clear prompt after use to prevent re-triggering on minor interruptions?
+        // For now, keep it to ensure context persists on reconnects.
       }
     }
 
