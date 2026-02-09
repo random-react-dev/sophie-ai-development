@@ -1,6 +1,7 @@
 import {
   UserProfileUpdate,
   changePassword as authChangePassword,
+  signInWithGoogle as authSignInWithGoogle,
   updateUserProfile,
 } from "@/services/supabase/auth";
 import { supabase } from "@/services/supabase/client";
@@ -49,6 +50,7 @@ interface AuthState {
   setShowTrialPopup: (show: boolean) => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   verifyOtp: (email: string, token: string) => Promise<void>;
   updateProfile: (data: UserProfileUpdate) => Promise<void>;
   changePassword: (password: string) => Promise<void>;
@@ -88,6 +90,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         password,
       });
       if (error) throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  signInWithGoogle: async () => {
+    set({ isLoading: true });
+    try {
+      const { error } = await authSignInWithGoogle();
+      if (error) throw error;
+      set({ showTrialPopup: true });
     } finally {
       set({ isLoading: false });
     }
