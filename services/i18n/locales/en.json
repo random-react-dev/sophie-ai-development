@@ -241,7 +241,27 @@
       },
       "two_factor": {
         "title": "Two-Factor Authentication",
-        "status": "Not Enabled"
+        "status": "Not Enabled",
+        "status_enabled": "Enabled",
+        "status_disabled": "Not Enabled",
+        "enable_title": "Enable Email OTP",
+        "enable_body": "A verification code will be sent to your email each time you sign in from a new session. This adds an extra layer of security to your account.",
+        "enable_button": "Enable 2FA",
+        "disable_title": "Disable Email OTP",
+        "disable_body": "This will remove the extra security layer from your account. You will no longer need to verify a code when signing in.",
+        "disable_button": "Disable 2FA",
+        "otp_title": "Verify Your Identity",
+        "otp_subtitle": "Enter the 6-digit code sent to",
+        "otp_verify": "Verify",
+        "otp_resend": "Resend Code",
+        "otp_resend_in": "Resend in {{seconds}}s",
+        "otp_error_invalid": "Invalid or expired code. Please try again.",
+        "otp_error_generic": "Verification failed. Please try again.",
+        "otp_success": "Two-factor authentication verified!",
+        "otp_sent": "Verification code sent to your email.",
+        "cancel_and_logout": "Cancel & Sign Out",
+        "toggle_success_enabled": "Two-factor authentication has been enabled!",
+        "toggle_success_disabled": "Two-factor authentication has been disabled."
       },
       "tips_section": "Security Tips",
       "tips": {
@@ -251,7 +271,7 @@
         },
         "enable_2fa": {
           "title": "Enable two-factor auth",
-          "body": "An extra layer of security for your account. Coming soon!"
+          "body": "An extra layer of security for your account. Enable it in the settings above."
         }
       }
     },

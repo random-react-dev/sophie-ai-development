@@ -1,10 +1,8 @@
-import * as Speech from "expo-speech";
 import {
-  getLanguageByCode,
-  Language,
-  SUPPORTED_LANGUAGES,
+  SUPPORTED_LANGUAGES
 } from "@/constants/languages";
 import { Logger } from "@/services/common/Logger";
+import * as Speech from "expo-speech";
 
 const TAG = "TTS";
 
@@ -33,21 +31,30 @@ function getLanguageCode(languageName: string): string | null {
  * @param text The text to speak (e.g., "नमस्ते")
  * @param languageName The language name from SUPPORTED_LANGUAGES (e.g., "Hindi")
  * @param callbacks Optional callbacks for start/done/error events
+ * @param rate Speech rate (0.25–2.0, default 1.0)
+ * @param accentCode Optional BCP 47 language-region code (e.g., "en-AU", "fr-CA")
+ *                   to select a specific accent. Overrides the derived language code.
  */
 export async function speakWord(
   text: string,
   languageName: string | null | undefined,
   callbacks?: TTSCallbacks,
+  rate: number = 1.0,
+  accentCode?: string,
 ): Promise<void> {
   if (!text.trim()) {
     Logger.warn(TAG, "Empty text provided to speakWord");
     return;
   }
 
-  const languageCode = languageName ? getLanguageCode(languageName) : null;
-  const targetLang = languageCode ?? "en";
+  // Use explicit BCP 47 accent code if provided, otherwise derive from name
+  const derivedCode = languageName ? getLanguageCode(languageName) : null;
+  const targetLang = accentCode ?? derivedCode ?? "en";
 
-  Logger.info(TAG, `Speaking: "${text}" in ${languageName ?? "unknown"} (${targetLang})`);
+  Logger.info(
+    TAG,
+    `Speaking: "${text}" in ${languageName ?? "unknown"} (${targetLang}) at ${rate}x`,
+  );
 
   // Stop any currently playing speech before starting new
   await Speech.stop();
@@ -55,7 +62,7 @@ export async function speakWord(
   Speech.speak(text, {
     language: targetLang,
     pitch: 1.0,
-    rate: 1.0,
+    rate,
     volume: 1.0,
     onStart: callbacks?.onStart,
     onDone: callbacks?.onDone,

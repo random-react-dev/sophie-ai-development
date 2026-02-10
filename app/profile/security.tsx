@@ -1,7 +1,9 @@
+import TwoFactorToggleModal from "@/components/auth/TwoFactorToggleModal";
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuthStore } from "@/stores/authStore";
 import {
   disabledColorScheme,
   getRainbowColorScheme,
@@ -13,7 +15,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SecurityScreen() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [show2FAModal, setShow2FAModal] = useState(false);
   const { t } = useTranslation();
+  const { user } = useAuthStore();
+
+  const is2FAEnabled = user?.user_metadata?.two_factor_enabled === true;
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
@@ -24,19 +30,6 @@ export default function SecurityScreen() {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* Main Card Display */}
-        {/* <View className="mx-4 mt-6">
-                    <View className="bg-white rounded-2xl p-6 shadow-sm items-center">
-                        <View className="w-16 h-16 rounded-2xl bg-indigo-50 items-center justify-center mb-4">
-                            <Shield size={32} color="#6366f1" />
-                        </View>
-                        <Text className="text-xl font-bold text-gray-900">Security</Text>
-                        <Text className="text-sm text-gray-500 mt-1">
-                            Protect your account
-                        </Text>
-                    </View>
-                </View> */}
-
         {/* Security Items */}
         <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
@@ -55,12 +48,28 @@ export default function SecurityScreen() {
           {/* Two-Factor Auth Card */}
           <ProfileSettingCard
             title={t("profile.security_screen.two_factor.title")}
-            icon={<Shield size={20} color={disabledColorScheme.iconColor} />}
-            colorScheme={disabledColorScheme}
-            showArrow={false}
+            icon={
+              <Shield
+                size={20}
+                color={
+                  is2FAEnabled
+                    ? getRainbowColorScheme(1).iconColor
+                    : disabledColorScheme.iconColor
+                }
+              />
+            }
+            colorScheme={
+              is2FAEnabled ? getRainbowColorScheme(1) : disabledColorScheme
+            }
+            onPress={() => setShow2FAModal(true)}
             rightElement={
-              <Text className="text-xs text-gray-400 font-medium">
-                {t("profile.security_screen.two_factor.status")}
+              <Text
+                className={`text-xs font-medium ${is2FAEnabled ? "text-green-600" : "text-gray-400"
+                  }`}
+              >
+                {is2FAEnabled
+                  ? t("profile.security_screen.two_factor.status_enabled")
+                  : t("profile.security_screen.two_factor.status_disabled")}
               </Text>
             }
           />
@@ -108,6 +117,11 @@ export default function SecurityScreen() {
       <ChangePasswordModal
         visible={showPasswordModal}
         onClose={() => setShowPasswordModal(false)}
+      />
+      <TwoFactorToggleModal
+        visible={show2FAModal}
+        onClose={() => setShow2FAModal(false)}
+        currentlyEnabled={is2FAEnabled}
       />
     </SafeAreaView>
   );

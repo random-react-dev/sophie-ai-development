@@ -4,12 +4,14 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import AccentPickerModal from "@/components/language/AccentPickerModal";
 import LanguagePickerModal from "@/components/translate/LanguagePickerModal";
+import { AccentVariant, getDefaultAccent } from "@/constants/accents";
 import {
   DEFAULT_TARGET_LANG,
   Language,
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
+import { speakWord, stopSpeaking } from "@/services/audio/tts";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import { CreateProfileDTO } from "@/services/supabase/profiles";
 import { useAuthStore } from "@/stores/authStore";
@@ -100,12 +102,14 @@ export default function LanguageScreen() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newNativeLang, setNewNativeLang] = useState<Language>(
     SUPPORTED_LANGUAGES.find((l) => l.name === "Hindi") ||
-      SUPPORTED_LANGUAGES[0],
+    SUPPORTED_LANGUAGES[0],
   );
   const [newTargetLang, setNewTargetLang] =
     useState<Language>(DEFAULT_TARGET_LANG);
   const [newMediumLang, setNewMediumLang] = useState<Language | null>(null); // Optional
-  const [newAccent, setNewAccent] = useState("American");
+  const [newAccent, setNewAccent] = useState<AccentVariant>(
+    getDefaultAccent(DEFAULT_TARGET_LANG.code),
+  );
 
   // Picker Modals
   const [pickerType, setPickerType] = useState<
@@ -158,18 +162,32 @@ export default function LanguageScreen() {
     }
   }, [user, fetchProfiles]);
 
+  // Reset accent when target language changes
+  useEffect(() => {
+    setNewAccent(getDefaultAccent(newTargetLang.code));
+  }, [newTargetLang.code]);
+
   const handlePlayAccent = () => {
+    // Toggle: stop if already playing
+    if (isPlaying) {
+      void stopSpeaking();
+      setIsPlaying(false);
+      return;
+    }
+
     setIsPlaying(true);
-    // Placeholder for actual TTS
-    setTimeout(() => setIsPlaying(false), 2000);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    showAlert(
-      "Play Sound",
-      `Speaking "${testPhrase}" with ${
-        activeProfile?.preferred_accent || "American"
-      } accent at ${speechRate.toFixed(1)}x speed`,
-      undefined,
-      "info",
+
+    void speakWord(
+      testPhrase,
+      newTargetLang.name,
+      {
+        onStart: () => setIsPlaying(true),
+        onDone: () => setIsPlaying(false),
+        onError: () => setIsPlaying(false),
+      },
+      speechRate,
+      newAccent.bcp47,
     );
   };
 
@@ -201,7 +219,7 @@ export default function LanguageScreen() {
       native_language: newNativeLang.name,
       target_language: newTargetLang.name,
       medium_language: mediumName,
-      preferred_accent: newAccent,
+      preferred_accent: newAccent.bcp47,
     };
 
     const success = await addProfile(newProfileData);
@@ -326,7 +344,7 @@ export default function LanguageScreen() {
                 key={profile.id}
                 onPress={() => handleSwitchProfile(profile.id)}
                 className="mb-4 shadow-lg rounded-2xl bg-white"
-                // Remove border from here as it's handled inside for inactive, or via Rainbow for active
+              // Remove border from here as it's handled inside for inactive, or via Rainbow for active
               >
                 {profile.is_active ? (
                   <RainbowBorder
@@ -459,13 +477,7 @@ export default function LanguageScreen() {
                     className="flex-row items-center pt-4"
                   >
                     <CircleFlag
-                      countryCode={(() => {
-                        if (newAccent === "Indian") return "in";
-                        if (newAccent === "Australian") return "au";
-                        if (newAccent === "American") return "us";
-                        if (newAccent === "British") return "gb";
-                        return "us";
-                      })()}
+                      countryCode={newAccent.countryCode || "us"}
                       size={28}
                     />
                     <View className="flex-1 ml-3">
@@ -474,7 +486,7 @@ export default function LanguageScreen() {
                       </Text>
                       <View className="flex-row items-center gap-1">
                         <Text className="text-gray-900 font-semibold text-base">
-                          {t(`accent_picker.accents.${newAccent}`)}
+                          {newAccent.name}
                         </Text>
                       </View>
                     </View>
@@ -515,7 +527,6 @@ export default function LanguageScreen() {
                       <TouchableOpacity
                         activeOpacity={0.7}
                         onPress={handlePlayAccent}
-                        disabled={isPlaying}
                       >
                         <RainbowBorder
                           borderRadius={9999}
@@ -619,12 +630,13 @@ export default function LanguageScreen() {
       <AccentPickerModal
         visible={pickerType === "accent"}
         onClose={() => setPickerType(null)}
-        onSelect={(accent) => {
+        onSelect={(accent: AccentVariant) => {
           setNewAccent(accent);
           // Delay closing to allow selection animation to play
           setTimeout(() => setPickerType(null), 300);
         }}
-        selectedAccent={newAccent}
+        selectedAccent={newAccent.bcp47}
+        targetLanguageCode={newTargetLang.code}
       />
 
       <AlertModal
