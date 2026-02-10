@@ -1,17 +1,23 @@
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/services/supabase/client";
+import { useAuthStore } from "@/stores/authStore";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-// Configure Google Sign-In on component mount
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-});
+// Configure Google Sign-In (skip if credentials not configured)
+try {
+  if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
+    GoogleSignin.configure({
+      webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    });
+  }
+} catch (e) {
+  console.warn("Google Sign-In not configured:", e);
+}
 
 function GoogleLogo() {
   return (
