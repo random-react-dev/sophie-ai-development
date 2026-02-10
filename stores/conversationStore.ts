@@ -62,6 +62,7 @@ interface ConversationState {
   messages: Message[];
   hasGreeted: boolean;
   sessionProfileId: string | null;
+  activeScenarioTimestamp: number;
 
   // Actions
   setConnectionState: (state: ConnectionState) => void;
@@ -74,6 +75,7 @@ interface ConversationState {
   setShowTranscript: (show: boolean) => void;
   setHasGreeted: (hasGreeted: boolean) => void;
   setSessionProfileId: (id: string | null) => void;
+  setActiveScenarioTimestamp: (timestamp: number) => void;
   addMessage: (role: "user" | "model", text: string) => void;
   clearMessages: () => void;
   handleInterruption: () => void;
@@ -109,6 +111,7 @@ const initialState = {
   messages: [] as Message[],
   hasGreeted: false,
   sessionProfileId: null as string | null,
+  activeScenarioTimestamp: 0,
 };
 
 export const useConversationStore = create<ConversationState>((set, get) => ({
@@ -135,6 +138,9 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
 
   setSessionProfileId: (sessionProfileId: string | null) =>
     set({ sessionProfileId }),
+
+  setActiveScenarioTimestamp: (activeScenarioTimestamp: number) =>
+    set({ activeScenarioTimestamp }),
 
   addMessage: (role: "user" | "model", text: string) =>
     set((state) => {

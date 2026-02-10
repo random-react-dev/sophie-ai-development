@@ -11,6 +11,7 @@ export interface Scenario {
   level: CEFRLevel;
   context: string;
   icon: string;
+  isCustom?: boolean;
 }
 
 export const SCENARIOS: Scenario[] = [

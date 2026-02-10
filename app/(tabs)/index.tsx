@@ -98,7 +98,7 @@ export default function RoleplayScreen() {
 
     return scenarios.map((s) => {
       // Don't translate custom scenarios
-      if (s.category === "Custom") {
+      if (s.isCustom) {
         return s;
       }
       return {
@@ -415,7 +415,7 @@ function CreateScenarioModal({
     const newScenario: Scenario = {
       id: Math.random().toString(36).substring(7),
       title: topic,
-      category: "Custom",
+      category: category || "Custom",
       description: context || `Roleplay about ${topic}`,
       sophieRole,
       userRole: userRole || "Learner",
@@ -423,6 +423,7 @@ function CreateScenarioModal({
       level,
       context: context || `A conversation about ${topic}`,
       icon: "mic",
+      isCustom: true,
     };
 
     addCustomScenario(newScenario);
