@@ -85,6 +85,21 @@ export const signOut = async () => {
     return { error };
 }
 
+export const send2FACode = async (email: string) => {
+    const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
+    });
+    return { data, error };
+};
+
+export const toggle2FA = async (enabled: boolean) => {
+    const { data, error } = await supabase.auth.updateUser({
+        data: { two_factor_enabled: enabled },
+    });
+    return { data, error };
+};
+
 export const getUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     return user;

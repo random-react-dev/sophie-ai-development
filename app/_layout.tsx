@@ -16,6 +16,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
 import { TrialCountdownModal } from "@/components/auth/TrialCountdownModal";
+import TwoFactorOTPModal from "@/components/auth/TwoFactorOTPModal";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 import { useAuthStore } from "@/stores/authStore";
 import { useThemeStore } from "@/stores/themeStore";
@@ -32,7 +33,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
-  const { session, initialized, initialize } = useAuthStore();
+  const { session, initialized, initialize, pending2FA } = useAuthStore();
   const { loadTheme } = useThemeStore();
   const segments = useSegments();
   const router = useRouter();
@@ -71,6 +72,10 @@ export default function RootLayout() {
       session?.user?.user_metadata?.onboarding_data?.completed_at;
 
     if (session) {
+      // If 2FA verification is pending, don't navigate away
+      if (pending2FA) {
+        return;
+      }
       if (!onboardingCompleted) {
         // User is signed in but hasn't finished onboarding
         if (!inOnboardingGroup) {
@@ -97,7 +102,7 @@ export default function RootLayout() {
       // User is not signed in and not in auth group
       router.replace("/(auth)/login");
     }
-  }, [session, segments, initialized, router]);
+  }, [session, segments, initialized, router, pending2FA]);
 
   // Don't render until fonts are loaded
   if (!fontsLoaded) {
@@ -128,6 +133,7 @@ export default function RootLayout() {
               />
             </Stack>
             <TrialCountdownModal />
+            <TwoFactorOTPModal />
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
           </ThemeProvider>
         </I18nProvider>

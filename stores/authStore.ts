@@ -2,6 +2,7 @@ import {
   UserProfileUpdate,
   changePassword as authChangePassword,
   signInWithGoogle as authSignInWithGoogle,
+  send2FACode,
   updateUserProfile,
 } from "@/services/supabase/auth";
 import { supabase } from "@/services/supabase/client";
@@ -45,13 +46,18 @@ interface AuthState {
   isLoading: boolean;
   initialized: boolean;
   showTrialPopup: boolean;
+  pending2FA: boolean;
+  pending2FAEmail: string | null;
   setSession: (session: Session | null) => void;
   setUser: (user: User | null) => void;
   setShowTrialPopup: (show: boolean) => void;
+  setPending2FA: (pending: boolean, email?: string | null) => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   verifyOtp: (email: string, token: string) => Promise<void>;
+  verify2FA: (token: string) => Promise<void>;
+  resend2FACode: () => Promise<void>;
   updateProfile: (data: UserProfileUpdate) => Promise<void>;
   changePassword: (password: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
@@ -60,24 +66,51 @@ interface AuthState {
   initialize: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   session: null,
   isLoading: false,
   initialized: false,
   showTrialPopup: false,
+  pending2FA: false,
+  pending2FAEmail: null,
   setSession: (session: Session | null) => set({ session }),
   setUser: (user: User | null) => set({ user }),
   setShowTrialPopup: (show: boolean) => set({ showTrialPopup: show }),
+  setPending2FA: (pending: boolean, email?: string | null) =>
+    set({ pending2FA: pending, pending2FAEmail: email ?? null }),
   signIn: async (email, password) => {
     set({ isLoading: true });
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // Set pending2FA BEFORE signInWithPassword to prevent the race condition
+      // where onAuthStateChange fires and routes the user before we can check metadata
+      set({ pending2FA: true, pending2FAEmail: email });
+
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
-      set({ showTrialPopup: true });
+      if (error) {
+        set({ pending2FA: false, pending2FAEmail: null });
+        throw error;
+      }
+
+      // Check if 2FA is enabled for this user
+      const is2FAEnabled =
+        data.user?.user_metadata?.two_factor_enabled === true;
+      if (is2FAEnabled) {
+        // Sign out the active session first — signInWithOtp fails silently
+        // if there's already an active session from signInWithPassword
+        await supabase.auth.signOut();
+        const { error: otpError } = await send2FACode(email);
+        if (otpError) throw otpError;
+        // pending2FA is already true
+      } else {
+        set({ pending2FA: false, pending2FAEmail: null, showTrialPopup: true });
+      }
+    } catch (err) {
+      set({ pending2FA: false, pending2FAEmail: null });
+      throw err;
     } finally {
       set({ isLoading: false });
     }
@@ -97,9 +130,25 @@ export const useAuthStore = create<AuthState>((set) => ({
   signInWithGoogle: async () => {
     set({ isLoading: true });
     try {
-      const { error } = await authSignInWithGoogle();
+      const { data, error } = await authSignInWithGoogle();
       if (error) throw error;
-      set({ showTrialPopup: true });
+
+      // Check if 2FA is enabled for this user
+      const is2FAEnabled =
+        data.user?.user_metadata?.two_factor_enabled === true;
+      if (is2FAEnabled && data.user?.email) {
+        // Set pending2FA BEFORE send2FACode to prevent race condition
+        set({ pending2FA: true, pending2FAEmail: data.user.email });
+        // Sign out the active session — signInWithOtp conflicts with existing sessions
+        await supabase.auth.signOut();
+        const { error: otpError } = await send2FACode(data.user.email);
+        if (otpError) throw otpError;
+      } else {
+        set({ showTrialPopup: true });
+      }
+    } catch (err) {
+      set({ pending2FA: false, pending2FAEmail: null });
+      throw err;
     } finally {
       set({ isLoading: false });
     }
@@ -116,6 +165,28 @@ export const useAuthStore = create<AuthState>((set) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+  verify2FA: async (token: string) => {
+    set({ isLoading: true });
+    try {
+      const email = get().pending2FAEmail;
+      if (!email) throw new Error("No pending 2FA email");
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "email",
+      });
+      if (error) throw error;
+      set({ pending2FA: false, pending2FAEmail: null, showTrialPopup: true });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  resend2FACode: async () => {
+    const email = get().pending2FAEmail;
+    if (!email) throw new Error("No pending 2FA email");
+    const { error } = await send2FACode(email);
+    if (error) throw error;
   },
   updateProfile: async (data: UserProfileUpdate) => {
     console.log("[AuthStore] updateProfile called with:", data);
@@ -269,3 +340,7 @@ export const useAuthInitialized = (): boolean =>
   useAuthStore((s) => s.initialized);
 export const useShowTrialPopup = (): boolean =>
   useAuthStore((s) => s.showTrialPopup);
+export const usePending2FA = (): boolean =>
+  useAuthStore((s) => s.pending2FA);
+export const usePending2FAEmail = (): string | null =>
+  useAuthStore((s) => s.pending2FAEmail);
