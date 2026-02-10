@@ -1,23 +1,14 @@
 import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
+import {
+  AccentVariant,
+  getAccentsForLanguage,
+} from "@/constants/accents";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { FlatList, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-interface Accent {
-  code: string;
-  name: string;
-  countryCode: string;
-}
-
-const ACCENTS: Accent[] = [
-  { code: "Indian", name: "Indian", countryCode: "in" },
-  { code: "Australian", name: "Australian", countryCode: "au" },
-  { code: "American", name: "American", countryCode: "us" },
-  { code: "British", name: "British", countryCode: "gb" },
-];
 
 // Accent Item Card
 function AccentItem({
@@ -25,24 +16,18 @@ function AccentItem({
   isSelected,
   onPress,
 }: {
-  accent: Accent;
+  accent: AccentVariant;
   isSelected: boolean;
   onPress: () => void;
 }) {
-  const { t } = useTranslation();
-  // @ts-ignore
-  const localizedAccent = t(`accent_picker.accents.${accent.code}`);
-
   const Content = () => (
     <>
       <CircleFlag countryCode={accent.countryCode} size={40} />
       <View className="flex-1 ml-4">
         <Text className="font-bold text-base text-gray-900">
-          {localizedAccent}
+          {accent.name}
         </Text>
-        <Text className="text-gray-500 text-sm">
-          {localizedAccent} {t("accent_picker.english_suffix")}
-        </Text>
+        <Text className="text-gray-500 text-sm">{accent.bcp47}</Text>
       </View>
     </>
   );
@@ -73,8 +58,11 @@ function AccentItem({
 interface AccentPickerModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelect: (accent: string) => void;
+  onSelect: (accent: AccentVariant) => void;
+  /** Currently selected BCP 47 accent code (e.g., "en-US") */
   selectedAccent?: string;
+  /** ISO 639-1 code of the target language (e.g., "en", "fr") */
+  targetLanguageCode: string;
 }
 
 export default function AccentPickerModal({
@@ -82,12 +70,11 @@ export default function AccentPickerModal({
   onClose,
   onSelect,
   selectedAccent,
+  targetLanguageCode,
 }: AccentPickerModalProps) {
   const { t } = useTranslation();
 
-  const handleSelect = (accent: Accent) => {
-    onSelect(accent.code);
-  };
+  const accents = getAccentsForLanguage(targetLanguageCode);
 
   return (
     <Modal
@@ -112,8 +99,8 @@ export default function AccentPickerModal({
 
         {/* Accent List */}
         <FlatList
-          data={ACCENTS}
-          keyExtractor={(item) => item.code}
+          data={accents}
+          keyExtractor={(item) => item.bcp47}
           contentContainerStyle={{
             paddingHorizontal: 16,
             paddingBottom: 40,
@@ -124,8 +111,8 @@ export default function AccentPickerModal({
           renderItem={({ item }) => (
             <AccentItem
               accent={item}
-              isSelected={item.code === selectedAccent}
-              onPress={() => handleSelect(item)}
+              isSelected={item.bcp47 === selectedAccent}
+              onPress={() => onSelect(item)}
             />
           )}
         />
