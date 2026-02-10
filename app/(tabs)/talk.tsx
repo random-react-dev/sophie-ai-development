@@ -390,7 +390,7 @@ Stay in character while teaching.`;
     };
   }, [
     session?.user?.id,
-    session,
+    // session, // REMOVED: Caused restart on token refresh
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes
     selectedScenario, // Re-run when scenario changes

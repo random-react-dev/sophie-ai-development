@@ -234,6 +234,25 @@ class GeminiWebSocket {
     const defaultInstruction =
       "You are Sophie, a friendly AI language tutor. You help users master real-world conversation. When a user makes a mistake, provide a 'Natural Correction'—a more native way to say it—and explain the nuance briefly. Keep your spoken responses short and encouraging. Always respond in the target language unless an English explanation is needed for clarity.";
 
+    // Check if we have already greeted the user in this session
+    // If so, we MUST tell Gemini NOT to restart the intro, or it will treat the next input as a fresh start.
+    const store = getConversationStore().getState();
+    let finalInstruction = instruction || defaultInstruction;
+
+    if (store.hasGreeted) {
+      Logger.info(
+        TAG,
+        "Appending RECONNECT instruction (User has already been greeted)",
+      );
+      finalInstruction += `
+      
+      IMPORTANT SYSTEM UPDATE:
+      The conversation is resuming after a connection break.
+      You have ALREADY greeted the user and introduced the lesson.
+      Do NOT repeat the introduction or the greeting.
+      Just reply naturally to the user's latest input as if the conversation never stopped.`;
+    }
+
     // IMPORTANT: Gemini API expects camelCase in setup message (not snake_case)
     const setupMsg = {
       setup: {
@@ -249,7 +268,7 @@ class GeminiWebSocket {
           },
         },
         systemInstruction: {
-          parts: [{ text: instruction || defaultInstruction }],
+          parts: [{ text: finalInstruction }],
         },
         inputAudioTranscription: {},
         outputAudioTranscription: {},
@@ -458,16 +477,15 @@ class GeminiWebSocket {
       this.isSetupComplete = true;
       this.setConnectionState("connected");
 
-      // Always greet if we have a specific initial prompt (scenario/phrase)
-      // OR if we haven't greeted yet in this session
-      if (this.lastInitialPrompt || !store.hasGreeted) {
+      // Always greet ONLY if we haven't greeted yet in this session.
+      // We ignore this.lastInitialPrompt here because if we are reconnecting (hasGreeted=true),
+      // we don't want to repeat the intro.
+      if (!store.hasGreeted) {
         Logger.info(
           TAG,
-          `Triggering greeting (Has prompt: ${!!this.lastInitialPrompt}, Has greeted: ${store.hasGreeted})`,
+          `Triggering greeting (Has greeted: ${store.hasGreeted})`,
         );
         this.initializeAndGreet(store);
-        // Clear prompt after use to prevent re-triggering on minor interruptions?
-        // For now, keep it to ensure context persists on reconnects.
       }
     }
 
