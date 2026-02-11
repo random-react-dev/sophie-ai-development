@@ -12,6 +12,7 @@ import {
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { speakWord, stopSpeaking } from "@/services/audio/tts";
+import { Logger } from "@/services/common/Logger";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import { CreateProfileDTO } from "@/services/supabase/profiles";
 import { useAuthStore } from "@/stores/authStore";
@@ -19,6 +20,7 @@ import { useProfileStore } from "@/stores/profileStore";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
 import {
   CheckCircle2,
   ChevronDown,
@@ -44,6 +46,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LanguageScreen() {
+  const router = useRouter();
   const { t, locale } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
   const { user } = useAuthStore();
@@ -102,7 +105,7 @@ export default function LanguageScreen() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newNativeLang, setNewNativeLang] = useState<Language>(
     SUPPORTED_LANGUAGES.find((l) => l.name === "Hindi") ||
-    SUPPORTED_LANGUAGES[0],
+      SUPPORTED_LANGUAGES[0],
   );
   const [newTargetLang, setNewTargetLang] =
     useState<Language>(DEFAULT_TARGET_LANG);
@@ -256,9 +259,27 @@ export default function LanguageScreen() {
   };
 
   const handleSwitchProfile = async (id: string) => {
-    if (activeProfile?.id === id) return;
-    Haptics.selectionAsync();
-    await switchProfile(id);
+    Logger.info("LanguageScreen", `Switching profile to ${id}`);
+    if (activeProfile?.id === id) {
+      Logger.info(
+        "LanguageScreen",
+        "Profile already active, navigating to talk",
+      );
+      router.replace("/(tabs)/talk");
+      return;
+    }
+
+    try {
+      Haptics.selectionAsync();
+      Logger.info("LanguageScreen", "Calling switchProfile store action");
+      await switchProfile(id);
+      Logger.info("LanguageScreen", "Profile switched, navigating to talk");
+
+      // Use replace to avoid stacking navigation history
+      router.replace("/(tabs)/talk");
+    } catch (error) {
+      Logger.error("LanguageScreen", "Failed to switch profile", error);
+    }
   };
 
   return (
@@ -344,7 +365,7 @@ export default function LanguageScreen() {
                 key={profile.id}
                 onPress={() => handleSwitchProfile(profile.id)}
                 className="mb-4 shadow-lg rounded-2xl bg-white"
-              // Remove border from here as it's handled inside for inactive, or via Rainbow for active
+                // Remove border from here as it's handled inside for inactive, or via Rainbow for active
               >
                 {profile.is_active ? (
                   <RainbowBorder
