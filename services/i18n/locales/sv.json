@@ -238,8 +238,28 @@
         "subtitle": "Uppdatera ditt lösenord regelbundet"
       },
       "two_factor": {
-        "title": "Tvåfatorsautentisering",
-        "status": "Ej aktiverad"
+        "title": "Tvåfaktorsautentisering",
+        "status": "Inte aktiverad",
+        "status_enabled": "Aktiverad",
+        "status_disabled": "Inte aktiverad",
+        "enable_title": "Aktivera E-post OTP",
+        "enable_body": "En verifieringskod kommer att skickas till din e-post varje gång du loggar in från en ny session. Detta lägger till ett extra säkerhetslager till ditt konto.",
+        "enable_button": "Aktivera 2FA",
+        "disable_title": "Inaktivera E-post OTP",
+        "disable_body": "Detta kommer att ta bort det extra säkerhetslagret från ditt konto. Du behöver inte längre verifiera en kod när du loggar in.",
+        "disable_button": "Inaktivera 2FA",
+        "otp_title": "Verifiera din identitet",
+        "otp_subtitle": "Ange den 6-siffriga koden som skickats till",
+        "otp_verify": "Verifiera",
+        "otp_resend": "Skicka kod igen",
+        "otp_resend_in": "Skicka igen om {{seconds}}s",
+        "otp_error_invalid": "Ogiltig eller utgången kod. Försök igen.",
+        "otp_error_generic": "Verifiering misslyckades. Försök igen.",
+        "otp_success": "Tvåfaktorsautentisering verifierad!",
+        "otp_sent": "Verifieringskod skickad till din e-post.",
+        "cancel_and_logout": "Avbryt & Logga ut",
+        "toggle_success_enabled": "Tvåfaktorsautentisering har aktiverats!",
+        "toggle_success_disabled": "Tvåfaktorsautentisering har inaktiverats."
       },
       "tips_section": "Säkerhetstips",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Blanda bokstäver, siffror och specialtecken för maximalt skydd."
         },
         "enable_2fa": {
-          "title": "Aktivera tvåfatorsautentisering",
-          "body": "Ett extra lager av säkerhet för ditt konto. Kommer snart!"
+          "title": "Aktivera tvåfaktorsautentisering",
+          "body": "Ett extra säkerhetslager för ditt konto. Aktivera det i inställningarna ovan."
         }
       }
     },

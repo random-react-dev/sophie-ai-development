@@ -238,8 +238,28 @@
         "subtitle": "定期的にパスワードを更新してください"
       },
       "two_factor": {
-        "title": "二要素認証",
-        "status": "未有効"
+        "title": "2要素認証",
+        "status": "有効化されていません",
+        "status_enabled": "有効",
+        "status_disabled": "有効化されていません",
+        "enable_title": "メールOTPを有効にする",
+        "enable_body": "新しいセッションからサインインするたびに、確認コードがメールに送信されます。これにより、アカウントにセキュリティのレイヤーが追加されます。",
+        "enable_button": "2FAを有効にする",
+        "disable_title": "メールOTPを無効にする",
+        "disable_body": "これにより、アカウントから追加のセキュリティレイヤーが削除されます。サインイン時にコードを確認する必要はなくなります。",
+        "disable_button": "2FAを無効にする",
+        "otp_title": "本人確認",
+        "otp_subtitle": "送信された6桁のコードを入力してください",
+        "otp_verify": "確認",
+        "otp_resend": "コードを再送信",
+        "otp_resend_in": "{{seconds}}秒後に再送信",
+        "otp_error_invalid": "無効または期限切れのコードです。もう一度お試しください。",
+        "otp_error_generic": "確認に失敗しました。もう一度お試しください。",
+        "otp_success": "2要素認証が確認されました！",
+        "otp_sent": "確認コードがメールに送信されました。",
+        "cancel_and_logout": "キャンセルしてサインアウト",
+        "toggle_success_enabled": "2要素認証が有効になりました！",
+        "toggle_success_disabled": "2要素認証が無効になりました。"
       },
       "tips_section": "セキュリティのヒント",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "最大限の保護のために、文字、数字、記号を組み合わせてください。"
         },
         "enable_2fa": {
-          "title": "二要素認証を有効にする",
-          "body": "アカウントの追加のセキュリティレイヤー。近日公開！"
+          "title": "2要素認証を有効にする",
+          "body": "アカウントの追加のセキュリティレイヤー。上の設定で有効にしてください。"
         }
       }
     },

@@ -238,8 +238,28 @@
         "subtitle": "Actualiza tu contraseña regularmente"
       },
       "two_factor": {
-        "title": "Autenticación de Dos Factores",
-        "status": "No Habilitado"
+        "title": "Autenticación de dos factores",
+        "status": "No habilitado",
+        "status_enabled": "Habilitado",
+        "status_disabled": "No habilitado",
+        "enable_title": "Habilitar OTP por correo",
+        "enable_body": "Se enviará un código de verificación a su correo electrónico cada vez que inicie sesión desde una nueva sesión. Esto añade una capa extra de seguridad a su cuenta.",
+        "enable_button": "Habilitar 2FA",
+        "disable_title": "Deshabilitar OTP por correo",
+        "disable_body": "Esto eliminará la capa de seguridad extra de su cuenta. Ya no necesitará verificar un código al iniciar sesión.",
+        "disable_button": "Deshabilitar 2FA",
+        "otp_title": "Verifique su identidad",
+        "otp_subtitle": "Ingrese el código de 6 dígitos enviado a",
+        "otp_verify": "Verificar",
+        "otp_resend": "Reenviar código",
+        "otp_resend_in": "Reenviar en {{seconds}}s",
+        "otp_error_invalid": "Código inválido o expirado. Por favor, inténtelo de nuevo.",
+        "otp_error_generic": "Verificación fallida. Por favor, inténtelo de nuevo.",
+        "otp_success": "¡Autenticación de dos factores verificada!",
+        "otp_sent": "Código de verificación enviado a su correo electrónico.",
+        "cancel_and_logout": "Cancelar y cerrar sesión",
+        "toggle_success_enabled": "¡Se ha habilitado la autenticación de dos factores!",
+        "toggle_success_disabled": "Se ha deshabilitado la autenticación de dos factores."
       },
       "tips_section": "Consejos de Seguridad",
       "tips": {
@@ -249,7 +269,7 @@
         },
         "enable_2fa": {
           "title": "Habilitar autenticación de dos factores",
-          "body": "Una capa extra de seguridad para tu cuenta. ¡Próximamente!"
+          "body": "Una capa extra de seguridad para tu cuenta. Habilítalo en la configuración de arriba."
         }
       }
     },

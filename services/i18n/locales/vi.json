@@ -239,7 +239,27 @@
       },
       "two_factor": {
         "title": "Xác thực hai yếu tố",
-        "status": "Chưa kích hoạt"
+        "status": "Chưa bật",
+        "status_enabled": "Đã bật",
+        "status_disabled": "Chưa bật",
+        "enable_title": "Bật OTP qua Email",
+        "enable_body": "Một mã xác minh sẽ được gửi đến email của bạn mỗi khi bạn đăng nhập từ một phiên mới. Điều này thêm một lớp bảo mật bổ sung cho tài khoản của bạn.",
+        "enable_button": "Bật 2FA",
+        "disable_title": "Tắt OTP qua Email",
+        "disable_body": "Điều này sẽ xóa lớp bảo mật bổ sung khỏi tài khoản của bạn. Bạn sẽ không còn cần xác minh mã khi đăng nhập nữa.",
+        "disable_button": "Tắt 2FA",
+        "otp_title": "Xác minh danh tính của bạn",
+        "otp_subtitle": "Nhập mã 6 chữ số được gửi đến",
+        "otp_verify": "Xác minh",
+        "otp_resend": "Gửi lại mã",
+        "otp_resend_in": "Gửi lại sau {{seconds}}s",
+        "otp_error_invalid": "Mã không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.",
+        "otp_error_generic": "Xác minh thất bại. Vui lòng thử lại.",
+        "otp_success": "Xác thực hai yếu tố đã được xác minh!",
+        "otp_sent": "Mã xác minh đã được gửi đến email của bạn.",
+        "cancel_and_logout": "Hủy & Đăng xuất",
+        "toggle_success_enabled": "Xác thực hai yếu tố đã được bật!",
+        "toggle_success_disabled": "Xác thực hai yếu tố đã được tắt."
       },
       "tips_section": "Mẹo bảo mật",
       "tips": {
@@ -249,7 +269,7 @@
         },
         "enable_2fa": {
           "title": "Bật xác thực hai yếu tố",
-          "body": "Một lớp bảo mật bổ sung cho tài khoản của bạn. Sắp ra mắt!"
+          "body": "Một lớp bảo mật bổ sung cho tài khoản của bạn. Bật nó trong cài đặt ở trên."
         }
       }
     },

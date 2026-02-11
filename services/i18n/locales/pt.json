@@ -238,8 +238,28 @@
         "subtitle": "Atualize sua senha regularmente"
       },
       "two_factor": {
-        "title": "Autenticação de dois fatores",
-        "status": "Não ativado"
+        "title": "Autenticação de Dois Fatores",
+        "status": "Não Habilitado",
+        "status_enabled": "Habilitado",
+        "status_disabled": "Não Habilitado",
+        "enable_title": "Habilitar OTP por E-mail",
+        "enable_body": "Um código de verificação será enviado ao seu e-mail sempre que você entrar de uma nova sessão. Isso adiciona uma camada extra de segurança à sua conta.",
+        "enable_button": "Habilitar 2FA",
+        "disable_title": "Desabilitar OTP por E-mail",
+        "disable_body": "Isso removerá a camada extra de segurança da sua conta. Você não precisará mais verificar um código ao entrar.",
+        "disable_button": "Desabilitar 2FA",
+        "otp_title": "Verifique sua Identidade",
+        "otp_subtitle": "Digite o código de 6 dígitos enviado para",
+        "otp_verify": "Verificar",
+        "otp_resend": "Reenviar Código",
+        "otp_resend_in": "Reenviar em {{seconds}}s",
+        "otp_error_invalid": "Código inválido ou expirado. Por favor, tente novamente.",
+        "otp_error_generic": "Falha na verificação. Por favor, tente novamente.",
+        "otp_success": "Autenticação de dois fatores verificada!",
+        "otp_sent": "Código de verificação enviado para o seu e-mail.",
+        "cancel_and_logout": "Cancelar e Sair",
+        "toggle_success_enabled": "A autenticação de dois fatores foi habilitada!",
+        "toggle_success_disabled": "A autenticação de dois fatores foi desabilitada."
       },
       "tips_section": "Dicas de segurança",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Misture letras, números e caracteres especiais para proteção máxima."
         },
         "enable_2fa": {
-          "title": "Ativar autenticação de dois fatores",
-          "body": "Uma camada extra de segurança para sua conta. Em breve!"
+          "title": "Habilitar autenticação de dois fatores",
+          "body": "Uma camada extra de segurança para sua conta. Habilite nas configurações acima."
         }
       }
     },

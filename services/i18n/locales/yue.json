@@ -240,7 +240,27 @@
       },
       "two_factor": {
         "title": "雙重認證",
-        "status": "未啟用"
+        "status": "未啟用",
+        "status_enabled": "已啟用",
+        "status_disabled": "未啟用",
+        "enable_title": "啟用電郵 OTP",
+        "enable_body": "每次你從新會話登入時，驗證碼都會發送到你的電郵。這為你的帳戶增加了一層額外的安全性。",
+        "enable_button": "啟用 2FA",
+        "disable_title": "停用電郵 OTP",
+        "disable_body": "這將從你的帳戶中移除額外的安全層。登入時你將不再需要驗證代碼。",
+        "disable_button": "停用 2FA",
+        "otp_title": "驗證你的身分",
+        "otp_subtitle": "輸入發送至以下地址的 6 位數代碼",
+        "otp_verify": "驗證",
+        "otp_resend": "重新發送代碼",
+        "otp_resend_in": "{{seconds}} 秒後重新發送",
+        "otp_error_invalid": "代碼無效或已過期。請重試。",
+        "otp_error_generic": "驗證失敗。請重試。",
+        "otp_success": "雙重認證已驗證！",
+        "otp_sent": "驗證碼已發送到你的電郵。",
+        "cancel_and_logout": "取消並登出",
+        "toggle_success_enabled": "雙重認證已啟用！",
+        "toggle_success_disabled": "雙重認證已停用。"
       },
       "tips_section": "保安提示",
       "tips": {
@@ -250,7 +270,7 @@
         },
         "enable_2fa": {
           "title": "啟用雙重認證",
-          "body": "為您嘅帳戶提供額外嘅保安層。即將推出！"
+          "body": "為你的帳戶提供額外的安全層。在上面的設定中啟用它。"
         }
       }
     },

@@ -240,7 +240,27 @@
       },
       "two_factor": {
         "title": "双重认证",
-        "status": "未启用"
+        "status": "未启用",
+        "status_enabled": "已启用",
+        "status_disabled": "未启用",
+        "enable_title": "启用电子邮件 OTP",
+        "enable_body": "每次您从新会话登录时，验证码都会发送到您的电子邮件。这为您的帐户增加了一层额外的安全性。",
+        "enable_button": "启用 2FA",
+        "disable_title": "禁用电子邮件 OTP",
+        "disable_body": "这将从您的帐户中移除额外的安全层。登录时您将不再需要验证代码。",
+        "disable_button": "禁用 2FA",
+        "otp_title": "验证您的身份",
+        "otp_subtitle": "输入发送至以下地址的 6 位数代码",
+        "otp_verify": "验证",
+        "otp_resend": "重新发送代码",
+        "otp_resend_in": "{{seconds}} 秒后重新发送",
+        "otp_error_invalid": "代码无效或已过期。请重试。",
+        "otp_error_generic": "验证失败。请重试。",
+        "otp_success": "双重认证已验证！",
+        "otp_sent": "验证码已发送到您的电子邮件。",
+        "cancel_and_logout": "取消并注销",
+        "toggle_success_enabled": "双重认证已启用！",
+        "toggle_success_disabled": "双重认证已禁用。"
       },
       "tips_section": "安全提示",
       "tips": {
@@ -250,7 +270,7 @@
         },
         "enable_2fa": {
           "title": "启用双重认证",
-          "body": "为您的帐户提供额外的安全层。即将推出！"
+          "body": "为您的帐户提供额外的安全层。在上面的设置中启用它。"
         }
       }
     },

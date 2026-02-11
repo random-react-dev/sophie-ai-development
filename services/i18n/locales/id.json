@@ -239,7 +239,27 @@
       },
       "two_factor": {
         "title": "Otentikasi Dua Faktor",
-        "status": "Tidak Diaktifkan"
+        "status": "Tidak Diaktifkan",
+        "status_enabled": "Diaktifkan",
+        "status_disabled": "Tidak Diaktifkan",
+        "enable_title": "Aktifkan OTP Email",
+        "enable_body": "Kode verifikasi akan dikirim ke email Anda setiap kali Anda masuk dari sesi baru. Ini menambahkan lapisan keamanan ekstra ke akun Anda.",
+        "enable_button": "Aktifkan 2FA",
+        "disable_title": "Nonaktifkan OTP Email",
+        "disable_body": "Ini akan menghapus lapisan keamanan ekstra dari akun Anda. Anda tidak perlu lagi memverifikasi kode saat masuk.",
+        "disable_button": "Nonaktifkan 2FA",
+        "otp_title": "Verifikasi Identitas Anda",
+        "otp_subtitle": "Masukkan kode 6 digit yang dikirim ke",
+        "otp_verify": "Verifikasi",
+        "otp_resend": "Kirim Ulang Kode",
+        "otp_resend_in": "Kirim ulang dalam {{seconds}}s",
+        "otp_error_invalid": "Kode tidak valid atau kedaluwarsa. Silakan coba lagi.",
+        "otp_error_generic": "Verifikasi gagal. Silakan coba lagi.",
+        "otp_success": "Otentikasi dua faktor diverifikasi!",
+        "otp_sent": "Kode verifikasi dikirim ke email Anda.",
+        "cancel_and_logout": "Batal & Keluar",
+        "toggle_success_enabled": "Otentikasi dua faktor telah diaktifkan!",
+        "toggle_success_disabled": "Otentikasi dua faktor telah dinonaktifkan."
       },
       "tips_section": "Tips Keamanan",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Campurkan huruf, angka, dan karakter khusus untuk perlindungan maksimal."
         },
         "enable_2fa": {
-          "title": "Aktifkan autentikasi dua faktor",
-          "body": "Lapisan keamanan ekstra untuk akun Anda. Segera hadir!"
+          "title": "Aktifkan otentikasi dua faktor",
+          "body": "Lapisan keamanan ekstra untuk akun Anda. Aktifkan di pengaturan di atas."
         }
       }
     },

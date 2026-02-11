@@ -240,7 +240,27 @@
       },
       "two_factor": {
         "title": "2단계 인증",
-        "status": "활성화되지 않음"
+        "status": "활성화되지 않음",
+        "status_enabled": "활성화됨",
+        "status_disabled": "활성화되지 않음",
+        "enable_title": "이메일 OTP 활성화",
+        "enable_body": "새 세션에서 로그인할 때마다 확인 코드가 이메일로 전송됩니다. 이렇게 하면 계정에 추가 보안 계층이 추가됩니다。",
+        "enable_button": "2FA 활성화",
+        "disable_title": "이메일 OTP 비활성화",
+        "disable_body": "이렇게 하면 계정에서 추가 보안 계층이 제거됩니다. 로그인할 때 더 이상 코드를 확인할 필요가 없습니다。",
+        "disable_button": "2FA 비활성화",
+        "otp_title": "본인 확인",
+        "otp_subtitle": "전송된 6자리 코드를 입력하세요",
+        "otp_verify": "확인",
+        "otp_resend": "코드 재전송",
+        "otp_resend_in": "{{seconds}}초 후 재전송",
+        "otp_error_invalid": "유효하지 않거나 만료된 코드입니다. 다시 시도해 주세요。",
+        "otp_error_generic": "확인에 실패했습니다. 다시 시도해 주세요。",
+        "otp_success": "2단계 인증이 확인되었습니다!",
+        "otp_sent": "확인 코드가 이메일로 전송되었습니다。",
+        "cancel_and_logout": "취소 및 로그아웃",
+        "toggle_success_enabled": "2단계 인증이 활성화되었습니다!",
+        "toggle_success_disabled": "2단계 인증이 비활성화되었습니다."
       },
       "tips_section": "보안 팁",
       "tips": {
@@ -250,7 +270,7 @@
         },
         "enable_2fa": {
           "title": "2단계 인증 활성화",
-          "body": "계정을 위한 추가 보안 계층. 곧 출시됩니다!"
+          "body": "계정에 대한 추가 보안 계층입니다. 위의 설정에서 활성화하세요."
         }
       }
     },
