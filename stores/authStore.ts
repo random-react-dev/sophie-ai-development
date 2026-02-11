@@ -28,6 +28,7 @@ const clearUserData = async (): Promise<void> => {
     "translation-history",
     "profile-storage",
     "sophie-learning-preferences",
+    "vocabulary-storage",
   ]);
 
   // Reset in-memory and persisted stores to initial state

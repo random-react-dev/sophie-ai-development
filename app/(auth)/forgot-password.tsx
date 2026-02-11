@@ -1,7 +1,8 @@
 import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthInput } from "@/components/auth/AuthInput";
-import { AlertModal } from "@/components/common/AlertModal";
+import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { Button } from "@/components/common/Button";
+import { checkEmailExists } from "@/services/supabase/auth";
 import { useAuthStore } from "@/stores/authStore";
 import { safeGoBack } from "@/utils/navigation";
 import { Link, router } from "expo-router";
@@ -13,39 +14,48 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
   const { forgotPassword, isLoading } = useAuthStore();
-
-  // Modal state
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
-  const [isSuccessModal, setIsSuccessModal] = useState(false);
-
-  const showAlert = (title: string, message: string, isSuccess = false) => {
-    setModalTitle(title);
-    setModalMessage(message);
-    setIsSuccessModal(isSuccess);
-    setModalVisible(true);
-  };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-    if (isSuccessModal) {
-      safeGoBack(router, "/(auth)/login");
-    }
-  };
+  const { alertState, showAlert, hideAlert } = useAlertModal();
 
   const handleReset = async () => {
-    if (!email) {
-      showAlert("Error", "Please enter your email address");
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      showAlert("Error", "Please enter your email address.", undefined, "error");
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      showAlert("Invalid Email", "Please enter a valid email address.", undefined, "error");
+      return;
+    }
+
     try {
-      await forgotPassword(email);
-      showAlert("Success", "Password reset link sent! Check your email.", true);
+      const exists = await checkEmailExists(trimmedEmail);
+      if (!exists) {
+        showAlert(
+          "No Account Found",
+          "We couldn't find an account with this email. Try a different email or create a new account.",
+          [
+            { text: "Create Account", onPress: () => router.push("/(auth)/signup") },
+            { text: "Try Again", style: "cancel" },
+          ],
+          "info",
+        );
+        return;
+      }
+
+      await forgotPassword(trimmedEmail);
+      showAlert(
+        "Check Your Email",
+        "We've sent a password reset link to your email. Check your inbox.",
+        [{ text: "Back to Login", onPress: () => safeGoBack(router, "/(auth)/login") }],
+        "success",
+      );
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "Something went wrong";
-      showAlert("Error", errorMessage);
+        error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      showAlert("Error", errorMessage, undefined, "error");
     }
   };
 
@@ -127,11 +137,12 @@ export default function ForgotPasswordScreen() {
 
       {/* Alert Modal */}
       <AlertModal
-        visible={modalVisible}
-        title={modalTitle}
-        message={modalMessage}
-        onClose={handleModalClose}
-        type={isSuccessModal ? "success" : "error"}
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        onClose={hideAlert}
+        type={alertState.type}
+        buttons={alertState.buttons}
       />
     </SafeAreaView>
   );
