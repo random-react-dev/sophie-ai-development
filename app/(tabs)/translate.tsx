@@ -413,9 +413,8 @@ export default function TranslateScreen() {
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleMicPress}
-                  className={`w-10 h-10 items-center justify-center rounded-full ${
-                    isListening ? "bg-red-100" : "bg-gray-100"
-                  }`}
+                  className={`w-10 h-10 items-center justify-center rounded-full ${isListening ? "bg-red-100" : "bg-gray-100"
+                    }`}
                 >
                   <FontAwesome
                     name="microphone"
@@ -514,9 +513,8 @@ export default function TranslateScreen() {
                       <TouchableOpacity
                         activeOpacity={0.7}
                         onPress={handleSpeak}
-                        className={`w-10 h-10 rounded-full items-center justify-center ${
-                          isSpeaking ? "bg-blue-100" : "bg-gray-100"
-                        }`}
+                        className={`w-10 h-10 rounded-full items-center justify-center ${isSpeaking ? "bg-blue-100" : "bg-gray-100"
+                          }`}
                       >
                         <Volume2
                           size={18}
@@ -630,7 +628,6 @@ export default function TranslateScreen() {
                         setSaveFolderId(newFolder.id);
                         setIsCreatingFolder(false);
                         setNewFolderName("");
-                        setShowSaveFolderPicker(false);
                       }
                     }}
                   >

@@ -104,3 +104,11 @@ export const getUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     return user;
 }
+
+export const checkEmailExists = async (email: string): Promise<boolean> => {
+    const { data, error } = await supabase.rpc('check_email_exists', {
+        p_email: email,
+    });
+    if (error) throw error;
+    return !!data;
+};

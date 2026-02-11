@@ -4,6 +4,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
+import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { isVoiceModeAvailable } from "@/utils/environment";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -39,6 +40,7 @@ export default function TabLayout() {
     connectionState,
   } = useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
+  const { fetchVocabulary } = useVocabularyStore();
   const { user } = useAuthStore();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -48,6 +50,7 @@ export default function TabLayout() {
   useEffect(() => {
     if (user) {
       fetchProfiles();
+      fetchVocabulary();
     }
   }, [user]);
 
