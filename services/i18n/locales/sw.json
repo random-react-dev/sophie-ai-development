@@ -239,7 +239,27 @@
       },
       "two_factor": {
         "title": "Uthibitishaji wa Hatua Mbili",
-        "status": "Haijawezeshwa"
+        "status": "Haijaweshwa",
+        "status_enabled": "Imeweshwa",
+        "status_disabled": "Haijaweshwa",
+        "enable_title": "Washa OTP ya Barua Pepe",
+        "enable_body": "Nambari ya kuthibitisha itatumwa kwa barua pepe yako kila unapoingia kutoka kwa kipindi kipya. Hii inaongeza safu ya ziada ya usalama kwenye akaunti yako.",
+        "enable_button": "Washa 2FA",
+        "disable_title": "Zima OTP ya Barua Pepe",
+        "disable_body": "Hii itaondoa safu ya ziada ya usalama kutoka kwa akaunti yako. Hutahitaji tena kuthibitisha nambari unapoingia.",
+        "disable_button": "Zima 2FA",
+        "otp_title": "Thibitisha Utambulisho Wako",
+        "otp_subtitle": "Weka nambari 6 iliyotumwa kwa",
+        "otp_verify": "Thibitisha",
+        "otp_resend": "Tuma Tena Nambari",
+        "otp_resend_in": "Tuma tena baada ya {{seconds}}s",
+        "otp_error_invalid": "Nambari si sahihi au imeisha muda. Tafadhali jaribu tena.",
+        "otp_error_generic": "Uthibitishaji umeshindwa. Tafadhali jaribu tena.",
+        "otp_success": "Uthibitishaji wa hatua mbili umethibitishwa!",
+        "otp_sent": "Nambari ya kuthibitisha imetumwa kwa barua pepe yako.",
+        "cancel_and_logout": "Ghairi na Toka",
+        "toggle_success_enabled": "Uthibitishaji wa hatua mbili umeweshwa!",
+        "toggle_success_disabled": "Uthibitishaji wa hatua mbili umezimwa."
       },
       "tips_section": "Vidokezo vya Usalama",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Changanya herufi, nambari na alama maalum kwa ulinzi wa hali ya juu."
         },
         "enable_2fa": {
-          "title": "Washa uthibitishaji wa hatua mbili",
-          "body": "Safu ya ziada ya usalama kwa akaunti yako. Inakuja hivi karibuni!"
+          "title": "Washa uthibitishaji wa 2FA",
+          "body": "Safu ya ziada ya usalama kwa akaunti yako. Iwashe kwenye mipangilio hapo juu."
         }
       }
     },

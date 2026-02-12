@@ -239,7 +239,27 @@
       },
       "two_factor": {
         "title": "Zwei-Faktor-Authentifizierung",
-        "status": "Nicht aktiviert"
+        "status": "Nicht aktiviert",
+        "status_enabled": "Aktiviert",
+        "status_disabled": "Nicht aktiviert",
+        "enable_title": "E-Mail-OTP aktivieren",
+        "enable_body": "Jedes Mal, wenn Sie sich von einer neuen Sitzung aus anmelden, wird ein Bestätigungscode an Ihre E-Mail gesendet. Dies fügt Ihrem Konto eine zusätzliche Sicherheitsebene hinzu.",
+        "enable_button": "2FA aktivieren",
+        "disable_title": "E-Mail-OTP deaktivieren",
+        "disable_body": "Dies entfernt die zusätzliche Sicherheitsebene von Ihrem Konto. Sie müssen beim Anmelden keinen Code mehr verifizieren.",
+        "disable_button": "2FA deaktivieren",
+        "otp_title": "Identität bestätigen",
+        "otp_subtitle": "Geben Sie den 6-stelligen Code ein, der gesendet wurde an",
+        "otp_verify": "Verifizieren",
+        "otp_resend": "Code erneut senden",
+        "otp_resend_in": "Erneut senden in {{seconds}}s",
+        "otp_error_invalid": "Ungültiger oder abgelaufener Code. Bitte versuchen Sie es erneut.",
+        "otp_error_generic": "Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+        "otp_success": "Zwei-Faktor-Authentifizierung verifiziert!",
+        "otp_sent": "Bestätigungscode an Ihre E-Mail gesendet.",
+        "cancel_and_logout": "Abbrechen & Abmelden",
+        "toggle_success_enabled": "Zwei-Faktor-Authentifizierung wurde aktiviert!",
+        "toggle_success_disabled": "Zwei-Faktor-Authentifizierung wurde deaktiviert."
       },
       "tips_section": "Sicherheitstipps",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Mischen Sie Buchstaben, Zahlen und Sonderzeichen für maximalen Schutz."
         },
         "enable_2fa": {
-          "title": "Zwei-Faktor-Authentifizierung aktivieren",
-          "body": "Eine zusätzliche Sicherheitsebene für Ihr Konto. Demnächst verfügbar!"
+          "title": "Zwei-Faktor-Auth aktivieren",
+          "body": "Eine zusätzliche Sicherheitsebene für Ihr Konto. Aktivieren Sie es in den Einstellungen oben."
         }
       }
     },

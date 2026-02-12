@@ -13,7 +13,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, usePathname, useRouter } from "expo-router";
+
 import { RotateCcw } from "lucide-react-native";
 import React, {
   useCallback,
@@ -171,6 +172,8 @@ export default function TalkScreen() {
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef<boolean>(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const isFocused = pathname === "/talk";
   const { t } = useTranslation();
 
   // Derive target and native languages from active profile
@@ -241,14 +244,17 @@ export default function TalkScreen() {
     }, []),
   );
 
-  // Initialize Session (Once on mount)
+  // Initialize Session (Once on mount, or re-init on focus/change)
   useEffect(() => {
     let isMounted = true;
 
-    // Only initialize if we haven't already
-    // if (isInitialized.current) return; // REMOVED to allow re-init on language change
-
     const initSession = async () => {
+      // Security check: Only start session when screen is focused
+      if (!isFocused) {
+        Logger.info(TAG, "Screen not focused, skipping session init");
+        return;
+      }
+
       if (!session) return;
 
       // Don't initialize until both languages are selected
@@ -396,6 +402,7 @@ Stay in character while teaching.`;
     selectedScenario, // Re-run when scenario changes
     practicePhrase, // Re-run when practice phrase changes
     scenarioSelectionTimestamp, // Re-run when scenario is re-selected (even if same object)
+    isFocused, // Re-run on focus change
   ]);
 
   const getStatusText = (): string => {

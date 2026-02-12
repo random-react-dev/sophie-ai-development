@@ -239,7 +239,27 @@
       },
       "two_factor": {
         "title": "Authentification à deux facteurs",
-        "status": "Non activé"
+        "status": "Non activé",
+        "status_enabled": "Activé",
+        "status_disabled": "Non activé",
+        "enable_title": "Activer l'OTP par email",
+        "enable_body": "Un code de vérification sera envoyé à votre adresse e-mail chaque fois que vous vous connecterez depuis une nouvelle session. Cela ajoute une couche de sécurité supplémentaire à votre compte.",
+        "enable_button": "Activer la 2FA",
+        "disable_title": "Désactiver l'OTP par email",
+        "disable_body": "Cela supprimera la couche de sécurité supplémentaire de votre compte. Vous n'aurez plus besoin de vérifier un code lors de la connexion.",
+        "disable_button": "Désactiver la 2FA",
+        "otp_title": "Vérifiez votre identité",
+        "otp_subtitle": "Entrez le code à 6 chiffres envoyé à",
+        "otp_verify": "Vérifier",
+        "otp_resend": "Renvoyer le code",
+        "otp_resend_in": "Renvoyer dans {{seconds}}s",
+        "otp_error_invalid": "Code invalide ou expiré. Veuillez réessayer.",
+        "otp_error_generic": "Échec de la vérification. Veuillez réessayer.",
+        "otp_success": "Authentification à deux facteurs vérifiée !",
+        "otp_sent": "Code de vérification envoyé à votre e-mail.",
+        "cancel_and_logout": "Annuler et se déconnecter",
+        "toggle_success_enabled": "L'authentification à deux facteurs a été activée !",
+        "toggle_success_disabled": "L'authentification à deux facteurs a été désactivée."
       },
       "tips_section": "Conseils de sécurité",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Mélangez lettres, chiffres et caractères spéciaux pour une protection maximale."
         },
         "enable_2fa": {
-          "title": "Activer l'authentification à deux facteurs",
-          "body": "Une couche de sécurité supplémentaire pour votre compte. Bientôt disponible !"
+          "title": "Activer l'auth à deux facteurs",
+          "body": "Une couche de sécurité supplémentaire pour votre compte. Activez-la dans les paramètres ci-dessus."
         }
       }
     },

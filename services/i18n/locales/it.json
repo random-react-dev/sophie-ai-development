@@ -239,7 +239,27 @@
       },
       "two_factor": {
         "title": "Autenticazione a due fattori",
-        "status": "Non abilitato"
+        "status": "Non abilitato",
+        "status_enabled": "Abilitato",
+        "status_disabled": "Non abilitato",
+        "enable_title": "Abilita OTP via email",
+        "enable_body": "Un codice di verifica verrà inviato alla tua email ogni volta che accedi da una nuova sessione. Questo aggiunge un ulteriore livello di sicurezza al tuo account.",
+        "enable_button": "Abilita 2FA",
+        "disable_title": "Disabilita OTP via email",
+        "disable_body": "Questo rimuoverà il livello di sicurezza aggiuntivo dal tuo account. Non dovrai più verificare un codice al momento dell'accesso.",
+        "disable_button": "Disabilita 2FA",
+        "otp_title": "Verifica la tua identità",
+        "otp_subtitle": "Inserisci il codice a 6 cifre inviato a",
+        "otp_verify": "Verifica",
+        "otp_resend": "Invia di nuovo codice",
+        "otp_resend_in": "Invia di nuovo in {{seconds}}s",
+        "otp_error_invalid": "Codice non valido o scaduto. Riprova.",
+        "otp_error_generic": "Verifica fallita. Riprova.",
+        "otp_success": "Autenticazione a due fattori verificata!",
+        "otp_sent": "Codice di verifica inviato alla tua email.",
+        "cancel_and_logout": "Annulla e disconnetti",
+        "toggle_success_enabled": "L'autenticazione a due fattori è stata abilitata!",
+        "toggle_success_disabled": "L'autenticazione a due fattori è stata disabilitata."
       },
       "tips_section": "Consigli di sicurezza",
       "tips": {
@@ -248,8 +268,8 @@
           "body": "Mescola lettere, numeri e caratteri speciali per la massima protezione."
         },
         "enable_2fa": {
-          "title": "Abilita l'autenticazione a due fattori",
-          "body": "Un ulteriore livello di sicurezza per il tuo account. In arrivo!"
+          "title": "Abilita auth a due fattori",
+          "body": "Un livello di sicurezza extra per il tuo account. Abilitalo nelle impostazioni sopra."
         }
       }
     },

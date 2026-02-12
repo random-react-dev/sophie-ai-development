@@ -10,9 +10,9 @@ import {
   Language,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
-import { audioStreamer } from "@/services/audio/streamer";
+import { speakWord, stopSpeaking } from "@/services/audio/tts";
 import { translateText } from "@/services/gemini/translate";
-import { geminiWebSocket } from "@/services/gemini/websocket";
+// import { geminiWebSocket } from "@/services/gemini/websocket"; // Removed
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
@@ -266,40 +266,31 @@ export default function TranslateScreen() {
   };
 
   /**
-   * Speak the translated text using Text-to-Speech via Gemini WebSocket.
+   * Speak the translated text using native device TTS (expo-speech).
    */
-  const handleSpeak = () => {
+  const handleSpeak = async () => {
     if (!translatedText) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // If already speaking, stop playback
     if (isSpeaking) {
-      audioStreamer.handleInterruption();
+      await stopSpeaking();
       setIsSpeaking(false);
-      return;
-    }
-
-    if (!geminiWebSocket.isReady()) {
-      showAlert(
-        t("vocab_screen.alerts.error_title"),
-        t("vocab_screen.alerts.connection_required"),
-        undefined,
-        "warning",
-      );
       return;
     }
 
     setIsSpeaking(true);
-    geminiWebSocket.speakPhrase(translatedText, targetLang.name, true);
 
-    // Reset speaking state when audio finishes (approximate timeout)
-    // The WebSocket doesn't provide a direct "finished" callback for TTS,
-    // so we use a reasonable timeout based on text length
-    const estimatedDuration = Math.max(2000, translatedText.length * 80);
-    setTimeout(() => {
-      setIsSpeaking(false);
-    }, estimatedDuration);
+    // Use built-in TTS instead of Gemini WebSocket
+    await speakWord(translatedText, targetLang.name, {
+      onStart: () => setIsSpeaking(true),
+      onDone: () => setIsSpeaking(false),
+      onError: (err) => {
+        setIsSpeaking(false);
+        console.error("TTS Error:", err);
+      },
+    });
   };
 
   return (
