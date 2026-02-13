@@ -306,7 +306,7 @@
       "help_improve": "Giúp chúng tôi cải thiện",
       "whatsapp_support": "Hỗ trợ WhatsApp",
       "whatsapp_subtitle": "Trò chuyện với chúng tôi trên WhatsApp",
-      "whatsapp_message": "Xin chào Đội ngũ Sophie! 👋 Tôi đang sử dụng ứng dụng Sophie AI và rất muốn kết nối với các bạn.",
+      "whatsapp_message": "Xin chào Đội ngũ Sophie AI! 👋 Tôi đang sử dụng ứng dụng Sophie AI và rất muốn kết nối với các bạn.",
       "contact_alert_title": "Liên hệ với chúng tôi",
       "contact_alert_body": "Gửi email cho chúng tôi tại support@speakwithsophie.ai nếu có bất kỳ câu hỏi hoặc phản hồi nào.",
       "feedback_alert_title": "Sắp ra mắt",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Tạo Kịch bản",
-      "sophie_role_label": "Vai trò của Sophie",
+      "sophie_role_label": "Vai trò của Sophie AI",
       "sophie_role_placeholder": "vd: Một chủ tiệm khó tính nhưng hay giúp đỡ",
       "user_role_label": "Vai trò của Bạn",
       "user_role_placeholder": "vd: Một khách hàng đang vội",
@@ -409,7 +409,7 @@
       "context_placeholder": "Mô tả bối cảnh...",
       "start_button": "Bắt đầu Kịch bản",
       "validation_title": "Thiếu Trường Bắt buộc",
-      "validation_message": "Vai trò của Sophie và Chủ đề là bắt buộc!"
+      "validation_message": "Vai trò của Sophie AI và Chủ đề là bắt buộc!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Nhà tuyển dụng kỹ thuật cấp cao tại một công ty công nghệ",
       "userRole": "Ứng viên ứng tuyển cho vai trò Nhà phát triển Frontend",
       "topic": "Sự nghiệp",
-      "context": "Bạn đang trong cuộc phỏng vấn cho công việc mơ ước của mình. Sophie sẽ hỏi về kinh nghiệm và kỹ năng của bạn."
+      "context": "Bạn đang trong cuộc phỏng vấn cho công việc mơ ước của mình. Sophie AI sẽ hỏi về kinh nghiệm và kỹ năng của bạn."
     },
     "asking-directions": {
       "title": "Hỏi đường",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie đang nói...",
+      "speaking": "Sophie AI đang nói...",
       "preparing": "Đang chuẩn bị câu trả lời... {{progress}}%",
-      "thinking": "Sophie đang suy nghĩ...",
+      "thinking": "Sophie AI đang suy nghĩ...",
       "listening": "Đang nghe...",
       "connecting": "Đang kết nối...",
       "reconnecting": "Đang kết nối lại...",
@@ -496,8 +496,8 @@
       "translating": "Đang dịch..."
     },
     "prompts": {
-      "select_both_langs": "Chọn cả hai ngôn ngữ ở trên để bắt đầu bài học của bạn với Sophie.",
-      "hold_mic_start": "Giữ mic bên dưới để bắt đầu nói chuyện với Sophie."
+      "select_both_langs": "Chọn cả hai ngôn ngữ ở trên để bắt đầu bài học của bạn với Sophie AI.",
+      "hold_mic_start": "Giữ mic bên dưới để bắt đầu nói chuyện với Sophie AI."
     },
     "alerts": {
       "end_session_title": "Kết thúc phiên",
@@ -505,7 +505,7 @@
       "finish_title": "Kết thúc cuộc trò chuyện",
       "finish_msg": "Bạn đã hoàn thành phiên thực hành này chưa?",
       "reset_title": "Đặt lại trò chuyện",
-      "reset_msg": "Thao tác này sẽ xóa cuộc trò chuyện hiện tại và đặt lại Sophie. Tiếp tục?",
+      "reset_msg": "Thao tác này sẽ xóa cuộc trò chuyện hiện tại và đặt lại Sophie AI. Tiếp tục?",
       "error_title": "Lỗi",
       "error_msg": "Dịch thất bại. Vui lòng thử lại.",
       "success_title": "Thành công",
@@ -568,7 +568,7 @@
       "translation_failed": "Dịch thất bại",
       "playing_audio": "Đang phát âm thanh cho: \"{{text}}\"",
       "speech_error": "Không thể nói cụm từ này. Vui lòng thử lại.",
-      "connection_required": "Vui lòng truy cập tab Nói chuyện trước để kết nối với Sophie."
+      "connection_required": "Vui lòng truy cập tab Nói chuyện trước để kết nối với Sophie AI."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Tạo hồ sơ",
       "sections": {
         "target_label": "Tôi muốn học",
-        "medium_label": "Sophie dạy bằng",
+        "medium_label": "Sophie AI dạy bằng",
         "medium_placeholder": "Giống như tiếng mẹ đẻ",
         "accent_label": "Giọng đọc ưa thích"
       },

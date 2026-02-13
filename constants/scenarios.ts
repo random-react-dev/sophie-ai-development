@@ -38,7 +38,7 @@ export const SCENARIOS: Scenario[] = [
     topic: "Career",
     level: "S4",
     context:
-      "You are in an interview for your dream job. Sophie will ask about your experience and skills.",
+      "You are in an interview for your dream job. Sophie AI will ask about your experience and skills.",
     icon: "briefcase",
   },
   {

@@ -306,7 +306,7 @@
       "help_improve": "Helfen Sie uns, besser zu werden",
       "whatsapp_support": "WhatsApp-Support",
       "whatsapp_subtitle": "Chatten Sie mit uns auf WhatsApp",
-      "whatsapp_message": "Hallo Sophie-Team! 👋 Ich benutze die Sophie AI-App und würde gerne mit euch in Kontakt treten.",
+      "whatsapp_message": "Hallo Sophie AI-Team! 👋 Ich benutze die Sophie AI-App und würde gerne mit euch in Kontakt treten.",
       "contact_alert_title": "Kontaktieren Sie uns",
       "contact_alert_body": "Senden Sie uns eine E-Mail an support@speakwithsophie.ai für Fragen oder Feedback.",
       "feedback_alert_title": "Demnächst",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Szenario Erstellen",
-      "sophie_role_label": "Sophies Rolle",
+      "sophie_role_label": "Sophie AIs Rolle",
       "sophie_role_placeholder": "z.B. Ein mürrischer, aber hilfsbereiter Ladenbesitzer",
       "user_role_label": "Ihre Rolle",
       "user_role_placeholder": "z.B. Ein Kunde in Eile",
@@ -409,7 +409,7 @@
       "context_placeholder": "Beschreiben Sie die Umgebung...",
       "start_button": "Szenario Starten",
       "validation_title": "Erforderliche Felder fehlen",
-      "validation_message": "Sophies Rolle und Thema sind erforderlich!"
+      "validation_message": "Sophie AIs Rolle und Thema sind erforderlich!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Senior Technical Recruiter bei einem Technologieunternehmen",
       "userRole": "Kandidat, der sich für eine Frontend-Entwickler-Rolle bewirbt",
       "topic": "Karriere",
-      "context": "Sie sind in einem Vorstellungsgespräch für Ihren Traumjob. Sophie wird Sie nach Ihrer Erfahrung und Ihren Fähigkeiten fragen."
+      "context": "Sie sind in einem Vorstellungsgespräch für Ihren Traumjob. Sophie AI wird Sie nach Ihrer Erfahrung und Ihren Fähigkeiten fragen."
     },
     "asking-directions": {
       "title": "Nach dem Weg Fragen",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie spricht...",
-      "preparing": "Antwort wird vorbereitet... {{progress}}%",
-      "thinking": "Sophie denkt nach...",
+      "speaking": "Sophie AI spricht...",
+      "preparing": "Antwort wird vorbereitet... %{progress}%",
+      "thinking": "Sophie AI denkt nach...",
       "listening": "Zuhören...",
       "connecting": "Verbinden...",
       "reconnecting": "Wiederverbinden...",
@@ -496,8 +496,8 @@
       "translating": "Übersetzen..."
     },
     "prompts": {
-      "select_both_langs": "Wählen Sie beide Sprachen oben aus, um Ihre Lektion mit Sophie zu beginnen.",
-      "hold_mic_start": "Halten Sie das Mikrofon unten gedrückt, um mit Sophie zu sprechen."
+      "select_both_langs": "Wählen Sie beide Sprachen oben aus, um Ihre Lektion mit Sophie AI zu beginnen.",
+      "hold_mic_start": "Halten Sie das Mikrofon unten gedrückt, um mit Sophie AI zu sprechen."
     },
     "alerts": {
       "end_session_title": "Sitzung beenden",
@@ -505,7 +505,7 @@
       "finish_title": "Gespräch beenden",
       "finish_msg": "Sind Sie fertig mit dieser Übungssitzung?",
       "reset_title": "Chat zurücksetzen",
-      "reset_msg": "Dies löscht das aktuelle Gespräch und setzt Sophie zurück. Fortfahren?",
+      "reset_msg": "Dies löscht das aktuelle Gespräch und setzt Sophie AI zurück. Fortfahren?",
       "error_title": "Fehler",
       "error_msg": "Übersetzung fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "success_title": "Erfolg",
@@ -568,7 +568,7 @@
       "translation_failed": "Übersetzung fehlgeschlagen",
       "playing_audio": "Audio wird abgespielt für: \"{{text}}\"",
       "speech_error": "Fehler beim Sprechen des Satzes. Bitte versuchen Sie es erneut.",
-      "connection_required": "Bitte besuchen Sie zuerst den Sprechen-Tab, um sich mit Sophie zu verbinden."
+      "connection_required": "Bitte besuchen Sie zuerst den Sprechen-Tab, um sich mit Sophie AI zu verbinden."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Profil erstellen",
       "sections": {
         "target_label": "Ich möchte lernen",
-        "medium_label": "Sophie unterrichtet auf",
+        "medium_label": "Sophie AI unterrichtet auf",
         "medium_placeholder": "Wie Muttersprache",
         "accent_label": "Bevorzugter Akzent"
       },

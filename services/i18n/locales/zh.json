@@ -307,7 +307,7 @@
       "help_improve": "帮助我们要改进",
       "whatsapp_support": "WhatsApp 支持",
       "whatsapp_subtitle": "在 WhatsApp 上与我们聊天",
-      "whatsapp_message": "你好 Sophie 团队！👋 我正在使用 Sophie AI 应用程序，希望能与你们联系。",
+      "whatsapp_message": "你好 Sophie AI 团队！👋 我正在使用 Sophie AI 应用程序，希望能与你们联系。",
       "contact_alert_title": "联系我们",
       "contact_alert_body": "有任何问题或反馈，请发送电子邮件至 support@speakwithsophie.ai。",
       "feedback_alert_title": "即将推出",
@@ -397,7 +397,7 @@
     },
     "create_modal": {
       "title": "创建场景",
-      "sophie_role_label": "Sophie的角色",
+      "sophie_role_label": "Sophie AI的角色",
       "sophie_role_placeholder": "例如：脾气暴躁但乐于助人的店主",
       "user_role_label": "你的角色",
       "user_role_placeholder": "例如：赶时间的顾客",
@@ -410,7 +410,7 @@
       "context_placeholder": "描述设置...",
       "start_button": "开始场景",
       "validation_title": "缺少必填字段",
-      "validation_message": "Sophie的角色和话题是必填的！"
+      "validation_message": "Sophie AI的角色和话题是必填的！"
     }
   },
   "scenarios_data": {
@@ -428,7 +428,7 @@
       "sophieRole": "科技公司的高级技术招聘人员",
       "userRole": "申请前端开发人员职位的候选人",
       "topic": "职业",
-      "context": "你正在面试你梦寐以求的工作。Sophie会询问你的经验和技能。"
+      "context": "你正在面试你梦寐以求的工作。Sophie AI会询问你的经验和技能。"
     },
     "asking-directions": {
       "title": "问路",
@@ -469,9 +469,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "苏菲正在说话...",
+      "speaking": "Sophie AI正在说话...",
       "preparing": "准备回复... {{progress}}%",
-      "thinking": "苏菲正在思考...",
+      "thinking": "Sophie AI正在思考...",
       "listening": "正在听...",
       "connecting": "正在连接...",
       "reconnecting": "正在重新连接...",
@@ -497,8 +497,8 @@
       "translating": "正在翻译..."
     },
     "prompts": {
-      "select_both_langs": "选择上面的两种语言开始与苏菲的课程。",
-      "hold_mic_start": "按住下面的麦克风开始与苏菲交谈。"
+      "select_both_langs": "选择上面的两种语言开始与Sophie AI的课程。",
+      "hold_mic_start": "按住下面的麦克风开始与Sophie AI交谈。"
     },
     "alerts": {
       "end_session_title": "结束会话",
@@ -506,7 +506,7 @@
       "finish_title": "结束对话",
       "finish_msg": "你完成这次练习了吗？",
       "reset_title": "重置聊天",
-      "reset_msg": "这将清除当前的对话并重置苏菲。继续吗？",
+      "reset_msg": "这将清除当前的对话并重置Sophie AI。继续吗？",
       "error_title": "错误",
       "error_msg": "翻译失败。请重试。",
       "success_title": "成功",
@@ -569,7 +569,7 @@
       "translation_failed": "翻译失败",
       "playing_audio": "正在播放音频：\"{{text}}\"",
       "speech_error": "播放短语失败。请重试。",
-      "connection_required": "请先访问通话标签页以连接到Sophie。"
+      "connection_required": "请先访问通话标签页以连接到Sophie AI。"
     }
   },
   "language_picker": {
@@ -639,7 +639,7 @@
       "create_button": "创建资料",
       "sections": {
         "target_label": "我想学习",
-        "medium_label": "Sophie 教学语言",
+        "medium_label": "Sophie AI 教学语言",
         "medium_placeholder": "与母语相同",
         "accent_label": "首选口音"
       },
@@ -661,7 +661,7 @@
     "last_day_title": "最后一天！",
     "days_left_title": "剩余 {{count}} 天",
     "last_day_subtitle": "您的免费试用今天结束！",
-    "upgrade_subtitle": "升级到苏菲 AI Pro 以获得完整体验。",
+    "upgrade_subtitle": "升级到 Sophie AI Pro 以获得完整体验。",
     "benefits_title": "您将获得",
     "benefit_1": "无限 AI 对话",
     "benefit_2": "解锁所有 10+ 种语言",

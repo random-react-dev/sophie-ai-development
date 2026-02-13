@@ -307,7 +307,7 @@
       "help_improve": "बेहतर बनाने में हमारी मदद करें",
       "whatsapp_support": "व्हाट्सएप सहायता",
       "whatsapp_subtitle": "व्हाट्सएप पर हमारे साथ चैट करें",
-      "whatsapp_message": "नमस्ते सोफी टीम! 👋 मैं सोफी एआई ऐप का उपयोग कर रहा हूं और आपसे जुड़ना पसंद करूंगा।",
+      "whatsapp_message": "नमस्ते Sophie AI टीम! 👋 मैं Sophie AI ऐप का उपयोग कर रहा हूं और आपसे जुड़ना पसंद करूंगा।",
       "contact_alert_title": "संपर्क करें",
       "contact_alert_body": "किसी भी प्रश्न या प्रतिक्रिया के लिए support@speakwithsophie.ai पर हमें ईमेल करें।",
       "feedback_alert_title": "जल्द आ रहा है",
@@ -397,7 +397,7 @@
     },
     "create_modal": {
       "title": "परिदृश्य बनाएं",
-      "sophie_role_label": "सोफी की भूमिका",
+      "sophie_role_label": "Sophie AI की भूमिका",
       "sophie_role_placeholder": "उदा. एक चिड़चिड़ा लेकिन मददगार दुकानदार",
       "user_role_label": "आपकी भूमिका",
       "user_role_placeholder": "उदा. एक ग्राहक जो जल्दी में है",
@@ -410,7 +410,7 @@
       "context_placeholder": "सेटिंग का वर्णन करें...",
       "start_button": "परिदृश्य शुरू करें",
       "validation_title": "आवश्यक क्षेत्र गायब हैं",
-      "validation_message": "सोफी की भूमिका और विषय आवश्यक हैं!"
+      "validation_message": "Sophie AI की भूमिका और विषय आवश्यक हैं!"
     }
   },
   "scenarios_data": {
@@ -428,7 +428,7 @@
       "sophieRole": "एक तकनीकी कंपनी में वरिष्ठ तकनीकी भर्तीकर्ता",
       "userRole": "फ्रंटएंड डेवलपर भूमिका के लिए आवेदन करने वाला उम्मीदवार",
       "topic": "करियर",
-      "context": "आप अपने सपनों की नौकरी के लिए साक्षात्कार में हैं। सोफी आपके अनुभव और कौशल के बारे में पूछेगी।"
+      "context": "आप अपने सपनों की नौकरी के लिए साक्षात्कार में हैं। Sophie AI आपके अनुभव और कौशल के बारे में पूछेगी।"
     },
     "asking-directions": {
       "title": "रास्ता पूछना",
@@ -469,9 +469,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "सोफी बोल रही है...",
+      "speaking": "Sophie AI बोल रही है...",
       "preparing": "प्रतिक्रिया तैयार हो रही है... {{progress}}%",
-      "thinking": "सोफी सोच रही है...",
+      "thinking": "Sophie AI सोच रही है...",
       "listening": "सुन रही है...",
       "connecting": "कनेक्ट हो रहा है...",
       "reconnecting": "पुनः कनेक्ट हो रहा है...",
@@ -497,8 +497,8 @@
       "translating": "अनुवाद हो रहा है..."
     },
     "prompts": {
-      "select_both_langs": "सोफी के साथ अपना पाठ शुरू करने के लिए ऊपर दोनों भाषाओं का चयन करें।",
-      "hold_mic_start": "सोफी के साथ बात करना शुरू करने के लिए नीचे माइक दबाए रखें।"
+      "select_both_langs": "Sophie AI के साथ अपना पाठ शुरू करने के लिए ऊपर दोनों भाषाओं का चयन करें।",
+      "hold_mic_start": "Sophie AI के साथ बात करना शुरू करने के लिए नीचे माइक दबाए रखें।"
     },
     "alerts": {
       "end_session_title": "सत्र समाप्त करें",
@@ -506,7 +506,7 @@
       "finish_title": "बातचीत समाप्त करें",
       "finish_msg": "क्या आपने यह अभ्यास सत्र पूरा कर लिया है?",
       "reset_title": "चैट रीसेट करें",
-      "reset_msg": "यह वर्तमान बातचीत को साफ़ कर देगा और सोफी को रीसेट कर देगा। जारी रखें?",
+      "reset_msg": "यह वर्तमान बातचीत को साफ़ कर देगा और Sophie AI को रीसेट कर देगा। जारी रखें?",
       "error_title": "त्रुटि",
       "error_msg": "अनुवाद करने में विफल। कृपया पुन: प्रयास करें।",
       "success_title": "सफलता",
@@ -569,7 +569,7 @@
       "translation_failed": "अनुवाद विफल",
       "playing_audio": "इसके लिए ऑडियो चलाया जा रहा है: \"{{text}}\"",
       "speech_error": "वाक्यांश बोलने में विफल। कृपया पुन: प्रयास करें।",
-      "connection_required": "Sophie से जुड़ने के लिए कृपया पहले 'बात करें' टैब पर जाएं।"
+      "connection_required": "Sophie AI से जुड़ने के लिए कृपया पहले 'बात करें' टैब पर जाएं।"
     }
   },
   "language_picker": {
@@ -639,7 +639,7 @@
       "create_button": "प्रोफ़ाइल बनाएं ",
       "sections": {
         "target_label": "मैं सीखना चाहता हूँ",
-        "medium_label": "सोफी सिखाती है",
+        "medium_label": "Sophie AI सिखाती है",
         "medium_placeholder": "मातृभाषा के समान",
         "accent_label": "पसंदीदा लहज़ा"
       },
@@ -661,7 +661,7 @@
     "last_day_title": "आखिरी दिन!",
     "days_left_title": "{{count}} दिन शेष ",
     "last_day_subtitle": "आपका निःशुल्क परीक्षण आज समाप्त हो रहा है!",
-    "upgrade_subtitle": "पूर्ण अनुभव के लिए सोफी एआई प्रो में अपग्रेड करें।",
+    "upgrade_subtitle": "पूर्ण अनुभव के लिए Sophie AI प्रो में अपग्रेड करें।",
     "benefits_title": "आपको क्या मिलेगा",
     "benefit_1": "असीमित एआई बातचीत",
     "benefit_2": "सभी 10+ भाषाएँ अनलॉक",

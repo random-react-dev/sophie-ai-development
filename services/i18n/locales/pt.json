@@ -306,7 +306,7 @@
       "help_improve": "Ajude-nos a melhorar",
       "whatsapp_support": "Suporte WhatsApp",
       "whatsapp_subtitle": "Converse conosco no WhatsApp",
-      "whatsapp_message": "Olá Equipe Sophie! 👋 Estou usando o app Sophie AI e adoraria falar com vocês.",
+      "whatsapp_message": "Olá Equipe Sophie AI! 👋 Estou usando o app Sophie AI e adoraria falar com vocês.",
       "contact_alert_title": "Contate-nos",
       "contact_alert_body": "Envie um e-mail para support@speakwithsophie.ai para dúvidas ou feedback.",
       "feedback_alert_title": "Em breve",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Criar Cenário",
-      "sophie_role_label": "Papel da Sophie",
+      "sophie_role_label": "Papel da Sophie AI",
       "sophie_role_placeholder": "ex. Um lojista rabugento mas prestativo",
       "user_role_label": "Seu Papel",
       "user_role_placeholder": "ex. Um cliente com pressa",
@@ -409,7 +409,7 @@
       "context_placeholder": "Descreva o cenário...",
       "start_button": "Iniciar Cenário",
       "validation_title": "Campos Obrigatórios em Falta",
-      "validation_message": "O Papel da Sophie e o Tópico são obrigatórios!"
+      "validation_message": "O Papel da Sophie AI e o Tópico são obrigatórios!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Recrutador Técnico Sênior em uma empresa de tecnologia",
       "userRole": "Candidato se candidatando a uma vaga de Desenvolvedor Frontend",
       "topic": "Carreira",
-      "context": "Você está em uma entrevista para o emprego dos seus sonhos. Sophie perguntará sobre sua experiência e habilidades."
+      "context": "Você está em uma entrevista para o emprego dos seus sonhos. Sophie AI perguntará sobre sua experiência e habilidades."
     },
     "asking-directions": {
       "title": "Pedir Informações",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie Falando...",
+      "speaking": "Sophie AI Falando...",
       "preparing": "Preparando resposta... {{progress}}%",
-      "thinking": "Sophie está pensando...",
+      "thinking": "Sophie AI está pensando...",
       "listening": "Ouvindo...",
       "connecting": "Conectando...",
       "reconnecting": "Reconectando...",
@@ -496,8 +496,8 @@
       "translating": "Traduzindo..."
     },
     "prompts": {
-      "select_both_langs": "Selecione ambos os idiomas acima para começar sua lição com Sophie.",
-      "hold_mic_start": "Segure o microfone abaixo para começar a falar com Sophie."
+      "select_both_langs": "Selecione ambos os idiomas acima para começar sua lição com Sophie AI.",
+      "hold_mic_start": "Segure o microfone abaixo para começar a falar com Sophie AI."
     },
     "alerts": {
       "end_session_title": "Encerrar Sessão",
@@ -505,7 +505,7 @@
       "finish_title": "Concluir Conversa",
       "finish_msg": "Você terminou esta sessão de prática?",
       "reset_title": "Reiniciar Chat",
-      "reset_msg": "Isso limpará a conversa atual e reiniciará Sophie. Continuar?",
+      "reset_msg": "Isso limpará a conversa atual e reiniciará Sophie AI. Continuar?",
       "error_title": "Erro",
       "error_msg": "Falha ao traduzir. Por favor, tente novamente.",
       "success_title": "Sucesso",
@@ -568,7 +568,7 @@
       "translation_failed": "Tradução falhou",
       "playing_audio": "Reproduzindo áudio para: \"{{text}}\"",
       "speech_error": "Falha ao falar a frase. Por favor, tente novamente.",
-      "connection_required": "Por favor, visite a guia Falar primeiro para se conectar à Sophie."
+      "connection_required": "Por favor, visite a guia Falar primeiro para se conectar à Sophie AI."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Criar perfil",
       "sections": {
         "target_label": "Quero aprender",
-        "medium_label": "Sophie ensina em",
+        "medium_label": "Sophie AI ensina em",
         "medium_placeholder": "Igual ao nativo",
         "accent_label": "Sotaque preferido"
       },

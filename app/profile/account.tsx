@@ -129,7 +129,16 @@ export default function AccountScreen() {
               </Text>
               <Text className="text-gray-900 font-medium">
                 {user?.created_at
-                  ? new Date(user.created_at).toLocaleDateString()
+                  ? (() => {
+                      const date = new Date(user.created_at);
+                      const day = String(date.getDate()).padStart(2, "0");
+                      const month = String(date.getMonth() + 1).padStart(
+                        2,
+                        "0",
+                      );
+                      const year = date.getFullYear();
+                      return `${day}/${month}/${year}`;
+                    })()
                   : t("profile.account_screen.na")}
               </Text>
             </View>

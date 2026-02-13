@@ -307,7 +307,7 @@
       "help_improve": "개선에 도움 주기",
       "whatsapp_support": "WhatsApp 지원",
       "whatsapp_subtitle": "WhatsApp으로 채팅하기",
-      "whatsapp_message": "안녕하세요 Sophie 팀! 👋 Sophie AI 앱을 잘 사용하고 있습니다. 문의하고 싶습니다.",
+      "whatsapp_message": "안녕하세요 Sophie AI 팀! 👋 Sophie AI 앱을 잘 사용하고 있습니다. 문의하고 싶습니다.",
       "contact_alert_title": "문의하기",
       "contact_alert_body": "질문이나 피드백이 있으시면 support@speakwithsophie.ai으로 이메일을 보내주세요.",
       "feedback_alert_title": "곧 출시",
@@ -397,7 +397,7 @@
     },
     "create_modal": {
       "title": "시나리오 만들기",
-      "sophie_role_label": "소피의 역할",
+      "sophie_role_label": "Sophie AI의 역할",
       "sophie_role_placeholder": "예: 무뚝뚝하지만 친절한 상점 주인",
       "user_role_label": "당신의 역할",
       "user_role_placeholder": "예: 서두르는 고객",
@@ -410,7 +410,7 @@
       "context_placeholder": "설정을 설명해주세요...",
       "start_button": "시나리오 시작",
       "validation_title": "필수 항목 누락",
-      "validation_message": "소피의 역할과 주제는 필수입니다!"
+      "validation_message": "Sophie AI의 역할과 주제는 필수입니다!"
     }
   },
   "scenarios_data": {
@@ -428,7 +428,7 @@
       "sophieRole": "기술 회사의 수석 기술 채용 담당자",
       "userRole": "프론트엔드 개발자 역할에 지원하는 후보자",
       "topic": "경력",
-      "context": "당신은 꿈의 직업을 위한 면접을 보고 있습니다. 소피는 당신의 경험과 기술에 대해 물을 것입니다."
+      "context": "당신은 꿈의 직업을 위한 면접을 보고 있습니다. Sophie AI는 당신의 경험과 기술에 대해 물을 것입니다."
     },
     "asking-directions": {
       "title": "길 묻기",
@@ -469,9 +469,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "소피가 말하는 중...",
+      "speaking": "Sophie AI가 말하는 중...",
       "preparing": "응답 준비 중... {{progress}}%",
-      "thinking": "소피가 생각 중...",
+      "thinking": "Sophie AI가 생각 중...",
       "listening": "듣는 중...",
       "connecting": "연결 중...",
       "reconnecting": "재연결 중...",
@@ -497,8 +497,8 @@
       "translating": "번역 중..."
     },
     "prompts": {
-      "select_both_langs": "소피와 수업을 시작하려면 위의 두 언어를 모두 선택하세요.",
-      "hold_mic_start": "소피와 대화를 시작하려면 아래 마이크를 길게 누르세요."
+      "select_both_langs": "Sophie AI와 수업을 시작하려면 위의 두 언어를 모두 선택하세요.",
+      "hold_mic_start": "Sophie AI와 대화를 시작하려면 아래 마이크를 길게 누르세요."
     },
     "alerts": {
       "cancel": "취소",
@@ -559,7 +559,7 @@
       "translation_failed": "번역 실패",
       "playing_audio": "\"{{text}}\" 오디오 재생 중",
       "speech_error": "문구를 말하지 못했습니다. 다시 시도해 주세요.",
-      "connection_required": "Sophie에 연결하려면 먼저 대화 탭을 방문하세요."
+      "connection_required": "Sophie AI에 연결하려면 먼저 대화 탭을 방문하세요."
     }
   },
   "language_picker": {
@@ -629,7 +629,7 @@
       "create_button": "프로필 만들기",
       "sections": {
         "target_label": "배우고 싶은 언어",
-        "medium_label": "Sophie의 교육 언어",
+        "medium_label": "Sophie AI의 교육 언어",
         "medium_placeholder": "모국어와 동일",
         "accent_label": "선호하는 억양"
       },
@@ -651,7 +651,7 @@
     "last_day_title": "마지막 날!",
     "days_left_title": "{{count}}일 남음",
     "last_day_subtitle": "오늘 무료 체험이 종료됩니다!",
-    "upgrade_subtitle": "소피 AI 프로로 업그레이드하여 모든 기능을 이용하세요.",
+    "upgrade_subtitle": "Sophie AI 프로로 업그레이드하여 모든 기능을 이용하세요.",
     "benefits_title": "혜택",
     "benefit_1": "무제한 AI 대화",
     "benefit_2": "모든 10+ 언어 잠금 해제",

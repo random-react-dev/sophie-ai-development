@@ -232,7 +232,7 @@ class GeminiWebSocket {
   private sendSetupMessage(instruction: string) {
     Logger.info(TAG, "Sending setup message...");
     const defaultInstruction =
-      "You are Sophie, a friendly AI language tutor. You help users master real-world conversation. When a user makes a mistake, provide a 'Natural Correction'—a more native way to say it—and explain the nuance briefly. Keep your spoken responses short and encouraging. Always respond in the target language unless an English explanation is needed for clarity.";
+      "You are Sophie AI, a friendly AI language tutor. You help users master real-world conversation. When a user makes a mistake, provide a 'Natural Correction'—a more native way to say it—and explain the nuance briefly. Keep your spoken responses short and encouraging. Always respond in the target language unless an English explanation is needed for clarity.";
 
     // Check if we have already greeted the user in this session
     // If so, we MUST tell Gemini NOT to restart the intro, or it will treat the next input as a fresh start.

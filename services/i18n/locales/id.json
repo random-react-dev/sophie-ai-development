@@ -306,7 +306,7 @@
       "help_improve": "Bantu kami meningkatkan",
       "whatsapp_support": "Dukungan WhatsApp",
       "whatsapp_subtitle": "Mengobrol dengan kami di WhatsApp",
-      "whatsapp_message": "Hai Tim Sophie! 👋 Saya menggunakan aplikasi Sophie AI dan ingin terhubung dengan Anda.",
+      "whatsapp_message": "Hai Tim Sophie AI! 👋 Saya menggunakan aplikasi Sophie AI dan ingin terhubung dengan Anda.",
       "contact_alert_title": "Hubungi Kami",
       "contact_alert_body": "Email kami di support@speakwithsophie.ai untuk pertanyaan atau umpan balik.",
       "feedback_alert_title": "Segera Hadir",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Buat Skenario",
-      "sophie_role_label": "Peran Sophie",
+      "sophie_role_label": "Peran Sophie AI",
       "sophie_role_placeholder": "cth. Penjaga toko yang galak tapi membantu",
       "user_role_label": "Peran Anda",
       "user_role_placeholder": "cth. Pelanggan yang sedang terburu-buru",
@@ -409,7 +409,7 @@
       "context_placeholder": "Jelaskan pengaturannya...",
       "start_button": "Mulai Skenario",
       "validation_title": "Kolom Wajib Hilang",
-      "validation_message": "Peran Sophie dan Topik wajib diisi!"
+      "validation_message": "Peran Sophie AI dan Topik wajib diisi!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Perekrut Teknis Senior di perusahaan teknologi",
       "userRole": "Kandidat melamar peran Pengembang Frontend",
       "topic": "Karier",
-      "context": "Anda sedang dalam wawancara untuk pekerjaan impian Anda. Sophie akan bertanya tentang pengalaman dan keterampilan Anda."
+      "context": "Anda sedang dalam wawancara untuk pekerjaan impian Anda. Sophie AI akan bertanya tentang pengalaman dan keterampilan Anda."
     },
     "asking-directions": {
       "title": "Menanyakan Arah",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie Berbicara...",
+      "speaking": "Sophie AI Berbicara...",
       "preparing": "Menyiapkan respons... {{progress}}%",
-      "thinking": "Sophie sedang berpikir...",
+      "thinking": "Sophie AI sedang berpikir...",
       "listening": "Mendengarkan...",
       "connecting": "Menghubungkan...",
       "reconnecting": "Menghubungkan kembali...",
@@ -496,8 +496,8 @@
       "translating": "Menerjemahkan..."
     },
     "prompts": {
-      "select_both_langs": "Pilih kedua bahasa di atas untuk memulai pelajaran Anda dengan Sophie.",
-      "hold_mic_start": "Tahan mikrofon di bawah ini untuk mulai berbicara dengan Sophie."
+      "select_both_langs": "Pilih kedua bahasa di atas untuk memulai pelajaran Anda dengan Sophie AI.",
+      "hold_mic_start": "Tahan mikrofon di bawah ini untuk mulai berbicara dengan Sophie AI."
     },
     "alerts": {
       "end_session_title": "Akhiri Sesi",
@@ -505,7 +505,7 @@
       "finish_title": "Selesaikan Percakapan",
       "finish_msg": "Apakah Anda selesai dengan sesi latihan ini?",
       "reset_title": "Atur Ulang Obrolan",
-      "reset_msg": "Ini akan menghapus percakapan saat ini dan mengatur ulang Sophie. Lanjutkan?",
+      "reset_msg": "Ini akan menghapus percakapan saat ini dan mengatur ulang Sophie AI. Lanjutkan?",
       "error_title": "Kesalahan",
       "error_msg": "Gagal menerjemahkan. Silakan coba lagi.",
       "success_title": "Berhasil",
@@ -568,7 +568,7 @@
       "translation_failed": "Terjemahan gagal",
       "playing_audio": "Memutar audio untuk: \"{{text}}\"",
       "speech_error": "Gagal mengucapkan frasa. Silakan coba lagi.",
-      "connection_required": "Silakan kunjungi tab Bicara terlebih dahulu untuk terhubung ke Sophie."
+      "connection_required": "Silakan kunjungi tab Bicara terlebih dahulu untuk terhubung ke Sophie AI."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Buat Profil",
       "sections": {
         "target_label": "Saya ingin belajar",
-        "medium_label": "Sophie mengajar dalam",
+        "medium_label": "Sophie AI mengajar dalam",
         "medium_placeholder": "Sama dengan Bahasa Asli",
         "accent_label": "Aksen pilihan"
       },

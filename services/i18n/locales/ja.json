@@ -306,7 +306,7 @@
       "help_improve": "改善にご協力ください",
       "whatsapp_support": "WhatsAppサポート",
       "whatsapp_subtitle": "WhatsAppでチャット",
-      "whatsapp_message": "こんにちは、Sophieチーム！ 👋 Sophie AIアプリを使用しています。ご連絡したく思います。",
+      "whatsapp_message": "こんにちは、Sophie AIチーム！ 👋 Sophie AIアプリを使用しています。ご連絡したく思います。",
       "contact_alert_title": "お問い合わせ",
       "contact_alert_body": "ご質問やフィードバックは support@speakwithsophie.ai までメールでお送りください。",
       "feedback_alert_title": "近日公開",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "シナリオを作成",
-      "sophie_role_label": "ソフィーの役割",
+      "sophie_role_label": "Sophie AIの役割",
       "sophie_role_placeholder": "例：不機嫌だが親切な店主",
       "user_role_label": "あなたの役割",
       "user_role_placeholder": "例：急いでいる客",
@@ -409,7 +409,7 @@
       "context_placeholder": "設定を説明してください...",
       "start_button": "シナリオを開始",
       "validation_title": "必須フィールドがありません",
-      "validation_message": "ソフィーの役割とトピックは必須です！"
+      "validation_message": "Sophie AIの役割とトピックは必須です！"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "テック企業のシニアテクニカルリクルーター",
       "userRole": "フロントエンド開発者に応募する候補者",
       "topic": "キャリア",
-      "context": "あなたは夢の仕事の面接を受けています。ソフィーはあなたの経験とスキルについて質問します。"
+      "context": "あなたは夢の仕事の面接を受けています。Sophie AIはあなたの経験とスキルについて質問します。"
     },
     "asking-directions": {
       "title": "道を尋ねる",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "ソフィーが話しています...",
+      "speaking": "Sophie AIが話しています...",
       "preparing": "応答を準備中... {{progress}}%",
-      "thinking": "ソフィーは考えています...",
+      "thinking": "Sophie AIは考えています...",
       "listening": "聞いています...",
       "connecting": "接続中...",
       "reconnecting": "再接続中...",
@@ -496,8 +496,8 @@
       "translating": "翻訳中..."
     },
     "prompts": {
-      "select_both_langs": "上記の両方の言語を選択して、ソフィーとのレッスンを開始してください。",
-      "hold_mic_start": "下のマイクを長押しして、ソフィーと話し始めてください。"
+      "select_both_langs": "上記の両方の言語を選択して、Sophie AIとのレッスンを開始してください。",
+      "hold_mic_start": "下のマイクを長押しして、Sophie AIと話し始めてください。"
     },
     "alerts": {
       "end_session_title": "セッション終了",
@@ -505,7 +505,7 @@
       "finish_title": "会話終了",
       "finish_msg": "この練習セッションを終了しますか？",
       "reset_title": "チャットをリセット",
-      "reset_msg": "現在の会話をクリアしてソフィーをリセットします。続けますか？",
+      "reset_msg": "現在の会話をクリアしてSophie AIをリセットします。続けますか？",
       "error_title": "エラー",
       "error_msg": "翻訳に失敗しました。もう一度お試しください。",
       "success_title": "成功",
@@ -568,7 +568,7 @@
       "translation_failed": "翻訳に失敗しました",
       "playing_audio": "「{{text}}」の音声を再生中",
       "speech_error": "フレーズの読み上げに失敗しました。もう一度お試しください。",
-      "connection_required": "Sophieに接続するには、まずトークタブにアクセスしてください。"
+      "connection_required": "Sophie AIに接続するには、まずトークタブにアクセスしてください。"
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "プロファイルを作成",
       "sections": {
         "target_label": "学びたい言語",
-        "medium_label": "Sophieの指導言語",
+        "medium_label": "Sophie AIの指導言語",
         "medium_placeholder": "母国語と同じ",
         "accent_label": "優先アクセント"
       },
@@ -660,7 +660,7 @@
     "last_day_title": "最終日！",
     "days_left_title": "残り{{count}}日",
     "last_day_subtitle": "無料トライアルは今日で終了です！",
-    "upgrade_subtitle": "ソフィー AI プロにアップグレードして、すべての機能を体験しましょう。",
+    "upgrade_subtitle": "Sophie AI プロにアップグレードして、すべての機能を体験しましょう。",
     "benefits_title": "得られるもの",
     "benefit_1": "無制限のAI会話",
     "benefit_2": "全10以上の言語をアンロック",

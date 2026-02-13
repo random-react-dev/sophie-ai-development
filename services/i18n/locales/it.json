@@ -306,7 +306,7 @@
       "help_improve": "Aiutaci a migliorare",
       "whatsapp_support": "Supporto WhatsApp",
       "whatsapp_subtitle": "Chatta con noi su WhatsApp",
-      "whatsapp_message": "Ciao Team Sophie! 👋 Sto usando l'app Sophie AI e vorrei connettermi con voi.",
+      "whatsapp_message": "Ciao Team Sophie AI! 👋 Sto usando l'app Sophie AI e vorrei connettermi con voi.",
       "contact_alert_title": "Contattaci",
       "contact_alert_body": "Inviaci un'email a support@speakwithsophie.ai per domande o feedback.",
       "feedback_alert_title": "In arrivo",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Crea Scenario",
-      "sophie_role_label": "Ruolo di Sophie",
+      "sophie_role_label": "Ruolo di Sophie AI",
       "sophie_role_placeholder": "es. Un negoziante scontroso ma disponibile",
       "user_role_label": "Tuo Ruolo",
       "user_role_placeholder": "es. Un cliente di fretta",
@@ -409,7 +409,7 @@
       "context_placeholder": "Descrivi l'ambientazione...",
       "start_button": "Avvia Scenario",
       "validation_title": "Campi Obbligatori Mancanti",
-      "validation_message": "Il Ruolo di Sophie e l'Argomento sono obbligatori!"
+      "validation_message": "Il Ruolo di Sophie AI e l'Argomento sono obbligatori!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Recruiter Tecnico Senior presso un'azienda tecnologica",
       "userRole": "Candidato che si candida per un ruolo di Sviluppatore Frontend",
       "topic": "Carriera",
-      "context": "Sei a un colloquio per il lavoro dei tuoi sogni. Sophie ti chiederà della tua esperienza e delle tue abilità."
+      "context": "Sei a un colloquio per il lavoro dei tuoi sogni. Sophie AI ti chiederà della tua esperienza e delle tue abilità."
     },
     "asking-directions": {
       "title": "Chiedere Indicazioni",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie sta parlando...",
+      "speaking": "Sophie AI sta parlando...",
       "preparing": "Preparazione risposta... {{progress}}%",
-      "thinking": "Sophie sta pensando...",
+      "thinking": "Sophie AI sta pensando...",
       "listening": "Ascoltando...",
       "connecting": "Connessione in corso...",
       "reconnecting": "Riconnessione...",
@@ -500,7 +500,7 @@
       "finish_title": "Termina conversazione",
       "finish_msg": "Hai finito con questa sessione di pratica?",
       "reset_title": "Reimposta chat",
-      "reset_msg": "Questo cancellerà la conversazione corrente e reimposterà Sophie. Continuare?",
+      "reset_msg": "Questo cancellerà la conversazione corrente e reimposterà Sophie AI. Continuare?",
       "error_title": "Errore",
       "error_msg": "Traduzione fallita. Riprova.",
       "success_title": "Successo",
@@ -563,7 +563,7 @@
       "translation_failed": "Traduzione fallita",
       "playing_audio": "Riproduzione audio per: \"{{text}}\"",
       "speech_error": "Errore nella pronuncia della frase. Riprova per favore.",
-      "connection_required": "Visita prima la scheda Parla per connetterti a Sophie."
+      "connection_required": "Visita prima la scheda Parla per connetterti a Sophie AI."
     }
   },
   "language_picker": {
@@ -633,7 +633,7 @@
       "create_button": "Crea profilo",
       "sections": {
         "target_label": "Voglio imparare",
-        "medium_label": "Sophie insegna in",
+        "medium_label": "Sophie AI insegna in",
         "medium_placeholder": "Uguale alla madrelingua",
         "accent_label": "Accento preferito"
       },

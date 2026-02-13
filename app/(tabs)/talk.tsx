@@ -71,7 +71,7 @@ const buildTutorPrompt = (
   targetLang: Language,
   nativeLang: Language,
 ): string => {
-  return `You are Sophie, a warm and encouraging AI language tutor.
+  return `You are Sophie AI, a warm and encouraging AI language tutor.
 
 ## Context
 - User wants to learn: ${targetLang.name}
@@ -120,7 +120,7 @@ const buildRoleplayPrompt = (
   targetLang: Language,
   nativeLang: Language,
 ): string => {
-  return `You are Sophie, a warm and encouraging AI language tutor helping the user practice via roleplay.
+  return `You are Sophie AI, a warm and encouraging AI language tutor helping the user practice via roleplay.
 
 ## Context
 - User wants to learn: ${targetLang.name}
