@@ -129,7 +129,7 @@ export default function SupportScreen() {
           {/* Email Support Card */}
           <ProfileSettingCard
             title={t("profile.support_screen.email_support")}
-            subtitle="support@fluentai.com"
+            subtitle="support@speakwithsophie.ai"
             icon={<Mail size={20} color={getRainbowColorScheme(2).iconColor} />}
             colorScheme={getRainbowColorScheme(2)}
             onPress={() =>
