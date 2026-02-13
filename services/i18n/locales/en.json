@@ -418,42 +418,42 @@
     "ordering-coffee": {
       "title": "Ordering Coffee",
       "description": "Order a latte and a croissant at a busy café.",
-      "sophieRole": "Barista at a busy city center café",
-      "userRole": "A customer looking for breakfast",
+      "sophieRole": "Friendly barista at a cozy neighborhood café called 'The Morning Grind'",
+      "userRole": "A regular customer stopping by for breakfast before work",
       "topic": "Daily Life",
-      "context": "You are at a café called \"The Morning Grind\". You want to order a coffee and something to eat."
+      "context": "You are at a cozy café called \"The Morning Grind\". The barista is cheerful and chatty — order your coffee, pick a pastry, and enjoy some friendly small talk."
     },
     "job-interview": {
       "title": "Job Interview",
       "description": "Interview for a software engineer position.",
-      "sophieRole": "Senior Technical Recruiter at a tech company",
-      "userRole": "Candidate applying for a Frontend Developer role",
+      "sophieRole": "Friendly but professional Senior Technical Recruiter at a well-known tech startup",
+      "userRole": "A candidate interviewing for a Frontend Developer position",
       "topic": "Career",
-      "context": "You are in an interview for your dream job. Sophie AI will ask about your experience and skills."
+      "context": "You are interviewing at a modern tech startup. The recruiter will ask about your experience, skills, and what drives you."
     },
     "asking-directions": {
       "title": "Asking Directions",
       "description": "You are lost in Tokyo and need to find a train station.",
-      "sophieRole": "A helpful local resident in Tokyo",
-      "userRole": "A tourist who is slightly lost",
+      "sophieRole": "A friendly local resident out for a walk near Shibuya, who knows the area well",
+      "userRole": "A tourist exploring Tokyo whose phone battery just died",
       "topic": "Travel",
-      "context": "You are near Shibuya Crossing and need to get to the JR station but your phone battery is dead."
+      "context": "You are near Shibuya Crossing and need to get to the JR station, but your phone is dead. A friendly local offers to help."
     },
     "hotel-check-in": {
       "title": "Hotel Check-in",
       "description": "Check in and ask for a room and a view.",
-      "sophieRole": "Front desk receptionist at a 4-star hotel",
-      "userRole": "A guest arriving for a three-night stay",
+      "sophieRole": "Professional and welcoming front desk receptionist at 'The Grand Vista', a 4-star hotel",
+      "userRole": "A guest arriving after a long flight for a three-night stay",
       "topic": "Travel",
-      "context": "You have a reservation under your name. You want to confirm the breakfast times and ask if there is a room with a nice view available."
+      "context": "You have a reservation and have just arrived after a long flight. The receptionist is welcoming — check in, ask about amenities, and see if you can get a room with a view."
     },
     "political-debate": {
       "title": "Political Debate",
       "description": "Discuss environmental policies and climate change.",
-      "sophieRole": "A passionate environmental advocate",
-      "userRole": "A skeptical citizen or opposing policy maker",
+      "sophieRole": "A passionate but respectful environmental policy researcher",
+      "userRole": "A citizen with questions and possibly different views on environmental policy",
       "topic": "Current Affairs",
-      "context": "Engage in a deep discussion about the balance between economic growth and environmental protection."
+      "context": "Engage in a thoughtful discussion about the balance between economic growth and environmental protection with a knowledgeable researcher."
     }
   },
   "common": {
