@@ -254,7 +254,7 @@
         "otp_subtitle": "Enter the 6-digit code sent to",
         "otp_verify": "Verify",
         "otp_resend": "Resend Code",
-        "otp_resend_in": "Resend in {{seconds}}s",
+        "otp_resend_in": "Resend in %{seconds}s",
         "otp_error_invalid": "Invalid or expired code. Please try again.",
         "otp_error_generic": "Verification failed. Please try again.",
         "otp_success": "Two-factor authentication verified!",
