@@ -58,7 +58,7 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
       className={`mb-6 flex-row w-full ${isUser ? "justify-end" : "justify-start"}`}
       accessible={true}
       accessibilityRole="text"
-      accessibilityLabel={`${isUser ? "You" : "Sophie"} said: ${message.text}`}
+      accessibilityLabel={`${isUser ? "You" : "Sophie AI"} said: ${message.text}`}
     >
       <View
         className={`flex-row max-w-full ${isUser ? "justify-end" : "justify-start"} gap-2`}

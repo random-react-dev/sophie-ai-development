@@ -11,7 +11,7 @@ interface PageHeaderProps {
   title?: string;
 }
 
-export const PageHeader = ({ title = "Sophie.ai" }: PageHeaderProps) => {
+export const PageHeader = ({ title = "Sophie AI" }: PageHeaderProps) => {
   const { user } = useAuthStore();
   const { t } = useTranslation();
 

@@ -306,9 +306,9 @@
       "help_improve": "Aidez-nous à améliorer",
       "whatsapp_support": "Support WhatsApp",
       "whatsapp_subtitle": "Discutez avec nous sur WhatsApp",
-      "whatsapp_message": "Bonjour l'équipe Sophie ! 👋 J'utilise l'application Sophie AI et j'aimerais vous contacter.",
+      "whatsapp_message": "Bonjour l'équipe Sophie AI ! 👋 J'utilise l'application Sophie AI et j'aimerais vous contacter.",
       "contact_alert_title": "Contactez-nous",
-      "contact_alert_body": "Envoyez-nous un email à support@fluentai.com pour toute question ou retour d'information.",
+      "contact_alert_body": "Envoyez-nous un email à support@speakwithsophie.ai pour toute question ou retour d'information.",
       "feedback_alert_title": "Bientôt disponible",
       "feedback_alert_body": "La fonctionnalité de commentaires in-app sera bientôt disponible.",
       "danger_zone": "Zone de Danger",
@@ -335,7 +335,7 @@
       "section5_title": "5. Vos droits",
       "section5_body": "Vous avez le droit d'accéder, de corriger ou de supprimer vos informations personnelles à tout moment via les paramètres du compte ou en contactant notre équipe de support.",
       "section6_title": "6. Informations de contact",
-      "section6_body": "Si vous avez des questions sur cette Politique de Confidentialité, veuillez nous contacter à support@fluentai.com."
+      "section6_body": "Si vous avez des questions sur cette Politique de Confidentialité, veuillez nous contacter à support@speakwithsophie.ai."
     },
     "terms_screen": {
       "title": "Conditions d'Utilisation",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Créer un Scénario",
-      "sophie_role_label": "Rôle de Sophie",
+      "sophie_role_label": "Rôle de Sophie AI",
       "sophie_role_placeholder": "ex. Un commerçant grincheux mais serviable",
       "user_role_label": "Votre Rôle",
       "user_role_placeholder": "ex. Un client pressé",
@@ -409,7 +409,7 @@
       "context_placeholder": "Décrivez le cadre...",
       "start_button": "Démarrer le Scénario",
       "validation_title": "Champs Requis Manquants",
-      "validation_message": "Le Rôle de Sophie et le Sujet sont requis !"
+      "validation_message": "Le Rôle de Sophie AI et le Sujet sont requis !"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Recruteur Technique Senior dans une entreprise technologique",
       "userRole": "Candidat postulant pour un rôle de Développeur Frontend",
       "topic": "Carrière",
-      "context": "Vous êtes en entretien pour le job de vos rêves. Sophie vous posera des questions sur votre expérience et vos compétences."
+      "context": "Vous êtes en entretien pour le job de vos rêves. Sophie AI vous posera des questions sur votre expérience et vos compétences."
     },
     "asking-directions": {
       "title": "Demander son Chemin",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie Parle...",
-      "preparing": "Préparation de la réponse... {{progress}}%",
-      "thinking": "Sophie réfléchit...",
+      "speaking": "Sophie AI Parle...",
+      "preparing": "Préparation de la réponse... %{progress}%",
+      "thinking": "Sophie AI réfléchit...",
       "listening": "Écoute...",
       "connecting": "Connexion...",
       "reconnecting": "Reconnexion...",
@@ -554,7 +554,7 @@
       "translation_failed": "Échec de la traduction",
       "playing_audio": "Lecture audio pour : \"{{text}}\"",
       "speech_error": "Échec de la prononciation de la phrase. Veuillez réessayer.",
-      "connection_required": "Veuillez d'abord visiter l'onglet Parler pour vous connecter à Sophie."
+      "connection_required": "Veuillez d'abord visiter l'onglet Parler pour vous connecter à Sophie AI."
     }
   },
   "language_picker": {
@@ -624,7 +624,7 @@
       "create_button": "Créer le profil",
       "sections": {
         "target_label": "Je veux apprendre",
-        "medium_label": "Sophie enseigne en",
+        "medium_label": "Sophie AI enseigne en",
         "medium_placeholder": "Identique à la langue maternelle",
         "accent_label": "Accent préféré"
       },

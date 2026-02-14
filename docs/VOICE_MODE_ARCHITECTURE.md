@@ -1,10 +1,10 @@
-# Sophie Voice Mode Architecture
+# Sophie AI Voice Mode Architecture
 
 This document describes the working architecture for real-time voice conversations with Gemini Live API. **Do not change this architecture without understanding the critical design decisions.**
 
 ## Overview
 
-Sophie uses Gemini Live API for real-time voice conversations. The user speaks, Gemini processes the audio, and Sophie responds with voice.
+Sophie AI uses Gemini Live API for real-time voice conversations. The user speaks, Gemini processes the audio, and Sophie AI responds with voice.
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
@@ -24,28 +24,30 @@ Sophie uses Gemini Live API for real-time voice conversations. The user speaks, 
 ### User Flow
 
 1. **User visits Talk page** → Selects target and native languages
-2. **WebSocket connects** → Sophie **automatically greets** with hello word introduction
+2. **WebSocket connects** → Sophie AI **automatically greets** with hello word introduction
 3. **User holds mic button (200ms+)** → Recording starts, audio streams to Gemini
-4. **User releases mic** → Recording stops, Gemini processes and Sophie responds
+4. **User releases mic** → Recording stops, Gemini processes and Sophie AI responds
 5. **Flow continues** → User can hold again to speak
 
 ### Key Implementation Details
 
 **Auto-Greeting on Setup Complete** (`services/gemini/websocket.ts:314-324`)
+
 ```typescript
 if (isSetupCompleteReceived) {
-    this.isSetupComplete = true;
-    this.setConnectionState('connected');
+  this.isSetupComplete = true;
+  this.setConnectionState("connected");
 
-    // Auto-greet on first connection
-    if (!store.hasGreeted) {
-        this.sendGreeting();
-        store.setHasGreeted(true);
-    }
+  // Auto-greet on first connection
+  if (!store.hasGreeted) {
+    this.sendGreeting();
+    store.setHasGreeted(true);
+  }
 }
 ```
 
 **Timer-Based Hold Detection** (`app/(tabs)/_layout.tsx`)
+
 - Uses 200ms threshold to distinguish tap from hold
 - `onPressIn` starts a timer, recording only begins after threshold
 - Quick taps show tooltip: "Hold to Speak"
@@ -62,6 +64,7 @@ const isHoldingRef = useRef(false);
 ```
 
 **DO NOT:**
+
 - Trigger greeting on button press (it's auto on setup)
 - Start recording immediately on `onPressIn` (use timer)
 - Remove the hold threshold (prevents accidental recordings)
@@ -70,16 +73,18 @@ const isHoldingRef = useRef(false);
 
 ### 1. Continuous Audio Streaming (DO NOT PAUSE)
 
-**The microphone MUST stream continuously** - even while Sophie is speaking.
+**The microphone MUST stream continuously** - even while Sophie AI is speaking.
 
 **Why:**
+
 - Gemini's automatic VAD (Voice Activity Detection) handles turn detection
 - Pausing audio breaks VAD's ability to detect user speech
 - Sending `activityStart`/`activityEnd` signals is INCOMPATIBLE with automatic VAD
 - Error if you try: `Code: 1007, Reason: Explicit activity control is not supported when automatic activity detection is enabled`
 
 **What happens if you pause:**
-- User speech after Sophie finishes will NOT be detected
+
+- User speech after Sophie AI finishes will NOT be detected
 - WebSocket may disconnect with error 1007
 
 ### 2. Hardware Echo Cancellation (AEC)
@@ -88,15 +93,16 @@ const isHoldingRef = useRef(false);
 
 ```typescript
 AudioManager.setAudioSessionOptions({
-    iosCategory: 'playAndRecord',
-    iosMode: 'voiceChat',
-    iosOptions: ['defaultToSpeaker', 'allowBluetooth'],
+  iosCategory: "playAndRecord",
+  iosMode: "voiceChat",
+  iosOptions: ["defaultToSpeaker", "allowBluetooth"],
 });
 ```
 
 **Why:**
+
 - `iosMode: 'voiceChat'` enables hardware-level echo cancellation
-- Without this, the microphone picks up Sophie's voice from the speaker
+- Without this, the microphone picks up Sophie AI's voice from the speaker
 - This would confuse Gemini's VAD into thinking the user is speaking
 
 ### 3. Automatic VAD Configuration
@@ -113,10 +119,12 @@ realtimeInputConfig: {
 ```
 
 **Settings:**
+
 - `END_SENSITIVITY_LOW`: Less aggressive end-of-speech detection (user can pause briefly)
 - `silenceDurationMs: 300`: Wait 300ms of silence before considering speech ended
 
 **DO NOT:**
+
 - Set `disabled: true` (requires manual activity signals)
 - Send `activityStart` or `activityEnd` messages
 - Try to manually control turn-taking
@@ -129,13 +137,14 @@ Uses `AudioBufferQueueSourceNode` from `react-native-audio-api` for smooth audio
 this.queueSource = this.audioContext.createBufferQueueSource();
 this.queueSource.connect(this.audioContext.destination);
 this.queueSource.onEnded = (event) => {
-    if (event.isLast && this.isGenerationComplete) {
-        this.finishSpeaking();
-    }
+  if (event.isLast && this.isGenerationComplete) {
+    this.finishSpeaking();
+  }
 };
 ```
 
 **Why:**
+
 - Queues audio chunks for gapless playback
 - `onEnded` callback with `isLast: true` detects when all audio has played
 - No need for setTimeout-based timing
@@ -162,7 +171,7 @@ services/
 1. `expo-stream-audio` captures microphone at 16kHz, mono, PCM
 2. Every 20ms frame (~50 frames/second) sent to `onAudioData` callback
 3. `geminiWebSocket.sendAudioChunk()` sends base64 PCM to Gemini
-4. Audio is ALWAYS sent - no pausing during Sophie's speech
+4. Audio is ALWAYS sent - no pausing during Sophie AI's speech
 
 ### Playback (Gemini → User)
 
@@ -178,26 +187,26 @@ services/
 
 ```json
 {
-    "setup": {
-        "model": "models/gemini-2.5-flash-native-audio-preview-09-2025",
-        "generationConfig": {
-            "responseModalities": ["AUDIO"],
-            "speechConfig": {
-                "voiceConfig": {
-                    "prebuiltVoiceConfig": { "voiceName": "Aoede" }
-                }
-            }
-        },
-        "systemInstruction": { "parts": [{ "text": "..." }] },
-        "inputAudioTranscription": {},
-        "outputAudioTranscription": {},
-        "realtimeInputConfig": {
-            "automaticActivityDetection": {
-                "endOfSpeechSensitivity": "END_SENSITIVITY_LOW",
-                "silenceDurationMs": 300
-            }
+  "setup": {
+    "model": "models/gemini-2.5-flash-native-audio-preview-09-2025",
+    "generationConfig": {
+      "responseModalities": ["AUDIO"],
+      "speechConfig": {
+        "voiceConfig": {
+          "prebuiltVoiceConfig": { "voiceName": "Aoede" }
         }
+      }
+    },
+    "systemInstruction": { "parts": [{ "text": "..." }] },
+    "inputAudioTranscription": {},
+    "outputAudioTranscription": {},
+    "realtimeInputConfig": {
+      "automaticActivityDetection": {
+        "endOfSpeechSensitivity": "END_SENSITIVITY_LOW",
+        "silenceDurationMs": 300
+      }
     }
+  }
 }
 ```
 
@@ -205,12 +214,12 @@ services/
 
 ```json
 {
-    "realtimeInput": {
-        "audio": {
-            "mimeType": "audio/pcm;rate=16000",
-            "data": "<base64 PCM data>"
-        }
+  "realtimeInput": {
+    "audio": {
+      "mimeType": "audio/pcm;rate=16000",
+      "data": "<base64 PCM data>"
     }
+  }
 }
 ```
 
@@ -218,16 +227,18 @@ services/
 
 ```json
 {
-    "serverContent": {
-        "modelTurn": {
-            "parts": [{
-                "inlineData": {
-                    "mimeType": "audio/pcm;rate=24000",
-                    "data": "<base64 PCM data>"
-                }
-            }]
+  "serverContent": {
+    "modelTurn": {
+      "parts": [
+        {
+          "inlineData": {
+            "mimeType": "audio/pcm;rate=24000",
+            "data": "<base64 PCM data>"
+          }
         }
+      ]
     }
+  }
 }
 ```
 
@@ -235,18 +246,18 @@ services/
 
 ```json
 {
-    "serverContent": {
-        "inputTranscription": { "text": "User said this" },
-        "outputTranscription": { "text": "Sophie said this" }
-    }
+  "serverContent": {
+    "inputTranscription": { "text": "User said this" },
+    "outputTranscription": { "text": "Sophie AI said this" }
+  }
 }
 ```
 
 ## Common Issues and Solutions
 
-### Issue: User speech not detected after Sophie speaks
+### Issue: User speech not detected after Sophie AI speaks
 
-**Cause:** Audio was being paused during Sophie's speech, breaking VAD.
+**Cause:** Audio was being paused during Sophie AI's speech, breaking VAD.
 
 **Solution:** Keep audio streaming continuously. Hardware AEC handles echo.
 
@@ -271,14 +282,14 @@ services/
 ## Testing Checklist
 
 - [ ] WebSocket stays connected (no 1007 errors)
-- [ ] Sophie auto-greets when WebSocket setup completes (no button press needed)
+- [ ] Sophie AI auto-greets when WebSocket setup completes (no button press needed)
 - [ ] Quick tap on mic shows "Hold to Speak" tooltip
 - [ ] Holding mic (200ms+) starts recording
-- [ ] Sophie's voice is clear (no choppy audio)
-- [ ] User can speak after Sophie finishes
+- [ ] Sophie AI's voice is clear (no choppy audio)
+- [ ] User can speak after Sophie AI finishes
 - [ ] User's speech is transcribed (`input_transcription` in logs)
-- [ ] Sophie responds to user's speech
-- [ ] User can interrupt Sophie mid-speech
+- [ ] Sophie AI responds to user's speech
+- [ ] User can interrupt Sophie AI mid-speech
 - [ ] No echo or feedback during playback
 
 ## Log Messages to Watch
@@ -290,10 +301,10 @@ services/
 [GeminiWS] Setup complete - ready for conversation
 [GeminiWS] Auto-sending greeting...
 [GeminiWS] Sending greeting request
-[AudioStreamer] Sophie started speaking
+[AudioStreamer] Sophie AI started speaking
 [AudioStreamer] Queued audio chunk #1 (23040 samples)
 [AudioStreamer] onEnded: bufferId=X, isLast=true
-[AudioStreamer] Sophie finished speaking
+[AudioStreamer] Sophie AI finished speaking
 ... user holds mic button ...
 [ConversationStore] Starting PTT recording...
 [GeminiWS] Sending audio chunk #1 (xxx chars)

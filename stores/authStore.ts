@@ -83,31 +83,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signIn: async (email, password) => {
     set({ isLoading: true });
     try {
-      // Set pending2FA BEFORE signInWithPassword to prevent the race condition
-      // where onAuthStateChange fires and routes the user before we can check metadata
-      set({ pending2FA: true, pending2FAEmail: email });
-
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) {
-        set({ pending2FA: false, pending2FAEmail: null });
-        throw error;
-      }
+      if (error) throw error;
 
       // Check if 2FA is enabled for this user
       const is2FAEnabled =
         data.user?.user_metadata?.two_factor_enabled === true;
       if (is2FAEnabled) {
+        // Set pending2FA BEFORE signOut so navigation doesn't redirect
+        set({ pending2FA: true, pending2FAEmail: email });
         // Sign out the active session first — signInWithOtp fails silently
         // if there's already an active session from signInWithPassword
         await supabase.auth.signOut();
         const { error: otpError } = await send2FACode(email);
-        if (otpError) throw otpError;
-        // pending2FA is already true
+        if (otpError) {
+          set({ pending2FA: false, pending2FAEmail: null });
+          throw otpError;
+        }
       } else {
-        set({ pending2FA: false, pending2FAEmail: null, showTrialPopup: true });
+        set({ showTrialPopup: true });
       }
     } catch (err) {
       set({ pending2FA: false, pending2FAEmail: null });
@@ -341,7 +338,6 @@ export const useAuthInitialized = (): boolean =>
   useAuthStore((s) => s.initialized);
 export const useShowTrialPopup = (): boolean =>
   useAuthStore((s) => s.showTrialPopup);
-export const usePending2FA = (): boolean =>
-  useAuthStore((s) => s.pending2FA);
+export const usePending2FA = (): boolean => useAuthStore((s) => s.pending2FA);
 export const usePending2FAEmail = (): string | null =>
   useAuthStore((s) => s.pending2FAEmail);

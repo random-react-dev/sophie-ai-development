@@ -306,9 +306,9 @@
       "help_improve": "Tusaidie kuboresha",
       "whatsapp_support": "Msaada wa WhatsApp",
       "whatsapp_subtitle": "Piga gumzo nasi kwenye WhatsApp",
-      "whatsapp_message": "Habari Timu ya Sophie! 👋 Ninatumia programu ya Sophie AI na ningependa kuwasiliana nanyi.",
+      "whatsapp_message": "Habari Timu ya Sophie AI! 👋 Ninatumia programu ya Sophie AI na ningependa kuwasiliana nanyi.",
       "contact_alert_title": "Wasiliana Nasi",
-      "contact_alert_body": "Tutumie barua pepe kwa support@fluentai.com kwa maswali au maoni yoyote.",
+      "contact_alert_body": "Tutumie barua pepe kwa support@speakwithsophie.ai kwa maswali au maoni yoyote.",
       "feedback_alert_title": "Inakuja Hivi Karibuni",
       "feedback_alert_body": "Kipengele cha maoni ya ndani ya programu kitapatikana hivi karibuni.",
       "danger_zone": "Eneo la Hatari",
@@ -335,7 +335,7 @@
       "section5_title": "5. Haki Zako",
       "section5_body": "Una haki ya kufikia, kusahihisha, au kufuta taarifa zako za kibinafsi wakati wowote kupitia mipangilio ya akaunti au kwa kuwasiliana na timu yetu ya usaidizi.",
       "section6_title": "6. Maelezo ya Mawasiliano",
-      "section6_body": "Ikiwa una maswali kuhusu Sera hii ya Faragha, tafadhali wasiliana nasi kwa support@fluentai.com."
+      "section6_body": "Ikiwa una maswali kuhusu Sera hii ya Faragha, tafadhali wasiliana nasi kwa support@speakwithsophie.ai."
     },
     "terms_screen": {
       "title": "Masharti ya Huduma",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Unda Tukio",
-      "sophie_role_label": "Jukumu la Sophie",
+      "sophie_role_label": "Jukumu la Sophie AI",
       "sophie_role_placeholder": "mfano Mmiliki wa duka mwenye hasira lakini anayesaidia",
       "user_role_label": "Jukumu Lako",
       "user_role_placeholder": "mfano Mteja aliye na haraka",
@@ -409,7 +409,7 @@
       "context_placeholder": "Elezea mpangilio...",
       "start_button": "Anza Tukio",
       "validation_title": "Sehemu Zinazohitajika Zimekosekana",
-      "validation_message": "Jukumu la Sophie na Mada vinahitajika!"
+      "validation_message": "Jukumu la Sophie AI na Mada vinahitajika!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Mtaalamu Mkuu wa Uajiri katika kampuni ya teknolojia",
       "userRole": "Mgombea anayeomba nafasi ya Msanidi wa Frontend",
       "topic": "Kazi",
-      "context": "Uko kwenye usaili kwa kazi ya ndoto yako. Sophie atakuuliza kuhusu uzoefu na ujuzi wako."
+      "context": "Uko kwenye usaili kwa kazi ya ndoto yako. Sophie AI atakuuliza kuhusu uzoefu na ujuzi wako."
     },
     "asking-directions": {
       "title": "Kuuliza Maelekezo",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie Anazungumza...",
+      "speaking": "Sophie AI Anazungumza...",
       "preparing": "Inaandaa jibu... {{progress}}%",
-      "thinking": "Sophie anafikiria...",
+      "thinking": "Sophie AI anafikiria...",
       "listening": "Inasikiliza...",
       "connecting": "Inaunganisha...",
       "reconnecting": "Inaunganisha tena...",
@@ -496,8 +496,8 @@
       "translating": "Inatafsiri..."
     },
     "prompts": {
-      "select_both_langs": "Chagua lugha zote mbili hapo juu ili kuanza somo lako na Sophie.",
-      "hold_mic_start": "Shikilia maikrofoni hapa chini ili kuanza kuzungumza na Sophie."
+      "select_both_langs": "Chagua lugha zote mbili hapo juu ili kuanza somo lako na Sophie AI.",
+      "hold_mic_start": "Shikilia maikrofoni hapa chini ili kuanza kuzungumza na Sophie AI."
     },
     "alerts": {
       "end_session_title": "Maliza Kipindi",
@@ -505,7 +505,7 @@
       "finish_title": "Maliza Mazungumzo",
       "finish_msg": "Umemaliza kikao hiki cha mazoezi?",
       "reset_title": "Weka Upya Gumzo",
-      "reset_msg": "Hii itafuta mazungumzo ya sasa na kuweka upya Sophie. Endelea?",
+      "reset_msg": "Hii itafuta mazungumzo ya sasa na kuweka upya Sophie AI. Endelea?",
       "error_title": "Hitilafu",
       "error_msg": "Imeshindwa kutafsiri. Tafadhali jaribu tena.",
       "success_title": "Mafanikio",
@@ -568,7 +568,7 @@
       "translation_failed": "Tafsiri imeshindwa",
       "playing_audio": "Inacheza sauti kwa: \"{{text}}\"",
       "speech_error": "Imeshindikana kutamka neno. Tafadhali jaribu tena.",
-      "connection_required": "Tafadhali tembelea kichupo cha Kuongea kwanza ili kuungana na Sophie."
+      "connection_required": "Tafadhali tembelea kichupo cha Kuongea kwanza ili kuungana na Sophie AI."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Unda Wasifu",
       "sections": {
         "target_label": "Nataka kujifunza",
-        "medium_label": "Sophie anafundisha kwa",
+        "medium_label": "Sophie AI anafundisha kwa",
         "medium_placeholder": "Sawa na Lugha ya Asili",
         "accent_label": "Lafudhi inayopendekezwa"
       },

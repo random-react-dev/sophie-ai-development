@@ -306,9 +306,9 @@
       "help_improve": "Hjälp oss att förbättra",
       "whatsapp_support": "WhatsApp-support",
       "whatsapp_subtitle": "Chatta med oss på WhatsApp",
-      "whatsapp_message": "Hej Sophie-teamet! 👋 Jag använder Sophie AI-appen och skulle gärna vilja komma i kontakt med er.",
+      "whatsapp_message": "Hej Sophie AI-teamet! 👋 Jag använder Sophie AI-appen och skulle gärna vilja komma i kontakt med er.",
       "contact_alert_title": "Kontakta oss",
-      "contact_alert_body": "Mejla oss på support@fluentai.com för frågor eller feedback.",
+      "contact_alert_body": "Mejla oss på support@speakwithsophie.ai för frågor eller feedback.",
       "feedback_alert_title": "Kommer snart",
       "feedback_alert_body": "Feedback-funktion i appen kommer snart att vara tillgänglig.",
       "danger_zone": "Farozon",
@@ -335,7 +335,7 @@
       "section5_title": "5. Dina rättigheter",
       "section5_body": "Du har rätt att när som helst få tillgång till, korrigera eller ta bort din personliga information via kontoinställningarna eller genom att kontakta vårt supportteam.",
       "section6_title": "6. Kontaktinformation",
-      "section6_body": "Om du har frågor om denna integritetspolicy, vänligen kontakta oss på support@fluentai.com."
+      "section6_body": "Om du har frågor om denna integritetspolicy, vänligen kontakta oss på support@speakwithsophie.ai."
     },
     "terms_screen": {
       "title": "Användarvillkor",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Skapa scenario",
-      "sophie_role_label": "Sophies roll",
+      "sophie_role_label": "Sophie AI:s roll",
       "sophie_role_placeholder": "t.ex. En grinig men hjälpsam butiksägare",
       "user_role_label": "Din roll",
       "user_role_placeholder": "t.ex. En kund som har bråttom",
@@ -409,7 +409,7 @@
       "context_placeholder": "Beskriv inställningen...",
       "start_button": "Starta scenario",
       "validation_title": "Obligatoriska fält saknas",
-      "validation_message": "Sophies roll och ämne är obligatoriska!"
+      "validation_message": "Sophie AI:s roll och ämne är obligatoriska!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Senior teknisk rekryterare på ett teknikföretag",
       "userRole": "Kandidat som söker en roll som Frontend-utvecklare",
       "topic": "Karriär",
-      "context": "Du är på en intervju för ditt drömjobb. Sophie kommer att fråga om din erfarenhet och dina färdigheter."
+      "context": "Du är på en intervju för ditt drömjobb. Sophie AI kommer att fråga om din erfarenhet och dina färdigheter."
     },
     "asking-directions": {
       "title": "Fråga om Vägen",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Sophie talar...",
+      "speaking": "Sophie AI talar...",
       "preparing": "Förbereder svar... {{progress}}%",
-      "thinking": "Sophie tänker...",
+      "thinking": "Sophie AI tänker...",
       "listening": "Lyssnar...",
       "connecting": "Ansluter...",
       "reconnecting": "Återansluter...",
@@ -496,8 +496,8 @@
       "translating": "Översätter..."
     },
     "prompts": {
-      "select_both_langs": "Välj båda språken ovan för att börja din lektion med Sophie.",
-      "hold_mic_start": "Håll mikrofonen nedan för att börja prata med Sophie."
+      "select_both_langs": "Välj båda språken ovan för att börja din lektion med Sophie AI.",
+      "hold_mic_start": "Håll mikrofonen nedan för att börja prata med Sophie AI."
     },
     "alerts": {
       "end_session_title": "Avsluta session",
@@ -505,7 +505,7 @@
       "finish_title": "Avsluta konversation",
       "finish_msg": "Är du klar med denna övningssession?",
       "reset_title": "Återställ chatt",
-      "reset_msg": "Detta raderar den nuvarande konversationen och återställer Sophie. Fortsätta?",
+      "reset_msg": "Detta raderar den nuvarande konversationen och återställer Sophie AI. Fortsätta?",
       "error_title": "Fel",
       "error_msg": "Det gick inte att översätta. Försök igen.",
       "success_title": "Framgång",
@@ -568,7 +568,7 @@
       "translation_failed": "Översättning misslyckades",
       "playing_audio": "Spelar ljud för: \"{{text}}\"",
       "speech_error": "Misslyckades med att tala frasen. Vänligen försök igen.",
-      "connection_required": "Vänligen besök fliken Tala först för att ansluta till Sophie."
+      "connection_required": "Vänligen besök fliken Tala först för att ansluta till Sophie AI."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Skapa profil",
       "sections": {
         "target_label": "Jag vill lära mig",
-        "medium_label": "Sophie undervisar på",
+        "medium_label": "Sophie AI undervisar på",
         "medium_placeholder": "Samma som modersmål",
         "accent_label": "Föredraget uttal"
       },

@@ -306,9 +306,9 @@
       "help_improve": "ساعدنا على التحسن",
       "whatsapp_support": "دعم واتساب",
       "whatsapp_subtitle": "دردش معنا على واتساب",
-      "whatsapp_message": "مرحباً فريق صوفي! 👋 أنا أستخدم تطبيق صوفي للذكاء الاصطناعي وأود التواصل معكم.",
+      "whatsapp_message": "مرحباً فريق Sophie AI! 👋 أنا أستخدم تطبيق Sophie AI وأود التواصل معكم.",
       "contact_alert_title": "اتصل بنا",
-      "contact_alert_body": "راسلنا على support@fluentai.com لأي أسئلة أو ملاحظات.",
+      "contact_alert_body": "راسلنا على support@speakwithsophie.ai لأي أسئلة أو ملاحظات.",
       "feedback_alert_title": "قريبا",
       "feedback_alert_body": "ستتوفر ميزة الملاحظات داخل التطبيق قريباً.",
       "danger_zone": "منطقة الخطر",
@@ -335,7 +335,7 @@
       "section5_title": "5. حقوقك",
       "section5_body": "لديك الحق في الوصول إلى معلوماتك الشخصية أو تصحيحها أو حذفها في أي وقت من خلال إعدادات الحساب أو عن طريق الاتصال بفريق الدعم لدينا.",
       "section6_title": "6. معلومات الاتصال",
-      "section6_body": "إذا كان لديك أي أسئلة حول سياسة الخصوصية هذه، يرجى الاتصال بنا على support@fluentai.com."
+      "section6_body": "إذا كان لديك أي أسئلة حول سياسة الخصوصية هذه، يرجى الاتصال بنا على support@speakwithsophie.ai."
     },
     "terms_screen": {
       "title": "شروط الخدمة",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "إنشاء سيناريو",
-      "sophie_role_label": "دور صوفي",
+      "sophie_role_label": "دور Sophie AI",
       "sophie_role_placeholder": "مثال: صاحب متجر غاضب ولكنه متعاون",
       "user_role_label": "دورك",
       "user_role_placeholder": "مثال: عميل في عجلة من أمره",
@@ -409,7 +409,7 @@
       "context_placeholder": "صف الإعداد...",
       "start_button": "بدء السيناريو",
       "validation_title": "حقول مطلوبة مفقودة",
-      "validation_message": "دور صوفي والموضوع مطلوبان!"
+      "validation_message": "دور Sophie AI والموضوع مطلوبان!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "مُوظِّف تقني أول في شركة تكنولوجيا",
       "userRole": "مرشح يتقدم لدور مطور واجهة أمامية",
       "topic": "مهنة",
-      "context": "أنت في مقابلة لوظيفة أحلامك. ستسألك صوفي عن خبرتك ومهاراتك."
+      "context": "أنت في مقابلة لوظيفة أحلامك. ستسألك Sophie AI عن خبرتك ومهاراتك."
     },
     "asking-directions": {
       "title": "سؤال عن الاتجاهات",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "صوفي تتحدث...",
+      "speaking": "Sophie AI تتحدث...",
       "preparing": "جارٍ إعداد الرد... {{progress}}%",
-      "thinking": "صوفي تفكر...",
+      "thinking": "Sophie AI تفكر...",
       "listening": "جارٍ الاستماع...",
       "connecting": "جارٍ الاتصال...",
       "reconnecting": "جارٍ إعادة الاتصال...",
@@ -496,8 +496,8 @@
       "translating": "جاري الترجمة..."
     },
     "prompts": {
-      "select_both_langs": "حدد كلتا اللغتين أعلاه لبدء درسك مع صوفي.",
-      "hold_mic_start": "اضغط باستمرار على الميكروفون أدناه لبدء التحدث مع صوفي."
+      "select_both_langs": "حدد كلتا اللغتين أعلاه لبدء درسك مع Sophie AI.",
+      "hold_mic_start": "اضغط باستمرار على الميكروفون أدناه لبدء التحدث مع Sophie AI."
     },
     "alerts": {
       "end_session_title": "إنهاء الجلسة",
@@ -505,7 +505,7 @@
       "finish_title": "إنهاء المحادثة",
       "finish_msg": "هل انتهيت من جلسة التدريب هذه؟",
       "reset_title": "إعادة تعيين الدردشة",
-      "reset_msg": "سيؤدي هذا إلى مسح المحادثة الحالية وإعادة تعيين صوفي. متابعة؟",
+      "reset_msg": "سيؤدي هذا إلى مسح المحادثة الحالية وإعادة تعيين Sophie AI. متابعة؟",
       "error_title": "خطأ",
       "error_msg": "فشل الترجمة. الرجاء المحاولة مرة أخرى.",
       "success_title": "نجاح",
@@ -567,7 +567,7 @@
       "translation_failed": "فشل الترجمة",
       "playing_audio": "جاري تشغيل الصوت لـ: \"{{text}}\"",
       "speech_error": "فشل في نطق العبارة. حاول مرة اخرى.",
-      "connection_required": "يرجى زيارة علامة تبويب التحدث أولاً للاتصال بـ Sophie."
+      "connection_required": "يرجى زيارة علامة تبويب التحدث أولاً للاتصال بـ Sophie AI."
     }
   },
   "language_screen": {
@@ -587,7 +587,7 @@
       "create_button": "إنشاء ملف تعريف",
       "sections": {
         "target_label": "أريد أن أتعلم",
-        "medium_label": "صوفي تدرس بـ",
+        "medium_label": "Sophie AI تدرس بـ",
         "medium_placeholder": "نفس اللغة الأم",
         "accent_label": "اللهجة المفضلة"
       },
@@ -659,7 +659,7 @@
     "last_day_title": "اليوم الأخير!",
     "days_left_title": "{{count}} أيام متبقية",
     "last_day_subtitle": "تنتهي تجربتك المجانية اليوم!",
-    "upgrade_subtitle": "قم بالترقية إلى صوفي AI برو للحصول على التجربة الكاملة.",
+    "upgrade_subtitle": "قم بالترقية إلى Sophie AI برو للحصول على التجربة الكاملة.",
     "benefits_title": "ما ستحصل عليه",
     "benefit_1": "محادثات ذكاء اصطناعي غير محدودة",
     "benefit_2": "فتح جميع اللغات الـ 10+",

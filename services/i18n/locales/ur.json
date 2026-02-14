@@ -306,9 +306,9 @@
       "help_improve": "بہتر بنانے میں ہماری مدد کریں",
       "whatsapp_support": "WhatsApp سپورٹ",
       "whatsapp_subtitle": "WhatsApp پر ہمارے ساتھ چیٹ کریں",
-      "whatsapp_message": "ہیلو سوفی ٹیم! 👋 میں سوفی AI ایپ استعمال کر رہا ہوں اور آپ سے رابطہ کرنا چاہوں گا۔",
+      "whatsapp_message": "ہیلو Sophie AI ٹیم! 👋 میں Sophie AI ایپ استعمال کر رہا ہوں اور آپ سے رابطہ کرنا چاہوں گا۔",
       "contact_alert_title": "ہم سے رابطہ کریں",
-      "contact_alert_body": "کسی بھی سوال یا تاثرات کے لیے ہمیں support@fluentai.com پر ای میل کریں۔",
+      "contact_alert_body": "کسی بھی سوال یا تاثرات کے لیے ہمیں support@speakwithsophie.ai پر ای میل کریں۔",
       "feedback_alert_title": "جلد آرہا ہے",
       "feedback_alert_body": "ان ایپ فیڈ بیک کی خصوصیت جلد دستیاب ہوگی۔",
       "danger_zone": "ڈینجر زون",
@@ -335,7 +335,7 @@
       "section5_title": "5. آپ کے حقوق",
       "section5_body": "آپ کو اکاؤنٹ کی ترتیبات کے ذریعے یا ہماری سپورٹ ٹیم سے رابطہ کر کے کسی بھی وقت اپنی ذاتی معلومات تک رسائی، تصحیح، یا حذف کرنے کا حق حاصل ہے۔",
       "section6_title": "6. رابطہ کی معلومات",
-      "section6_body": "اگر آپ کو اس رازداری کی پالیسی کے بارے میں کوئی سوال ہے، تو براہ کرم ہم سے support@fluentai.com پر رابطہ کریں۔"
+      "section6_body": "اگر آپ کو اس رازداری کی پالیسی کے بارے میں کوئی سوال ہے، تو براہ کرم ہم سے support@speakwithsophie.ai پر رابطہ کریں۔"
     },
     "terms_screen": {
       "title": "سروس کی شرائط",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "منظرنامہ بنائیں",
-      "sophie_role_label": "صوفی کا کردار",
+      "sophie_role_label": "Sophie AI کا کردار",
       "sophie_role_placeholder": "مثال: ایک بدمزاج لیکن مددگار دکاندار",
       "user_role_label": "آپ کا کردار",
       "user_role_placeholder": "مثال: ایک گاہک جو جلدی میں ہے",
@@ -409,7 +409,7 @@
       "context_placeholder": "ترتیب بیان کریں...",
       "start_button": "منظرنامہ شروع کریں",
       "validation_title": "مطلوبة فیلڈز غائب ہیں",
-      "validation_message": "صوفی کا کردار اور موضوع درکار ہیں!"
+      "validation_message": "Sophie AI کا کردار اور موضوع درکار ہیں!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "ٹیکنالوجی کمپنی میں سینئر تکنیکی بھرتی کنندہ",
       "userRole": "فرنٹ اینڈ ڈویلپر کے کردار کے لیے درخواست دینے والا امیدوار",
       "topic": "کیریئر",
-      "context": "آپ اپنی خوابوں کی نوکری کے لیے انٹرویو میں ہیں۔ صوفی آپ کے تجربے اور مہارتوں کے بارے میں پوچھے گی۔"
+      "context": "آپ اپنی خوابوں کی نوکری کے لیے انٹرویو میں ہیں۔ Sophie AI آپ کے تجربے اور مہارتوں کے بارے میں پوچھے گی۔"
     },
     "asking-directions": {
       "title": "راستہ پوچھنا",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "صوفی بول رہی ہے...",
+      "speaking": "Sophie AI بول رہی ہے...",
       "preparing": "جواب تیار ہو رہا ہے... {{progress}}%",
-      "thinking": "صوفی سوچ رہی ہے...",
+      "thinking": "Sophie AI سوچ رہی ہے...",
       "listening": "سن رہی ہے...",
       "connecting": "کنکیٹ ہو رہا ہے...",
       "reconnecting": "دوبارہ کنیکٹ ہو رہا ہے...",
@@ -496,8 +496,8 @@
       "translating": "ترجمہ ہو رہا ہے..."
     },
     "prompts": {
-      "select_both_langs": "صوفی کے ساتھ اپنا سبق شروع کرنے کے لیے اوپر دونوں زبانیں منتخب کریں۔",
-      "hold_mic_start": "صوفی کے ساتھ بات کرنا شروع کرنے کے لیے نیچے مائک دبا کر رکھیں۔"
+      "select_both_langs": "Sophie AI کے ساتھ اپنا سبق شروع کرنے کے لیے اوپر دونوں زبانیں منتخب کریں۔",
+      "hold_mic_start": "Sophie AI کے ساتھ بات کرنا شروع کرنے کے لیے نیچے مائک دبا کر رکھیں۔"
     },
     "alerts": {
       "end_session_title": "سیشن ختم کریں",
@@ -505,7 +505,7 @@
       "finish_title": "بات چیت ختم کریں",
       "finish_msg": "کیا آپ نے یہ مشق سیشن مکمل کر لیا ہے؟",
       "reset_title": "چیٹ دوبارہ ترتیب دیں",
-      "reset_msg": "یہ موجودہ گفتگو کو صاف کر دے گا اور صوفی کو دوبارہ ترتیب دے گا۔ جاری رکھیں؟",
+      "reset_msg": "یہ موجودہ گفتگو کو صاف کر دے گا اور Sophie AI کو دوبارہ ترتیب دے گا۔ جاری رکھیں؟",
       "error_title": "غلطی",
       "error_msg": "ترجمہ کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
       "success_title": "کامیابی",
@@ -568,7 +568,7 @@
       "translation_failed": "ترجمہ ناکام",
       "playing_audio": "آڈیو چل رہا ہے: \"{{text}}\"",
       "speech_error": "جملہ بولنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
-      "connection_required": "صوفی سے منسلک ہونے کے لیے براہ کرم پہلے 'بات کریں' ٹیب پر جائیں۔"
+      "connection_required": "Sophie AI سے منسلک ہونے کے لیے براہ کرم پہلے 'بات کریں' ٹیب پر جائیں۔"
     }
   },
   "language_screen": {
@@ -588,7 +588,7 @@
       "create_button": "پروفائل بنائیں",
       "sections": {
         "target_label": "میں سیکھنا چاہتا ہوں",
-        "medium_label": "سوفی سکھاتی ہے",
+        "medium_label": "Sophie AI سکھاتی ہے",
         "medium_placeholder": "مادری زبان جیسی",
         "accent_label": "پسندیدہ لہجہ"
       },
@@ -660,7 +660,7 @@
     "last_day_title": "آخری دن!",
     "days_left_title": "{{count}} دن باقی",
     "last_day_subtitle": "آپ کا مفت ٹرائل آج ختم ہو رہا ہے!",
-    "upgrade_subtitle": "مکمل تجربے کے لیے صوفی AI پرو میں اپ گریڈ کریں۔",
+    "upgrade_subtitle": "مکمل تجربے کے لیے Sophie AI پرو میں اپ گریڈ کریں۔",
     "benefits_title": "آپ کو کیا ملے گا",
     "benefit_1": "لامحدود AI گفتگو",
     "benefit_2": "تمام 10+ زبانیں غیر مقفل",

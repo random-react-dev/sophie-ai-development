@@ -306,9 +306,9 @@
       "help_improve": "Помогите нам стать лучше",
       "whatsapp_support": "Поддержка в WhatsApp",
       "whatsapp_subtitle": "Чат с нами в WhatsApp",
-      "whatsapp_message": "Привет, команда Sophie! 👋 Я пользуюсь приложением Sophie AI и хотел бы связаться с вами.",
+      "whatsapp_message": "Привет, команда Sophie AI! 👋 Я пользуюсь приложением Sophie AI и хотел бы связаться с вами.",
       "contact_alert_title": "Связаться с нами",
-      "contact_alert_body": "Напишите нам на support@fluentai.com для любых вопросов или отзывов.",
+      "contact_alert_body": "Напишите нам на support@speakwithsophie.ai для любых вопросов или отзывов.",
       "feedback_alert_title": "Скоро",
       "feedback_alert_body": "Функция отправки отзывов в приложении скоро будет доступна.",
       "danger_zone": "Опасная зона",
@@ -335,7 +335,7 @@
       "section5_title": "5. Ваши права",
       "section5_body": "Вы имеете право получить доступ, исправить или удалить вашу личную информацию в любое время через настройки аккаунта или связавшись с нашей службой поддержки.",
       "section6_title": "6. Контактная информация",
-      "section6_body": "Если у вас есть вопросы об этой Политике конфиденциальности, пожалуйста, свяжитесь с нами по адресу support@fluentai.com."
+      "section6_body": "Если у вас есть вопросы об этой Политике конфиденциальности, пожалуйста, свяжитесь с нами по адресу support@speakwithsophie.ai."
     },
     "terms_screen": {
       "title": "Условия использования",
@@ -396,7 +396,7 @@
     },
     "create_modal": {
       "title": "Создать сценарий",
-      "sophie_role_label": "Роль Софи",
+      "sophie_role_label": "Роль Sophie AI",
       "sophie_role_placeholder": "напр., Ворчливый, но полезный продавец",
       "user_role_label": "Ваша роль",
       "user_role_placeholder": "напр., Покупатель, который спешит",
@@ -409,7 +409,7 @@
       "context_placeholder": "Опишите обстановку...",
       "start_button": "Начать сценарий",
       "validation_title": "Отсутствуют обязательные поля",
-      "validation_message": "Роль Софи и Тема обязательны!"
+      "validation_message": "Роль Sophie AI и Тема обязательны!"
     }
   },
   "scenarios_data": {
@@ -427,7 +427,7 @@
       "sophieRole": "Старший технический рекрутер в технологической компании",
       "userRole": "Кандидат, подающий заявку на роль Frontend-разработчика",
       "topic": "Карьера",
-      "context": "Вы на собеседовании на работу своей мечты. Софи спросит о вашем опыте и навыках."
+      "context": "Вы на собеседовании на работу своей мечты. Sophie AI спросит о вашем опыте и навыках."
     },
     "asking-directions": {
       "title": "Спросить Дорогу",
@@ -468,9 +468,9 @@
   },
   "talk_screen": {
     "status": {
-      "speaking": "Софи говорит...",
+      "speaking": "Sophie AI говорит...",
       "preparing": "Подготовка ответа... {{progress}}%",
-      "thinking": "Софи думает...",
+      "thinking": "Sophie AI думает...",
       "listening": "Слушаю...",
       "connecting": "Подключение...",
       "reconnecting": "Переподключение...",
@@ -496,8 +496,8 @@
       "translating": "Перевод..."
     },
     "prompts": {
-      "select_both_langs": "Выберите оба языка выше, чтобы начать урок с Софи.",
-      "hold_mic_start": "Удерживайте микрофон ниже, чтобы начать разговор с Софи."
+      "select_both_langs": "Выберите оба языка выше, чтобы начать урок с Sophie AI.",
+      "hold_mic_start": "Удерживайте микрофон ниже, чтобы начать разговор с Sophie AI."
     },
     "alerts": {
       "end_session_title": "Завершить сессию",
@@ -505,7 +505,7 @@
       "finish_title": "Завершить разговор",
       "finish_msg": "Вы закончили эту практическую сессию?",
       "reset_title": "Сбросить чат",
-      "reset_msg": "Это очистит текущий разговор и сбросит Софи. Продолжить?",
+      "reset_msg": "Это очистит текущий разговор и сбросит Sophie AI. Продолжить?",
       "error_title": "Ошибка",
       "error_msg": "Не удалось перевести. Пожалуйста, попробуйте еще раз.",
       "success_title": "Успех",
@@ -568,7 +568,7 @@
       "translation_failed": "Ошибка перевода",
       "playing_audio": "Воспроизведение аудио для: \"{{text}}\"",
       "speech_error": "Не удалось произнести фразу. Пожалуйста, попробуйте снова.",
-      "connection_required": "Пожалуйста, сначала посетите вкладку Разговор, чтобы подключиться к Sophie."
+      "connection_required": "Пожалуйста, сначала посетите вкладку Разговор, чтобы подключиться к Sophie AI."
     }
   },
   "language_picker": {
@@ -638,7 +638,7 @@
       "create_button": "Создать профиль",
       "sections": {
         "target_label": "Я хочу выучить",
-        "medium_label": "Софи обучает на",
+        "medium_label": "Sophie AI обучает на",
         "medium_placeholder": "Как родной язык",
         "accent_label": "Предпочитаемый акцент"
       },
@@ -660,7 +660,7 @@
     "last_day_title": "Последний день!",
     "days_left_title": "Осталось {{count}} дн.",
     "last_day_subtitle": "Ваш бесплатный пробный период заканчивается сегодня!",
-    "upgrade_subtitle": "Обновитесь до Софи AI Pro для полного доступа.",
+    "upgrade_subtitle": "Обновитесь до Sophie AI Pro для полного доступа.",
     "benefits_title": "Что вы получите",
     "benefit_1": "Неограниченные диалоги с ИИ",
     "benefit_2": "Все 10+ языков разблокированы",

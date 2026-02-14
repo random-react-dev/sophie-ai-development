@@ -159,7 +159,7 @@ export default function ReportScreen() {
                     className={`w-2 h-2 rounded-full ${msg.role === "user" ? "bg-gray-300" : "bg-black"}`}
                   />
                   <Text className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    {msg.role === "user" ? "You" : "Sophie"}
+                    {msg.role === "user" ? "You" : "Sophie AI"}
                   </Text>
                 </View>
                 {msg.role !== "user" && (

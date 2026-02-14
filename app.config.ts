@@ -62,7 +62,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "expo-av",
       {
         microphonePermission:
-          "Allow Sophie to access your microphone for voice conversations.",
+          "Allow Sophie AI to access your microphone for voice conversations.",
       },
     ],
     "expo-stream-audio",
@@ -80,8 +80,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-speech-recognition",
       {
-        microphonePermission: "Allow Sophie to use the microphone for voice input.",
-        speechRecognitionPermission: "Allow Sophie to use speech recognition.",
+        microphonePermission:
+          "Allow Sophie AI to use the microphone for voice input.",
+        speechRecognitionPermission:
+          "Allow Sophie AI to use speech recognition.",
       },
     ],
     // Google Sign-In - Uncomment when EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME is configured
