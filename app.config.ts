@@ -12,7 +12,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "com.fluentai.sophie",
+    bundleIdentifier: "ai.speakwithsophie.app",
     buildNumber: "1",
     infoPlist: {
       NSMicrophoneUsageDescription:
