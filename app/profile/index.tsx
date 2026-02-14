@@ -21,6 +21,7 @@ import {
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -120,7 +121,11 @@ export default function ProfileScreen() {
       {/* Header */}
       <ProfileHeader title={t("profile.title")} />
 
-      <View className="flex-1 justify-between">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Profile Card */}
         <View className="bg-surface mx-4 mt-2 rounded-2xl p-4 shadow-sm">
           <View className="items-center">
@@ -133,11 +138,11 @@ export default function ProfileScreen() {
               <View className="w-24 h-24 rounded-full bg-blue-100 overflow-hidden border-4 border-white shadow-lg">
                 {user?.user_metadata?.avatar_url ? (
                   <Image
-                    key={user.user_metadata.avatar_url}
                     source={{ uri: user.user_metadata.avatar_url }}
                     style={{ width: "100%", height: "100%" }}
                     contentFit="cover"
-                    cachePolicy="none"
+                    cachePolicy="memory-disk"
+                    transition={200}
                   />
                 ) : (
                   <View className="w-full h-full items-center justify-center">
@@ -283,7 +288,7 @@ export default function ProfileScreen() {
             />
           </View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Alert Modal */}
       <AlertModal
