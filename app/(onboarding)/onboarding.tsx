@@ -172,6 +172,7 @@ export default function OnboardingScreen() {
     if (currentStep === 10) {
       try {
         const { currentLanguage } = useLanguageStore.getState();
+        const { cefrLevel } = useLearningStore.getState();
         const onboardingMetadata = {
           full_name: data.name,
           country: data.country,
@@ -184,6 +185,7 @@ export default function OnboardingScreen() {
             learning_duration: data.learningDuration,
             speaking_level: data.speakingLevel,
             confidence_level: data.confidenceLevel,
+            cefr_level: cefrLevel,
             barriers: data.barriers,
             focus_areas: data.focusAreas,
             discovery_source: data.discoverySource,

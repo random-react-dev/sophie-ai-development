@@ -2,8 +2,10 @@ import { AuthInput } from "@/components/auth/AuthInput";
 import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { APP_LANGUAGES, Language } from "@/constants/languages";
+import { CEFR_LEVELS } from "@/constants/scenarios";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/stores/languageStore";
+import { useLearningStore } from "@/stores/learningStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
 import { Ionicons } from "@expo/vector-icons";
 import { ChevronDown } from "lucide-react-native";
@@ -155,6 +157,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     const { data, updateData } = useOnboardingStore();
     const { t } = useTranslation();
     const { currentLanguage, setLanguage } = useLanguageStore();
+    const { cefrLevel, setCefrLevel } = useLearningStore();
     const [subStep, setSubStep] = useState(1);
 
     // Notify parent of sub-step changes
@@ -325,7 +328,7 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
       );
     }
 
-    // Sub-step 3: Profile Details (Name, Country, Native Language)
+    // Sub-step 3: Profile Details (Name, Country, Native Language, Learning Language, Level)
     return (
       <View className="flex-1">
         <View className="mb-6 px-4">
@@ -338,30 +341,6 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Learning Language */}
-          <View className="mb-4">
-            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-              {t("onboarding.profileStep.learningLanguageLabel")}
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
-              onPress={() => setLearningLangModalVisible(true)}
-            >
-              <Text
-                className={`flex-1 text-base ${
-                  data.learningLanguage ? "text-gray-800" : "text-gray-400"
-                }`}
-                numberOfLines={1}
-              >
-                {data.learningLanguage
-                  ? getSelectedLearningLanguageName()
-                  : t("onboarding.profileStep.learningLanguagePlaceholder")}
-              </Text>
-              <ChevronDown size={20} color="#9CA3AF" />
-            </TouchableOpacity>
-          </View>
-
           {/* Name */}
           <View className="mb-4">
             <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
@@ -419,6 +398,78 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
               </Text>
               <ChevronDown size={20} color="#9CA3AF" />
             </TouchableOpacity>
+          </View>
+
+          {/* Learning Language */}
+          <View className="mb-4">
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+              {t("onboarding.profileStep.learningLanguageLabel")}
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex-row items-center justify-between w-full bg-white rounded-full px-4 h-14 border border-gray-300"
+              onPress={() => setLearningLangModalVisible(true)}
+            >
+              <Text
+                className={`flex-1 text-sm ${
+                  data.learningLanguage ? "text-gray-800" : "text-gray-400"
+                }`}
+                numberOfLines={1}
+              >
+                {data.learningLanguage
+                  ? getSelectedLearningLanguageName()
+                  : t("onboarding.profileStep.learningLanguagePlaceholder")}
+              </Text>
+              <ChevronDown size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Level Selector (S1-S6) */}
+          <View className="mb-4">
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+              {t("onboarding.profileStep.levelLabel")}
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-1"
+              contentContainerStyle={{ gap: 4 }}
+            >
+              {CEFR_LEVELS.map((l) => {
+                const isSelected = cefrLevel === l;
+
+                if (isSelected) {
+                  return (
+                    <TouchableOpacity
+                      key={l}
+                      activeOpacity={0.7}
+                      onPress={() => setCefrLevel(l)}
+                    >
+                      <RainbowBorder
+                        borderRadius={9999}
+                        borderWidth={1}
+                        containerClassName="px-5 py-2"
+                      >
+                        <Text className="font-bold text-sm text-black">
+                          {l}
+                        </Text>
+                      </RainbowBorder>
+                    </TouchableOpacity>
+                  );
+                }
+
+                return (
+                  <TouchableOpacity
+                    key={l}
+                    activeOpacity={0.7}
+                    onPress={() => setCefrLevel(l)}
+                    className="px-5 py-2 rounded-full border border-gray-300"
+                  >
+                    <Text className="font-bold text-sm text-gray-600">{l}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
         </ScrollView>
 

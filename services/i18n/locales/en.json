@@ -19,7 +19,8 @@
       "learningLanguagePlaceholder": "Select language you want to learn",
       "selectCountry": "Select Country",
       "selectNativeLanguage": "Native Language",
-      "selectLearningLanguage": "Choose Learning Language"
+      "selectLearningLanguage": "Choose Learning Language",
+      "levelLabel": "Your Level"
     },
     "options": {
       "goal": {

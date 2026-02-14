@@ -18,6 +18,7 @@
       "learningLanguagePlaceholder": "Выберите язык, который хотите изучать",
       "selectCountry": "Выберите страну",
       "selectLearningLanguage": "Выберите язык обучения",
+      "levelLabel": "Ваш уровень",
       "selectNativeLanguage": "Родной язык"
     },
     "options": {

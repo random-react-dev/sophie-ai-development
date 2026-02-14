@@ -19,7 +19,8 @@
       "learningLanguagePlaceholder": "वह भाषा चुनें जो आप सीखना चाहते हैं",
       "selectCountry": "देश चुनें",
       "selectNativeLanguage": "मातृभाषा",
-      "selectLearningLanguage": "सीखने की भाषा चुनें"
+      "selectLearningLanguage": "सीखने की भाषा चुनें",
+      "levelLabel": "आपका स्तर"
     },
     "options": {
       "goal": {

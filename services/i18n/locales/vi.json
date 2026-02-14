@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "Chọn ngôn ngữ bạn muốn học",
       "selectCountry": "Chọn quốc gia",
       "selectNativeLanguage": "Ngôn ngữ mẹ đẻ",
-      "selectLearningLanguage": "Chọn ngôn ngữ học"
+      "selectLearningLanguage": "Chọn ngôn ngữ học",
+      "levelLabel": "Trình độ của bạn"
     },
     "options": {
       "goal": {

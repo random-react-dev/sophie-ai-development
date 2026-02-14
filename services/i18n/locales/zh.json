@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "选择你想学的语言",
       "selectCountry": "选择国家",
       "selectNativeLanguage": "母语",
-      "selectLearningLanguage": "选择学习语言"
+      "selectLearningLanguage": "选择学习语言",
+      "levelLabel": "你的等级"
     },
     "options": {
       "goal": {
