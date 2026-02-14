@@ -545,6 +545,7 @@ function CreateScenarioModal({
                   />
                 </View>
 
+                {/* level */}
                 <View className="mb-6">
                   <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
                     {t("scenarios_screen.create_modal.level_label")}

@@ -351,14 +351,12 @@ export default function OnboardingScreen() {
 
         {/* Inline Rainbow Progress Bar */}
         <View className="flex-1">
-          <RainbowProgressBar currentStep={currentStep} totalSteps={10} />
-        </View>
-
-        {/* Step Counter */}
-        <View className="min-w-[40px] items-end">
-          <Text className="text-sm font-bold text-gray-400">
-            <Text className="text-gray-900">{currentStep}</Text>/10
-          </Text>
+          <RainbowProgressBar
+            currentStep={currentStep}
+            totalSteps={10}
+            subStep={profileSubStep}
+            totalSubSteps={3}
+          />
         </View>
       </View>
 

@@ -10,17 +10,34 @@ import Animated, {
 interface RainbowProgressBarProps {
   currentStep: number;
   totalSteps: number;
+  subStep?: number;
+  totalSubSteps?: number;
 }
 
 export const RainbowProgressBar: React.FC<RainbowProgressBarProps> = ({
   currentStep,
   totalSteps,
+  subStep = 1,
+  totalSubSteps = 1,
 }) => {
   const [width, setWidth] = useState(0);
   // Calculate progress percentage (0 to 1)
-  // Ensure we don't divide by zero and clamp between 0 and 1
+  // When a step has sub-steps, interpolate within that step's range
+  // Total effective segments = (totalSteps - 1) + (totalSubSteps - 1) for the step with sub-steps
+  const extraSegments = totalSubSteps - 1; // additional segments from sub-steps
+  const totalSegments = totalSteps - 1 + extraSegments;
+
+  let effectivePosition: number;
+  if (totalSubSteps > 1 && currentStep === 1) {
+    // Within the first step's sub-steps
+    effectivePosition = subStep - 1;
+  } else {
+    // Past the sub-step step: offset by the extra segments
+    effectivePosition = (currentStep - 1) + extraSegments;
+  }
+
   const progressPercent = Math.min(
-    Math.max((currentStep - 1) / (totalSteps - 1), 0),
+    Math.max(effectivePosition / totalSegments, 0),
     1
   );
 
