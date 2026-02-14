@@ -46,3 +46,4 @@ app-example
 .gemini
 .factory
 .claude
+log-server.js

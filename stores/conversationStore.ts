@@ -270,25 +270,55 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
       return;
     }
 
-    const { impactAsync, ImpactFeedbackStyle } = await import("expo-haptics");
-    await ensureAudioStreamerReady();
-    await impactAsync(ImpactFeedbackStyle.Medium);
-
-    Logger.info("ConversationStore", "Starting PTT recording...");
-    geminiWebSocket.sendActivityStart();
-
-    await audioRecorder.start({
-      onAudioData: (base64) => geminiWebSocket.sendAudioChunk(base64),
-      onVolumeChange: createVolumeHandler(set),
-    });
-
+    // Set state IMMEDIATELY (synchronous) so UI responds.
+    // pttStartTime is set later, right before audioRecorder.start(),
+    // so MIN_PTT_DURATION_MS measures actual recording time (not setup time).
     set({
       isPTTActive: true,
-      pttStartTime: Date.now(),
+      pttStartTime: null,
       isListening: true,
       isConversationActive: true,
       isProcessing: false,
     });
+
+    try {
+      const { impactAsync, ImpactFeedbackStyle } =
+        await import("expo-haptics");
+      await ensureAudioStreamerReady();
+      await impactAsync(ImpactFeedbackStyle.Medium);
+
+      // Bail out if stop ran while we were setting up
+      if (!get().isPTTActive) {
+        Logger.info("ConversationStore", "PTT cancelled during startup");
+        return;
+      }
+
+      Logger.info("ConversationStore", "Starting PTT recording...");
+      geminiWebSocket.sendActivityStart();
+
+      // Set pttStartTime NOW — right before recording starts — so the
+      // minimum duration check in stop reflects actual recording time.
+      set({ pttStartTime: Date.now() });
+
+      await audioRecorder.start({
+        onAudioData: (base64) => geminiWebSocket.sendAudioChunk(base64),
+        onVolumeChange: createVolumeHandler(set),
+      });
+
+      // If stop ran during audioRecorder.start(), clean up the orphan
+      if (!get().isPTTActive) {
+        Logger.info("ConversationStore", "PTT stopped during recorder start, cleaning up");
+        await audioRecorder.stop();
+      }
+    } catch (err) {
+      Logger.error("ConversationStore", "PTT recording failed to start", err);
+      // Reset state so UI returns to normal
+      set({
+        isPTTActive: false,
+        pttStartTime: null,
+        isListening: false,
+      });
+    }
   },
 
   /**

@@ -1,0 +1,12 @@
+diff --git a/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift b/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift
+--- a/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift
++++ b/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift
+@@ -267,7 +267,7 @@
+
+   private func startRecordingInternal(options: [String: Any]) async throws {
+     do {
+-      try audioSession.setCategory(.record, mode: .voiceChat, options: [])
++      try audioSession.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth])
+
+       if let requestedSampleRate = options["sampleRate"] as? Double {
+         try? audioSession.setPreferredSampleRate(requestedSampleRate)

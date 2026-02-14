@@ -13,6 +13,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { Logger } from '../common/Logger';
 
 const TAG = 'AudioRecorder';
+const TARGET_SAMPLE_RATE = 16000;
 const MAX_CONSECUTIVE_ERRORS = 5;
 const RESTART_DELAY_MS = 200;
 
@@ -29,6 +30,7 @@ class AudioRecorder {
     private chunkCount = 0;
     private consecutiveErrors = 0;
     private isRestarting = false;
+    private downsampleRatio = 1;
 
     // Singleton pattern
     private static instance: AudioRecorder;
@@ -84,11 +86,12 @@ class AudioRecorder {
                 this.consecutiveErrors = 0;
                 this.chunkCount++;
 
-                // On first frame, log sample rate to verify it matches what Gemini expects
+                // On first frame, detect downsample ratio
                 if (this.chunkCount === 1) {
                     Logger.info(TAG, `First frame: sampleRate=${frame.sampleRate}, size=${frame.pcmBase64?.length || 0}`);
-                    if (frame.sampleRate !== 16000) {
-                        Logger.warn(TAG, `Sample rate mismatch! Got ${frame.sampleRate}, expected 16000`);
+                    if (frame.sampleRate !== TARGET_SAMPLE_RATE) {
+                        this.downsampleRatio = Math.round(frame.sampleRate / TARGET_SAMPLE_RATE);
+                        Logger.info(TAG, `Downsampling ${frame.sampleRate}Hz → ${TARGET_SAMPLE_RATE}Hz (ratio: ${this.downsampleRatio}:1)`);
                     }
                 } else if (this.chunkCount % 50 === 0) {
                     Logger.debug(TAG, `Audio frame #${this.chunkCount}`);
@@ -100,8 +103,13 @@ class AudioRecorder {
                     return;
                 }
 
+                // Downsample if needed (e.g. 48kHz → 16kHz = take every 3rd sample)
+                const audioData = this.downsampleRatio > 1
+                    ? this.downsample(frame.pcmBase64)
+                    : frame.pcmBase64;
+
                 // Send PCM data to callback
-                this.options?.onAudioData(frame.pcmBase64);
+                this.options?.onAudioData(audioData);
 
                 // Send volume level
                 if (frame.level !== undefined && this.options?.onVolumeChange) {
@@ -186,6 +194,32 @@ class AudioRecorder {
         }
     }
 
+    /**
+     * Downsample Int16 PCM by taking every Nth sample (simple decimation).
+     * Works well for integer ratios like 48kHz→16kHz (3:1).
+     */
+    private downsample(base64Data: string): string {
+        const binaryStr = atob(base64Data);
+        const srcLength = binaryStr.length;
+        const bytesPerSample = 2; // Int16
+        const srcSamples = srcLength / bytesPerSample;
+        const dstSamples = Math.floor(srcSamples / this.downsampleRatio);
+        const dst = new Uint8Array(dstSamples * bytesPerSample);
+
+        for (let i = 0; i < dstSamples; i++) {
+            const srcOffset = i * this.downsampleRatio * bytesPerSample;
+            dst[i * 2] = binaryStr.charCodeAt(srcOffset);
+            dst[i * 2 + 1] = binaryStr.charCodeAt(srcOffset + 1);
+        }
+
+        // Encode back to base64
+        let result = '';
+        for (let i = 0; i < dst.length; i++) {
+            result += String.fromCharCode(dst[i]);
+        }
+        return btoa(result);
+    }
+
     private cleanup(): void {
         this.frameSubscription?.remove();
         this.errorSubscription?.remove();
@@ -194,6 +228,7 @@ class AudioRecorder {
         this.isRecording = false;
         this.consecutiveErrors = 0;
         this.isRestarting = false;
+        this.downsampleRatio = 1;
     }
 }
 

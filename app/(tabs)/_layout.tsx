@@ -1,15 +1,26 @@
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Logger } from "@/services/common/Logger";
 import { useAuthStore } from "@/stores/authStore";
+import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { isVoiceModeAvailable } from "@/utils/environment";
 import { Feather } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-import { Globe, Languages, MessageCircle, VenetianMask } from "lucide-react-native";
-import React, { useEffect } from "react";
-import { Dimensions, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
+import { Tabs, usePathname, useRouter } from "expo-router";
+import { Globe, Languages, VenetianMask } from "lucide-react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Dimensions, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// Remote logging for physical device debugging
+// Set to true and rebuild to enable (works in TestFlight/production too)
+const ENABLE_REMOTE_LOGGING = true;
+if (ENABLE_REMOTE_LOGGING) {
+  Logger.enableRemoteLogging("http://192.168.1.3:8899/log");
+}
 
 // Get screen width for responsive sizing
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -24,6 +35,152 @@ const responsiveFontSize = (size: number) => {
 
 // Check if voice mode is available (not available in Expo Go)
 const voiceAvailable = isVoiceModeAvailable();
+
+function MicTabButton() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { t } = useTranslation();
+  const {
+    connectionState,
+    isPTTActive,
+    isProcessing,
+    startPTTRecording,
+    stopPTTRecording,
+  } = useConversationStore();
+  const [isPressing, setIsPressing] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const pttStartPromiseRef = useRef<Promise<void> | null>(null);
+  const isTalkTab = pathname === "/talk";
+
+  // Pulsing animation when recording
+  useEffect(() => {
+    if (!isPTTActive) {
+      pulseAnim.setValue(1);
+      return;
+    }
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.4,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    animation.start();
+    return () => animation.stop();
+  }, [isPTTActive]);
+
+  const handlePressIn = () => {
+    if (!isTalkTab) {
+      router.push("/(tabs)/talk");
+      return;
+    }
+    if (connectionState !== "connected") return;
+    setIsPressing(true);
+    Animated.spring(scaleAnim, {
+      toValue: 0.92,
+      useNativeDriver: true,
+    }).start();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    pttStartPromiseRef.current = startPTTRecording().catch((err: unknown) => {
+      Logger.error("MicTabButton", "Failed to start PTT recording", err);
+    });
+  };
+
+  const handlePressOut = () => {
+    if (!isTalkTab) return;
+    setIsPressing(false);
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+    const startPromise = pttStartPromiseRef.current;
+    pttStartPromiseRef.current = null;
+    if (startPromise) {
+      startPromise.then(() => stopPTTRecording()).catch(() => {});
+    } else {
+      stopPTTRecording();
+    }
+  };
+
+  const getButtonColor = (): string => {
+    if (isPTTActive) return "bg-white shadow-red-200";
+    if (isProcessing) return "bg-white shadow-orange-200";
+    if (!isTalkTab || connectionState !== "connected")
+      return "bg-gray-100 shadow-gray-200";
+    return isPressing
+      ? "bg-gray-50 shadow-blue-200"
+      : "bg-white shadow-blue-200";
+  };
+
+  return (
+    <View
+      className="items-center justify-center -top-8"
+      style={{ zIndex: 50 }}
+    >
+      {/* Pulse ring when recording */}
+      {isPTTActive && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            width: 72,
+            height: 72,
+            borderRadius: 9999,
+            backgroundColor: "rgba(239, 68, 68, 0.2)",
+            transform: [{ scale: pulseAnim }],
+          }}
+        />
+      )}
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        pressRetentionOffset={{ top: 80, left: 80, right: 80, bottom: 80 }}
+      >
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <RainbowBorder
+            borderRadius={9999}
+            borderWidth={2.5}
+            className="w-[72px] h-[72px]"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.15,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+            containerClassName={`items-center justify-center ${getButtonColor()}`}
+          >
+            <Feather
+              name="mic"
+              size={28}
+              color={isPTTActive ? "#ef4444" : "black"}
+            />
+          </RainbowBorder>
+        </Animated.View>
+      </Pressable>
+      <Text
+        allowFontScaling={false}
+        style={{
+          fontFamily: "GoogleSans-Bold",
+          fontSize: responsiveFontSize(10),
+          fontWeight: "bold",
+          textAlign: "center",
+          color: isTalkTab ? "#3b82f6" : "#94a3b8",
+          marginTop: 4,
+        }}
+      >
+        {t("tabs.talk")}
+      </Text>
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -58,6 +215,8 @@ export default function TabLayout() {
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
           paddingHorizontal: 8,
+          overflow: "visible" as const,
+          zIndex: 50,
         },
         tabBarLabel: ({ children, color }) => (
           <Text
@@ -101,12 +260,8 @@ export default function TabLayout() {
         name="talk"
         options={{
           title: t("tabs.talk"),
-          // Hide the tab completely in Expo Go (native modules not available)
           href: voiceAvailable ? undefined : null,
-          tabBarActiveTintColor: "#3b82f6",
-          tabBarIcon: ({ color }) => (
-            <MessageCircle size={24} color={color} />
-          ),
+          tabBarButton: () => <MicTabButton />,
         }}
       />
       <Tabs.Screen

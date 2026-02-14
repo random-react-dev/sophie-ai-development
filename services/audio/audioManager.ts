@@ -25,13 +25,21 @@ export function configureAudioSession(): void {
     }
 
     try {
+        // 1. Set audio session options FIRST (this also re-enables internal management)
         AudioManager.setAudioSessionOptions({
             iosCategory: 'playAndRecord',
             iosMode: 'voiceChat',
             iosOptions: ['defaultToSpeaker', 'allowBluetooth'],
         });
+
+        // 2. THEN disable internal session management to prevent
+        //    react-native-audio-api from overriding our config when
+        //    AudioContext is created. Required when using multiple
+        //    audio libraries (expo-stream-audio for recording).
+        AudioManager.disableSessionManagement();
+
         isConfigured = true;
-        Logger.info(TAG, 'iOS audio session configured for voice chat (AEC enabled)');
+        Logger.info(TAG, 'iOS audio session configured (playAndRecord + voiceChat, internal management disabled)');
     } catch (error) {
         Logger.error(TAG, 'Failed to configure audio session', error);
     }

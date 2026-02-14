@@ -25,9 +25,7 @@ import React, {
 } from "react";
 import {
   Alert,
-  Animated,
   FlatList,
-  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -36,8 +34,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTranslation } from "@/hooks/useTranslation";
-import * as Haptics from "expo-haptics";
-
 import { MessageBubble } from "@/components/common/MessageBubble";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Logger } from "@/services/common/Logger";
@@ -172,8 +168,6 @@ export default function TalkScreen() {
     isSpeaking,
     isProcessing,
     isPTTActive,
-    startPTTRecording,
-    stopPTTRecording,
     volumeLevel,
     bufferProgress,
     messages,
@@ -233,75 +227,6 @@ export default function TalkScreen() {
   // Check if both languages are selected (profile exists)
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
-
-  // --- Floating PTT Button State ---
-  const [isPressing, setIsPressing] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-
-  // Pulsing animation ONLY when recording
-  useEffect(() => {
-    if (!isPTTActive) {
-      pulseAnim.setValue(1);
-      return;
-    }
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.4,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    animation.start();
-    return () => animation.stop();
-  }, [isPTTActive]);
-
-  const handlePTTPressIn = () => {
-    if (connectionState !== "connected") return;
-    setIsPressing(true);
-    Animated.spring(scaleAnim, {
-      toValue: 0.92,
-      useNativeDriver: true,
-    }).start();
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    // Start recording immediately — short recordings (< 1s) are safely
-    // discarded by stopPTTRecording() in the conversation store.
-    try {
-      startPTTRecording();
-    } catch (err) {
-      Logger.error(TAG, "Failed to start PTT recording", err);
-    }
-  };
-
-  const handlePTTPressOut = () => {
-    setIsPressing(false);
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-
-    // Stop recording if active
-    if (isPTTActive) {
-      stopPTTRecording();
-    }
-  };
-
-  const getPTTButtonColor = (): string => {
-    if (isPTTActive) return "bg-white shadow-red-200";
-    if (isProcessing) return "bg-white shadow-orange-200";
-    if (connectionState !== "connected") return "bg-gray-100 shadow-gray-200";
-    return isPressing
-      ? "bg-gray-50 shadow-blue-200"
-      : "bg-white shadow-blue-200";
-  };
 
   // Fetch profiles on mount to ensure activeProfile is loaded
   useEffect(() => {
@@ -848,47 +773,6 @@ ${levelGuide}
       {/* <View className="h-20" /> */}
 
       {/* Language selection is now managed from the Profile page (/(tabs)/language) */}
-
-      {/* Floating PTT Mic Button */}
-      {canStartConversation && (
-        <View
-          style={{
-            position: "absolute",
-            bottom: 16,
-            left: 0,
-            right: 0,
-            alignItems: "center",
-          }}
-          pointerEvents="box-none"
-        >
-          <Pressable
-            onPressIn={handlePTTPressIn}
-            onPressOut={handlePTTPressOut}
-          >
-            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-              <RainbowBorder
-                borderRadius={9999}
-                borderWidth={2.5}
-                className="w-[72px] h-[72px]"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 12,
-                  elevation: 8,
-                }}
-                containerClassName={`items-center justify-center ${getPTTButtonColor()}`}
-              >
-                <Feather
-                  name="mic"
-                  size={28}
-                  color={isPTTActive ? "#ef4444" : "black"}
-                />
-              </RainbowBorder>
-            </Animated.View>
-          </Pressable>
-        </View>
-      )}
 
       {/* Reset Confirmation Modal */}
       <AlertModal
