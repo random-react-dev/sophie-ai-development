@@ -415,44 +415,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "Pedir Café",
-      "description": "Peça um café com leite e um croissant em um café movimentado.",
-      "sophieRole": "Barista em um café movimentado no centro da cidade",
-      "userRole": "Um cliente procurando café da manhã",
-      "topic": "Vida Diária",
-      "context": "Você está em um café chamado \"The Morning Grind\". Você quer pedir um café e algo para comer."
+      "title": "Pedir um café",
+      "description": "Peça um latte e um croissant em um café movimentado.",
+      "sophieRole": "Barista amigável em um café aconchegante de bairro chamado 'The Morning Grind'",
+      "userRole": "Um cliente regular passando para tomar café da manhã antes do trabalho",
+      "topic": "Vida quotidiana",
+      "context": "Você está em um café aconchegante chamado 'The Morning Grind'. O barista é alegre e comunicativo — peça seu café, escolha um doce e desfrute de uma conversa amigável."
     },
     "job-interview": {
-      "title": "Entrevista de Emprego",
-      "description": "Entrevista para uma vaga de engenheiro de software.",
-      "sophieRole": "Recrutador Técnico Sênior em uma empresa de tecnologia",
-      "userRole": "Candidato se candidatando a uma vaga de Desenvolvedor Frontend",
+      "title": "Entrevista de emprego",
+      "description": "Entrevista para uma posição de engenheiro de software.",
+      "sophieRole": "Recrutador técnico sênior amigável, mas profissional, em uma startup de tecnologia conhecida",
+      "userRole": "Um candidato participando de uma entrevista para uma vaga de desenvolvedor frontend",
       "topic": "Carreira",
-      "context": "Você está em uma entrevista para o emprego dos seus sonhos. Sophie AI perguntará sobre sua experiência e habilidades."
+      "context": "Você está em uma entrevista em uma startup de tecnologia moderna. O recrutador perguntará sobre sua experiência, habilidades e o que te motiva."
     },
     "asking-directions": {
-      "title": "Pedir Informações",
+      "title": "Pedir direções",
       "description": "Você está perdido em Tóquio e precisa encontrar uma estação de trem.",
-      "sophieRole": "Um residente local prestativo em Tóquio",
-      "userRole": "Um turista que está um pouco perdido",
+      "sophieRole": "Um residente local amigável passeando perto de Shibuya, que conhece bem a área",
+      "userRole": "Um turista explorando Tóquio que acabou de ficar sem bateria no celular",
       "topic": "Viagem",
-      "context": "Você está perto do cruzamento de Shibuya e precisa chegar à estação JR, mas a bateria do seu telefone acabou."
+      "context": "Você está perto do cruzamento de Shibuya e precisa chegar à estação JR, mas seu celular está descarregado. Um amigável residente local se oferece para ajudar."
     },
     "hotel-check-in": {
-      "title": "Check-in no Hotel",
-      "description": "Faça o check-in e peça um quarto e uma vista.",
-      "sophieRole": "Recepcionista em um hotel 4 estrelas",
-      "userRole": "Um hóspede chegando para uma estadia de três noites",
+      "title": "Check-in no hotel",
+      "description": "Faça o check-in e peça um quarto com vista.",
+      "sophieRole": "Recepcionista profissional e acolhedor no 'The Grand Vista', um hotel 4 estrelas",
+      "userRole": "Um hóspede chegando após um voo longo para uma estadia de três noites",
       "topic": "Viagem",
-      "context": "Você tem uma reserva em seu nome. Você quer confirmar os horários do café da manhã e perguntar se há um quarto com uma boa vista disponível."
+      "context": "Você tem uma reserva e acabou de chegar após um longo voo. O recepcionista é acolhedor — faça o check-in, pergunte sobre as comodidades e veja se consegue um quarto com vista."
     },
     "political-debate": {
-      "title": "Debate Político",
+      "title": "Debate político",
       "description": "Discutir políticas ambientais e mudanças climáticas.",
-      "sophieRole": "Um defensor apaixonado do meio ambiente",
-      "userRole": "Um cidadão cético ou um legislador de oposição",
+      "sophieRole": "Um pesquisador de políticas ambientais apaixonado, mas respeitoso",
+      "userRole": "Um cidadão com perguntas e talvez diferentes pontos de vista sobre política ambiental",
       "topic": "Atualidades",
-      "context": "Envolva-se em uma discussão profunda sobre o equilíbrio entre crescimento econômico e proteção ambiental."
+      "context": "Participe de uma discussão ponderada sobre o equilíbrio entre crescimento econômico e proteção ambiental com um pesquisador experiente."
     }
   },
   "common": {

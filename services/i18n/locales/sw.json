@@ -416,43 +416,43 @@
   "scenarios_data": {
     "ordering-coffee": {
       "title": "Kuagiza Kahawa",
-      "description": "Agiza latte na croissant katika mkahawa wenye shughuli nyingi.",
-      "sophieRole": "Barista katika mkahawa wenye shughuli nyingi katikati ya jiji",
-      "userRole": "Mteja anayetafuta kifungua kinywa",
+      "description": "Agiza latte na croissants kwenye mkahawa wenye shughuli nyingi.",
+      "sophieRole": "Barista rafiki katika mkahawa mzuri wa mtaani unaoitwa 'The Morning Grind'",
+      "userRole": "Mteja wa kawaida anayepita kwa ajili ya kiamsha kinywa kabla ya kazi",
       "topic": "Maisha ya Kila Siku",
-      "context": "Uko katika mkahawa unaitwa \"The Morning Grind\". Unataka kuagiza kahawa na kitu cha kula."
+      "context": "Uko kwenye mkahawa mzuri unaoitwa 'The Morning Grind'. Barista ni mchangamfu na anapenda kuzungumza — agiza kahawa yako, chagua keki, na ufurahie mazungumzo rafiki."
     },
     "job-interview": {
-      "title": "Usaili wa Kazi",
-      "description": "Usaili kwa nafasi ya mhandisi wa programu.",
-      "sophieRole": "Mtaalamu Mkuu wa Uajiri katika kampuni ya teknolojia",
-      "userRole": "Mgombea anayeomba nafasi ya Msanidi wa Frontend",
+      "title": "Mahojiano ya Kazi",
+      "description": "Mahojiano ya nafasi ya mhandisi wa programu.",
+      "sophieRole": "Mwajiri mkuu wa kiufundi mwenye urafiki lakini mtaalamu katika kampuni mashuhuri ya kiteknolojia",
+      "userRole": "Mgombea anayehojiwa kwa jukumu la msanidi programu wa frontend",
       "topic": "Kazi",
-      "context": "Uko kwenye usaili kwa kazi ya ndoto yako. Sophie AI atakuuliza kuhusu uzoefu na ujuzi wako."
+      "context": "Unahojiwa katika kampuni ya kisasa ya kiteknolojia. Mwajiri atakuuliza kuhusu uzoefu wako, ujuzi wako, na nini kinakuchochea."
     },
     "asking-directions": {
       "title": "Kuuliza Maelekezo",
-      "description": "Umepotea Tokyo na unahitaji kupata kituo cha treni.",
-      "sophieRole": "Mkaazi mwenye msaada wa Tokyo",
-      "userRole": "Mtalii ambaye amepotea kidogo",
+      "description": "Umepotea Tokyo na unahitaji kupata kituo cha gari moshi.",
+      "sophieRole": "Mkazi wa eneo hilo mwenye rafiki anayetembea karibu na Shibuya, ambaye anajua eneo hilo vizuri",
+      "userRole": "Mtalii anayevumbua Tokyo ambaye simu yake imeishiwa chaji",
       "topic": "Usafiri",
-      "context": "Uko karibu na Shibuya Crossing na unahitaji kufika kituo cha JR lakini betri ya simu yako imeisha."
+      "context": "Uko karibu na makutano ya Shibuya na unahitaji kufika kituo cha JR lakini simu yako imekufa. Mkazi wa eneo hilo mwenye rafiki anajitolea kusaidia."
     },
     "hotel-check-in": {
-      "title": "Kuingia Hotelini",
-      "description": "Ingia na uombe chumba na mandhari.",
-      "sophieRole": "Mpokezi wa dawati la mbele katika hoteli ya nyota 4",
-      "userRole": "Mgeni anayewasili kwa kukaa usiku tatu",
+      "title": "Kujiandikisha Hotelini",
+      "description": "Jiandikishe na uombe chumba chenye mtazamo mzuri.",
+      "sophieRole": "Mpokeaji wageni mtaalamu na mkarimu katika 'The Grand Vista', hoteli ya nyota 4",
+      "userRole": "Mgeni anayewasili baada ya safari ndefu ya ndege kwa kukaa kwa usiku tatu",
       "topic": "Usafiri",
-      "context": "Una uhifadhi kwa jina lako. Unataka kuthibitisha muda wa kifungua kinywa na kuuliza ikiwa kuna chumba chenye mandhari nzuri kinapatikana."
+      "context": "Una nafasi kwa jina lako na umewasili hivi punde baada ya safari ndefu ya ndege. Mpokeaji wageni anakukaribisha kwa joto — jiandikishe, uliza kuhusu huduma, na uone kama unaweza kupata chumba chenye mtazamo mzuri."
     },
     "political-debate": {
       "title": "Mjadala wa Kisiasa",
-      "description": "Jadili sera za mazingira na mabadiliko ya tabianchi.",
-      "sophieRole": "Mtetezi mwenye shauku wa mazingira",
-      "userRole": "Raia mwenye mashaka au mtunga sera wa upinzani",
-      "topic": "Mambo ya Sasa",
-      "context": "Shiriki katika majadiliano ya kina kuhusu usawa kati ya ukuaji wa uchumi na ulinzi wa mazingira."
+      "description": "Jadili sera za mazingira na mabadiliko ya hali ya hewa.",
+      "sophieRole": "Mtafiti wa sera za mazingira mwenye shauku lakini mwenye heshima",
+      "userRole": "Raia mwenye maswali na labda maoni tofauti kuhusu sera za mazingira",
+      "topic": "Masuala ya Sasa",
+      "context": "Shiriki katika mjadala wa kina kuhusu usawa kati ya ukuaji wa uchumi na ulinzi wa mazingira na mtafiti mtaalam."
     }
   },
   "common": {
