@@ -15,7 +15,10 @@ import { translateText } from "@/services/gemini/translate";
 // import { geminiWebSocket } from "@/services/gemini/websocket"; // Removed
 import { useAuthStore } from "@/stores/authStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useTranslationHistoryStore } from "@/stores/translationHistoryStore";
+import {
+  TranslationHistoryItem,
+  useTranslationHistoryStore,
+} from "@/stores/translationHistoryStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -100,6 +103,27 @@ export default function TranslateScreen() {
         setTranslatedText("");
         setRomanization("");
       }
+    }
+  });
+  useSpeechRecognitionEvent("error", (event) => {
+    setIsListening(false);
+    if (
+      event.error === "not-allowed" ||
+      event.error === "service-not-allowed"
+    ) {
+      showAlert(
+        t("translate_screen.alerts.permission_required"),
+        t("translate_screen.alerts.mic_access"),
+        undefined,
+        "error",
+      );
+    } else {
+      showAlert(
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.translate_failed"),
+        undefined,
+        "error",
+      );
     }
   });
 
@@ -257,7 +281,7 @@ export default function TranslateScreen() {
     Haptics.selectionAsync();
   };
 
-  const handleHistorySelect = (item: any) => {
+  const handleHistorySelect = (item: TranslationHistoryItem) => {
     setInputText(item.sourceText);
     setTranslatedText(item.translatedText);
     setRomanization(item.romanization);

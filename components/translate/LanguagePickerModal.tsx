@@ -66,6 +66,9 @@ interface LanguagePickerModalProps {
   onSelect: (language: Language) => void;
   selectedCode?: string;
   title?: string;
+  /** When true, renders as an absolutely-positioned View instead of a native Modal.
+   *  Use this when the picker is opened from inside another Modal (iOS only supports one native modal). */
+  renderInline?: boolean;
 }
 
 export default function LanguagePickerModal({
@@ -74,6 +77,7 @@ export default function LanguagePickerModal({
   onSelect,
   selectedCode,
   title,
+  renderInline,
 }: LanguagePickerModalProps) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -104,6 +108,85 @@ export default function LanguagePickerModal({
   // Determine title: use prop if provided, otherwise translate default
   const modalTitle = title || t("language_picker.title");
 
+  const innerContent = (
+    <>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+        <Text className="text-xl font-bold text-black flex-1 pr-4">
+          {modalTitle}
+        </Text>
+        <Pressable
+          onPress={handleClose}
+          className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+        >
+          <Ionicons name="close" size={24} color="black" />
+        </Pressable>
+      </View>
+
+      {/* Search Bar */}
+      <View className="px-4 py-3">
+        <View className="h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
+          <Feather name="search" size={20} color="gray" />
+          <TextInput
+            placeholder={t("language_picker.search_placeholder")}
+            className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="gray"
+            textAlignVertical="center"
+            style={{ includeFontPadding: false }}
+          />
+        </View>
+      </View>
+
+      {/* Language List */}
+      <FlatList
+        data={filteredLanguages}
+        keyExtractor={(item) => item.code}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: 40,
+          marginTop: 10,
+        }}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        renderItem={({ item }) => (
+          <LanguageItem
+            item={item}
+            isSelected={item.code === selectedCode}
+            onPress={() => handleSelect(item)}
+          />
+        )}
+        ListEmptyComponent={
+          <View className="items-center py-10">
+            <Text className="text-gray-400 font-medium">
+              {t("language_picker.no_results")}
+            </Text>
+          </View>
+        }
+      />
+    </>
+  );
+
+  if (renderInline) {
+    if (!visible) return null;
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 50,
+          backgroundColor: "white",
+        }}
+      >
+        {innerContent}
+      </View>
+    );
+  }
+
   return (
     <Modal
       visible={visible}
@@ -115,63 +198,7 @@ export default function LanguagePickerModal({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 bg-white"
       >
-        <SafeAreaView className="flex-1">
-          {/* Header */}
-          <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-            <Text className="text-xl font-bold text-black flex-1 pr-4">
-              {modalTitle}
-            </Text>
-            <Pressable
-              onPress={handleClose}
-              className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-            >
-              <Ionicons name="close" size={24} color="black" />
-            </Pressable>
-          </View>
-
-          {/* Search Bar */}
-          <View className="px-4 py-3">
-            <View className="h-12 bg-surface shadow-lg rounded-full flex-row items-center px-4">
-              <Feather name="search" size={20} color="gray" />
-              <TextInput
-                placeholder={t("language_picker.search_placeholder")}
-                className="flex-1 ml-3 text-gray-900 font-medium text-sm p-0"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor="gray"
-                textAlignVertical="center"
-                style={{ includeFontPadding: false }}
-              />
-            </View>
-          </View>
-
-          {/* Language List */}
-          <FlatList
-            data={filteredLanguages}
-            keyExtractor={(item) => item.code}
-            contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingBottom: 40,
-              marginTop: 10,
-            }}
-            showsVerticalScrollIndicator={false}
-            ItemSeparatorComponent={() => <View className="h-3" />}
-            renderItem={({ item }) => (
-              <LanguageItem
-                item={item}
-                isSelected={item.code === selectedCode}
-                onPress={() => handleSelect(item)}
-              />
-            )}
-            ListEmptyComponent={
-              <View className="items-center py-10">
-                <Text className="text-gray-400 font-medium">
-                  {t("language_picker.no_results")}
-                </Text>
-              </View>
-            }
-          />
-        </SafeAreaView>
+        <SafeAreaView className="flex-1">{innerContent}</SafeAreaView>
       </KeyboardAvoidingView>
     </Modal>
   );

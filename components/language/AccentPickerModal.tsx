@@ -63,6 +63,9 @@ interface AccentPickerModalProps {
   selectedAccent?: string;
   /** ISO 639-1 code of the target language (e.g., "en", "fr") */
   targetLanguageCode: string;
+  /** When true, renders as an absolutely-positioned View instead of a native Modal.
+   *  Use this when the picker is opened from inside another Modal (iOS only supports one native modal). */
+  renderInline?: boolean;
 }
 
 export default function AccentPickerModal({
@@ -71,10 +74,67 @@ export default function AccentPickerModal({
   onSelect,
   selectedAccent,
   targetLanguageCode,
+  renderInline,
 }: AccentPickerModalProps) {
   const { t } = useTranslation();
 
   const accents = getAccentsForLanguage(targetLanguageCode);
+
+  const innerContent = (
+    <>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
+        <Text className="text-xl font-bold text-black">
+          {t("accent_picker.title")}
+        </Text>
+        <Pressable
+          onPress={onClose}
+          className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+        >
+          <Ionicons name="close" size={24} color="black" />
+        </Pressable>
+      </View>
+
+      {/* Accent List */}
+      <FlatList
+        data={accents}
+        keyExtractor={(item) => item.bcp47}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: 40,
+          marginTop: 10,
+        }}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        renderItem={({ item }) => (
+          <AccentItem
+            accent={item}
+            isSelected={item.bcp47 === selectedAccent}
+            onPress={() => onSelect(item)}
+          />
+        )}
+      />
+    </>
+  );
+
+  if (renderInline) {
+    if (!visible) return null;
+    return (
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 50,
+          backgroundColor: "white",
+        }}
+      >
+        {innerContent}
+      </View>
+    );
+  }
 
   return (
     <Modal
@@ -83,40 +143,7 @@ export default function AccentPickerModal({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView className="flex-1 bg-white">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-4 border-b border-gray-100">
-          <Text className="text-xl font-bold text-black">
-            {t("accent_picker.title")}
-          </Text>
-          <Pressable
-            onPress={onClose}
-            className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
-          >
-            <Ionicons name="close" size={24} color="black" />
-          </Pressable>
-        </View>
-
-        {/* Accent List */}
-        <FlatList
-          data={accents}
-          keyExtractor={(item) => item.bcp47}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingBottom: 40,
-            marginTop: 10,
-          }}
-          showsVerticalScrollIndicator={false}
-          ItemSeparatorComponent={() => <View className="h-3" />}
-          renderItem={({ item }) => (
-            <AccentItem
-              accent={item}
-              isSelected={item.bcp47 === selectedAccent}
-              onPress={() => onSelect(item)}
-            />
-          )}
-        />
-      </SafeAreaView>
+      <SafeAreaView className="flex-1 bg-white">{innerContent}</SafeAreaView>
     </Modal>
   );
 }

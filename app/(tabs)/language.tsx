@@ -84,7 +84,6 @@ export default function LanguageScreen() {
       // Fallback: Manual Map
       // Normalize locale (e.g. 'hi-IN' -> 'hi')
       const simpleLocale = locale.split("-")[0];
-      // @ts-ignore
       const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
       if (manualName) return manualName;
 
@@ -617,48 +616,49 @@ export default function LanguageScreen() {
                 </RainbowBorder>
               </TouchableOpacity>
             </View>
+
+            {/* Inline Language Picker — rendered inside this modal to avoid nested native modals on iOS */}
+            <LanguagePickerModal
+              renderInline
+              visible={pickerType !== null && pickerType !== "accent"}
+              onClose={() => setPickerType(null)}
+              onSelect={(lang) => {
+                if (pickerType === "native") setNewNativeLang(lang);
+                if (pickerType === "target") setNewTargetLang(lang);
+                if (pickerType === "medium") setNewMediumLang(lang);
+                setPickerType(null);
+              }}
+              selectedCode={
+                pickerType === "native"
+                  ? newNativeLang.code
+                  : pickerType === "target"
+                    ? newTargetLang.code
+                    : newMediumLang?.code
+              }
+              title={
+                pickerType === "native"
+                  ? t("language_picker.select_native")
+                  : pickerType === "target"
+                    ? t("language_picker.select_target")
+                    : t("language_picker.select_instruction")
+              }
+            />
+
+            {/* Inline Accent Picker */}
+            <AccentPickerModal
+              renderInline
+              visible={pickerType === "accent"}
+              onClose={() => setPickerType(null)}
+              onSelect={(accent: AccentVariant) => {
+                setNewAccent(accent);
+                setTimeout(() => setPickerType(null), 300);
+              }}
+              selectedAccent={newAccent.bcp47}
+              targetLanguageCode={newTargetLang.code}
+            />
           </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
-
-      {/* Language Picker Modal - Shared across main screen and create profile */}
-      <LanguagePickerModal
-        visible={pickerType !== null && pickerType !== "accent"}
-        onClose={() => setPickerType(null)}
-        onSelect={(lang) => {
-          if (pickerType === "native") setNewNativeLang(lang);
-          if (pickerType === "target") setNewTargetLang(lang);
-          if (pickerType === "medium") setNewMediumLang(lang);
-          setPickerType(null);
-        }}
-        selectedCode={
-          pickerType === "native"
-            ? newNativeLang.code
-            : pickerType === "target"
-              ? newTargetLang.code
-              : newMediumLang?.code
-        }
-        title={
-          pickerType === "native"
-            ? t("language_picker.select_native")
-            : pickerType === "target"
-              ? t("language_picker.select_target")
-              : t("language_picker.select_instruction")
-        }
-      />
-
-      {/* Accent Picker Modal */}
-      <AccentPickerModal
-        visible={pickerType === "accent"}
-        onClose={() => setPickerType(null)}
-        onSelect={(accent: AccentVariant) => {
-          setNewAccent(accent);
-          // Delay closing to allow selection animation to play
-          setTimeout(() => setPickerType(null), 300);
-        }}
-        selectedAccent={newAccent.bcp47}
-        targetLanguageCode={newTargetLang.code}
-      />
 
       <AlertModal
         visible={alertState.visible}

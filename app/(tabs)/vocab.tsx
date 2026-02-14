@@ -179,7 +179,6 @@ export default function VocabScreen() {
       // Fallback: Manual Map
       // Normalize locale (e.g. 'hi-IN' -> 'hi')
       const simpleLocale = locale.split("-")[0];
-      // @ts-ignore
       const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
       if (manualName) return manualName;
 
@@ -848,6 +847,18 @@ export default function VocabScreen() {
                 )}
               </TouchableOpacity>
             </View>
+
+            {/* Inline Language Picker — inside Add modal to avoid nested native modals on iOS */}
+            <LanguagePickerModal
+              renderInline
+              visible={showLangPicker}
+              onClose={() => setShowLangPicker(false)}
+              onSelect={(lang) => {
+                setNewLanguage(lang);
+                setShowLangPicker(false);
+              }}
+              selectedCode={newLanguage.code}
+            />
           </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
@@ -987,6 +998,18 @@ export default function VocabScreen() {
                 )}
               </TouchableOpacity>
             </View>
+
+            {/* Inline Language Picker — inside Edit modal to avoid nested native modals on iOS */}
+            <LanguagePickerModal
+              renderInline
+              visible={showEditLangPicker}
+              onClose={() => setShowEditLangPicker(false)}
+              onSelect={(lang) => {
+                setEditLanguage(lang);
+                setShowEditLangPicker(false);
+              }}
+              selectedCode={editLanguage.code}
+            />
           </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
@@ -1081,16 +1104,6 @@ export default function VocabScreen() {
           </View>
         </SafeAreaView>
       </Modal>
-
-      <LanguagePickerModal
-        visible={showEditLangPicker}
-        onClose={() => setShowEditLangPicker(false)}
-        onSelect={(lang) => {
-          setEditLanguage(lang);
-          setShowEditLangPicker(false);
-        }}
-        selectedCode={editLanguage.code}
-      />
 
       {/* Folder Picker Modal */}
       <Modal
@@ -1237,16 +1250,6 @@ export default function VocabScreen() {
           </View>
         </SafeAreaView>
       </Modal>
-
-      <LanguagePickerModal
-        visible={showLangPicker}
-        onClose={() => setShowLangPicker(false)}
-        onSelect={(lang) => {
-          setNewLanguage(lang);
-          setShowLangPicker(false);
-        }}
-        selectedCode={newLanguage.code}
-      />
 
       {/* Multi-Phrase Selection Modal */}
       <Modal

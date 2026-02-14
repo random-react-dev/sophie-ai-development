@@ -1,17 +1,14 @@
-import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
-import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { isVoiceModeAvailable } from "@/utils/environment";
 import { Feather } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { Tabs, usePathname, useRouter } from "expo-router";
-import { Globe, Languages, VenetianMask } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, Pressable, Text, View } from "react-native";
+import { Tabs } from "expo-router";
+import { Globe, Languages, MessageCircle, VenetianMask } from "lucide-react-native";
+import React, { useEffect } from "react";
+import { Dimensions, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Get screen width for responsive sizing
@@ -29,22 +26,10 @@ const responsiveFontSize = (size: number) => {
 const voiceAvailable = isVoiceModeAvailable();
 
 export default function TabLayout() {
-  const pathname = usePathname();
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const {
-    startPTTRecording,
-    stopPTTRecording,
-    isPTTActive,
-    isProcessing,
-    connectionState,
-  } = useConversationStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
   const { fetchVocabulary } = useVocabularyStore();
   const { user } = useAuthStore();
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const [isPressing, setIsPressing] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -53,47 +38,6 @@ export default function TabLayout() {
       fetchVocabulary();
     }
   }, [user]);
-
-  // Determine if Talk tab is focused
-  const isTalkFocused = pathname === "/talk";
-
-  // Scale animation for active state (subtle lift when focused)
-  const activeScaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    Animated.spring(activeScaleAnim, {
-      toValue: isTalkFocused ? 1.08 : 1, // Slightly larger when focused
-      useNativeDriver: true,
-      damping: 15,
-      stiffness: 150,
-    }).start();
-  }, [isTalkFocused]);
-
-  // Pulsing animation ONLY when recording
-  useEffect(() => {
-    if (!isPTTActive) {
-      pulseAnim.setValue(1);
-      return;
-    }
-
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.4,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-
-    animation.start();
-    return () => animation.stop();
-  }, [isPTTActive]);
 
   // Find flag for active profile target language
   const activeFlag = activeProfile
@@ -110,15 +54,10 @@ export default function TabLayout() {
           backgroundColor: "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#f1f5f9",
-          // Use a safer height calculation that works across devices
           height: 60 + (insets.bottom > 0 ? insets.bottom : 10),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
           paddingHorizontal: 8,
-          // CRITICAL: Allow floating buttons to extend outside the tab bar
-          overflow: "visible",
-          // Ensure tab bar sits above other content if needed
-          zIndex: 50,
         },
         tabBarLabel: ({ children, color }) => (
           <Text
@@ -164,112 +103,10 @@ export default function TabLayout() {
           title: t("tabs.talk"),
           // Hide the tab completely in Expo Go (native modules not available)
           href: voiceAvailable ? undefined : null,
-          tabBarButton: voiceAvailable
-            ? () => {
-                const isFocused = pathname === "/talk";
-                const isConnected = connectionState === "connected";
-
-                const handlePressIn = () => {
-                  if (!isFocused) return;
-
-                  setIsPressing(true);
-
-                  Animated.spring(scaleAnim, {
-                    toValue: 1.1,
-                    useNativeDriver: true,
-                  }).start();
-
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                };
-
-                const handlePressOut = () => {
-                  setIsPressing(false);
-
-                  Animated.spring(scaleAnim, {
-                    toValue: 1,
-                    useNativeDriver: true,
-                  }).start();
-
-                  if (isPTTActive) {
-                    stopPTTRecording();
-                  }
-                };
-
-                const handleLongPress = () => {
-                  if (!isFocused || !isConnected) return;
-
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  startPTTRecording();
-                };
-
-                const handlePress = () => {
-                  if (!isFocused) {
-                    router.push("/(tabs)/talk");
-                  }
-                };
-
-                const getButtonColor = (): string => {
-                  if (isPTTActive) return "bg-white shadow-red-200";
-                  if (isProcessing) return "bg-white shadow-orange-200";
-                  if (!isFocused) return "bg-white shadow-gray-200";
-                  if (!isConnected) return "bg-gray-100 shadow-gray-200";
-                  return isPressing
-                    ? "bg-gray-50 shadow-blue-200"
-                    : "bg-white shadow-blue-200";
-                };
-
-                return (
-                  <Animated.View
-                    style={{
-                      transform: [
-                        {
-                          scale: Animated.multiply(activeScaleAnim, scaleAnim),
-                        },
-                      ],
-                    }}
-                    className="items-center justify-center -top-8"
-                  >
-                    <Pressable
-                      onPressIn={handlePressIn}
-                      onPressOut={handlePressOut}
-                      onLongPress={handleLongPress}
-                      delayLongPress={400}
-                      onPress={handlePress}
-                    >
-                      <RainbowBorder
-                        borderRadius={20}
-                        borderWidth={3}
-                        innerBackgroundClassName=""
-                        className="size-20"
-                        style={{
-                          // Subtle premium shadow when active
-                          shadowColor:
-                            isFocused && !isPTTActive ? "#70369D" : "#000",
-                          shadowOffset: { width: 0, height: isFocused ? 3 : 2 },
-                          shadowOpacity:
-                            isFocused && !isPTTActive ? 0.25 : 0.15,
-                          shadowRadius: isFocused && !isPTTActive ? 8 : 4,
-                          elevation: isFocused && !isPTTActive ? 8 : 4,
-                        }}
-                        containerClassName={`items-center justify-center ${getButtonColor()}`}
-                      >
-                        <Feather
-                          name="mic"
-                          size={26}
-                          color={
-                            isPTTActive
-                              ? "#ef4444"
-                              : isProcessing
-                                ? "black"
-                                : "black"
-                          }
-                        />
-                      </RainbowBorder>
-                    </Pressable>
-                  </Animated.View>
-                );
-              }
-            : undefined,
+          tabBarActiveTintColor: "#3b82f6",
+          tabBarIcon: ({ color }) => (
+            <MessageCircle size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
