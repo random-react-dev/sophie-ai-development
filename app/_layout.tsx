@@ -33,7 +33,8 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
-  const { session, initialized, initialize, pending2FA } = useAuthStore();
+  const { session, initialized, initialize, pending2FA, isLoading } =
+    useAuthStore();
   const { loadTheme } = useThemeStore();
   const segments = useSegments();
   const router = useRouter();
@@ -63,6 +64,16 @@ export default function RootLayout() {
   useEffect(() => {
     if (!initialized) return;
 
+    // Don't navigate while auth operations (signIn/signUp/signOut) are in progress.
+    // This prevents the SIGNED_IN event from triggering premature navigation
+    // before signIn has finished checking for 2FA.
+    if (isLoading) return;
+
+    // Don't navigate while 2FA verification is pending.
+    // During the 2FA flow, session is null (signOut was called intentionally),
+    // but we must stay put so the OTP modal can show.
+    if (pending2FA) return;
+
     const inAuthGroup = segments[0] === "(auth)";
     const inOnboardingGroup = segments[0] === "(onboarding)";
     const inTabsGroup = segments[0] === "(tabs)";
@@ -72,10 +83,6 @@ export default function RootLayout() {
       session?.user?.user_metadata?.onboarding_data?.completed_at;
 
     if (session) {
-      // If 2FA verification is pending, don't navigate away
-      if (pending2FA) {
-        return;
-      }
       if (!onboardingCompleted) {
         // User is signed in but hasn't finished onboarding
         if (!inOnboardingGroup) {
@@ -102,7 +109,7 @@ export default function RootLayout() {
       // User is not signed in and not in auth group
       router.replace("/(auth)/login");
     }
-  }, [session, segments, initialized, router, pending2FA]);
+  }, [session, segments, initialized, router, pending2FA, isLoading]);
 
   // Don't render until fonts are loaded
   if (!fontsLoaded) {

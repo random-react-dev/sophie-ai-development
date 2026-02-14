@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
 import * as aesjs from 'aes-js';
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import 'react-native-get-random-values';
 
 // As Expo's SecureStore does not support values larger than 2048 bytes,
@@ -92,3 +92,16 @@ export const supabase = createClient(
         },
     }
 );
+
+// Tells Supabase Auth to continuously refresh the session automatically if
+// the app is in the foreground. When the app goes to background, the refresh
+// stops to save resources. (Official Supabase React Native recommendation)
+if (Platform.OS !== 'web') {
+    AppState.addEventListener('change', (state) => {
+        if (state === 'active') {
+            supabase.auth.startAutoRefresh();
+        } else {
+            supabase.auth.stopAutoRefresh();
+        }
+    });
+}

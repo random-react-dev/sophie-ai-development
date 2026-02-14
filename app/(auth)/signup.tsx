@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function SignupScreen() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
-  const { signUp, updateProfile, isLoading } = useAuthStore();
+  const { signUp, updateProfile, isLoading, initialized } = useAuthStore();
 
   // Modal state
   const [modalVisible, setModalVisible] = useState(false);
@@ -131,7 +131,7 @@ export default function SignupScreen() {
         <Button
           title={isLoading ? "Creating account..." : "Create Account"}
           onPress={handleSignup}
-          disabled={isLoading}
+          disabled={isLoading || !initialized}
           className="mt-6 h-14"
           variant="rainbow"
         />

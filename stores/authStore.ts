@@ -116,11 +116,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signUp: async (email, password) => {
     set({ isLoading: true });
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (error) throw error;
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (!error) return;
+
+      // Retry once on transient network errors (handles cold-start race condition)
+      const isRetryable =
+        error.name === "AuthRetryableFetchError" ||
+        error.message.toLowerCase().includes("network request failed");
+
+      if (isRetryable) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const { error: retryError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (retryError) throw retryError;
+        return;
+      }
+
+      throw error;
     } finally {
       set({ isLoading: false });
     }
@@ -244,7 +258,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await clearUserData();
 
     await supabase.auth.signOut();
-    set({ user: null, session: null, isLoading: false });
+    set({
+      user: null,
+      session: null,
+      isLoading: false,
+      pending2FA: false,
+      pending2FAEmail: null,
+      showTrialPopup: false,
+    });
   },
   deleteAccount: async () => {
     set({ isLoading: true });
@@ -256,7 +277,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Clear all user-specific data before signing out
       await clearUserData();
       await supabase.auth.signOut();
-      set({ user: null, session: null, isLoading: false });
+      set({
+        user: null,
+        session: null,
+        isLoading: false,
+        pending2FA: false,
+        pending2FAEmail: null,
+        showTrialPopup: false,
+      });
     } finally {
       set({ isLoading: false });
     }
@@ -319,7 +347,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set((state) => ({
           session,
           user: newUser,
-          showTrialPopup: event === "SIGNED_IN" ? true : state.showTrialPopup,
+          // Clear showTrialPopup on SIGNED_OUT; preserve on other events.
+          // showTrialPopup is set explicitly by signIn, verify2FA, and initialize —
+          // NOT here, to avoid showing it during the 2FA signIn flow.
+          showTrialPopup:
+            event === "SIGNED_OUT" ? false : state.showTrialPopup,
         }));
       },
     );
