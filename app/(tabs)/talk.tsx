@@ -235,7 +235,6 @@ export default function TalkScreen() {
     targetLanguage !== null && nativeLanguage !== null;
 
   // --- Floating PTT Button State ---
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isPressing, setIsPressing] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -264,15 +263,6 @@ export default function TalkScreen() {
     return () => animation.stop();
   }, [isPTTActive]);
 
-  // Cleanup long-press timer on unmount
-  useEffect(() => {
-    return () => {
-      if (longPressTimer.current) {
-        clearTimeout(longPressTimer.current);
-      }
-    };
-  }, []);
-
   const handlePTTPressIn = () => {
     if (connectionState !== "connected") return;
     setIsPressing(true);
@@ -282,11 +272,13 @@ export default function TalkScreen() {
     }).start();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Manual long-press timer (more reliable than onLongPress on physical devices)
-    longPressTimer.current = setTimeout(() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // Start recording immediately — short recordings (< 1s) are safely
+    // discarded by stopPTTRecording() in the conversation store.
+    try {
       startPTTRecording();
-    }, 400);
+    } catch (err) {
+      Logger.error(TAG, "Failed to start PTT recording", err);
+    }
   };
 
   const handlePTTPressOut = () => {
@@ -296,11 +288,6 @@ export default function TalkScreen() {
       useNativeDriver: true,
     }).start();
 
-    // Cancel timer if not yet fired
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
     // Stop recording if active
     if (isPTTActive) {
       stopPTTRecording();
@@ -874,11 +861,11 @@ ${levelGuide}
           }}
           pointerEvents="box-none"
         >
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Pressable
-              onPressIn={handlePTTPressIn}
-              onPressOut={handlePTTPressOut}
-            >
+          <Pressable
+            onPressIn={handlePTTPressIn}
+            onPressOut={handlePTTPressOut}
+          >
+            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
               <RainbowBorder
                 borderRadius={9999}
                 borderWidth={2.5}
@@ -898,8 +885,8 @@ ${levelGuide}
                   color={isPTTActive ? "#ef4444" : "black"}
                 />
               </RainbowBorder>
-            </Pressable>
-          </Animated.View>
+            </Animated.View>
+          </Pressable>
         </View>
       )}
 
