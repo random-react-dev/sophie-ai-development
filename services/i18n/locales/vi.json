@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "Chọn ngôn ngữ bạn muốn học",
       "selectCountry": "Chọn quốc gia",
       "selectNativeLanguage": "Ngôn ngữ mẹ đẻ",
-      "selectLearningLanguage": "Chọn ngôn ngữ học"
+      "selectLearningLanguage": "Chọn ngôn ngữ học",
+      "levelLabel": "Trình độ của bạn"
     },
     "options": {
       "goal": {
@@ -414,44 +415,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "Gọi Cà phê",
-      "description": "Gọi một ly latte và bánh croissant tại một quán cà phê đông đúc.",
-      "sophieRole": "Nhân viên pha chế tại một quán cà phê trung tâm thành phố bận rộn",
-      "userRole": "Một khách hàng đang tìm bữa sáng",
+      "title": "Gọi cà phê",
+      "description": "Gọi một ly latte và một chiếc bánh sừng bò (croissant) tại một quán cà phê đông đúc.",
+      "sophieRole": "Nhân viên pha chế thân thiện tại một quán cà phê nhỏ ấm cúng trong khu phố mang tên 'The Morning Grind'",
+      "userRole": "Một khách hàng quen ghé qua ăn sáng trước khi đi làm",
       "topic": "Cuộc sống hàng ngày",
-      "context": "Bạn đang ở một quán cà phê tên là \"The Morning Grind\". Bạn muốn gọi một ly cà phê và thứ gì đó để ăn."
+      "context": "Bạn đang ở một quán cà phê ấm cúng tên là 'The Morning Grind'. Nhân viên pha chế rất vui vẻ và hay trò chuyện — hãy gọi cà phê, chọn một chiếc bánh ngọt và tận hưởng cuộc trò chuyện nhỏ thân thiện."
     },
     "job-interview": {
       "title": "Phỏng vấn xin việc",
       "description": "Phỏng vấn cho vị trí kỹ sư phần mềm.",
-      "sophieRole": "Nhà tuyển dụng kỹ thuật cấp cao tại một công ty công nghệ",
-      "userRole": "Ứng viên ứng tuyển cho vai trò Nhà phát triển Frontend",
+      "sophieRole": "Một chuyên viên tuyển dụng kỹ thuật cấp cao thân thiện nhưng chuyên nghiệp tại một công ty khởi nghiệp công nghệ nổi tiếng",
+      "userRole": "Ứng viên đang được phỏng vấn cho vị trí lập trình viên frontend",
       "topic": "Sự nghiệp",
-      "context": "Bạn đang trong cuộc phỏng vấn cho công việc mơ ước của mình. Sophie AI sẽ hỏi về kinh nghiệm và kỹ năng của bạn."
+      "context": "Bạn đang tham gia buổi phỏng vấn tại một công ty khởi nghiệp công nghệ hiện đại. Chuyên viên tuyển dụng sẽ hỏi về kinh nghiệm, kỹ năng và điều gì thúc đẩy bạn."
     },
     "asking-directions": {
       "title": "Hỏi đường",
-      "description": "Bạn bị lạc ở Tokyo và cần tìm một ga tàu.",
-      "sophieRole": "Một cư dân địa phương nhiệt tình ở Tokyo",
-      "userRole": "Một du khách hơi bị lạc",
+      "description": "Bạn bị lạc ở Tokyo và cần tìm ga tàu điện.",
+      "sophieRole": "Một người dân địa phương thân thiện đang đi dạo gần Shibuya và rất am hiểu khu vực này",
+      "userRole": "Khách du lịch đang khám phá Tokyo và điện thoại vừa mới hết pin",
       "topic": "Du lịch",
-      "context": "Bạn đang ở gần Giao lộ Shibuya và cần đến ga JR nhưng điện thoại của bạn đã hết pin."
+      "context": "Bạn đang ở gần ngã tư Shibuya và cần đến ga JR nhưng điện thoại đã sập nguồn. Một người dân địa phương thân thiện đề nghị giúp đỡ."
     },
     "hotel-check-in": {
       "title": "Nhận phòng khách sạn",
-      "description": "Làm thủ tục nhận phòng và yêu cầu phòng có view đẹp.",
-      "sophieRole": "Lễ tân tại một khách sạn 4 sao",
-      "userRole": "Một vị khách đến lưu trú ba đêm",
+      "description": "Làm thủ tục nhận phòng và yêu cầu phòng có tầm nhìn đẹp.",
+      "sophieRole": "Nhân viên lễ tân chuyên nghiệp và hiếu khách tại 'The Grand Vista', một khách sạn 4 sao",
+      "userRole": "Khách hàng vừa đến sau một chuyến bay dài để lưu trú trong ba đêm",
       "topic": "Du lịch",
-      "context": "Bạn có một đặt phòng dưới tên của bạn. Bạn muốn xác nhận thời gian ăn sáng và hỏi xem có phòng nào có view đẹp không."
+      "context": "Bạn đã đặt phòng trước và vừa mới đến sau một chuyến bay dài. Nhân viên lễ tân chào đón bạn nồng nhiệt — hãy làm thủ tục nhận phòng, hỏi về các tiện nghi và xem liệu bạn có thể đổi lấy một căn phòng có tầm nhìn đẹp hay không."
     },
     "political-debate": {
-      "title": "Tranh luận Chính trị",
-      "description": "Thảo luận về các chính sách môi trường và biến đổi khí hậu.",
-      "sophieRole": "Một người ủng hộ môi trường đầy nhiệt huyết",
-      "userRole": "Một công dân hoài nghi hoặc nhà hoạch định chính sách đối lập",
-      "topic": "Các vấn đề hiện tại",
-      "context": "Tham gia vào một cuộc thảo luận sâu sắc về sự cân bằng giữa tăng trưởng kinh tế và bảo vệ môi trường."
+      "title": "Tranh luận chính trị",
+      "description": "Thảo luận về chính sách môi trường và biến đổi khí hậu.",
+      "sophieRole": "Một nhà nghiên cứu chính sách môi trường đầy nhiệt huyết nhưng luôn tôn trọng ý kiến khác biệt",
+      "userRole": "Một công dân có nhiều câu hỏi và có thể có quan điểm khác về chính sách môi trường",
+      "topic": "Thời sự",
+      "context": "Tham gia vào một cuộc thảo luận sâu về sự cân bằng giữa tăng trưởng kinh tế và bảo vệ môi trường với một nhà nghiên cứu chuyên gia."
     }
   },
   "common": {

@@ -11,6 +11,7 @@ import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
+import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useFocusEffect, usePathname, useRouter } from "expo-router";
@@ -189,6 +190,7 @@ export default function TalkScreen() {
     scenarioSelectionTimestamp,
   } = useScenarioStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
+  const { cefrLevel } = useLearningStore();
   const { session, user } = useAuthStore();
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef<boolean>(false);
@@ -348,7 +350,11 @@ ${levelGuide}
           initialPrompt = `Set the scene and speak your opening line as ${selectedScenario.sophieRole}. Start with a small atmospheric detail or action, then greet the user naturally. Make it feel like the user just walked into this moment.`;
         } else {
           Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
-          instruction = buildTutorPrompt(targetLanguage, nativeLanguage);
+          const levelGuide = LEVEL_GUIDANCE[cefrLevel] || LEVEL_GUIDANCE["S1"];
+          instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
+
+## Language Difficulty — ${cefrLevel}
+${levelGuide}`;
           initialPrompt =
             "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences.";
         }
@@ -434,6 +440,7 @@ ${levelGuide}
     nativeLanguage, // Re-run when native language changes
     selectedScenario, // Re-run when scenario changes
     practicePhrase, // Re-run when practice phrase changes
+    cefrLevel, // Re-run when CEFR level changes
     scenarioSelectionTimestamp, // Re-run when scenario is re-selected (even if same object)
     isFocused, // Re-run on focus change
   ]);

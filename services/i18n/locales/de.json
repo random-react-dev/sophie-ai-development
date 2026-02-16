@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "Wählen Sie die Sprache, die Sie lernen möchten",
       "selectCountry": "Land auswählen",
       "selectNativeLanguage": "Muttersprache",
-      "selectLearningLanguage": "Lernsprache wählen"
+      "selectLearningLanguage": "Lernsprache wählen",
+      "levelLabel": "Ihr Niveau"
     },
     "options": {
       "goal": {
@@ -414,44 +415,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "Kaffee Bestellen",
+      "title": "Kaffee bestellen",
       "description": "Bestellen Sie einen Latte und ein Croissant in einem belebten Café.",
-      "sophieRole": "Barista in einem belebten Café im Stadtzentrum",
-      "userRole": "Ein Kunde, der Frühstück sucht",
-      "topic": "Tägliches Leben",
-      "context": "Sie sind in einem Café namens \"The Morning Grind\". Sie möchten einen Kaffee und etwas zu essen bestellen."
+      "sophieRole": "Freundlicher Barista in einem gemütlichen Nachbarschaftscafé namens 'The Morning Grind'",
+      "userRole": "Ein Stammkunde, der vor der Arbeit zum Frühstück vorbeikommt",
+      "topic": "Alltag",
+      "context": "Sie befinden sich in einem gemütlichen Café namens 'The Morning Grind'. Der Barista ist fröhlich und gesprächig – bestellen Sie Ihren Kaffee, wählen Sie ein Gebäck und genießen Sie einen freundlichen Plausch."
     },
     "job-interview": {
       "title": "Vorstellungsgespräch",
-      "description": "Interview für eine Position als Softwareingenieur.",
-      "sophieRole": "Senior Technical Recruiter bei einem Technologieunternehmen",
-      "userRole": "Kandidat, der sich für eine Frontend-Entwickler-Rolle bewirbt",
+      "description": "Vorstellungsgespräch für eine Stelle als Softwareentwickler.",
+      "sophieRole": "Freundlicher, aber professioneller Senior Technical Recruiter bei einem bekannten Tech-Startup",
+      "userRole": "Ein Kandidat für ein Vorstellungsgespräch für eine Frontend-Entwickler-Position",
       "topic": "Karriere",
-      "context": "Sie sind in einem Vorstellungsgespräch für Ihren Traumjob. Sophie AI wird Sie nach Ihrer Erfahrung und Ihren Fähigkeiten fragen."
+      "context": "Sie führen ein Vorstellungsgespräch bei einem modernen Tech-Startup. Der Recruiter wird Sie nach Ihren Erfahrungen, Fähigkeiten und Ihrem Antrieb fragen."
     },
     "asking-directions": {
-      "title": "Nach dem Weg Fragen",
+      "title": "Nach dem Weg fragen",
       "description": "Sie haben sich in Tokio verlaufen und müssen einen Bahnhof finden.",
-      "sophieRole": "Ein hilfsbereiter Einheimischer in Tokio",
-      "userRole": "Ein Tourist, der sich etwas verlaufen hat",
-      "topic": "Reisen",
-      "context": "Sie sind in der Nähe der Shibuya-Kreuzung und müssen zum JR-Bahnhof, aber Ihr Handy-Akku ist leer."
+      "sophieRole": "Ein freundlicher Anwohner bei einem Spaziergang in der Nähe von Shibuya, der sich in der Gegend gut auskennt",
+      "userRole": "Ein Tourist, der Tokio erkundet und dessen Handy-Akku gerade leer ist",
+      "topic": "Reise",
+      "context": "Sie befinden sich in der Nähe der Shibuya-Kreuzung und müssen zum JR-Bahnhof gelangen, aber Ihr Handy ist leer. Ein freundlicher Einheimischer bietet Hilfe an."
     },
     "hotel-check-in": {
-      "title": "Hotel Check-in",
-      "description": "Checken Sie ein und fragen Sie nach einem Zimmer und einer Aussicht.",
-      "sophieRole": "Rezeptionist an der Rezeption eines 4-Sterne-Hotels",
-      "userRole": "Ein Gast, der für einen Aufenthalt von drei Nächten ankommt",
-      "topic": "Reisen",
-      "context": "Sie haben eine Reservierung auf Ihren Namen. Sie möchten die Frühstückszeiten bestätigen und fragen, ob ein Zimmer mit schöner Aussicht verfügbar ist."
+      "title": "Check-in im Hotel",
+      "description": "Checken Sie ein und fragen Sie nach einem Zimmer mit Aussicht.",
+      "sophieRole": "Professioneller und herzlicher Rezeptionist im 'The Grand Vista', einem 4-Sterne-Hotel",
+      "userRole": "Ein Gast, der nach einem langen Flug für einen dreitägigen Aufenthalt ankommt",
+      "topic": "Reise",
+      "context": "Sie haben eine Reservierung und sind gerade nach einem langen Flug angekommen. Der Rezeptionist ist herzlich – checken Sie ein, fragen Sie nach den Annehmlichkeiten und sehen Sie nach, ob Sie ein Zimmer mit Aussicht bekommen können."
     },
     "political-debate": {
       "title": "Politische Debatte",
-      "description": "Diskutieren Sie über Umweltpolitik und Klimawandel.",
-      "sophieRole": "Ein leidenschaftlicher Umweltaktivist",
-      "userRole": "Ein skeptischer Bürger oder gegnerischer Politiker",
-      "topic": "Aktuelle Angelegenheiten",
-      "context": "Führen Sie eine tiefgehende Diskussion über das Gleichgewicht zwischen Wirtschaftswachstum und Umweltschutz."
+      "description": "Diskussion über Umweltpolitik und den Klimawandel.",
+      "sophieRole": "Ein leidenschaftlicher, aber respektvoller Forscher für Umweltpolitik",
+      "userRole": "Ein Bürger mit Fragen und möglicherweise unterschiedlichen Ansichten zur Umweltpolitik",
+      "topic": "Aktuelle Themen",
+      "context": "Nehmen Sie an einer nachdenklichen Diskussion über das Gleichgewicht zwischen Wirtschaftswachstum und Umweltschutz mit einem sachkundigen Forscher teil."
     }
   },
   "common": {

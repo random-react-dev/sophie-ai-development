@@ -10,12 +10,14 @@ import {
   Language,
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
+import { CEFR_LEVELS } from "@/constants/scenarios";
 import { useTranslation } from "@/hooks/useTranslation";
 import { speakWord, stopSpeaking } from "@/services/audio/tts";
 import { Logger } from "@/services/common/Logger";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import { CreateProfileDTO } from "@/services/supabase/profiles";
 import { useAuthStore } from "@/stores/authStore";
+import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
@@ -50,6 +52,7 @@ export default function LanguageScreen() {
   const { t, locale } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
   const { user } = useAuthStore();
+  const { cefrLevel, setCefrLevel } = useLearningStore();
   const {
     profiles,
     activeProfile,
@@ -494,7 +497,7 @@ export default function LanguageScreen() {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={() => setPickerType("accent")}
-                    className="flex-row items-center pt-4"
+                    className="flex-row items-center pt-4 pb-4"
                   >
                     <CircleFlag
                       countryCode={newAccent.countryCode || "us"}
@@ -512,6 +515,57 @@ export default function LanguageScreen() {
                     </View>
                     <ChevronDown size={20} color="#111827" />
                   </TouchableOpacity>
+                  <View className="h-[1px] bg-gray-200" />
+
+                  {/* Level Selector (S1-S6) */}
+                  <View className="pt-4">
+                    <Text className="text-gray-500 text-sm font-semibold capitalize mb-2 ml-1">
+                      {t("onboarding.profileStep.levelLabel")}
+                    </Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      className="mt-1"
+                      contentContainerStyle={{ gap: 6 }}
+                    >
+                      {CEFR_LEVELS.map((l) => {
+                        const isSelected = cefrLevel === l;
+
+                        if (isSelected) {
+                          return (
+                            <TouchableOpacity
+                              key={l}
+                              activeOpacity={0.7}
+                              onPress={() => setCefrLevel(l)}
+                            >
+                              <RainbowBorder
+                                borderRadius={9999}
+                                borderWidth={1}
+                                containerClassName="px-4 py-2"
+                              >
+                                <Text className="font-bold text-sm text-black">
+                                  {l}
+                                </Text>
+                              </RainbowBorder>
+                            </TouchableOpacity>
+                          );
+                        }
+
+                        return (
+                          <TouchableOpacity
+                            key={l}
+                            activeOpacity={0.7}
+                            onPress={() => setCefrLevel(l)}
+                            className="px-4 py-2 rounded-full border border-gray-300"
+                          >
+                            <Text className="font-bold text-sm text-gray-600">
+                              {l}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
                 </View>
               </View>
 

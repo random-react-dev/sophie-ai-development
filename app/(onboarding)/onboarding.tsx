@@ -172,6 +172,7 @@ export default function OnboardingScreen() {
     if (currentStep === 10) {
       try {
         const { currentLanguage } = useLanguageStore.getState();
+        const { cefrLevel } = useLearningStore.getState();
         const onboardingMetadata = {
           full_name: data.name,
           country: data.country,
@@ -184,6 +185,7 @@ export default function OnboardingScreen() {
             learning_duration: data.learningDuration,
             speaking_level: data.speakingLevel,
             confidence_level: data.confidenceLevel,
+            cefr_level: cefrLevel,
             barriers: data.barriers,
             focus_areas: data.focusAreas,
             discovery_source: data.discoverySource,
@@ -351,14 +353,12 @@ export default function OnboardingScreen() {
 
         {/* Inline Rainbow Progress Bar */}
         <View className="flex-1">
-          <RainbowProgressBar currentStep={currentStep} totalSteps={10} />
-        </View>
-
-        {/* Step Counter */}
-        <View className="min-w-[40px] items-end">
-          <Text className="text-sm font-bold text-gray-400">
-            <Text className="text-gray-900">{currentStep}</Text>/10
-          </Text>
+          <RainbowProgressBar
+            currentStep={currentStep}
+            totalSteps={10}
+            subStep={profileSubStep}
+            totalSubSteps={3}
+          />
         </View>
       </View>
 

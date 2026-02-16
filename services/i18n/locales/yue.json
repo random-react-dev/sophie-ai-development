@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "揀你想學嘅語言",
       "selectCountry": "揀選國家",
       "selectNativeLanguage": "母語",
-      "selectLearningLanguage": "揀選學習語言"
+      "selectLearningLanguage": "揀選學習語言",
+      "levelLabel": "你嘅程度"
     },
     "options": {
       "goal": {
@@ -415,44 +416,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "叫咖啡",
-      "description": "喺一間好忙嘅咖啡室叫一杯鮮奶咖啡同一個牛角包。",
-      "sophieRole": "繁忙市中心咖啡室嘅咖啡師",
-      "userRole": "搵早餐嘅顧客",
+      "title": "去咖啡店買咖啡",
+      "description": "喺一間好忙嘅咖啡店叫杯 latte 同埋一個牛角包。",
+      "sophieRole": "喺一間叫 'The Morning Grind' 嘅舒服街坊咖啡店入面一個好親切嘅咖啡師",
+      "userRole": "返工前去買早餐嘅熟客",
       "topic": "日常生活",
-      "context": "你喺一間叫做「The Morning Grind」嘅咖啡室。你想叫一杯咖啡同少少嘢食。"
+      "context": "你喺一間叫 'The Morning Grind' 嘅舒服咖啡店。咖啡師好開朗同埋好健談 — 叫杯咖啡，揀件西餅，同埋傾下啲親切嘅閒話。"
     },
     "job-interview": {
-      "title": "求職面試",
-      "description": "軟件工程師職位嘅面試。",
-      "sophieRole": "科技公司嘅高級技術招聘人員",
-      "userRole": "申請前端開發人員職位嘅候選人",
-      "topic": "職業",
-      "context": "你而家面試緊你夢寐以求嘅工作。Sophie會問你關於你嘅經驗同技能。"
+      "title": "搵工面試",
+      "description": "應徵軟件工程師職位嘅面試。",
+      "sophieRole": "一間好出名嘅科技初創公司入面一個好親切但係好專業嘅高級技術招聘人員",
+      "userRole": "準備面試前端開發人員職位嘅應徵者",
+      "topic": "事業發展",
+      "context": "你喺一間現代科技初創公司面試緊。招聘人員會問你嘅經驗、技能同埋有咩動力。"
     },
     "asking-directions": {
       "title": "問路",
-      "description": "你喺東京迷路，需要搵火車站。",
-      "sophieRole": "東京一位熱心嘅當地居民",
-      "userRole": "有少少迷路嘅遊客",
+      "description": "你喺東京盪失路，需要搵到火車站。",
+      "sophieRole": "一個喺澀谷附近散緊步，對嗰區好熟嘅親切當地人",
+      "userRole": "喺東京周圍去但係手機岩岩冇晒電嘅遊客",
       "topic": "旅遊",
-      "context": "你喺涉谷十字路口附近，需要去JR站，但你部電話無電。"
+      "context": "你喺澀谷十字路口附近，需要去 JR 站，但係你部手機熄咗。一個親切嘅當地人主動過黎幫你。"
     },
     "hotel-check-in": {
-      "title": "酒店登記入住",
-      "description": "辦理登記入住並要求房間同景觀。",
-      "sophieRole": "四星級酒店嘅前台接待員",
-      "userRole": "入住三晚嘅客人",
+      "title": "酒店入住登記",
+      "description": "辦理入住手續，同埋要求一間景觀好嘅房。",
+      "sophieRole": "'The Grand Vista' 四星級酒店入面一個專業同埋好有禮貌嘅接待員",
+      "userRole": "搭完長途機岩岩到步，準備住三晚嘅客人",
       "topic": "旅遊",
-      "context": "你有預訂。你想確認早餐時間，同問吓有無風景靚嘅房。"
+      "context": "你有預約，搭完長途機岩岩到。接待員好熱情咁歡迎你 — 辦理入住手續，問下有咩設施，同埋睇下可唔可以換間景觀靚啲嘅房。"
     },
     "political-debate": {
       "title": "政治辯論",
-      "description": "討論環境政策同氣候變化。",
-      "sophieRole": "充滿熱誠嘅環境擁護者",
-      "userRole": "持懷疑態度嘅市民或反對派決策者",
+      "description": "討論環境政策同埋氣候變化。",
+      "sophieRole": "一個對環境政策好有熱誠但係好尊重人嘅研究員",
+      "userRole": "對環境政策有疑問，甚至有唔同意見嘅市民",
       "topic": "時事",
-      "context": "就經濟增長同環境保護之間嘅平衡進行深入討論。"
+      "context": "同一個專家研究員深入討論經濟增長同埋環境保護之間嘅平衡。"
     }
   },
   "common": {

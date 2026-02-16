@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "Sélectionnez la langue que vous souhaitez apprendre",
       "selectCountry": "Sélectionner un pays",
       "selectNativeLanguage": "Langue maternelle",
-      "selectLearningLanguage": "Choisir la langue d'apprentissage"
+      "selectLearningLanguage": "Choisir la langue d'apprentissage",
+      "levelLabel": "Votre niveau"
     },
     "options": {
       "goal": {
@@ -414,44 +415,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "Commander un Café",
-      "description": "Commandez un café au lait et un croissant dans un café animé.",
-      "sophieRole": "Barista dans un café animé du centre-ville",
-      "userRole": "Un client cherchant un petit-déjeuner",
-      "topic": "Vie Quotidienne",
-      "context": "Vous êtes dans un café appelé \"The Morning Grind\". Vous voulez commander un café et quelque chose à manger."
+      "title": "Commander un café",
+      "description": "Commandez un latte et un croissant dans un café animé.",
+      "sophieRole": "Barista sympathique dans un café de quartier chaleureux appelé 'The Morning Grind'",
+      "userRole": "Un client régulier qui s'arrête pour prendre son petit-déjeuner avant le travail",
+      "topic": "Vie quotidienne",
+      "context": "Vous êtes dans un café chaleureux appelé 'The Morning Grind'. Le barista est joyeux et bavard — commandez votre café, choisissez une pâtisserie et profitez d'une petite discussion amicale."
     },
     "job-interview": {
-      "title": "Entretien d'Embauche",
+      "title": "Entretien d'embauche",
       "description": "Entretien pour un poste d'ingénieur logiciel.",
-      "sophieRole": "Recruteur Technique Senior dans une entreprise technologique",
-      "userRole": "Candidat postulant pour un rôle de Développeur Frontend",
+      "sophieRole": "Recruteur technique senior amical mais professionnel dans une startup technologique bien connue",
+      "userRole": "Un candidat passant un entretien pour un poste de développeur frontend",
       "topic": "Carrière",
-      "context": "Vous êtes en entretien pour le job de vos rêves. Sophie AI vous posera des questions sur votre expérience et vos compétences."
+      "context": "Vous passez un entretien dans une startup technologique moderne. Le recruteur vous posera des questions sur votre expérience, vos compétences et ce qui vous motive."
     },
     "asking-directions": {
-      "title": "Demander son Chemin",
+      "title": "Demander son chemin",
       "description": "Vous êtes perdu à Tokyo et devez trouver une gare.",
-      "sophieRole": "Un résident local serviable à Tokyo",
-      "userRole": "Un touriste un peu perdu",
+      "sophieRole": "Un habitant sympathique en promenade près de Shibuya, qui connaît bien le quartier",
+      "userRole": "Un touriste explorant Tokyo dont la batterie de téléphone vient de s'épuiser",
       "topic": "Voyage",
-      "context": "Vous êtes près du carrefour de Shibuya et devez vous rendre à la gare JR mais la batterie de votre téléphone est vide."
+      "context": "Vous êtes près du carrefour de Shibuya et vous devez vous rendre à la gare JR, mais votre téléphone est éteint. Un habitant sympathique propose de vous aider."
     },
     "hotel-check-in": {
-      "title": "Enregistrement à l'Hôtel",
-      "description": "Enregistrez-vous et demandez une chambre et une vue.",
-      "sophieRole": "Réceptionniste dans un hôtel 4 étoiles",
-      "userRole": "Un client arrivant pour un séjour de trois nuits",
+      "title": "Enregistrement à l'hôtel",
+      "description": "Enregistrez-vous et demandez une chambre avec vue.",
+      "sophieRole": "Réceptionniste professionnel et accueillant à 'The Grand Vista', un hôtel 4 étoiles",
+      "userRole": "Un client arrivant après un long vol pour un séjour de trois nuits",
       "topic": "Voyage",
-      "context": "Vous avez une réservation à votre nom. Vous voulez confirmer les heures du petit-déjeuner et demander s'il y a une chambre avec une belle vue disponible."
+      "context": "Vous avez une réservation et venez d'arriver après un long vol. Le réceptionniste est accueillant — enregistrez-vous, renseignez-vous sur les services et voyez si vous pouvez obtenir une chambre avec vue."
     },
     "political-debate": {
-      "title": "Débat Politique",
+      "title": "Débat politique",
       "description": "Discuter des politiques environnementales et du changement climatique.",
-      "sophieRole": "Un défenseur passionné de l'environnement",
-      "userRole": "Un citoyen sceptique ou un législateur opposant",
-      "topic": "Affaires Courantes",
-      "context": "Engagez une discussion approfondie sur l'équilibre entre la croissance économique et la protection de l'environnement."
+      "sophieRole": "Un chercheur en politique environnementale passionné mais respectueux",
+      "userRole": "Un citoyen avec des questions et peut-être des points de vue différents sur la politique environnementale",
+      "topic": "Actualités",
+      "context": "Participez à une discussion réfléchie sur l'équilibre entre croissance économique et protection de l'environnement avec un chercheur compétent."
     }
   },
   "common": {

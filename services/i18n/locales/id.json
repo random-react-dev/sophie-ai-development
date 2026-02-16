@@ -18,6 +18,7 @@
       "learningLanguagePlaceholder": "Pilih bahasa yang ingin Anda pelajari",
       "selectCountry": "Pilih Negara",
       "selectLearningLanguage": "Pilih Bahasa Pembelajaran",
+      "levelLabel": "Level Anda",
       "selectNativeLanguage": "Bahasa Ibu"
     },
     "options": {
@@ -416,42 +417,42 @@
     "ordering-coffee": {
       "title": "Memesan Kopi",
       "description": "Pesan latte dan croissant di kafe yang ramai.",
-      "sophieRole": "Barista di kafe pusat kota yang sibuk",
-      "userRole": "Seorang pelanggan mencari sarapan",
+      "sophieRole": "Barista ramah di kafe lingkungan yang nyaman bernama 'The Morning Grind'",
+      "userRole": "Pelanggan tetap yang mampir untuk sarapan sebelum bekerja",
       "topic": "Kehidupan Sehari-hari",
-      "context": "Anda berada di kafe bernama \"The Morning Grind\". Anda ingin memesan kopi dan makanan."
+      "context": "Anda berada di kafe nyaman bernama 'The Morning Grind'. Baristanya ceria dan suka mengobrol — pesan kopi Anda, pilih kue, dan nikmati obrolan ramah."
     },
     "job-interview": {
       "title": "Wawancara Kerja",
       "description": "Wawancara untuk posisi insinyur perangkat lunak.",
-      "sophieRole": "Perekrut Teknis Senior di perusahaan teknologi",
-      "userRole": "Kandidat melamar peran Pengembang Frontend",
+      "sophieRole": "Perekrut teknis senior yang ramah namun profesional di startup teknologi ternama",
+      "userRole": "Kandidat yang sedang diwawancarai untuk peran pengembang frontend",
       "topic": "Karier",
-      "context": "Anda sedang dalam wawancara untuk pekerjaan impian Anda. Sophie AI akan bertanya tentang pengalaman dan keterampilan Anda."
+      "context": "Anda sedang diwawancarai di startup teknologi modern. Perekrut akan bertanya tentang pengalaman, keahlian, dan apa yang memotivasi Anda."
     },
     "asking-directions": {
       "title": "Menanyakan Arah",
       "description": "Anda tersesat di Tokyo dan perlu menemukan stasiun kereta.",
-      "sophieRole": "Penduduk lokal yang membantu di Tokyo",
-      "userRole": "Seorang turis yang sedikit tersesat",
+      "sophieRole": "Penduduk lokal yang ramah sedang berjalan-jalan di dekat Shibuya, yang tahu area tersebut dengan baik",
+      "userRole": "Turis yang sedang menjelajahi Tokyo yang baru saja kehabisan baterai ponsel",
       "topic": "Perjalanan",
-      "context": "Anda berada di dekat Persimpangan Shibuya dan perlu menuju stasiun JR tetapi baterai ponsel Anda habis."
+      "context": "Anda berada di dekat persimpangan Shibuya dan perlu sampai ke stasiun JR tetapi ponsel Anda mati. Seorang penduduk lokal yang ramah menawarkan bantuan."
     },
     "hotel-check-in": {
       "title": "Check-in Hotel",
-      "description": "Check-in dan minta kamar dan pemandangan.",
-      "sophieRole": "Resepsionis meja depan di hotel bintang 4",
-      "userRole": "Seorang tamu yang tiba untuk menginap tiga malam",
+      "description": "Lakukan lapor diri dan minta kamar dengan pemandangan.",
+      "sophieRole": "Resepsionis yang profesional dan ramah di 'The Grand Vista', sebuah hotel bintang 4",
+      "userRole": "Tamu yang datang setelah penerbangan panjang untuk menginap selama tiga malam",
       "topic": "Perjalanan",
-      "context": "Anda memiliki reservasi atas nama Anda. Anda ingin mengonfirmasi waktu sarapan dan bertanya apakah ada kamar dengan pemandangan bagus yang tersedia."
+      "context": "Anda memiliki reservasi atas nama Anda dan baru saja tiba setelah penerbangan panjang. Resepsionisnya ramah — lakukan proses lapor diri, tanyakan tentang fasilitas, dan lihat apakah Anda bisa mendapatkan kamar dengan pemandangan."
     },
     "political-debate": {
       "title": "Debat Politik",
-      "description": "Diskusikan kebijakan lingkungan dan perubahan iklim.",
-      "sophieRole": "Seorang advokat lingkungan yang bersemangat",
-      "userRole": "Warga negara yang skeptis atau pembuat kebijakan oposisi",
-      "topic": "Masalah Terkini",
-      "context": "Terlibat dalam diskusi mendalam tentang keseimbangan antara pertumbuhan ekonomi dan perlindungan lingkungan."
+      "description": "Mendiskusikan kebijakan lingkungan dan perubahan iklim.",
+      "sophieRole": "Peneliti kebijakan lingkungan yang bersemangat namun tetap menghargai pendapat lain",
+      "userRole": "Warga negara dengan pertanyaan dan mungkin sudut pandang yang berbeda tentang kebijakan lingkungan",
+      "topic": "Isu Terkini",
+      "context": "Ikuti diskusi mendalam tentang keseimbangan antara pertumbuhan ekonomi dan perlindungan lingkungan bersama peneliti ahli."
     }
   },
   "common": {

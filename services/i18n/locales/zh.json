@@ -18,7 +18,8 @@
       "learningLanguagePlaceholder": "选择你想学的语言",
       "selectCountry": "选择国家",
       "selectNativeLanguage": "母语",
-      "selectLearningLanguage": "选择学习语言"
+      "selectLearningLanguage": "选择学习语言",
+      "levelLabel": "你的等级"
     },
     "options": {
       "goal": {
@@ -415,44 +416,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "点咖啡",
-      "description": "在繁忙的咖啡馆点一杯拿铁和一个牛角包。",
-      "sophieRole": "繁忙市中心咖啡馆的咖啡师",
-      "userRole": "寻找早餐的顾客",
+      "title": "去咖啡店买咖啡",
+      "description": "在一家繁忙的咖啡馆点一杯拿铁和一个牛角面包。",
+      "sophieRole": "在一家名为 'The Morning Grind' 的温馨邻里咖啡馆里，一位亲切的咖啡师",
+      "userRole": "上班前顺路来吃早餐的常客",
       "topic": "日常生活",
-      "context": "你在一家名为“The Morning Grind”的咖啡馆。你想点一杯咖啡和一些吃的。"
+      "context": "你在一家名为 'The Morning Grind' 的温馨咖啡馆。咖啡师开朗且健谈 — 点一杯咖啡，选一件点心，享受一下亲切的闲聊。"
     },
     "job-interview": {
       "title": "求职面试",
       "description": "软件工程师职位的面试。",
-      "sophieRole": "科技公司的高级技术招聘人员",
-      "userRole": "申请前端开发人员职位的候选人",
-      "topic": "职业",
-      "context": "你正在面试你梦寐以求的工作。Sophie AI会询问你的经验和技能。"
+      "sophieRole": "一家知名科技初创公司里一名称职且专业的高级技术招聘人员",
+      "userRole": "准备面试前端开发人员职位的应聘者",
+      "topic": "事业发展",
+      "context": "你正在一家现代科技初创公司面试。招聘人员会询问你的经验、技能以及你的动力来源。"
     },
     "asking-directions": {
       "title": "问路",
       "description": "你在东京迷路了，需要找到火车站。",
-      "sophieRole": "东京一位热心的当地居民",
-      "userRole": "有点迷路的游客",
-      "topic": "旅行",
-      "context": "你在涩谷十字路口附近，需要去JR站，但你的手机没电了。"
+      "sophieRole": "一位在涩谷附近散步、对该地区非常熟悉的亲切当地人",
+      "userRole": "在东京到处逛但手机刚刚没电了的游客",
+      "topic": "旅游",
+      "context": "你在涩谷十字路口附近，需要去 JR 站，但你的手机关机了。一位亲切的当地人主动过来提供帮助。"
     },
     "hotel-check-in": {
-      "title": "酒店入住",
-      "description": "办理入住并询问房间和景观。",
-      "sophieRole": "四星级酒店的前台接待员",
-      "userRole": "入住三晚的客人",
-      "topic": "旅行",
-      "context": "你名下有预订。你想确认早餐时间，并询问是否有风景好的房间。"
+      "title": "酒店入住登记",
+      "description": "办理入住手续，并要求一间景观好的房间。",
+      "sophieRole": "在 'The Grand Vista' 四星级酒店里一位专业且有礼貌的接待员",
+      "userRole": "搭乘长途航班刚刚抵达，准备入住三晚的客人",
+      "topic": "旅游",
+      "context": "你有预订，搭乘长途航班刚刚抵达。接待员热情地欢迎你 — 办理入住手续，询问有哪些设施，并看看是否可以换一间景观更漂亮的房间。"
     },
     "political-debate": {
       "title": "政治辩论",
       "description": "讨论环境政策和气候变化。",
-      "sophieRole": "充满激情的环境拥护者",
-      "userRole": "持怀疑态度的公民或反对派决策者",
+      "sophieRole": "一位对环境政策充满热情但非常尊重他人的研究员",
+      "userRole": "对环境政策有疑问，甚至有不同意见的公民",
       "topic": "时事",
-      "context": "就经济增长与环境保护之间的平衡进行深入讨论。"
+      "context": "与一位专家研究员深入探讨经济增长与环境保护之间的平衡。"
     }
   },
   "common": {

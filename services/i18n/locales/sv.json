@@ -18,6 +18,7 @@
       "learningLanguagePlaceholder": "Välj språk du vill lära dig",
       "selectCountry": "Välj land",
       "selectLearningLanguage": "Välj inlärningsspråk",
+      "levelLabel": "Din nivå",
       "selectNativeLanguage": "Modersmål"
     },
     "options": {
@@ -414,44 +415,44 @@
   },
   "scenarios_data": {
     "ordering-coffee": {
-      "title": "Beställa Kaffe",
-      "description": "Beställ en latte och en croissant på ett livligt kafé.",
-      "sophieRole": "Barista på ett livligt kafé i centrum",
-      "userRole": "En kund som letar efter frukost",
-      "topic": "Dagligt Liv",
-      "context": "Du är på ett kafé som heter \"The Morning Grind\". Du vill beställa en kaffe och något att äta."
+      "title": "Beställa kaffe",
+      "description": "Beställ en latte och en croissant på ett livligt café.",
+      "sophieRole": "Vänlig barista på ett mysigt kvarterscafé som heter 'The Morning Grind'",
+      "userRole": "En stamkund som tittar förbi för frukost före jobbet",
+      "topic": "Dagligt liv",
+      "context": "Du är på ett mysigt café som heter 'The Morning Grind'. Baristan är glad och pratsam — beställ ditt kaffe, välj ett bakverk och njut av lite vänligt småprat."
     },
     "job-interview": {
       "title": "Anställningsintervju",
-      "description": "Intervju för en position som mjukvaruingenjör.",
-      "sophieRole": "Senior teknisk rekryterare på ett teknikföretag",
-      "userRole": "Kandidat som söker en roll som Frontend-utvecklare",
+      "description": "Intervju för en tjänst som mjukvaruingenjör.",
+      "sophieRole": "Vänlig men professionell senior teknisk rekryterare på en framstående tech-startup",
+      "userRole": "Kandidat som intervjuas för en roll som frontend-utvecklare",
       "topic": "Karriär",
-      "context": "Du är på en intervju för ditt drömjobb. Sophie AI kommer att fråga om din erfarenhet och dina färdigheter."
+      "context": "Du intervjuas på en modern tech-startup. Rekryteraren kommer att fråga om din erfarenhet, dina färdigheter och vad som driver dig."
     },
     "asking-directions": {
-      "title": "Fråga om Vägen",
-      "description": "Du är vilse i Tokyo och behöver hitta en tågstation.",
-      "sophieRole": "En hjälpsam lokalinvånare i Tokyo",
-      "userRole": "En turist som är lite vilse",
+      "title": "Fråga efter vägen",
+      "description": "Du är vilse i Tokyo och behöver hitta tågstationen.",
+      "sophieRole": "Vänlig lokalinvånare som promenerar nära Shibuya och känner till området väl",
+      "userRole": "Turist som utforskar Tokyo och vars telefon precis dog",
       "topic": "Resa",
-      "context": "Du är nära Shibuya Crossing och behöver ta dig till JR-stationen men ditt mobilbatteri är slut."
+      "context": "Du är nära Shibuya-korsningen och behöver ta dig till JR-stationen men din telefon har dött. En vänlig lokalinvånare erbjuder sig att hjälpa till."
     },
     "hotel-check-in": {
       "title": "Hotellincheckning",
-      "description": "Checka in och be om ett rum och en utsikt.",
-      "sophieRole": "Receptionist på ett 4-stjärnigt hotell",
-      "userRole": "En gäst som anländer för en vistelse på tre nätter",
+      "description": "Checka in och be om ett rum med utsikt.",
+      "sophieRole": "Professionell och välkomnande receptionist på 'The Grand Vista', ett 4-stjärnigt hotell",
+      "userRole": "Gäst som anländer efter en lång flygresa för en tre nätters vistelse",
       "topic": "Resa",
-      "context": "Du har en bokning i ditt namn. Du vill bekräfta frukosttiderna och fråga om det finns ett rum med fin utsikt tillgängligt."
+      "context": "Du har en bokning i ditt namn och har precis anlänt efter en lång flygresa. Receptionisten välkomnar dig varmt — checka in, fråga om bekvämligheter och se om du kan få ett rum med utsikt."
     },
     "political-debate": {
-      "title": "Politisk Debatt",
+      "title": "Politisk debatt",
       "description": "Diskutera miljöpolitik och klimatförändringar.",
-      "sophieRole": "En passionerad miljöförespråkare",
-      "userRole": "En skeptisk medborgare eller oppositionspolitiker",
-      "topic": "Aktuella Händelser",
-      "context": "Delta i en djup diskussion om balansen mellan ekonomisk tillväxt och miljöskydd."
+      "sophieRole": "Passionerad men respektfull forskare inom miljöpolitik",
+      "userRole": "Medborgare med frågor och kanske en annan syn på miljöpolitik",
+      "topic": "Aktuella händelser",
+      "context": "Delta i en djupgående diskussion om balansen mellan ekonomisk tillväxt och miljöskydd med en expertforskare."
     }
   },
   "common": {
