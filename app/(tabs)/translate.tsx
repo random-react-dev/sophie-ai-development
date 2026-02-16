@@ -14,6 +14,7 @@ import { speakWord, stopSpeaking } from "@/services/audio/tts";
 import { translateText } from "@/services/gemini/translate";
 // import { geminiWebSocket } from "@/services/gemini/websocket"; // Removed
 import { useAuthStore } from "@/stores/authStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import {
   TranslationHistoryItem,
@@ -62,6 +63,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TranslateScreen() {
   useAuthStore(); // Kept for auth state side effects
+  const { activeProfile } = useProfileStore();
   const { setPracticePhrase } = useScenarioStore();
   const router = useRouter();
   const { addEntry } = useTranslationHistoryStore();
@@ -314,7 +316,7 @@ export default function TranslateScreen() {
         setIsSpeaking(false);
         console.error("TTS Error:", err);
       },
-    });
+    }, 1.0, activeProfile?.preferred_accent);
   };
 
   return (

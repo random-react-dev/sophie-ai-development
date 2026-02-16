@@ -17,6 +17,7 @@ import {
   VocabularyItem,
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -67,6 +68,7 @@ export default function VocabScreen() {
   const ALL_LABEL = t("vocab_screen.all_filter");
   const ALL_FOLDERS_LABEL = t("vocab_screen.all_folders");
   useAuthStore(); // Kept for auth state side effects
+  const { activeProfile } = useProfileStore();
   const { setPracticePhrase } = useScenarioStore();
   const {
     items,
@@ -243,7 +245,7 @@ export default function VocabScreen() {
       onError: () => {
         setSpeakingItemId(null);
       },
-    });
+    }, 1.0, activeProfile?.preferred_accent);
   };
 
   const handleDelete = async (id: string) => {

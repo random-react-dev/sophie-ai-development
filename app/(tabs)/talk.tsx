@@ -2,6 +2,7 @@ import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
+import { getAccentDescription } from "@/constants/accents";
 import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { audioRecorder } from "@/services/audio/recorder";
 import { audioStreamer } from "@/services/audio/streamer";
@@ -70,12 +71,23 @@ const getHelloWord = (code: string): string => HELLO_WORDS[code] || "Hello";
 const buildTutorPrompt = (
   targetLang: Language,
   nativeLang: Language,
+  accentDesc: string | null,
 ): string => {
+  const accentBlock = accentDesc
+    ? `
+
+## ACCENT & DIALECT (CRITICAL — NON-NEGOTIABLE)
+- You MUST speak ${targetLang.name} with a ${accentDesc} accent and pronunciation.
+- Sound like a NATIVE speaker from that region. NOT like a foreigner.
+- EVERY word you speak must UNMISTAKABLY reflect this regional accent.`
+    : "";
+
   return `You are Sophie AI, a warm and encouraging AI language tutor.
 
 ## Context
 - User wants to learn: ${targetLang.name}
 - User's native language: ${nativeLang.name}
+${accentBlock}
 
 ## Your Teaching Style
 - Be warm, patient, and non-judgmental
@@ -129,12 +141,23 @@ const LEVEL_GUIDANCE: Record<string, string> = {
 const buildRoleplayPrompt = (
   targetLang: Language,
   nativeLang: Language,
+  accentDesc: string | null,
 ): string => {
+  const accentBlock = accentDesc
+    ? `
+
+## ACCENT & DIALECT (CRITICAL — NON-NEGOTIABLE)
+- You MUST speak ${targetLang.name} with a ${accentDesc} accent and pronunciation.
+- Sound like a NATIVE speaker from that region. NOT like a foreigner.
+- EVERY word you speak must UNMISTAKABLY reflect this regional accent.`
+    : "";
+
   return `You are Sophie AI, an incredibly engaging and natural AI language tutor helping the user practice real-world conversations through immersive roleplay.
 
 ## Language Context
 - User is learning: ${targetLang.name}
 - User's native language: ${nativeLang.name}
+${accentBlock}
 
 ## Core Roleplay Principles
 - **BE the character** — fully embody the role with personality, emotions, and natural reactions. You are NOT an AI tutor pretending; you ARE this person.
@@ -308,12 +331,17 @@ export default function TalkScreen() {
           return;
         }
 
+        // Resolve accent description from profile
+        const accentDesc = activeProfile?.preferred_accent
+          ? getAccentDescription(activeProfile.preferred_accent)
+          : null;
+
         // Build instruction based on context
         let instruction: string;
         let initialPrompt: string | undefined;
 
         if (practicePhrase) {
-          instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
+          instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
 ## Special Focus
 The user wants to practice the phrase: "${practicePhrase}".
@@ -325,7 +353,7 @@ Help them use this phrase naturally in conversation.`;
             `Initializing for Scenario: ${selectedScenario.title}`,
           );
           const levelGuide = LEVEL_GUIDANCE[selectedScenario.level] || LEVEL_GUIDANCE["S2"];
-          instruction = `${buildRoleplayPrompt(targetLanguage, nativeLanguage)}
+          instruction = `${buildRoleplayPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
 ## Your Character
 You are: ${selectedScenario.sophieRole}
@@ -351,7 +379,7 @@ ${levelGuide}
         } else {
           Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
           const levelGuide = LEVEL_GUIDANCE[cefrLevel] || LEVEL_GUIDANCE["S1"];
-          instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage)}
+          instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
 ## Language Difficulty — ${cefrLevel}
 ${levelGuide}`;
