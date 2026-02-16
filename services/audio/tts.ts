@@ -1,6 +1,4 @@
-import {
-  SUPPORTED_LANGUAGES
-} from "@/constants/languages";
+import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { Logger } from "@/services/common/Logger";
 import * as Speech from "expo-speech";
 
@@ -57,7 +55,7 @@ export async function speakWord(
   );
 
   // Stop any currently playing speech before starting new
-  await Speech.stop();
+  void Speech.stop();
 
   Speech.speak(text, {
     language: targetLang,
