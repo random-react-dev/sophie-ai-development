@@ -15,6 +15,7 @@ import {
   ProfileStepRef,
 } from "@/components/onboarding/ProfileStep";
 import { RainbowProgressBar } from "@/components/onboarding/RainbowProgressBar";
+import { getDefaultAccent } from "@/constants/accents";
 import { getLanguageByCode } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
@@ -128,7 +129,6 @@ export default function OnboardingScreen() {
   const isStepValid = (step: number) => {
     switch (step) {
       case 1:
-      case 1:
         // ProfileStep validation based on sub-step
         if (profileSubStep === 1) {
           // Sub-step 1: App language selection
@@ -210,7 +210,7 @@ export default function OnboardingScreen() {
             native_language: nativeLangName,
             target_language: targetLangName,
             medium_language: nativeLangName, // Teach in native language
-            preferred_accent: "American", // Default accent
+            preferred_accent: getDefaultAccent(data.learningLanguage).bcp47,
           });
 
           // 3. Set Learning Store Languages (so app is ready to use)

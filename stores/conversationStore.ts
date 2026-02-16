@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { audioRecorder } from "../services/audio/recorder";
 import { Logger } from "../services/common/Logger";
 import { ConnectionState } from "../services/gemini/types";
@@ -433,3 +435,25 @@ export const useConversationActions = (): {
     stopPTTRecording: s.stopPTTRecording,
     handleInterruption: s.handleInterruption,
   }));
+
+// ============================================
+// Persisted Intro Store - One-time intro flag
+// ============================================
+
+interface IntroState {
+  hasSeenIntro: boolean;
+  setHasSeenIntro: (value: boolean) => void;
+}
+
+export const useIntroStore = create<IntroState>()(
+  persist(
+    (set) => ({
+      hasSeenIntro: false,
+      setHasSeenIntro: (hasSeenIntro: boolean) => set({ hasSeenIntro }),
+    }),
+    {
+      name: "sophie-intro-state",
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);

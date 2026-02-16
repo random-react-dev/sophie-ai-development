@@ -11,7 +11,7 @@ import { geminiWebSocket } from "@/services/gemini/websocket";
 import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
-import { useConversationStore } from "@/stores/conversationStore";
+import { useConversationStore, useIntroStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
@@ -77,10 +77,14 @@ const buildTutorPrompt = (
     ? `
 
 ## ACCENT & DIALECT (CRITICAL — NON-NEGOTIABLE)
-- You MUST speak ${targetLang.name} with a ${accentDesc} accent and pronunciation.
-- Sound like a NATIVE speaker from that region. NOT like a foreigner.
-- EVERY word you speak must UNMISTAKABLY reflect this regional accent.`
-    : "";
+- You MUST speak ${targetLang.name} with the following accent: ${accentDesc}.
+- Sound like a NATIVE speaker from that exact region. NOT like a foreigner and NOT like a generic accent.
+- EVERY word you speak must UNMISTAKABLY reflect this specific regional accent throughout the ENTIRE conversation.
+- RESPOND IN ${targetLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${targetLang.name.toUpperCase()} when speaking the target language.`
+    : `
+
+## LANGUAGE (CRITICAL)
+- RESPOND IN ${targetLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${targetLang.name.toUpperCase()} when speaking the target language.`;
 
   return `You are Sophie AI, a warm and encouraging AI language tutor.
 
@@ -147,10 +151,14 @@ const buildRoleplayPrompt = (
     ? `
 
 ## ACCENT & DIALECT (CRITICAL — NON-NEGOTIABLE)
-- You MUST speak ${targetLang.name} with a ${accentDesc} accent and pronunciation.
-- Sound like a NATIVE speaker from that region. NOT like a foreigner.
-- EVERY word you speak must UNMISTAKABLY reflect this regional accent.`
-    : "";
+- You MUST speak ${targetLang.name} with the following accent: ${accentDesc}.
+- Sound like a NATIVE speaker from that exact region. NOT like a foreigner and NOT like a generic accent.
+- EVERY word you speak must UNMISTAKABLY reflect this specific regional accent throughout the ENTIRE conversation.
+- RESPOND IN ${targetLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${targetLang.name.toUpperCase()} when speaking the target language.`
+    : `
+
+## LANGUAGE (CRITICAL)
+- RESPOND IN ${targetLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${targetLang.name.toUpperCase()} when speaking the target language.`;
 
   return `You are Sophie AI, an incredibly engaging and natural AI language tutor helping the user practice real-world conversations through immersive roleplay.
 
@@ -383,8 +391,12 @@ ${levelGuide}
 
 ## Language Difficulty — ${cefrLevel}
 ${levelGuide}`;
-          initialPrompt =
-            "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences.";
+          const hasSeenIntro = useIntroStore.getState().hasSeenIntro;
+          if (!hasSeenIntro) {
+            initialPrompt = `Introduce yourself briefly: "Hi, I am Sophie!" Then tell the user they can always ask you anything in ${targetLanguage.name} anytime. Keep it warm, friendly, and under 2 sentences. Do NOT start a lesson yet.`;
+          } else {
+            initialPrompt = undefined; // No auto-greeting for returning users
+          }
         }
 
         Logger.info(TAG, `Generated Instruction Length: ${instruction.length}`);

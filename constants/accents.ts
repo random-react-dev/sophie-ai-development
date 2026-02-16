@@ -86,39 +86,39 @@ export function getDefaultAccent(langCode: string): AccentVariant {
  */
 const ACCENT_DESCRIPTIONS: Record<string, string> = {
     // English
-    "en-US": "American English, as spoken in the United States",
-    "en-GB": "British English, as spoken in England",
-    "en-AU": "Australian English, as spoken in Australia",
-    "en-IN": "Indian English, as spoken in India",
+    "en-US": "General American English — the standard US broadcast accent, clear and rhotic, as heard on national US news networks",
+    "en-GB": "Standard British English (Received Pronunciation) — as spoken by educated speakers in London and southern England, non-rhotic with clear vowel distinctions",
+    "en-AU": "Standard Australian English — as spoken in Sydney, with characteristic vowel shifts and rising intonation",
+    "en-IN": "Standard Indian English — as spoken by educated speakers in New Delhi, with retroflex consonants and syllable-timed rhythm",
     // French
-    "fr-FR": "Standard French, as spoken in France",
-    "fr-CA": "Canadian French, as spoken in Quebec, Canada",
+    "fr-FR": "Standard Metropolitan French — as spoken by educated speakers in Paris, with standard liaison rules and nasal vowels",
+    "fr-CA": "Standard Quebec French — as spoken in Montreal, with characteristic vowel laxing and affrication of /t/ and /d/ before high vowels",
     // Spanish
-    "es-ES": "Castilian Spanish, as spoken in Spain",
-    "es-MX": "Mexican Spanish, as spoken in Mexico",
+    "es-ES": "Standard Castilian Spanish — as spoken in Madrid, Spain, with the characteristic theta sound for 'c' and 'z' (distincion)",
+    "es-MX": "Standard Mexican Spanish — as spoken in Mexico City, with clear pronunciation and seseo",
     // Portuguese
-    "pt-BR": "Brazilian Portuguese, as spoken in Brazil",
-    "pt-PT": "European Portuguese, as spoken in Portugal",
+    "pt-BR": "Standard Brazilian Portuguese — as spoken in Sao Paulo, with open vowels and palatalized /t/ and /d/ before /i/",
+    "pt-PT": "Standard European Portuguese — as spoken in Lisbon, with reduced unstressed vowels and sibilant /s/",
     // Chinese
-    "zh-CN": "Mandarin Chinese, as spoken in mainland China",
-    "zh-TW": "Mandarin Chinese, as spoken in Taiwan",
+    "zh-CN": "Standard Mandarin Chinese (Putonghua) — as spoken in Beijing, with standard four-tone pronunciation",
+    "zh-TW": "Standard Taiwanese Mandarin — as spoken in Taipei, with softer retroflex consonants and distinct intonation patterns",
     // Arabic
-    "ar-SA": "Arabic, as spoken in Saudi Arabia",
-    "ar-EG": "Egyptian Arabic, as spoken in Egypt",
+    "ar-SA": "Modern Standard Arabic with a Saudi accent — as spoken by educated speakers in Riyadh, with emphatic consonants and clear pronunciation",
+    "ar-EG": "Egyptian Arabic — as spoken in Cairo, with characteristic /g/ for qaf and recognizable melodic intonation",
     // Single-accent languages
-    "hi-IN": "Hindi, as spoken in India",
-    "ja-JP": "Japanese, as spoken in Japan",
-    "ko-KR": "Korean, as spoken in South Korea",
-    "it-IT": "Italian, as spoken in Italy",
-    "ru-RU": "Russian, as spoken in Russia",
-    "de-DE": "German, as spoken in Germany",
-    "sv-SE": "Swedish, as spoken in Sweden",
-    "vi-VN": "Vietnamese, as spoken in Vietnam",
-    "id-ID": "Indonesian, as spoken in Indonesia",
-    "ur-PK": "Urdu, as spoken in Pakistan",
-    "ta-IN": "Tamil, as spoken in India",
-    "bn-IN": "Bengali, as spoken in India",
-    "sw-KE": "Swahili, as spoken in Kenya",
+    "hi-IN": "Standard Hindi (Khariboli) — as spoken by educated speakers in New Delhi, with clear Devanagari-based pronunciation",
+    "ja-JP": "Standard Japanese (Hyojungo) — as spoken in Tokyo, with standard pitch accent patterns",
+    "ko-KR": "Standard Korean (Pyojuneo) — as spoken in Seoul, with standard vowel and consonant distinctions",
+    "it-IT": "Standard Italian — as spoken in Rome and Florence, with clear open vowels and geminate consonants",
+    "ru-RU": "Standard Russian — as spoken in Moscow, with characteristic akan'ye vowel reduction and palatalized consonants",
+    "de-DE": "Standard High German (Hochdeutsch) — as spoken in Hanover, with clear consonant articulation and standard vowel length",
+    "sv-SE": "Standard Swedish (Rikssvenska) — as spoken in Stockholm, with characteristic pitch accent and rounded vowels",
+    "vi-VN": "Standard Northern Vietnamese — as spoken in Hanoi, with all six tones clearly distinguished",
+    "id-ID": "Standard Indonesian (Bahasa Indonesia) — as spoken in Jakarta, with clear syllable-timed pronunciation",
+    "ur-PK": "Standard Urdu — as spoken by educated speakers in Islamabad and Lahore, with clear Nastaliq-based pronunciation",
+    "ta-IN": "Standard Tamil — as spoken in Chennai, with retroflex consonants and clear vowel distinctions",
+    "bn-IN": "Standard Bengali — as spoken in Kolkata, with characteristic aspirated consonants and nasal vowels",
+    "sw-KE": "Standard Swahili — as spoken in Nairobi, Kenya, with clear Bantu vowel system and penultimate stress",
 };
 
 /**

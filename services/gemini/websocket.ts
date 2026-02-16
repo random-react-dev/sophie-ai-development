@@ -15,7 +15,7 @@ const getConversationStore = () =>
   require("../../stores/conversationStore").useConversationStore;
 
 const TAG = "GeminiWS";
-const MODEL = "models/gemini-2.5-flash-native-audio-preview-09-2025";
+const MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025";
 const MAX_RECONNECT_ATTEMPTS = 3;
 const INITIAL_RECONNECT_DELAY_MS = 1000;
 
@@ -448,6 +448,36 @@ class GeminiWebSocket {
       );
       this.sendGreeting();
       store.setHasGreeted(true);
+
+      // Mark intro as seen so returning users skip the auto-greeting
+      const introStore = require("../../stores/conversationStore").useIntroStore;
+      if (!introStore.getState().hasSeenIntro) {
+        introStore.getState().setHasSeenIntro(true);
+      }
+    } catch (err) {
+      Logger.error(TAG, "Failed to initialize audio streamer", err);
+    }
+  }
+
+  /**
+   * Initialize audio streamer without sending a greeting.
+   * Used for returning users in default session — they speak first.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async initializeAudioOnly(store: {
+    hasGreeted: boolean;
+    setHasGreeted: (v: boolean) => void;
+  }): Promise<void> {
+    try {
+      await audioStreamer.initialize();
+      audioStreamer.setSpeakingStateCallback((isSpeaking) => {
+        getConversationStore().getState().setSpeaking(isSpeaking);
+      });
+      audioStreamer.setBufferProgressCallback((progress) => {
+        getConversationStore().getState().setBufferProgress(progress);
+      });
+      store.setHasGreeted(true);
+      Logger.info(TAG, "AudioStreamer initialized without greeting");
     } catch (err) {
       Logger.error(TAG, "Failed to initialize audio streamer", err);
     }
@@ -481,11 +511,18 @@ class GeminiWebSocket {
       // We ignore this.lastInitialPrompt here because if we are reconnecting (hasGreeted=true),
       // we don't want to repeat the intro.
       if (!store.hasGreeted) {
-        Logger.info(
-          TAG,
-          `Triggering greeting (Has greeted: ${store.hasGreeted})`,
-        );
-        this.initializeAndGreet(store);
+        if (this.lastInitialPrompt) {
+          // Scenario, practice phrase, or first-time intro — auto-greet
+          Logger.info(
+            TAG,
+            `Triggering greeting (Has greeted: ${store.hasGreeted})`,
+          );
+          this.initializeAndGreet(store);
+        } else {
+          // Returning user, default session — just initialize audio, no auto-greet
+          Logger.info(TAG, "No initial prompt — skipping auto-greet, initializing audio only");
+          this.initializeAudioOnly(store);
+        }
       }
     }
 
