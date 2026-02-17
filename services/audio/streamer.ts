@@ -9,9 +9,9 @@ import { Logger } from "../common/Logger";
 const TAG = "AudioStreamer";
 const SAMPLE_RATE = 24000; // Gemini output rate
 
-// Accumulate chunks into 1s buffers before sending to native
-const ACCUMULATION_TARGET = 24000; // 1.0s of audio at 24kHz
-const MIN_INITIAL_BUFFER = 48000; // 2s of audio before starting playback
+// Accumulate chunks into 0.3s buffers before sending to native
+const ACCUMULATION_TARGET = 7200; // 0.3s of audio at 24kHz
+const MIN_INITIAL_BUFFER = 16800; // 0.7s of audio before starting playback
 const FADE_IN_DURATION = 0.2; // 200ms fade-in to prevent pops
 
 // Periodic reset to prevent memory buildup
