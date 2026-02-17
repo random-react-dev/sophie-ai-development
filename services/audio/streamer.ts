@@ -9,9 +9,9 @@ import { Logger } from "../common/Logger";
 const TAG = "AudioStreamer";
 const SAMPLE_RATE = 24000; // Gemini output rate
 
-// Accumulate chunks into 0.3s buffers before sending to native
-const ACCUMULATION_TARGET = 7200; // 0.3s of audio at 24kHz
-const MIN_INITIAL_BUFFER = 16800; // 0.7s of audio before starting playback
+// Accumulate chunks into 0.2s buffers before sending to native
+const ACCUMULATION_TARGET = 4800; // 0.2s of audio at 24kHz (5 Gemini chunks)
+const MIN_INITIAL_BUFFER = 7200; // 0.3s of audio before starting playback
 const FADE_IN_DURATION = 0.2; // 200ms fade-in to prevent pops
 
 // Periodic reset to prevent memory buildup
@@ -31,19 +31,15 @@ class AudioStreamer {
   private chunkCount = 0;
   private speakingStateCallback: SpeakingStateCallback | null = null;
   private bufferProgressCallback: BufferProgressCallback | null = null;
-  private finishTimeout: ReturnType<typeof setTimeout> | null = null;
   private responseId = 0;
   private responsesSinceReset = 0;
   private isAudioPrimed = false;
-  private playbackStartTime = 0; // Track when playback actually started (Date.now())
 
   // Buffer accumulation (for native queue)
   private accumulatedSamples: Float32Array[] = [];
   private accumulatedLength = 0;
   private totalQueuedSamples = 0;
 
-  // Full response buffer for pause/resume
-  private currentResponseBuffer: Float32Array[] = [];
   private isPaused = false;
   private hasResponseCompleted = false; // True once finishSpeaking() has run
 
@@ -116,12 +112,6 @@ class AudioStreamer {
       this.stopCurrentPlayback();
     }
 
-    // Cancel any pending finish timeout
-    if (this.finishTimeout) {
-      clearTimeout(this.finishTimeout);
-      this.finishTimeout = null;
-    }
-
     // Increment response ID to invalidate stale callbacks
     this.responseId++;
 
@@ -152,10 +142,8 @@ class AudioStreamer {
     this.accumulatedSamples = [];
     this.accumulatedLength = 0;
     this.totalQueuedSamples = 0;
-    this.currentResponseBuffer = []; // Clear buffer for new response
     this.isPaused = false;
     this.hasResponseCompleted = false;
-    this.playbackStartTime = 0; // Reset playback start time
 
     Logger.info(TAG, `Prepared for response #${this.responseId}`);
   }
@@ -242,12 +230,21 @@ class AudioStreamer {
     // Create fresh queue source and connect through GainNode
     this.queueSource = this.audioContext.createBufferQueueSource();
     this.queueSource.connect(this.gainNode);
+
+    // Use native callback for reliable completion detection
+    const currentResponseId = this.responseId;
+    this.queueSource.onEnded = (event: { bufferId: string | undefined; isLast: boolean | undefined }) => {
+      if (event.isLast && this.isGenerationComplete && this.responseId === currentResponseId) {
+        this.finishSpeaking();
+      }
+    };
+
     Logger.debug(TAG, "Created fresh AudioBufferQueueSourceNode");
   }
 
   /**
    * Queue a PCM audio chunk. Chunks are accumulated into larger buffers
-   * (2.0s) before sending to native layer to reduce bridge traffic.
+   * (0.2s) before sending to native layer to reduce bridge traffic.
    */
   queueAudio(base64Pcm: string): void {
     if (this.isInterrupted || !this.audioContext || !this.queueSource) return;
@@ -261,9 +258,6 @@ class AudioStreamer {
       for (let i = 0; i < int16Array.length; i++) {
         float32Array[i] = int16Array[i] / 32768;
       }
-
-      // Store in response buffer for pause/resume capability
-      this.currentResponseBuffer.push(float32Array);
 
       this.chunkCount++;
 
@@ -285,7 +279,7 @@ class AudioStreamer {
         this.bufferProgressCallback?.(progress);
       }
 
-      // Start playback once we have enough initial buffer (1.5s)
+      // Start playback once we have enough initial buffer (0.3s)
       if (
         !this.hasStartedPlayback &&
         this.totalQueuedSamples >= MIN_INITIAL_BUFFER
@@ -350,7 +344,6 @@ class AudioStreamer {
 
     this.isPlaying = true;
     this.hasStartedPlayback = true;
-    this.playbackStartTime = Date.now(); // Record when playback started
     this.bufferProgressCallback?.(100); // Clear progress
     Logger.info(TAG, "Sophie started speaking");
     this.speakingStateCallback?.(true);
@@ -376,32 +369,8 @@ class AudioStreamer {
       this.startSpeaking();
     }
 
-    // Capture response ID for staleness check
-    const currentResponseId = this.responseId;
-
-    // Calculate REMAINING duration (total - already played)
-    const totalDurationMs = (this.totalQueuedSamples / SAMPLE_RATE) * 1000;
-    const elapsedMs =
-      this.playbackStartTime > 0 ? Date.now() - this.playbackStartTime : 0;
-    const remainingMs = Math.max(0, totalDurationMs - elapsedMs);
-    Logger.info(
-      TAG,
-      `Playback will finish in ~${(remainingMs / 1000).toFixed(1)}s (total: ${(totalDurationMs / 1000).toFixed(1)}s, elapsed: ${(elapsedMs / 1000).toFixed(1)}s)`,
-    );
-
-    if (this.finishTimeout) {
-      clearTimeout(this.finishTimeout);
-    }
-
-    this.finishTimeout = setTimeout(() => {
-      if (
-        this.responseId === currentResponseId &&
-        this.isPlaying &&
-        !this.isInterrupted
-      ) {
-        this.finishSpeaking();
-      }
-    }, remainingMs + 100); // Use remaining duration + small buffer
+    // The onEnded callback (with isLast=true) will call finishSpeaking()
+    // No setTimeout needed — native callback is more reliable
   }
 
   private finishSpeaking(): void {
@@ -409,16 +378,8 @@ class AudioStreamer {
 
     Logger.info(TAG, "Sophie finished speaking");
 
-    if (this.finishTimeout) {
-      clearTimeout(this.finishTimeout);
-      this.finishTimeout = null;
-    }
-
     // Mark response as completed (so pausePlayback knows not to preserve buffer)
     this.hasResponseCompleted = true;
-
-    // Clear the response buffer after speaking is done
-    this.currentResponseBuffer = [];
 
     this.resetState();
     this.speakingStateCallback?.(false);
@@ -444,11 +405,6 @@ class AudioStreamer {
     this.isInterrupted = true;
     this.responseId++;
 
-    if (this.finishTimeout) {
-      clearTimeout(this.finishTimeout);
-      this.finishTimeout = null;
-    }
-
     this.stopCurrentPlayback();
     this.resetState();
   }
@@ -457,166 +413,47 @@ class AudioStreamer {
     Logger.info(TAG, "Clearing audio queue");
     this.handleInterruption();
     this.isInterrupted = false;
-    this.currentResponseBuffer = []; // Also clear response buffer
   }
 
   /**
-   * Pause playback: fade out and stop source, but keep currentResponseBuffer intact
-   * ONLY if the response hasn't finished yet.
+   * Pause playback using native pause() which preserves queue position.
    */
   pausePlayback(): void {
-    // If response has already completed, there's nothing to resume later
     if (this.hasResponseCompleted) {
-      Logger.debug(
-        TAG,
-        "pausePlayback: response already completed, clearing buffer",
-      );
-      this.currentResponseBuffer = [];
       this.isPaused = false;
       return;
     }
 
-    if (!this.audioContext || !this.gainNode || !this.isPlaying) {
-      Logger.debug(TAG, "pausePlayback: nothing to pause");
-      return;
-    }
+    if (!this.audioContext || !this.queueSource || !this.isPlaying) return;
 
-    Logger.info(TAG, "Pausing playback mid-response (fade out & stop)");
-
-    // Cancel any pending finish timeout (we'll reschedule on resume)
-    if (this.finishTimeout) {
-      clearTimeout(this.finishTimeout);
-      this.finishTimeout = null;
-    }
-
-    // Fade out
-    const currentTime = this.audioContext.currentTime;
-    this.gainNode.gain.cancelScheduledValues(currentTime);
-    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, currentTime);
-    this.gainNode.gain.linearRampToValueAtTime(0, currentTime + 0.3);
-
-    // Stop source after fade (async, but we don't await)
-    setTimeout(() => {
-      if (this.queueSource) {
-        try {
-          this.queueSource.stop();
-          this.queueSource.disconnect();
-        } catch {
-          /* ignore */
-        }
-        this.queueSource = null;
-      }
-      this.isPlaying = false;
-      this.isPaused = true;
-      this.speakingStateCallback?.(false);
-      Logger.info(TAG, "Playback paused");
-    }, 350);
+    Logger.info(TAG, "Pausing playback");
+    this.queueSource.pause();
+    this.isPlaying = false;
+    this.isPaused = true;
+    this.speakingStateCallback?.(false);
   }
 
   /**
-   * Resume playback: re-create source, re-enqueue entire currentResponseBuffer from start,
-   * and set a proper finish timeout.
-   * Only resumes if we were actually paused mid-response.
+   * Resume playback using native start() after a pause.
    */
   resumePlayback(): void {
-    if (!this.audioContext || !this.gainNode) {
-      Logger.debug(TAG, "resumePlayback: no audio context");
-      return;
-    }
+    if (!this.audioContext || !this.queueSource) return;
+    if (this.hasResponseCompleted) return;
+    if (!this.isPaused) return;
 
-    // Don't resume if response already completed (nothing to play)
-    if (this.hasResponseCompleted) {
-      Logger.debug(
-        TAG,
-        "resumePlayback: response already completed, skipping resume",
-      );
-      return;
-    }
+    Logger.info(TAG, "Resuming playback");
 
-    // Only resume if we have buffered audio from a paused response
-    if (!this.isPaused || this.currentResponseBuffer.length === 0) {
-      Logger.debug(
-        TAG,
-        "resumePlayback: not paused or no buffered audio to resume",
-      );
-      return;
-    }
-
-    Logger.info(TAG, "Resuming playback (restart from beginning)");
-
-    // Resume context if suspended
     if (this.audioContext.state === "suspended") {
       this.audioContext.resume();
     }
 
-    // Create fresh source
-    this.createFreshQueueSource();
-    if (!this.queueSource) return;
-
-    // Merge and re-enqueue entire response buffer
-    const totalLen = this.currentResponseBuffer.reduce(
-      (acc, c) => acc + c.length,
-      0,
-    );
-    const merged = new Float32Array(totalLen);
-    let offset = 0;
-    for (const chunk of this.currentResponseBuffer) {
-      merged.set(chunk, offset);
-      offset += chunk.length;
-    }
-
-    const audioBuffer = this.audioContext.createBuffer(
-      1,
-      totalLen,
-      SAMPLE_RATE,
-    );
-    audioBuffer.getChannelData(0).set(merged);
-    this.queueSource.enqueueBuffer(audioBuffer);
-
-    Logger.info(
-      TAG,
-      `Re-queued ${this.currentResponseBuffer.length} chunks (${(totalLen / SAMPLE_RATE).toFixed(1)}s) for resume`,
-    );
-
-    // Apply fade-in
-    this.gainNode.gain.value = 0;
-    const currentTime = this.audioContext.currentTime;
-    this.gainNode.gain.linearRampToValueAtTime(
-      1.0,
-      currentTime + FADE_IN_DURATION,
-    );
-
-    // Start playback
     this.queueSource.start();
     this.isPlaying = true;
     this.isPaused = false;
     this.speakingStateCallback?.(true);
-
-    // Set finish timeout based on full duration
-    const durationMs = (totalLen / SAMPLE_RATE) * 1000;
-    Logger.info(
-      TAG,
-      `Resumed playback will finish in ~${(durationMs / 1000).toFixed(1)}s`,
-    );
-
-    const currentResponseId = this.responseId;
-    this.finishTimeout = setTimeout(() => {
-      if (
-        this.responseId === currentResponseId &&
-        this.isPlaying &&
-        !this.isInterrupted
-      ) {
-        this.finishSpeaking();
-      }
-    }, durationMs + 100); // Reduced buffer for faster UI response
   }
 
   dispose(): void {
-    if (this.finishTimeout) {
-      clearTimeout(this.finishTimeout);
-      this.finishTimeout = null;
-    }
-
     this.stopCurrentPlayback();
 
     if (this.gainNode) {

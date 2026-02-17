@@ -29,7 +29,7 @@ export function configureAudioSession(): void {
         AudioManager.setAudioSessionOptions({
             iosCategory: 'playAndRecord',
             iosMode: 'voiceChat',
-            iosOptions: ['defaultToSpeaker', 'allowBluetooth'],
+            iosOptions: ['defaultToSpeaker', 'allowBluetoothHFP'],
         });
 
         // 2. THEN disable internal session management to prevent
