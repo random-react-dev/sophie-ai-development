@@ -69,7 +69,7 @@ class AudioStreamer {
     if (this.audioContext) return;
 
     const { configureAudioSession } = await import("./audioManager");
-    configureAudioSession();
+    await configureAudioSession();
 
     Logger.info(TAG, "Initializing audio context");
     this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });

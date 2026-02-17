@@ -12,7 +12,7 @@ let isConfigured = false;
  * Enables hardware echo cancellation (AEC), automatic gain control (AGC),
  * and noise suppression for simultaneous recording and playback.
  */
-export function configureAudioSession(): void {
+export async function configureAudioSession(): Promise<void> {
     if (isConfigured) {
         Logger.debug(TAG, 'Audio session already configured');
         return;
@@ -32,14 +32,20 @@ export function configureAudioSession(): void {
             iosOptions: ['defaultToSpeaker', 'allowBluetoothHFP'],
         });
 
-        // 2. THEN disable internal session management to prevent
+        // 2. Activate the session NOW with our config (before disabling management).
+        //    In v0.11.5, setAudioSessionOptions only stores the config — the actual
+        //    AVAudioSession configuration happens in setActive:true, which is gated
+        //    by shouldManageSession. So we must activate BEFORE disabling management.
+        await AudioManager.setAudioSessionActivity(true);
+
+        // 3. THEN disable internal session management to prevent
         //    react-native-audio-api from overriding our config when
         //    AudioContext is created. Required when using multiple
         //    audio libraries (expo-stream-audio for recording).
         AudioManager.disableSessionManagement();
 
         isConfigured = true;
-        Logger.info(TAG, 'iOS audio session configured (playAndRecord + voiceChat, internal management disabled)');
+        Logger.info(TAG, 'iOS audio session configured and activated');
     } catch (error) {
         Logger.error(TAG, 'Failed to configure audio session', error);
     }
