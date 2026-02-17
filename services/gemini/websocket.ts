@@ -33,6 +33,7 @@ class GeminiWebSocket {
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
+  private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
 
   // Singleton
   private static instance: GeminiWebSocket;
@@ -434,7 +435,9 @@ class GeminiWebSocket {
     setHasGreeted: (v: boolean) => void;
   }): Promise<void> {
     try {
+      Logger.info(TAG, "[DIAG] initializeAndGreet() — starting audioStreamer.initialize()...");
       await audioStreamer.initialize();
+      Logger.info(TAG, "[DIAG] initializeAndGreet() — audioStreamer.initialize() completed");
       // Wire up callbacks to break circular dependency
       audioStreamer.setSpeakingStateCallback((isSpeaking) => {
         getConversationStore().getState().setSpeaking(isSpeaking);
@@ -444,7 +447,7 @@ class GeminiWebSocket {
       });
       Logger.info(
         TAG,
-        "AudioStreamer initialized with callbacks, sending greeting...",
+        "[DIAG] AudioStreamer initialized with callbacks, sending greeting...",
       );
       this.sendGreeting();
       store.setHasGreeted(true);
@@ -469,7 +472,9 @@ class GeminiWebSocket {
     setHasGreeted: (v: boolean) => void;
   }): Promise<void> {
     try {
+      Logger.info(TAG, "[DIAG] initializeAudioOnly() — starting audioStreamer.initialize()...");
       await audioStreamer.initialize();
+      Logger.info(TAG, "[DIAG] initializeAudioOnly() — audioStreamer.initialize() completed");
       audioStreamer.setSpeakingStateCallback((isSpeaking) => {
         getConversationStore().getState().setSpeaking(isSpeaking);
       });
@@ -477,7 +482,7 @@ class GeminiWebSocket {
         getConversationStore().getState().setBufferProgress(progress);
       });
       store.setHasGreeted(true);
-      Logger.info(TAG, "AudioStreamer initialized without greeting");
+      Logger.info(TAG, "[DIAG] AudioStreamer initialized without greeting");
     } catch (err) {
       Logger.error(TAG, "Failed to initialize audio streamer", err);
     }
@@ -551,10 +556,13 @@ class GeminiWebSocket {
             if (mimeType?.startsWith("audio/pcm")) {
               // Prepare streamer for new response on first audio chunk
               if (this.isFirstAudioChunk) {
+                this.audioChunksReceived = 0; // [DIAG] Reset counter
+                Logger.info(TAG, "[DIAG] First audio chunk — calling prepareForNewResponse()");
                 audioStreamer.prepareForNewResponse();
                 this.isFirstAudioChunk = false;
               }
-              Logger.debug(TAG, "Received audio chunk from model");
+              this.audioChunksReceived++; // [DIAG]
+              Logger.info(TAG, `[DIAG] Audio chunk #${this.audioChunksReceived} from model — dataLen=${inlineData.data.length}, mimeType=${mimeType}`);
               audioStreamer.queueAudio(inlineData.data);
             }
           }
@@ -599,7 +607,7 @@ class GeminiWebSocket {
       const isGenerationComplete =
         serverContent.generation_complete || serverContent.generationComplete;
       if (isGenerationComplete) {
-        Logger.debug(TAG, "Generation complete");
+        Logger.info(TAG, `[DIAG] Generation complete — total audio chunks received: ${this.audioChunksReceived}`);
         audioStreamer.onGenerationComplete();
         this.isFirstAudioChunk = true; // Reset for next response
         this.isAudioOnlyMode = false; // Reset audio-only mode
