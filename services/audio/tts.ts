@@ -1,6 +1,16 @@
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { Logger } from "@/services/common/Logger";
 import * as Speech from "expo-speech";
+import { Platform } from "react-native";
+
+// Default BCP 47 for iOS — bare codes like "es" may pick unpredictable regional variant
+const DEFAULT_BCP47: Record<string, string> = {
+  en: "en-US", es: "es-ES", fr: "fr-FR", pt: "pt-BR", zh: "zh-CN",
+  ar: "ar-SA", de: "de-DE", ja: "ja-JP", ko: "ko-KR", hi: "hi-IN",
+  ru: "ru-RU", it: "it-IT", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR",
+  vi: "vi-VN", th: "th-TH", id: "id-ID", bn: "bn-IN", ta: "ta-IN",
+  te: "te-IN", mr: "mr-IN", gu: "gu-IN", uk: "uk-UA", sv: "sv-SE",
+};
 
 const TAG = "TTS";
 
@@ -45,9 +55,25 @@ export async function speakWord(
     return;
   }
 
-  // Use explicit BCP 47 accent code if provided, otherwise derive from name
   const derivedCode = languageName ? getLanguageCode(languageName) : null;
-  const targetLang = accentCode ?? derivedCode ?? "en";
+
+  // Use accent only if it matches the item's base language
+  // Prevents applying Spanish accent to French vocab items
+  let targetLang: string;
+  if (accentCode && derivedCode && accentCode.startsWith(derivedCode)) {
+    targetLang = accentCode;
+  } else {
+    targetLang = derivedCode ?? accentCode ?? "en";
+  }
+
+  // Android: expo-speech uses Locale(string) which breaks on BCP 47 "es-ES".
+  // Strip region to get bare code that Locale() handles correctly.
+  // iOS: ensure full BCP 47 for better voice selection.
+  if (Platform.OS === "android" && targetLang.includes("-")) {
+    targetLang = targetLang.split("-")[0];
+  } else if (Platform.OS === "ios" && !targetLang.includes("-")) {
+    targetLang = DEFAULT_BCP47[targetLang] ?? targetLang;
+  }
 
   Logger.info(
     TAG,

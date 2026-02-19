@@ -10,7 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import * as Linking from "expo-linking";
 import { create } from "zustand";
-import { useConversationStore } from "./conversationStore";
+import { useConversationStore, useIntroStore } from "./conversationStore";
 import { useGameStore } from "./gameStore";
 import { useLearningStore } from "./learningStore";
 import { useProfileStore } from "./profileStore";
@@ -29,6 +29,7 @@ const clearUserData = async (): Promise<void> => {
     "profile-storage",
     "sophie-learning-preferences",
     "vocabulary-storage",
+    "sophie-intro-state",
   ]);
 
   // Reset in-memory and persisted stores to initial state
@@ -38,6 +39,7 @@ const clearUserData = async (): Promise<void> => {
   useVocabularyStore.setState({ items: [], folders: [], isLoading: false });
   useStatsStore.getState().reset();
   useConversationStore.getState().reset();
+  useIntroStore.getState().setHasSeenIntro(false);
   useGameStore.getState().reset();
 };
 

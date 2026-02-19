@@ -11,7 +11,7 @@ import { geminiWebSocket } from "@/services/gemini/websocket";
 import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
-import { useConversationStore } from "@/stores/conversationStore";
+import { useConversationStore, useIntroStore } from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
@@ -77,17 +77,23 @@ const buildTutorPrompt = (
     ? `
 
 ## ACCENT & DIALECT (CRITICAL — NON-NEGOTIABLE)
-- You MUST speak ${targetLang.name} with a ${accentDesc} accent and pronunciation.
-- Sound like a NATIVE speaker from that region. NOT like a foreigner.
-- EVERY word you speak must UNMISTAKABLY reflect this regional accent.`
+- When speaking ${targetLang.name} words or phrases, you MUST use this accent: ${accentDesc}.
+- Sound like a NATIVE speaker from that exact region. NOT like a foreigner and NOT like a generic accent.`
     : "";
+
+  const languageBlock = `
+
+## RESPONSE LANGUAGE (CRITICAL)
+- RESPOND IN ${nativeLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${nativeLang.name.toUpperCase()}.
+- Use ${targetLang.name} ONLY for the specific words, phrases, or sentences you are teaching.
+- All explanations, encouragements, corrections, and instructions must be in ${nativeLang.name}.`;
 
   return `You are Sophie AI, a warm and encouraging AI language tutor.
 
 ## Context
 - User wants to learn: ${targetLang.name}
 - User's native language: ${nativeLang.name}
-${accentBlock}
+${accentBlock}${languageBlock}
 
 ## Your Teaching Style
 - Be warm, patient, and non-judgmental
@@ -96,14 +102,8 @@ ${accentBlock}
 - Use the sandwich method: positive → correction → positive
 
 ## Greeting
-Start by greeting the user in their native language (${
-    nativeLang.name
-  }), then introduce the lesson:
-"Welcome to your ${
-    targetLang.name
-  } lesson! Let's start with a simple greeting. The word for 'hello' in ${
-    targetLang.name
-  } is '${getHelloWord(targetLang.code)}'. Can you try saying it?"
+Greet the user warmly in ${nativeLang.name}. Welcome them to their ${targetLang.name} lesson.
+Start with a simple word — teach them 'hello' in ${targetLang.name} ('${getHelloWord(targetLang.code)}') and ask them to try saying it.
 
 ## Lesson Flow
 1. Introduce a word/phrase in ${targetLang.name}
@@ -114,9 +114,6 @@ Start by greeting the user in their native language (${
 
 ## Key Rules
 - Keep responses short and conversational (2-3 sentences max)
-- Always respond in ${nativeLang.name} when explaining, but use ${
-    targetLang.name
-  } for the words being taught
 - Never make the user feel bad about mistakes
 - Be encouraging and celebrate progress
 
@@ -147,10 +144,14 @@ const buildRoleplayPrompt = (
     ? `
 
 ## ACCENT & DIALECT (CRITICAL — NON-NEGOTIABLE)
-- You MUST speak ${targetLang.name} with a ${accentDesc} accent and pronunciation.
-- Sound like a NATIVE speaker from that region. NOT like a foreigner.
-- EVERY word you speak must UNMISTAKABLY reflect this regional accent.`
-    : "";
+- You MUST speak ${targetLang.name} with the following accent: ${accentDesc}.
+- Sound like a NATIVE speaker from that exact region. NOT like a foreigner and NOT like a generic accent.
+- EVERY word you speak must UNMISTAKABLY reflect this specific regional accent throughout the ENTIRE conversation.
+- RESPOND IN ${targetLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${targetLang.name.toUpperCase()} when speaking the target language.`
+    : `
+
+## LANGUAGE (CRITICAL)
+- RESPOND IN ${targetLang.name.toUpperCase()}. YOU MUST RESPOND UNMISTAKABLY IN ${targetLang.name.toUpperCase()} when speaking the target language.`;
 
   return `You are Sophie AI, an incredibly engaging and natural AI language tutor helping the user practice real-world conversations through immersive roleplay.
 
@@ -383,8 +384,12 @@ ${levelGuide}
 
 ## Language Difficulty — ${cefrLevel}
 ${levelGuide}`;
-          initialPrompt =
-            "Say hi and ask me one simple question to start practicing. Keep it under 2 sentences.";
+          const hasSeenIntro = useIntroStore.getState().hasSeenIntro;
+          if (!hasSeenIntro) {
+            initialPrompt = `Introduce yourself briefly: "Hi, I am Sophie!" Then tell the user they can always ask you anything in ${targetLanguage.name} anytime. Keep it warm, friendly, and under 2 sentences. Do NOT start a lesson yet.`;
+          } else {
+            initialPrompt = undefined; // No auto-greeting for returning users
+          }
         }
 
         Logger.info(TAG, `Generated Instruction Length: ${instruction.length}`);

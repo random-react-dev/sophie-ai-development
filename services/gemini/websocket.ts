@@ -15,7 +15,7 @@ const getConversationStore = () =>
   require("../../stores/conversationStore").useConversationStore;
 
 const TAG = "GeminiWS";
-const MODEL = "models/gemini-2.5-flash-native-audio-preview-09-2025";
+const MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025";
 const MAX_RECONNECT_ATTEMPTS = 3;
 const INITIAL_RECONNECT_DELAY_MS = 1000;
 
@@ -33,6 +33,7 @@ class GeminiWebSocket {
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
+  private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
 
   // Singleton
   private static instance: GeminiWebSocket;
@@ -434,7 +435,9 @@ class GeminiWebSocket {
     setHasGreeted: (v: boolean) => void;
   }): Promise<void> {
     try {
+      Logger.info(TAG, "[DIAG] initializeAndGreet() — starting audioStreamer.initialize()...");
       await audioStreamer.initialize();
+      Logger.info(TAG, "[DIAG] initializeAndGreet() — audioStreamer.initialize() completed");
       // Wire up callbacks to break circular dependency
       audioStreamer.setSpeakingStateCallback((isSpeaking) => {
         getConversationStore().getState().setSpeaking(isSpeaking);
@@ -444,10 +447,42 @@ class GeminiWebSocket {
       });
       Logger.info(
         TAG,
-        "AudioStreamer initialized with callbacks, sending greeting...",
+        "[DIAG] AudioStreamer initialized with callbacks, sending greeting...",
       );
       this.sendGreeting();
       store.setHasGreeted(true);
+
+      // Mark intro as seen so returning users skip the auto-greeting
+      const introStore = require("../../stores/conversationStore").useIntroStore;
+      if (!introStore.getState().hasSeenIntro) {
+        introStore.getState().setHasSeenIntro(true);
+      }
+    } catch (err) {
+      Logger.error(TAG, "Failed to initialize audio streamer", err);
+    }
+  }
+
+  /**
+   * Initialize audio streamer without sending a greeting.
+   * Used for returning users in default session — they speak first.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async initializeAudioOnly(store: {
+    hasGreeted: boolean;
+    setHasGreeted: (v: boolean) => void;
+  }): Promise<void> {
+    try {
+      Logger.info(TAG, "[DIAG] initializeAudioOnly() — starting audioStreamer.initialize()...");
+      await audioStreamer.initialize();
+      Logger.info(TAG, "[DIAG] initializeAudioOnly() — audioStreamer.initialize() completed");
+      audioStreamer.setSpeakingStateCallback((isSpeaking) => {
+        getConversationStore().getState().setSpeaking(isSpeaking);
+      });
+      audioStreamer.setBufferProgressCallback((progress) => {
+        getConversationStore().getState().setBufferProgress(progress);
+      });
+      store.setHasGreeted(true);
+      Logger.info(TAG, "[DIAG] AudioStreamer initialized without greeting");
     } catch (err) {
       Logger.error(TAG, "Failed to initialize audio streamer", err);
     }
@@ -481,11 +516,18 @@ class GeminiWebSocket {
       // We ignore this.lastInitialPrompt here because if we are reconnecting (hasGreeted=true),
       // we don't want to repeat the intro.
       if (!store.hasGreeted) {
-        Logger.info(
-          TAG,
-          `Triggering greeting (Has greeted: ${store.hasGreeted})`,
-        );
-        this.initializeAndGreet(store);
+        if (this.lastInitialPrompt) {
+          // Scenario, practice phrase, or first-time intro — auto-greet
+          Logger.info(
+            TAG,
+            `Triggering greeting (Has greeted: ${store.hasGreeted})`,
+          );
+          this.initializeAndGreet(store);
+        } else {
+          // Returning user, default session — just initialize audio, no auto-greet
+          Logger.info(TAG, "No initial prompt — skipping auto-greet, initializing audio only");
+          this.initializeAudioOnly(store);
+        }
       }
     }
 
@@ -514,10 +556,13 @@ class GeminiWebSocket {
             if (mimeType?.startsWith("audio/pcm")) {
               // Prepare streamer for new response on first audio chunk
               if (this.isFirstAudioChunk) {
+                this.audioChunksReceived = 0; // [DIAG] Reset counter
+                Logger.info(TAG, "[DIAG] First audio chunk — calling prepareForNewResponse()");
                 audioStreamer.prepareForNewResponse();
                 this.isFirstAudioChunk = false;
               }
-              Logger.debug(TAG, "Received audio chunk from model");
+              this.audioChunksReceived++; // [DIAG]
+              Logger.info(TAG, `[DIAG] Audio chunk #${this.audioChunksReceived} from model — dataLen=${inlineData.data.length}, mimeType=${mimeType}`);
               audioStreamer.queueAudio(inlineData.data);
             }
           }
@@ -562,7 +607,7 @@ class GeminiWebSocket {
       const isGenerationComplete =
         serverContent.generation_complete || serverContent.generationComplete;
       if (isGenerationComplete) {
-        Logger.debug(TAG, "Generation complete");
+        Logger.info(TAG, `[DIAG] Generation complete — total audio chunks received: ${this.audioChunksReceived}`);
         audioStreamer.onGenerationComplete();
         this.isFirstAudioChunk = true; // Reset for next response
         this.isAudioOnlyMode = false; // Reset audio-only mode
