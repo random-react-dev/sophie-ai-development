@@ -235,7 +235,7 @@ export default function VocabScreen() {
     // Set speaking item for visual feedback and start playback
     setSpeakingItemId(item.id || null);
 
-    void speakWord(item.translation || item.phrase, item.language, {
+    void speakWord(item.phrase, item.language, {
       onStart: () => {
         setSpeakingItemId(item.id || null);
       },

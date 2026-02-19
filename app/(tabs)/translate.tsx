@@ -231,8 +231,8 @@ export default function TranslateScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     const success = await addItem({
-      phrase: inputText,
-      translation: translatedText,
+      phrase: translatedText,
+      translation: inputText,
       context: `${sourceLang.name} → ${targetLang.name}`,
       language: targetLang.name,
       folder_id: saveFolderId,
