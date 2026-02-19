@@ -79,3 +79,52 @@ export function getDefaultAccent(langCode: string): AccentVariant {
     const accents = getAccentsForLanguage(langCode);
     return accents[0];
 }
+
+/**
+ * Natural-language accent descriptions keyed by BCP 47 code.
+ * Used in Gemini system prompts to control spoken accent/dialect.
+ */
+const ACCENT_DESCRIPTIONS: Record<string, string> = {
+    // English
+    "en-US": "American English, as spoken in the United States",
+    "en-GB": "British English, as spoken in England",
+    "en-AU": "Australian English, as spoken in Australia",
+    "en-IN": "Indian English, as spoken in India",
+    // French
+    "fr-FR": "Standard French, as spoken in France",
+    "fr-CA": "Canadian French, as spoken in Quebec, Canada",
+    // Spanish
+    "es-ES": "Castilian Spanish, as spoken in Spain",
+    "es-MX": "Mexican Spanish, as spoken in Mexico",
+    // Portuguese
+    "pt-BR": "Brazilian Portuguese, as spoken in Brazil",
+    "pt-PT": "European Portuguese, as spoken in Portugal",
+    // Chinese
+    "zh-CN": "Mandarin Chinese, as spoken in mainland China",
+    "zh-TW": "Mandarin Chinese, as spoken in Taiwan",
+    // Arabic
+    "ar-SA": "Arabic, as spoken in Saudi Arabia",
+    "ar-EG": "Egyptian Arabic, as spoken in Egypt",
+    // Single-accent languages
+    "hi-IN": "Hindi, as spoken in India",
+    "ja-JP": "Japanese, as spoken in Japan",
+    "ko-KR": "Korean, as spoken in South Korea",
+    "it-IT": "Italian, as spoken in Italy",
+    "ru-RU": "Russian, as spoken in Russia",
+    "de-DE": "German, as spoken in Germany",
+    "sv-SE": "Swedish, as spoken in Sweden",
+    "vi-VN": "Vietnamese, as spoken in Vietnam",
+    "id-ID": "Indonesian, as spoken in Indonesia",
+    "ur-PK": "Urdu, as spoken in Pakistan",
+    "ta-IN": "Tamil, as spoken in India",
+    "bn-IN": "Bengali, as spoken in India",
+    "sw-KE": "Swahili, as spoken in Kenya",
+};
+
+/**
+ * Get a natural-language accent description for a BCP 47 code.
+ * Returns null if the code is not mapped.
+ */
+export function getAccentDescription(bcp47Code: string): string | null {
+    return ACCENT_DESCRIPTIONS[bcp47Code] ?? null;
+}
