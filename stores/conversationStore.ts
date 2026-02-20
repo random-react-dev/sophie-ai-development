@@ -339,7 +339,11 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
       "ConversationStore",
       `Stopping PTT recording... Duration: ${duration}ms`,
     );
-    await audioRecorder.stop();
+    try {
+      await audioRecorder.stop();
+    } catch (err) {
+      Logger.error("ConversationStore", "Failed to stop audio recorder", err);
+    }
     geminiWebSocket.sendActivityEnd();
 
     set({

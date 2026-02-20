@@ -465,6 +465,11 @@ ${levelGuide}`;
       audioRecorder.stop().catch(() => {});
       audioStreamer.dispose(); // Fully dispose on unmount
       isInitialized.current = false;
+      // Reset PTT state to prevent stale listening state on return
+      const convStore = useConversationStore.getState();
+      if (convStore.isPTTActive) {
+        convStore.stopConversation();
+      }
     };
   }, [
     session?.user?.id,

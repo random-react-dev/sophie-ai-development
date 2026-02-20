@@ -11,8 +11,9 @@ import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, Pressable, Text, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Animated, Dimensions, Text, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Remote logging for physical device debugging
@@ -47,7 +48,6 @@ function MicTabButton() {
     startPTTRecording,
     stopPTTRecording,
   } = useConversationStore();
-  const [isPressing, setIsPressing] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const pttStartPromiseRef = useRef<Promise<void> | null>(null);
@@ -83,7 +83,6 @@ function MicTabButton() {
       return;
     }
     if (connectionState !== "connected") return;
-    setIsPressing(true);
     Animated.spring(scaleAnim, {
       toValue: 0.92,
       useNativeDriver: true,
@@ -96,7 +95,6 @@ function MicTabButton() {
 
   const handlePressOut = () => {
     if (!isTalkTab) return;
-    setIsPressing(false);
     Animated.spring(scaleAnim, {
       toValue: 1,
       useNativeDriver: true,
@@ -110,14 +108,23 @@ function MicTabButton() {
     }
   };
 
+  const holdGesture = Gesture.LongPress()
+    .minDuration(1)
+    .maxDistance(200)
+    .runOnJS(true)
+    .onBegin(() => {
+      handlePressIn();
+    })
+    .onFinalize(() => {
+      handlePressOut();
+    });
+
   const getButtonColor = (): string => {
     if (isPTTActive) return "bg-white shadow-red-200";
     if (isProcessing) return "bg-white shadow-orange-200";
     if (!isTalkTab || connectionState !== "connected")
       return "bg-gray-100 shadow-gray-200";
-    return isPressing
-      ? "bg-gray-50 shadow-blue-200"
-      : "bg-white shadow-blue-200";
+    return "bg-white shadow-blue-200";
   };
 
   return (
@@ -138,11 +145,7 @@ function MicTabButton() {
           }}
         />
       )}
-      <Pressable
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        pressRetentionOffset={{ top: 80, left: 80, right: 80, bottom: 80 }}
-      >
+      <GestureDetector gesture={holdGesture}>
         <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
           <RainbowBorder
             borderRadius={9999}
@@ -164,7 +167,7 @@ function MicTabButton() {
             />
           </RainbowBorder>
         </Animated.View>
-      </Pressable>
+      </GestureDetector>
       <Text
         allowFontScaling={false}
         style={{

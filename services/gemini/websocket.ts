@@ -128,6 +128,7 @@ class GeminiWebSocket {
         Logger.info(TAG, "WebSocket Connected successfully");
         this.reconnectAttempts = 0;
         this.audioChunksSent = 0;
+        this.audioChunksReceived = 0;
         this.isSetupComplete = false;
         this.sendSetupMessage(systemInstruction);
       };
