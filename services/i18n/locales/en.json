@@ -390,6 +390,7 @@
     "empty_list": "No scenarios found",
     "categories": {
       "all": "All",
+      "beginner": "Beginner",
       "food_drink": "Food & Drink",
       "business": "Business",
       "social": "Social",
@@ -455,6 +456,14 @@
       "userRole": "A citizen with questions and possibly different views on environmental policy",
       "topic": "Current Affairs",
       "context": "Engage in a thoughtful discussion about the balance between economic growth and environmental protection with a knowledgeable researcher."
+    },
+    "introduction": {
+      "title": "Introduction",
+      "description": "Two people introduce themselves to each other.",
+      "sophieRole": "A friendly person sitting next to you at a language exchange meetup",
+      "userRole": "A newcomer at the meetup",
+      "topic": "Introduction",
+      "context": "You are at a language exchange meetup. You sit down next to someone friendly. Introduce yourself, exchange names, ask about age, occupation, and where they are from. Keep it simple and polite."
     }
   },
   "common": {

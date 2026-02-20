@@ -388,6 +388,7 @@
     "empty_list": "Inga scenarier hittades",
     "categories": {
       "all": "Alla",
+      "beginner": "Nybörjare",
       "food_drink": "Mat & Dryck",
       "business": "Företag",
       "social": "Socialt",
@@ -453,6 +454,14 @@
       "userRole": "Medborgare med frågor och kanske en annan syn på miljöpolitik",
       "topic": "Aktuella händelser",
       "context": "Delta i en djupgående diskussion om balansen mellan ekonomisk tillväxt och miljöskydd med en expertforskare."
+    },
+    "introduction": {
+      "title": "Introduktion",
+      "description": "Två personer presenterar sig för varandra.",
+      "sophieRole": "En vänlig person som sitter bredvid dig på en språkutbytes-träff",
+      "userRole": "En nykomling på träffen",
+      "topic": "Introduktion",
+      "context": "Du är på en språkutbytes-träff. Du sätter dig bredvid någon som ser trevlig ut. Presentera dig själv, byt namn, fråga om ålder, yrke och varifrån de kommer. Håll det enkelt och artigt."
     }
   },
   "common": {

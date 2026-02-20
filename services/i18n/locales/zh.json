@@ -389,6 +389,7 @@
     "empty_list": "未找到场景",
     "categories": {
       "all": "全部",
+      "beginner": "初学者",
       "food_drink": "餐饮",
       "business": "商务",
       "social": "社交",
@@ -454,6 +455,14 @@
       "userRole": "对环境政策有疑问，甚至有不同意见的公民",
       "topic": "时事",
       "context": "与一位专家研究员深入探讨经济增长与环境保护之间的平衡。"
+    },
+    "introduction": {
+      "title": "自我介绍",
+      "description": "两个人互相介绍。",
+      "sophieRole": "一个在语言交换活动中坐在你旁边的友善的人",
+      "userRole": "活动的新成员",
+      "topic": "自我介绍",
+      "context": "你正在参加一个语言交换活动。你坐在一个友好的人旁边。自我介绍、交换姓名、询问对方的年龄、职业和籍贯。保持对话简单且有礼。"
     }
   },
   "common": {

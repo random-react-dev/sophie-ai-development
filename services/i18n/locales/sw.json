@@ -388,6 +388,7 @@
     "empty_list": "Hakuna matukio yaliyopatikana",
     "categories": {
       "all": "Zote",
+      "beginner": "Mwanzoni",
       "food_drink": "Chakula na Vinywaji",
       "business": "Biashara",
       "social": "Kijamii",
@@ -453,6 +454,14 @@
       "userRole": "Raia mwenye maswali na labda maoni tofauti kuhusu sera za mazingira",
       "topic": "Masuala ya Sasa",
       "context": "Shiriki katika mjadala wa kina kuhusu usawa kati ya ukuaji wa uchumi na ulinzi wa mazingira na mtafiti mtaalam."
+    },
+    "introduction": {
+      "title": "Utangulizi",
+      "description": "Watu wawili wanatambulishana.",
+      "sophieRole": "Mtu mwenye urafiki aliyeketi kando yako katika mkutano wa kubadilishana lugha",
+      "userRole": "Mgeni katika mkutano huo",
+      "topic": "Utangulizi",
+      "context": "Uko katika mkutano wa kubadilishana lugha. Unaketi kando ya mtu mwenye urafiki. Jitambulishe, mbadilishane majina, uliza kuhusu umri, kazi, na wanatoka wapi. Fanya mazungumzo yawe rahisi na ya heshima."
     }
   },
   "common": {

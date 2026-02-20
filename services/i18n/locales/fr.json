@@ -388,6 +388,7 @@
     "empty_list": "Aucun scénario trouvé",
     "categories": {
       "all": "Tous",
+      "beginner": "Débutant",
       "food_drink": "Nourriture et Boissons",
       "business": "Affaires",
       "social": "Social",
@@ -453,6 +454,14 @@
       "userRole": "Un citoyen avec des questions et peut-être des points de vue différents sur la politique environnementale",
       "topic": "Actualités",
       "context": "Participez à une discussion réfléchie sur l'équilibre entre croissance économique et protection de l'environnement avec un chercheur compétent."
+    },
+    "introduction": {
+      "title": "Introduction",
+      "description": "Deux personnes se présentent l'une à l'autre.",
+      "sophieRole": "Une personne amicale assise à côté de vous lors d'une rencontre d'échange linguistique",
+      "userRole": "Un nouveau venu à la rencontre",
+      "topic": "Introduction",
+      "context": "Vous êtes à une rencontre d'échange linguistique. Vous vous asseyez à côté de quelqu'on de sympathique. Présentez-vous, échangez vos noms, demandez l'âge, la profession et d'où ils viennent. Restez simple et poli."
     }
   },
   "common": {

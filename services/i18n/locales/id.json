@@ -388,6 +388,7 @@
     "empty_list": "Skenario tidak ditemukan",
     "categories": {
       "all": "Semua",
+      "beginner": "Pemula",
       "food_drink": "Makanan & Minuman",
       "business": "Bisnis",
       "social": "Sosial",
@@ -453,6 +454,14 @@
       "userRole": "Warga negara dengan pertanyaan dan mungkin sudut pandang yang berbeda tentang kebijakan lingkungan",
       "topic": "Isu Terkini",
       "context": "Ikuti diskusi mendalam tentang keseimbangan antara pertumbuhan ekonomi dan perlindungan lingkungan bersama peneliti ahli."
+    },
+    "introduction": {
+      "title": "Perkenalan",
+      "description": "Dua orang saling memperkenalkan diri satu sama lain.",
+      "sophieRole": "Seseorang yang ramah duduk di sebelah Anda di pertemuan pertukaran bahasa",
+      "userRole": "Pendatang baru di pertemuan tersebut",
+      "topic": "Perkenalan",
+      "context": "Anda berada di pertemuan pertukaran bahasa. Anda duduk di sebelah seseorang yang ramah. Perkenalkan diri Anda, bertukar nama, tanya tentang usia, pekerjaan, dan dari mana mereka berasal. Tetaplah sederhana dan sopan."
     }
   },
   "common": {

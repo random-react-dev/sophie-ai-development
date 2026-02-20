@@ -52,6 +52,7 @@ const IconMap: Record<string, any> = {
   compass: Compass,
   bed: Bed,
   mic: Mic,
+  users: Users,
 };
 
 // Enable LayoutAnimation for Android
@@ -83,6 +84,8 @@ export default function RoleplayScreen() {
           return t("scenarios_screen.categories.food_drink");
         case "Business":
           return t("scenarios_screen.categories.business");
+        case "Beginner":
+          return t("scenarios_screen.categories.beginner");
         case "Social":
           return t("scenarios_screen.categories.social");
         case "Travel":
@@ -202,15 +205,17 @@ export default function RoleplayScreen() {
                   ? t("scenarios_screen.categories.food_drink")
                   : cat === "Business"
                     ? t("scenarios_screen.categories.business")
-                    : cat === "Social"
-                      ? t("scenarios_screen.categories.social")
-                      : cat === "Travel"
-                        ? t("scenarios_screen.categories.travel")
-                        : cat === "Customer Service"
-                          ? t("scenarios_screen.categories.customer_service")
-                          : cat === "Education"
-                            ? t("scenarios_screen.categories.education")
-                            : cat;
+                    : cat === "Beginner"
+                      ? t("scenarios_screen.categories.beginner")
+                      : cat === "Social"
+                        ? t("scenarios_screen.categories.social")
+                        : cat === "Travel"
+                          ? t("scenarios_screen.categories.travel")
+                          : cat === "Customer Service"
+                            ? t("scenarios_screen.categories.customer_service")
+                            : cat === "Education"
+                              ? t("scenarios_screen.categories.education")
+                              : cat;
 
             if (isSelected) {
               return (
@@ -316,24 +321,31 @@ export default function RoleplayScreen() {
                           ? t("scenarios_screen.categories.business", {
                               defaultValue: "Business",
                             })
-                          : item.category === "Social"
-                            ? t("scenarios_screen.categories.social", {
-                                defaultValue: "Social",
+                          : item.category === "Beginner"
+                            ? t("scenarios_screen.categories.beginner", {
+                                defaultValue: "Beginner",
                               })
-                            : item.category === "Travel"
-                              ? t("scenarios_screen.categories.travel", {
-                                  defaultValue: "Travel",
+                            : item.category === "Social"
+                              ? t("scenarios_screen.categories.social", {
+                                  defaultValue: "Social",
                                 })
-                              : item.category === "Customer Service"
-                                ? t(
-                                    "scenarios_screen.categories.customer_service",
-                                    { defaultValue: "Customer Service" },
-                                  )
-                                : item.category === "Education"
-                                  ? t("scenarios_screen.categories.education", {
-                                      defaultValue: "Education",
-                                    })
-                                  : item.category}
+                              : item.category === "Travel"
+                                ? t("scenarios_screen.categories.travel", {
+                                    defaultValue: "Travel",
+                                  })
+                                : item.category === "Customer Service"
+                                  ? t(
+                                      "scenarios_screen.categories.customer_service",
+                                      { defaultValue: "Customer Service" },
+                                    )
+                                  : item.category === "Education"
+                                    ? t(
+                                        "scenarios_screen.categories.education",
+                                        {
+                                          defaultValue: "Education",
+                                        },
+                                      )
+                                    : item.category}
                   </Text>
                   <Text
                     className="text-gray-400 text-sm font-medium"

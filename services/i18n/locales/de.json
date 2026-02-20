@@ -388,6 +388,7 @@
     "empty_list": "Keine Szenarien gefunden",
     "categories": {
       "all": "Alle",
+      "beginner": "Anfänger",
       "food_drink": "Essen & Trinken",
       "business": "Geschäft",
       "social": "Sozial",
@@ -453,6 +454,14 @@
       "userRole": "Ein Bürger mit Fragen und möglicherweise unterschiedlichen Ansichten zur Umweltpolitik",
       "topic": "Aktuelle Themen",
       "context": "Nehmen Sie an einer nachdenklichen Diskussion über das Gleichgewicht zwischen Wirtschaftswachstum und Umweltschutz mit einem sachkundigen Forscher teil."
+    },
+    "introduction": {
+      "title": "Vorstellung",
+      "description": "Zwei Personen stellen sich einander vor.",
+      "sophieRole": "Eine freundliche Person, die bei einem Sprachaustausch-Treffen neben dir sitzt",
+      "userRole": "Ein Neuling beim Treffen",
+      "topic": "Vorstellung",
+      "context": "Du bist bei einem Sprachaustausch-Treffen. Du setzt dich neben jemanden, der freundlich ist. Stell dich vor, tauscht Namen aus, frag nach Alter, Beruf und Herkunft. Halte es einfach und höflich."
     }
   },
   "common": {

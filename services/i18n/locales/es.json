@@ -388,6 +388,7 @@
     "empty_list": "No se encontraron escenarios",
     "categories": {
       "all": "Todos",
+      "beginner": "Principiante",
       "food_drink": "Comida y Bebida",
       "business": "Negocios",
       "social": "Social",
@@ -453,6 +454,14 @@
       "userRole": "Un ciudadano con preguntas y posiblemente diferentes puntos de vista sobre la política ambiental",
       "topic": "Asuntos actuales",
       "context": "Participa en una discusión reflexiva sobre el equilibrio entre el crecimiento económico y la protección ambiental con un investigador experto."
+    },
+    "introduction": {
+      "title": "Introducción",
+      "description": "Dos personas se presentan la una a la otra.",
+      "sophieRole": "Una persona amable sentada a tu lado en un intercambio de idiomas",
+      "userRole": "Un recién llegado al encuentro",
+      "topic": "Introducción",
+      "context": "Estás en un encuentro de intercambio de idiomas. Te sientas al lado de alguien amable. Preséntate, intercambia nombres, pregunta por la edad, ocupación y de dónde es. Mantén la conversación simple y educada."
     }
   },
   "common": {

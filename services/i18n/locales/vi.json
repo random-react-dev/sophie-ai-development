@@ -388,6 +388,7 @@
     "empty_list": "Không tìm thấy kịch bản",
     "categories": {
       "all": "Tất cả",
+      "beginner": "Người mới bắt đầu",
       "food_drink": "Thực phẩm & Đồ uống",
       "business": "Kinh doanh",
       "social": "Xã hội",
@@ -453,6 +454,14 @@
       "userRole": "Một công dân có nhiều câu hỏi và có thể có quan điểm khác về chính sách môi trường",
       "topic": "Thời sự",
       "context": "Tham gia vào một cuộc thảo luận sâu về sự cân bằng giữa tăng trưởng kinh tế và bảo vệ môi trường với một nhà nghiên cứu chuyên gia."
+    },
+    "introduction": {
+      "title": "Giới thiệu",
+      "description": "Hai người giới thiệu bản thân với nhau.",
+      "sophieRole": "Một người thân thiện ngồi cạnh bạn tại một buổi họp mặt trao đổi ngôn ngữ",
+      "userRole": "Một người mới đến buổi họp mặt",
+      "topic": "Giới thiệu",
+      "context": "Bạn đang ở một buổi họp mặt trao đổi ngôn ngữ. Bạn ngồi xuống cạnh một người thân thiện. Hãy giới thiệu bản thân, trao đổi tên, hỏi về độ tuổi, nghề nghiệp và họ đến từ đâu. Hãy giữ cuộc trò chuyện đơn giản và lịch sự."
     }
   },
   "common": {

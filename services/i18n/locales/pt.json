@@ -388,6 +388,7 @@
     "empty_list": "Nenhum cenário encontrado",
     "categories": {
       "all": "Todos",
+      "beginner": "Iniciante",
       "food_drink": "Comida e Bebida",
       "business": "Negócios",
       "social": "Social",
@@ -452,7 +453,15 @@
       "sophieRole": "Um pesquisador de políticas ambientais apaixonado, mas respeitoso",
       "userRole": "Um cidadão com perguntas e talvez diferentes pontos de vista sobre política ambiental",
       "topic": "Atualidades",
-      "context": "Participe de uma discussão ponderada sobre o equilíbrio entre crescimento econômico e proteção ambiental com um pesquisador experiente."
+      "context": "Participe de uma discussion ponderada sobre o equilíbrio entre crescimento econômico e proteção ambiental com um pesquisador experiente."
+    },
+    "introduction": {
+      "title": "Introdução",
+      "description": "Duas pessoas se apresentam uma à outra.",
+      "sophieRole": "Uma pessoa amigável sentada ao seu lado em um encontro de intercâmbio de idiomas",
+      "userRole": "Um recém-chegado ao encontro",
+      "topic": "Introdução",
+      "context": "Você está em um encontro de intercâmbio de idiomas. Você se senta ao lado de alguém amigável. Apresente-se, troque nomes, pergunte sobre a idade, profissão e de onde eles são. Mantenha a conversa simples e educada."
     }
   },
   "common": {

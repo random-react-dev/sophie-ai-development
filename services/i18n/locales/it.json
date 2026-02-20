@@ -388,6 +388,7 @@
     "empty_list": "Nessuno scenario trovato",
     "categories": {
       "all": "Tutti",
+      "beginner": "Principiante",
       "food_drink": "Cibo e Bevande",
       "business": "Affari",
       "social": "Sociale",
@@ -453,6 +454,14 @@
       "userRole": "Un cittadino con domande e forse punti di vista diversi sulla politica ambientale",
       "topic": "Attualità",
       "context": "Partecipa a una discussione approfondita sull'equilibrio tra crescita economica e protezione dell'ambiente con un ricercatore esperto."
+    },
+    "introduction": {
+      "title": "Introduzione",
+      "description": "Due persone si presentano l'una all'altra.",
+      "sophieRole": "Una persona amichevole seduta accanto a te in un incontro di scambio linguistico",
+      "userRole": "Un nuovo arrivato all'incontro",
+      "topic": "Presentazione",
+      "context": "Sei a un incontro di scambio linguistico. Ti siedi accanto a qualcuno di amichevole. Presentati, scambia i nomi, chiedi l'età, l'occupazione e da dove viene. Mantieniti semplice e educato."
     }
   },
   "common": {
