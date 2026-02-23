@@ -30,6 +30,7 @@ class AudioRecorder {
     private chunkCount = 0;
     private consecutiveErrors = 0;
     private isRestarting = false;
+    private isStopping = false;
     private downsampleRatio = 1;
 
     // Singleton pattern
@@ -93,8 +94,8 @@ class AudioRecorder {
                         this.downsampleRatio = Math.round(frame.sampleRate / TARGET_SAMPLE_RATE);
                         Logger.info(TAG, `Downsampling ${frame.sampleRate}Hz → ${TARGET_SAMPLE_RATE}Hz (ratio: ${this.downsampleRatio}:1)`);
                     }
-                } else if (this.chunkCount % 50 === 0) {
-                    Logger.debug(TAG, `Audio frame #${this.chunkCount}`);
+                } else if (this.chunkCount % 250 === 0) {
+                    Logger.debug(TAG, `Recording frame #${this.chunkCount}`);
                 }
 
                 // Validate audio data before sending
@@ -118,7 +119,6 @@ class AudioRecorder {
             });
 
             this.errorSubscription = addErrorListener((event) => {
-                Logger.error(TAG, 'Microphone error', event.message);
                 this.handleRecordingError(event.message);
             });
 
@@ -148,10 +148,11 @@ class AudioRecorder {
         }
 
         try {
-            Logger.info(TAG, 'Stopping recording...');
+            Logger.info(TAG, `Stopping recording (${this.chunkCount} frames captured)...`);
+            this.isStopping = true;
             await stop();
             this.cleanup();
-            Logger.info(TAG, 'Recording stopped successfully');
+            Logger.info(TAG, 'Recording stopped');
         } catch (error) {
             Logger.error(TAG, 'Failed to stop recording', error);
             this.cleanup();
@@ -180,13 +181,19 @@ class AudioRecorder {
     }
 
     private handleRecordingError(message: string): void {
+        if (this.isStopping && message.includes('0 bytes')) {
+            Logger.debug(TAG, 'Expected 0-byte read during stop — ignored');
+            return;
+        }
+
         if (!message.includes('0 bytes')) {
+            Logger.error(TAG, 'Mic error', message);
             this.consecutiveErrors = 0;
             return;
         }
 
         this.consecutiveErrors++;
-        Logger.warn(TAG, `Consecutive 0-byte errors: ${this.consecutiveErrors}`);
+        Logger.warn(TAG, `0-byte error #${this.consecutiveErrors}/${MAX_CONSECUTIVE_ERRORS}`);
 
         if (this.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS && !this.isRestarting) {
             Logger.warn(TAG, 'Max consecutive errors reached, attempting restart...');
@@ -228,6 +235,7 @@ class AudioRecorder {
         this.isRecording = false;
         this.consecutiveErrors = 0;
         this.isRestarting = false;
+        this.isStopping = false;
         this.downsampleRatio = 1;
     }
 }

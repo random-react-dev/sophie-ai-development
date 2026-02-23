@@ -1,4 +1,5 @@
 import { decode } from "base64-arraybuffer";
+import { Platform } from "react-native";
 import {
   AudioBufferQueueSourceNode,
   AudioContext,
@@ -34,6 +35,7 @@ class AudioStreamer {
   private responseId = 0;
   private responsesSinceReset = 0;
   private isAudioPrimed = false;
+  private flushCount = 0;
 
   // Buffer accumulation (for native queue)
   private accumulatedSamples: Float32Array[] = [];
@@ -67,24 +69,20 @@ class AudioStreamer {
 
   async initialize(): Promise<void> {
     if (this.audioContext) {
-      Logger.info(TAG, `[DIAG] initialize() skipped — AudioContext already exists (state=${this.audioContext.state})`);
+      Logger.debug(TAG, 'initialize() skipped — already exists');
       return;
     }
 
     const { configureAudioSession } = await import("./audioManager");
-    Logger.info(TAG, "[DIAG] initialize() — calling configureAudioSession...");
     await configureAudioSession();
-    Logger.info(TAG, "[DIAG] configureAudioSession completed");
 
-    Logger.info(TAG, `[DIAG] Creating AudioContext with sampleRate=${SAMPLE_RATE}`);
     this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
-    Logger.info(TAG, `[DIAG] AudioContext created — state=${this.audioContext.state}, sampleRate=${this.audioContext.sampleRate}`);
+    Logger.info(TAG, `Initialized AudioContext state=${this.audioContext.state}`);
 
     // Create GainNode at full volume to prevent iOS fade-in effects
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 1.0;
     this.gainNode.connect(this.audioContext.destination);
-    Logger.info(TAG, "[DIAG] GainNode created and connected to destination");
 
     // Prime iOS audio engine with silent buffer
     this.primeAudioEngine();
@@ -106,18 +104,15 @@ class AudioStreamer {
       source.start();
 
       this.isAudioPrimed = true;
-      Logger.info(TAG, "iOS audio engine primed with silent buffer");
+      Logger.debug(TAG, "Audio engine primed");
     } catch (error) {
       Logger.error(TAG, "Failed to prime audio engine", error);
     }
   }
 
   prepareForNewResponse(): void {
-    Logger.info(TAG, `[DIAG] prepareForNewResponse() called — responseId=${this.responseId}, isPlaying=${this.isPlaying}, audioContext.state=${this.audioContext?.state ?? 'null'}`);
-
     // If currently playing, stop and reset first
     if (this.isPlaying) {
-      Logger.info(TAG, "[DIAG] Stopping current playback for new response");
       this.stopCurrentPlayback();
     }
 
@@ -127,10 +122,7 @@ class AudioStreamer {
     // Periodic full reset to prevent memory buildup (every N responses)
     this.responsesSinceReset++;
     if (this.responsesSinceReset >= RESET_AFTER_RESPONSES) {
-      Logger.info(
-        TAG,
-        `[DIAG] Performing periodic full reset after ${RESET_AFTER_RESPONSES} responses`,
-      );
+      Logger.info(TAG, `Periodic full reset after ${RESET_AFTER_RESPONSES} responses`);
       this.performFullReset();
       this.responsesSinceReset = 0;
     }
@@ -138,8 +130,9 @@ class AudioStreamer {
     // Force native engine restart to clear any stall.
     // The AVAudioEngine can silently stop processing while still reporting
     // "running". This suspend→resume cycle forces a clean engine restart.
-    if (this.audioContext) {
-      Logger.info(TAG, '[DIAG] Forcing engine restart via suspend→resume');
+    // Only needed on iOS — on Android (Oboe/AAudio) this can destabilize playback.
+    if (this.audioContext && Platform.OS === 'ios') {
+      Logger.debug(TAG, 'iOS suspend→resume cycle');
       this.audioContext.suspend();
       this.audioContext.resume();
     }
@@ -151,17 +144,18 @@ class AudioStreamer {
     this.isGenerationComplete = false;
     this.hasStartedPlayback = false;
     this.chunkCount = 0;
+    this.flushCount = 0;
     this.accumulatedSamples = [];
     this.accumulatedLength = 0;
     this.totalQueuedSamples = 0;
     this.isPaused = false;
     this.hasResponseCompleted = false;
 
-    Logger.info(TAG, `[DIAG] Prepared for response #${this.responseId} — audioContext.state=${this.audioContext?.state ?? 'null'}`);
+    Logger.info(TAG, `Prepared response #${this.responseId} ctx=${this.audioContext?.state ?? 'null'} platform=${Platform.OS}`);
   }
 
   private performFullReset(): void {
-    Logger.info(TAG, "[DIAG] performFullReset() — closing old AudioContext and creating fresh one");
+    Logger.info(TAG, "Full reset — recreating AudioContext");
 
     // Close and recreate AudioContext to release all native resources
     if (this.queueSource) {
@@ -197,7 +191,7 @@ class AudioStreamer {
     this.isAudioPrimed = false;
     this.primeAudioEngine();
 
-    Logger.info(TAG, `[DIAG] Full reset complete — fresh AudioContext state=${this.audioContext.state}, sampleRate=${this.audioContext.sampleRate}`);
+    Logger.info(TAG, `Full reset done — ctx=${this.audioContext.state}`);
   }
 
   private stopCurrentPlayback(): void {
@@ -221,20 +215,20 @@ class AudioStreamer {
     this.accumulatedLength = 0;
 
     if (wasPlaying) {
+      Logger.info(TAG, "Stopped current playback");
       this.speakingStateCallback?.(false);
     }
   }
 
   private createFreshQueueSource(): void {
     if (!this.audioContext || !this.gainNode) {
-      Logger.warn(TAG, `[DIAG] createFreshQueueSource() — cannot create: audioContext=${!!this.audioContext}, gainNode=${!!this.gainNode}`);
+      Logger.warn(TAG, `Cannot create queueSource — ctx=${!!this.audioContext} gain=${!!this.gainNode}`);
       return;
     }
 
     // CRITICAL: Fully cleanup old queue source to prevent degradation
     // AudioBufferQueueSourceNode is single-use after stop()
     if (this.queueSource) {
-      Logger.info(TAG, "[DIAG] createFreshQueueSource() — cleaning up old queueSource");
       try {
         this.queueSource.clearBuffers();
         this.queueSource.stop();
@@ -252,13 +246,13 @@ class AudioStreamer {
     // Use native callback for reliable completion detection
     const currentResponseId = this.responseId;
     this.queueSource.onEnded = (event: { bufferId: string | undefined; isLast: boolean | undefined }) => {
-      Logger.info(TAG, `[DIAG] onEnded callback — isLast=${event.isLast}, isGenerationComplete=${this.isGenerationComplete}, responseId match=${this.responseId === currentResponseId}`);
-      if (event.isLast && this.isGenerationComplete && this.responseId === currentResponseId) {
+      // Only act on isLast from the current response while generation is complete
+      if (!event.isLast || this.responseId !== currentResponseId) return;
+      if (this.isGenerationComplete) {
+        Logger.info(TAG, `onEnded — last buffer done, finishing`);
         this.finishSpeaking();
       }
     };
-
-    Logger.info(TAG, `[DIAG] Created fresh AudioBufferQueueSourceNode for response #${this.responseId}`);
   }
 
   /**
@@ -268,7 +262,7 @@ class AudioStreamer {
   queueAudio(base64Pcm: string): void {
     if (this.isInterrupted || !this.audioContext || !this.queueSource) {
       if (!this.audioContext || !this.queueSource) {
-        Logger.warn(TAG, `[DIAG] queueAudio() dropped — audioContext=${!!this.audioContext}, queueSource=${!!this.queueSource}, isInterrupted=${this.isInterrupted}`);
+        Logger.warn(TAG, `queueAudio dropped — ctx=${!!this.audioContext} src=${!!this.queueSource}`);
       }
       return;
     }
@@ -289,11 +283,8 @@ class AudioStreamer {
       this.accumulatedSamples.push(float32Array);
       this.accumulatedLength += float32Array.length;
 
-      Logger.info(TAG, `[DIAG] queueAudio chunk #${this.chunkCount} — decoded=${float32Array.length} samples, accumulated=${this.accumulatedLength}, totalQueued=${this.totalQueuedSamples}`);
-
       // If we have enough accumulated, flush to native
       if (this.accumulatedLength >= ACCUMULATION_TARGET) {
-        Logger.info(TAG, `[DIAG] Accumulation threshold reached (${this.accumulatedLength} >= ${ACCUMULATION_TARGET}), flushing`);
         this.flushAccumulatedBuffer();
       }
 
@@ -311,11 +302,11 @@ class AudioStreamer {
         !this.hasStartedPlayback &&
         this.totalQueuedSamples >= MIN_INITIAL_BUFFER
       ) {
-        Logger.info(TAG, `[DIAG] Initial buffer threshold reached (${this.totalQueuedSamples} >= ${MIN_INITIAL_BUFFER}), starting playback`);
+        Logger.info(TAG, `Buffer ready — ${this.chunkCount} chunks, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s buffered, starting playback`);
         this.startSpeaking();
       }
     } catch (error) {
-      Logger.error(TAG, "[DIAG] Error queueing audio", error);
+      Logger.error(TAG, "Error queueing audio", error);
     }
   }
 
@@ -334,8 +325,6 @@ class AudioStreamer {
       offset += chunk.length;
     }
 
-    const bufferSize = this.accumulatedLength;
-
     // Create AudioBuffer and queue
     const audioBuffer = this.audioContext.createBuffer(
       1,
@@ -343,12 +332,11 @@ class AudioStreamer {
       SAMPLE_RATE,
     );
     audioBuffer.getChannelData(0).set(merged);
-    Logger.info(TAG, `[DIAG] flushAccumulatedBuffer() — enqueuing ${bufferSize} samples (${(bufferSize / SAMPLE_RATE * 1000).toFixed(0)}ms), audioContext.state=${this.audioContext.state}`);
     this.queueSource.enqueueBuffer(audioBuffer);
 
     // Track total queued
     this.totalQueuedSamples += this.accumulatedLength;
-    Logger.info(TAG, `[DIAG] Total queued after flush: ${this.totalQueuedSamples} samples (${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s)`);
+    this.flushCount++;
 
     // Explicit memory cleanup
     this.accumulatedSamples.length = 0;
@@ -358,7 +346,7 @@ class AudioStreamer {
 
   private startSpeaking(): void {
     if (this.isPlaying || !this.queueSource || !this.gainNode) {
-      Logger.warn(TAG, `[DIAG] startSpeaking() — skipped: isPlaying=${this.isPlaying}, queueSource=${!!this.queueSource}, gainNode=${!!this.gainNode}`);
+      Logger.warn(TAG, `startSpeaking skipped — playing=${this.isPlaying} src=${!!this.queueSource} gain=${!!this.gainNode}`);
       return;
     }
 
@@ -371,64 +359,66 @@ class AudioStreamer {
     );
 
     // Start the queue source playback
-    Logger.info(
-      TAG,
-      `[DIAG] startSpeaking() — calling queueSource.start() with ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s buffered, fade-in=${FADE_IN_DURATION}s, audioContext.state=${this.audioContext?.state}, currentTime=${currentTime.toFixed(3)}`,
-    );
     this.queueSource.start();
-    Logger.info(TAG, "[DIAG] queueSource.start() returned");
 
     this.isPlaying = true;
     this.hasStartedPlayback = true;
     this.bufferProgressCallback?.(100); // Clear progress
-    Logger.info(TAG, "[DIAG] Sophie started speaking — isPlaying=true, speakingStateCallback firing");
+    Logger.info(TAG, `>>> SPEAKING started — resp=#${this.responseId} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`);
     this.speakingStateCallback?.(true);
 
     // Watchdog: verify AudioContext.currentTime is advancing (engine truly running)
     const watchdogResponseId = this.responseId;
     const startCurrentTime = this.audioContext?.currentTime ?? 0;
 
-    // First check at 500ms — attempt suspend/resume recovery if stalled
+    // First check at 500ms — attempt recovery if stalled
     setTimeout(() => {
       if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
       const nowCurrentTime = this.audioContext?.currentTime ?? 0;
       const delta = nowCurrentTime - startCurrentTime;
       if (delta < 0.1) {
-        Logger.warn(TAG, `[DIAG] WATCHDOG: Engine stalled (delta=${delta.toFixed(3)}). Attempting suspend→resume recovery...`);
-        if (this.audioContext) {
-          this.audioContext.suspend();
-          this.audioContext.resume();
-        }
-
-        // Second check at 1000ms — escalate to full reset if still stalled
-        const postRecoveryTime = this.audioContext?.currentTime ?? 0;
-        setTimeout(() => {
-          if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
-          const finalTime = this.audioContext?.currentTime ?? 0;
-          const recoveryDelta = finalTime - postRecoveryTime;
-          if (recoveryDelta < 0.1) {
-            Logger.warn(TAG, `[DIAG] WATCHDOG: Still stalled after suspend→resume (delta=${recoveryDelta.toFixed(3)}). Escalating to full reset...`);
-            this.performFullReset();
-            this.createFreshQueueSource();
-            // Re-queue any pending audio — the current response's buffered audio
-            // is lost, but isGenerationComplete flag and subsequent chunks will rebuild
-            Logger.info(TAG, '[DIAG] WATCHDOG: Full reset complete. Playback will restart with next audio chunk.');
-            this.isPlaying = false;
-            this.hasStartedPlayback = false;
-            this.speakingStateCallback?.(false);
-          } else {
-            Logger.info(TAG, `[DIAG] WATCHDOG: Engine recovered after suspend→resume (delta=${recoveryDelta.toFixed(3)})`);
+        if (Platform.OS === 'ios') {
+          // iOS: try suspend→resume first, then escalate to full reset
+          Logger.warn(TAG, `WATCHDOG: Stalled delta=${delta.toFixed(3)} — trying suspend→resume`);
+          if (this.audioContext) {
+            this.audioContext.suspend();
+            this.audioContext.resume();
           }
-        }, 500);
+
+          const postRecoveryTime = this.audioContext?.currentTime ?? 0;
+          setTimeout(() => {
+            if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
+            const finalTime = this.audioContext?.currentTime ?? 0;
+            const recoveryDelta = finalTime - postRecoveryTime;
+            if (recoveryDelta < 0.1) {
+              Logger.warn(TAG, `WATCHDOG: Still stalled delta=${recoveryDelta.toFixed(3)} — full reset`);
+              this.performFullReset();
+              this.createFreshQueueSource();
+              this.isPlaying = false;
+              this.hasStartedPlayback = false;
+              this.speakingStateCallback?.(false);
+            } else {
+              Logger.info(TAG, `WATCHDOG: Recovered delta=${recoveryDelta.toFixed(3)}`);
+            }
+          }, 500);
+        } else {
+          // Android: skip suspend→resume (can destabilize Oboe), go directly to full reset
+          Logger.warn(TAG, `WATCHDOG: Android stalled delta=${delta.toFixed(3)} — full reset`);
+          this.performFullReset();
+          this.createFreshQueueSource();
+          this.isPlaying = false;
+          this.hasStartedPlayback = false;
+          this.speakingStateCallback?.(false);
+        }
       } else {
-        Logger.info(TAG, `[DIAG] WATCHDOG: currentTime advancing normally (delta=${delta.toFixed(3)})`);
+        Logger.debug(TAG, `WATCHDOG: OK delta=${delta.toFixed(3)}`);
       }
     }, 500);
   }
 
   onGenerationComplete(): void {
     if (this.isInterrupted) {
-      Logger.info(TAG, "[DIAG] onGenerationComplete() — ignored (interrupted)");
+      Logger.debug(TAG, "onGenerationComplete — ignored (interrupted)");
       return;
     }
 
@@ -436,18 +426,17 @@ class AudioStreamer {
 
     // Flush any remaining samples
     if (this.accumulatedLength > 0) {
-      Logger.info(TAG, `[DIAG] onGenerationComplete() — flushing remaining ${this.accumulatedLength} accumulated samples`);
       this.flushAccumulatedBuffer();
     }
 
     Logger.info(
       TAG,
-      `[DIAG] onGenerationComplete() — ${this.chunkCount} chunks, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s total, hasStartedPlayback=${this.hasStartedPlayback}, isPlaying=${this.isPlaying}`,
+      `Generation complete — ${this.chunkCount} chunks, ${this.flushCount} flushes, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s total, playing=${this.isPlaying}`,
     );
 
     // Start playback if we haven't yet (short responses)
     if (!this.hasStartedPlayback && this.totalQueuedSamples > 0) {
-      Logger.info(TAG, "[DIAG] onGenerationComplete() — short response, starting playback now");
+      Logger.info(TAG, "Short response — starting late playback");
       this.startSpeaking();
     }
 
@@ -456,12 +445,9 @@ class AudioStreamer {
   }
 
   private finishSpeaking(): void {
-    if (!this.isPlaying) {
-      Logger.info(TAG, "[DIAG] finishSpeaking() — skipped (not playing)");
-      return;
-    }
+    if (!this.isPlaying) return;
 
-    Logger.info(TAG, "[DIAG] finishSpeaking() — Sophie finished speaking, resetting state");
+    Logger.info(TAG, `<<< SPEAKING finished — resp=#${this.responseId} ${this.chunkCount} chunks, ${this.flushCount} flushes, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`);
 
     // Mark response as completed (so pausePlayback knows not to preserve buffer)
     this.hasResponseCompleted = true;
@@ -475,6 +461,7 @@ class AudioStreamer {
     this.isGenerationComplete = false;
     this.hasStartedPlayback = false;
     this.chunkCount = 0;
+    this.flushCount = 0;
 
     // Explicit memory cleanup
     if (this.accumulatedSamples.length > 0) {
@@ -486,7 +473,7 @@ class AudioStreamer {
   }
 
   handleInterruption(): void {
-    Logger.info(TAG, "Handling interruption");
+    Logger.info(TAG, "Interrupted");
     this.isInterrupted = true;
     this.responseId++;
 
@@ -495,7 +482,7 @@ class AudioStreamer {
   }
 
   clearQueue(): void {
-    Logger.info(TAG, "Clearing audio queue");
+    Logger.info(TAG, "Queue cleared");
     this.handleInterruption();
     this.isInterrupted = false;
   }
@@ -511,7 +498,7 @@ class AudioStreamer {
 
     if (!this.audioContext || !this.queueSource || !this.isPlaying) return;
 
-    Logger.info(TAG, "Pausing playback");
+    Logger.info(TAG, "Paused");
     this.queueSource.pause();
     this.isPlaying = false;
     this.isPaused = true;
@@ -526,7 +513,7 @@ class AudioStreamer {
     if (this.hasResponseCompleted) return;
     if (!this.isPaused) return;
 
-    Logger.info(TAG, "Resuming playback");
+    Logger.info(TAG, "Resumed");
 
     if (this.audioContext.state === "suspended") {
       this.audioContext.resume();
@@ -539,6 +526,7 @@ class AudioStreamer {
   }
 
   dispose(): void {
+    Logger.info(TAG, "Disposed");
     this.stopCurrentPlayback();
 
     if (this.gainNode) {
