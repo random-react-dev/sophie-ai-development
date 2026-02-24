@@ -27,7 +27,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundImage: "./assets/images/android-icon-background.png",
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
-    package: "com.fluentai.sophie",
+    package: "ai.speakwithsophie.app",
+    versionCode: 1,
     permissions: ["android.permission.RECORD_AUDIO"],
   },
   web: {
@@ -35,6 +36,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
+    "./plugins/withAndroidReleaseSigning",
     "expo-router",
     [
       "expo-splash-screen",

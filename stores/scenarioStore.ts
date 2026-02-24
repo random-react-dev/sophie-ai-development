@@ -14,6 +14,7 @@ interface ScenarioState {
   setSelectedCategory: (category: string) => void;
   selectScenario: (scenario: Scenario | null) => void;
   setPracticePhrase: (phrase: string | null) => void;
+  clearForProfileSwitch: () => void;
   addCustomScenario: (scenario: Scenario) => void;
 }
 
@@ -45,6 +46,12 @@ export const useScenarioStore = create<ScenarioState>()(
           practicePhrase,
           selectedScenario: null, // Clear scenario when practicing a phrase
           scenarioSelectionTimestamp: Date.now(),
+        }),
+      clearForProfileSwitch: () =>
+        set({
+          selectedScenario: null,
+          practicePhrase: null,
+          // No timestamp bump — avoids re-triggering the useEffect in talk.tsx
         }),
       addCustomScenario: (scenario) =>
         set((state) => ({
