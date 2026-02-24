@@ -15,7 +15,8 @@ import { useConversationStore, useIntroStore } from "@/stores/conversationStore"
 import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useFocusEffect, usePathname, useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { RotateCcw } from "lucide-react-native";
 import React, {
@@ -211,16 +212,18 @@ export default function TalkScreen() {
     selectScenario,
     practicePhrase,
     setPracticePhrase,
+    clearForProfileSwitch,
     scenarioSelectionTimestamp,
   } = useScenarioStore();
   const { activeProfile, fetchProfiles } = useProfileStore();
-  const { cefrLevel } = useLearningStore();
   const { session, user } = useAuthStore();
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef<boolean>(false);
+  const isFocusedRef = useRef<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
   const isFocused = pathname === "/talk";
+  isFocusedRef.current = isFocused;
   const { t } = useTranslation();
 
   // Derive target and native languages from active profile
@@ -297,7 +300,7 @@ export default function TalkScreen() {
 
     const initSession = async () => {
       // Security check: Only start session when screen is focused
-      if (!isFocused) {
+      if (!isFocusedRef.current) {
         Logger.info(TAG, "Screen not focused, skipping session init");
         return;
       }
@@ -379,10 +382,11 @@ ${levelGuide}
           initialPrompt = `Set the scene and speak your opening line as ${selectedScenario.sophieRole}. Start with a small atmospheric detail or action, then greet the user naturally. Make it feel like the user just walked into this moment.`;
         } else {
           Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
-          const levelGuide = LEVEL_GUIDANCE[cefrLevel] || LEVEL_GUIDANCE["S1"];
+          const currentCefrLevel = useLearningStore.getState().cefrLevel;
+          const levelGuide = LEVEL_GUIDANCE[currentCefrLevel] || LEVEL_GUIDANCE["S1"];
           instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
-## Language Difficulty — ${cefrLevel}
+## Language Difficulty — ${currentCefrLevel}
 ${levelGuide}`;
           const hasSeenIntro = useIntroStore.getState().hasSeenIntro;
           if (!hasSeenIntro) {
@@ -424,8 +428,7 @@ ${levelGuide}`;
       stopConversation();
       clearMessages();
       setHasGreeted(false);
-      selectScenario(null);
-      setPracticePhrase(null);
+      clearForProfileSwitch();
       geminiWebSocket.disconnect();
       isInitialized.current = false;
       setSessionStartTime(null);
@@ -447,12 +450,6 @@ ${levelGuide}`;
       isInitialized.current = false;
       setSessionStartTime(null);
       setActiveScenarioTimestamp(scenarioSelectionTimestamp);
-    } else if (isInitialized.current) {
-      // If initialized and effect re-ran, must be a config change (e.g. language) that didn't trigger profile switch or timestamp
-      // Force reconnect to apply new config (e.g. prompt with new language)
-      Logger.info(TAG, "Config changed, reconnecting...");
-      geminiWebSocket.disconnect();
-      isInitialized.current = false;
     }
 
     initSession();
@@ -473,14 +470,11 @@ ${levelGuide}`;
     };
   }, [
     session?.user?.id,
-    // session, // REMOVED: Caused restart on token refresh
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes
     selectedScenario, // Re-run when scenario changes
     practicePhrase, // Re-run when practice phrase changes
-    cefrLevel, // Re-run when CEFR level changes
     scenarioSelectionTimestamp, // Re-run when scenario is re-selected (even if same object)
-    isFocused, // Re-run on focus change
   ]);
 
   const getStatusText = (): string => {
