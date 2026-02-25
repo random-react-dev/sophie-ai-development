@@ -52,7 +52,7 @@ function DurationRing({
         stiffness: 100,
       });
     }
-  }, [targetPercentage, selected]);
+  }, [targetPercentage, selected, progress]);
 
   const animatedProps = useAnimatedProps(() => {
     const strokeDashoffset = circumference * (1 - progress.value);
@@ -216,7 +216,7 @@ function DotPattern({
     } else {
       progress.value = withSpring(1, { damping: 15, stiffness: 100 });
     }
-  }, [selected]);
+  }, [selected, progress]);
 
   // Helper component to ensure perfect circles
   // Fixed size-2 for all dots as requested
@@ -348,7 +348,7 @@ export function SelectionCard({
       damping: 20,
       stiffness: 90,
     });
-  }, [selected]);
+  }, [selected, progress]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

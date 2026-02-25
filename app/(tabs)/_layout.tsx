@@ -75,7 +75,7 @@ function MicTabButton() {
     );
     animation.start();
     return () => animation.stop();
-  }, [isPTTActive]);
+  }, [isPTTActive, pulseAnim]);
 
   const handlePressIn = () => {
     if (!isTalkTab) {
@@ -197,7 +197,7 @@ export default function TabLayout() {
       fetchProfiles();
       fetchVocabulary();
     }
-  }, [user]);
+  }, [user, fetchProfiles, fetchVocabulary]);
 
   // Find flag for active profile target language
   const activeFlag = activeProfile

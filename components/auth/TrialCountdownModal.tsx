@@ -52,7 +52,7 @@ export const TrialCountdownModal = () => {
       translateY.value = 300;
       opacity.value = 0;
     }
-  }, [showTrialPopup]);
+  }, [showTrialPopup, opacity, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

@@ -48,7 +48,7 @@ const AnimatedBorderLine: React.FC<{ visible: boolean }> = ({ visible }) => {
 
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, { duration: 200 });
-  }, [visible]);
+  }, [visible, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

@@ -44,7 +44,7 @@ export const CustomSlider: React.FC<CustomSliderProps> = ({
       const targetX = percentage * sliderWidth;
       translateX.value = withSpring(targetX, { damping: 40, stiffness: 150 });
     }
-  }, [value, sliderWidth, min, max]);
+  }, [value, sliderWidth, min, max, translateX]);
 
   const gesture = Gesture.Pan()
     .onStart(() => {

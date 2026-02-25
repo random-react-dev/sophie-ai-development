@@ -36,7 +36,7 @@ export function CustomToggle({
       duration: 150,
       easing: Easing.out(Easing.ease),
     });
-  }, [value]);
+  }, [value, progress]);
 
   const trackStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(

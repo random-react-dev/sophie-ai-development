@@ -174,7 +174,7 @@ export default function VocabScreen() {
 
         // If we are in English, returning englishName is correct.
         if (locale.startsWith("en")) return englishName;
-      } catch (error) {
+      } catch {
         // Fallback below
       }
 

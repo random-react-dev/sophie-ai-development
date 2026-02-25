@@ -77,25 +77,6 @@ export default function RoleplayScreen() {
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
   const translatedScenarios = useMemo(() => {
-    const getCategoryLabel = (cat: string) => {
-      switch (cat) {
-        case "Food & Drink":
-          return t("scenarios_screen.categories.food_drink");
-        case "Business":
-          return t("scenarios_screen.categories.business");
-        case "Social":
-          return t("scenarios_screen.categories.social");
-        case "Travel":
-          return t("scenarios_screen.categories.travel");
-        case "Customer Service":
-          return t("scenarios_screen.categories.customer_service");
-        case "Education":
-          return t("scenarios_screen.categories.education");
-        default:
-          return cat;
-      }
-    };
-
     return scenarios.map((s) => {
       // Don't translate custom scenarios
       if (s.isCustom) {

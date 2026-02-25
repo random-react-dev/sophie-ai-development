@@ -1,6 +1,7 @@
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useOnboardingStore } from "@/stores/onboardingStore";
+import { AlertButton } from "../common/AlertModal";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
@@ -105,8 +106,6 @@ const FocusTag: React.FC<FocusTagProps> = ({
     </AnimatedPressable>
   );
 };
-
-import { AlertButton } from "../common/AlertModal";
 
 interface FocusStepProps {
   onAlert: (

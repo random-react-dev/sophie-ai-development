@@ -468,6 +468,7 @@ ${levelGuide}`;
         convStore.stopConversation();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Session lifecycle: re-init only on user/language/scenario changes; store actions are stable refs, profile fields are compared internally
   }, [
     session?.user?.id,
     targetLanguage, // Re-run when target language changes
@@ -590,7 +591,7 @@ ${levelGuide}`;
         return null;
       }
     },
-    [showAlert],
+    [showAlert, t],
   );
 
   const handleSaveVocabulary = useCallback(

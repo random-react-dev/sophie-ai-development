@@ -24,7 +24,7 @@ export default function SocialScreen() {
           "error",
         );
       }
-    } catch (error) {
+    } catch {
       showAlert(
         t("profile.social_screen.error"),
         t("profile.social_screen.general_error", { platform: platformName }),
