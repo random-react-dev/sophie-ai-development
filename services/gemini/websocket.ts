@@ -268,6 +268,9 @@ class GeminiWebSocket {
               },
             },
           },
+          thinkingConfig: {
+            thinkingBudget: 0,
+          },
         },
         systemInstruction: {
           parts: [{ text: finalInstruction }],
@@ -544,6 +547,9 @@ class GeminiWebSocket {
         store.setProcessing(false);
 
         for (const part of modelTurn.parts) {
+          // Skip thinking parts — Gemini may mark internal reasoning with thought: true
+          if (part.thought) continue;
+
           const inlineData = part.inline_data || part.inlineData;
           if (inlineData) {
             const mimeType = inlineData.mime_type || inlineData.mimeType;

@@ -62,6 +62,7 @@ export interface GeminiPart {
   inline_data?: AudioInlineData;
   inlineData?: AudioInlineData;
   text?: string;
+  thought?: boolean;
 }
 
 // Server content from Gemini (supports both snake_case and camelCase)
