@@ -11,9 +11,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "20",
+    buildNumber: "24",
     infoPlist: {
       NSMicrophoneUsageDescription:
         "Allow Fluent-AI to use the microphone for voice conversations.",

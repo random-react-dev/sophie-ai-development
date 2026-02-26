@@ -44,7 +44,7 @@ export const RainbowTabIndicator: React.FC<RainbowTabIndicatorProps> = ({
       stiffness: 200,
       mass: 0.5,
     });
-  }, [activeIndex, tabWidth, tabCount, skipCenterTab]);
+  }, [activeIndex, tabWidth, tabCount, skipCenterTab, translateX]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],

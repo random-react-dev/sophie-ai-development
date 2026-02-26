@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PreferencesScreen() {
   const { user, updateProfile } = useAuthStore();
-  const { theme, setTheme, loadTheme } = useThemeStore();
+  const { loadTheme } = useThemeStore();
   const { currentLanguage, setLanguage } = useLanguageStore();
   const { t } = useTranslation();
 

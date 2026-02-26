@@ -80,7 +80,7 @@ export default function LanguageScreen() {
         }
 
         if (locale.startsWith("en")) return englishName;
-      } catch (error) {
+      } catch {
         // Fallback below
       }
 
@@ -159,6 +159,7 @@ export default function LanguageScreen() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- newTargetLang.code is read for conflict check, not as a trigger
   }, [isCreateModalVisible, activeProfile, user]);
 
   useEffect(() => {

@@ -50,7 +50,7 @@ export const RainbowProgressBar: React.FC<RainbowProgressBarProps> = ({
       damping: 30,
       stiffness: 100,
     });
-  }, [progressPercent]);
+  }, [progressPercent, animatedProgress]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

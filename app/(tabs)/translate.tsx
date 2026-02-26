@@ -151,6 +151,13 @@ export default function TranslateScreen() {
       ExpoSpeechRecognitionModule.start({
         lang: locale,
         interimResults: true,
+        continuous: true,
+        requiresOnDeviceRecognition: true,
+        iosCategory: {
+          category: "playAndRecord",
+          categoryOptions: ["defaultToSpeaker", "allowBluetooth"],
+          mode: "default",
+        },
       });
     }
   };
@@ -654,6 +661,13 @@ export default function TranslateScreen() {
                         setSaveFolderId(newFolder.id);
                         setIsCreatingFolder(false);
                         setNewFolderName("");
+                      } else {
+                        showAlert(
+                          t("translate_screen.alerts.error"),
+                          t("translate_screen.alerts.save_failed"),
+                          undefined,
+                          "error",
+                        );
                       }
                     }}
                   >

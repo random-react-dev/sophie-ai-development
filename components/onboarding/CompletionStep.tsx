@@ -75,6 +75,7 @@ const ConfettiPiece: React.FC<{
         easing: Easing.out(Easing.ease),
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- One-time mount animation setup
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -281,15 +282,16 @@ const SophieIntroVideo: React.FC = () => {
         clearTimeout(hideControlsTimeout.current);
       }
     };
-  }, [showControls, isPlaying, isVideoComplete]);
+  }, [showControls, isPlaying, isVideoComplete, controlsOpacity]);
 
   // Explicit cleanup on unmount to prevent memory leaks (Best Practice)
   useEffect(() => {
+    const video = videoRef.current;
     return () => {
-      if (videoRef.current) {
+      if (video) {
         // Stop playback and unload video resource
-        videoRef.current.setStatusAsync({ shouldPlay: false });
-        videoRef.current.unloadAsync();
+        video.setStatusAsync({ shouldPlay: false });
+        video.unloadAsync();
       }
     };
   }, []);

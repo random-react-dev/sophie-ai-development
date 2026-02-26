@@ -116,7 +116,9 @@ const initialState = {
   activeScenarioTimestamp: 0,
 };
 
-export const useConversationStore = create<ConversationState>((set, get) => ({
+export const useConversationStore = create<ConversationState>()(
+  persist(
+    (set, get) => ({
   ...initialState,
 
   setConnectionState: (connectionState: ConnectionState) =>
@@ -381,7 +383,17 @@ export const useConversationStore = create<ConversationState>((set, get) => ({
   toggleGlobalRecording: async () => {
     await get().toggleConversation();
   },
-}));
+    }),
+    {
+      name: "sophie-conversation",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        messages: state.messages,
+        showTranscript: state.showTranscript,
+      }),
+    },
+  ),
+);
 
 // Selector for backward compatibility
 export const selectIsConnected = (state: ConversationState): boolean =>

@@ -1,5 +1,6 @@
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { Logger } from "@/services/common/Logger";
+import { Audio } from "expo-av";
 import * as Speech from "expo-speech";
 import { Platform } from "react-native";
 
@@ -79,6 +80,15 @@ export async function speakWord(
     TAG,
     `Speaking: "${text}" in ${languageName ?? "unknown"} (${targetLang}) at ${rate}x`,
   );
+
+  // On iOS, reset audio session from playAndRecord (set by speech recognition)
+  // back to playback mode, and enable audio even in silent mode
+  if (Platform.OS === "ios") {
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+    });
+  }
 
   // Stop any currently playing speech before starting new
   void Speech.stop();

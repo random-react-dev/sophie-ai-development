@@ -174,7 +174,7 @@ export default function VocabScreen() {
 
         // If we are in English, returning englishName is correct.
         if (locale.startsWith("en")) return englishName;
-      } catch (error) {
+      } catch {
         // Fallback below
       }
 
@@ -770,7 +770,10 @@ export default function VocabScreen() {
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  onPress={() => setIsFolderPickerVisible(true)}
+                  onPress={() => {
+                    fetchVocabulary();
+                    setIsFolderPickerVisible(true);
+                  }}
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
                   <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
@@ -921,7 +924,10 @@ export default function VocabScreen() {
                 </Text>
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  onPress={() => setIsEditFolderPickerVisible(true)}
+                  onPress={() => {
+                    fetchVocabulary();
+                    setIsEditFolderPickerVisible(true);
+                  }}
                   className="flex-row items-center bg-gray-50 px-4 py-4 rounded-2xl border border-gray-100 gap-2"
                 >
                   <View className="w-8 h-8 rounded-full bg-gray-100 border border-gray-100 items-center justify-center">
@@ -1153,6 +1159,13 @@ export default function VocabScreen() {
                         setIsCreatingFolder(false);
                         setNewFolderName("");
                         setIsFolderPickerVisible(false);
+                      } else {
+                        showAlert(
+                          t("vocab_screen.alerts.error_title"),
+                          t("vocab_screen.alerts.save_error"),
+                          undefined,
+                          "error",
+                        );
                       }
                     }}
                   >
