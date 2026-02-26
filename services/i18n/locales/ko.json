@@ -230,7 +230,6 @@
       },
       "footer": "모든 요금제에는 연중무휴 AI 튜터 액세스 및 진행 상황 추적이 포함됩니다. 설정에서 언제든지 취소할 수 있습니다."
     },
-
     "security_screen": {
       "title": "보안",
       "subtitle": "계정 보호",
@@ -454,6 +453,30 @@
       "userRole": "환경 정책에 대해 궁금한 점이나 아마도 다른 견해를 가진 시민",
       "topic": "시사 이슈",
       "context": "지식이 풍부한 연구원과 함께 경제 성장과 환경 보호 사이의 균형에 대해 심도 있는 토론에 참여해 보세요."
+    },
+    "introduction": {
+      "title": "Introduction",
+      "description": "Two people introduce themselves to each other.",
+      "sophieRole": "A friendly person sitting next to you at a language exchange meetup",
+      "userRole": "A newcomer at the meetup",
+      "topic": "Introduction",
+      "context": "You are at a language exchange meetup. You sit down next to someone friendly. Introduce yourself, exchange names, ask about age, occupation, and where they are from. Keep it simple and polite."
+    },
+    "making-friends": {
+      "title": "Making friends",
+      "description": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities.",
+      "sophieRole": "A friendly person at the park",
+      "userRole": "A person looking to make new friends",
+      "topic": "Making friends",
+      "context": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities."
+    },
+    "basic-emotions": {
+      "title": "Basic emotions",
+      "description": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired.",
+      "sophieRole": "A friend meeting at the park",
+      "userRole": "A friend sharing how they feel today",
+      "topic": "Basic emotions",
+      "context": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired. Keep the vocabulary simple and focus on basic expressions of feeling."
     }
   },
   "common": {

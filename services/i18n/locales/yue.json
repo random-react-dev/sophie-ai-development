@@ -230,7 +230,6 @@
       },
       "footer": "所有計劃均包括 24/7 AI 導師服務及進度追蹤。隨時可在設定中取消。"
     },
-
     "security_screen": {
       "title": "保安",
       "subtitle": "保護您嘅帳戶",
@@ -454,6 +453,30 @@
       "userRole": "對環境政策有疑問，甚至有唔同意見嘅市民",
       "topic": "時事",
       "context": "同一個專家研究員深入討論經濟增長同埋環境保護之間嘅平衡。"
+    },
+    "introduction": {
+      "title": "Introduction",
+      "description": "Two people introduce themselves to each other.",
+      "sophieRole": "A friendly person sitting next to you at a language exchange meetup",
+      "userRole": "A newcomer at the meetup",
+      "topic": "Introduction",
+      "context": "You are at a language exchange meetup. You sit down next to someone friendly. Introduce yourself, exchange names, ask about age, occupation, and where they are from. Keep it simple and polite."
+    },
+    "making-friends": {
+      "title": "Making friends",
+      "description": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities.",
+      "sophieRole": "A friendly person at the park",
+      "userRole": "A person looking to make new friends",
+      "topic": "Making friends",
+      "context": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities."
+    },
+    "basic-emotions": {
+      "title": "Basic emotions",
+      "description": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired.",
+      "sophieRole": "A friend meeting at the park",
+      "userRole": "A friend sharing how they feel today",
+      "topic": "Basic emotions",
+      "context": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired. Keep the vocabulary simple and focus on basic expressions of feeling."
     }
   },
   "common": {
