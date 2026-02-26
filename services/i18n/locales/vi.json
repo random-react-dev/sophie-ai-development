@@ -462,6 +462,14 @@
       "userRole": "Một người mới đến buổi họp mặt",
       "topic": "Giới thiệu",
       "context": "Bạn đang ở một buổi họp mặt trao đổi ngôn ngữ. Bạn ngồi xuống cạnh một người thân thiện. Hãy giới thiệu bản thân, trao đổi tên, hỏi về độ tuổi, nghề nghiệp và họ đến từ đâu. Hãy giữ cuộc trò chuyện đơn giản và lịch sự."
+    },
+    "making-friends": {
+      "title": "Kết bạn",
+      "description": "Hai người bạn mới gặp nhau ở công viên và giới thiệu bản thân. Họ hỏi thăm tuổi tác, quê quán và sở thích của nhau. Họ trở nên thân thiết khi khám phá ra rằng cả hai cùng thích những hoạt động giống nhau.",
+      "sophieRole": "Một người thân thiện ở công viên",
+      "userRole": "Một người đang muốn kết bạn mới",
+      "topic": "Kết bạn",
+      "context": "Hai người bạn mới gặp nhau ở công viên và giới thiệu bản thân. Họ hỏi thăm tuổi tác, quê quán và sở thích của nhau. Họ trở nên thân thiết khi khám phá ra rằng cả hai cùng thích những hoạt động giống nhau."
     }
   },
   "common": {

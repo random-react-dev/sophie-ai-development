@@ -626,6 +626,9 @@ function CreateScenarioModal({
                         <View className="flex-1 flex-row items-center gap-3">
                           {category ? (
                             <View className="w-8 h-8 rounded-full bg-white border border-gray-50 items-center justify-center shadow-sm">
+                              {category === "Beginner" && (
+                                <Sparkles size={16} color="black" />
+                              )}
                               {category === "Food & Drink" && (
                                 <Utensils size={16} color="black" />
                               )}
@@ -700,6 +703,9 @@ function CreateScenarioModal({
                         <View className="flex-1 flex-row items-center gap-3">
                           {category ? (
                             <View className="size-8 rounded-full bg-gray-100 items-center justify-center">
+                              {category === "Beginner" && (
+                                <Sparkles size={16} color="#6b7280" />
+                              )}
                               {category === "Food & Drink" && (
                                 <Utensils size={16} color="#6b7280" />
                               )}
@@ -779,6 +785,8 @@ function CreateScenarioModal({
                           const getCategoryIcon = () => {
                             const iconColor = isSelected ? "black" : "#6b7280";
                             switch (cat) {
+                              case "Beginner":
+                                return <Sparkles size={16} color={iconColor} />;
                               case "Food & Drink":
                                 return <Utensils size={16} color={iconColor} />;
                               case "Business":

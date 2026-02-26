@@ -462,6 +462,14 @@
       "userRole": "Un nuovo arrivato all'incontro",
       "topic": "Presentazione",
       "context": "Sei a un incontro di scambio linguistico. Ti siedi accanto a qualcuno di amichevole. Presentati, scambia i nomi, chiedi l'età, l'occupazione e da dove viene. Mantieniti semplice e educato."
+    },
+    "making-friends": {
+      "title": "Fare amicizia",
+      "description": "Due nuovi amici si incontrano in un parco e si presentano. Si chiedono l'età a vicenda, da dove vengono e cosa amano fare. Legano scoprendo che entrambi si divertono con le stesse attività.",
+      "sophieRole": "Una persona amichevole al parco",
+      "userRole": "Una persona che cerca di fare nuove amicizie",
+      "topic": "Fare amicizia",
+      "context": "Due nuovi amici si incontrano in un parco e si presentano. Si chiedono l'età a vicenda, da dove vengono e cosa amano fare. Legano scoprendo che entrambi si divertono con le stesse attività."
     }
   },
   "common": {

@@ -462,6 +462,14 @@
       "userRole": "Mgeni katika mkutano huo",
       "topic": "Utangulizi",
       "context": "Uko katika mkutano wa kubadilishana lugha. Unaketi kando ya mtu mwenye urafiki. Jitambulishe, mbadilishane majina, uliza kuhusu umri, kazi, na wanatoka wapi. Fanya mazungumzo yawe rahisi na ya heshima."
+    },
+    "making-friends": {
+      "title": "Kutengeneza marafiki",
+      "description": "Marafiki wawili wapya wanakutana kwenye bustani na kujitambulisha. Wanaulizana umri, wanatoka wapi, na kisha wanapenda kufanya nini. Wanaunda uhusiano baada ya kugundua wanapenda shughuli zinazofanana.",
+      "sophieRole": "Mtu wa kirafiki kwenye bustani",
+      "userRole": "Mtu anayetafuta kutengeneza marafiki wapya",
+      "topic": "Kutengeneza marafiki",
+      "context": "Marafiki wawili wapya wanakutana kwenye bustani na kujitambulisha. Wanaulizana umri, wanatoka wapi, na kisha wanapenda kufanya nini. Wanaunda uhusiano baada ya kugundua wanapenda shughuli zinazofanana."
     }
   },
   "common": {

@@ -462,6 +462,14 @@
       "userRole": "Ein Neuling beim Treffen",
       "topic": "Vorstellung",
       "context": "Du bist bei einem Sprachaustausch-Treffen. Du setzt dich neben jemanden, der freundlich ist. Stell dich vor, tauscht Namen aus, frag nach Alter, Beruf und Herkunft. Halte es einfach und höflich."
+    },
+    "making-friends": {
+      "title": "Freunde finden",
+      "description": "Zwei neue Freunde treffen sich in einem Park und stellen sich vor. Sie fragen nach dem Alter des anderen, woher sie kommen und was sie gerne tun. Sie freunden sich an, als sie feststellen, dass sie dieselben Aktivitäten genießen.",
+      "sophieRole": "Eine freundliche Person im Park",
+      "userRole": "Eine Person, die neue Freunde finden möchte",
+      "topic": "Freunde finden",
+      "context": "Zwei neue Freunde treffen sich in einem Park und stellen sich vor. Sie fragen nach dem Alter des anderen, woher sie kommen und was sie gerne tun. Sie freunden sich an, als sie feststellen, dass sie dieselben Aktivitäten genießen."
     }
   },
   "common": {

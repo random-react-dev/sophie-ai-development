@@ -462,6 +462,14 @@
       "userRole": "Pendatang baru di pertemuan tersebut",
       "topic": "Perkenalan",
       "context": "Anda berada di pertemuan pertukaran bahasa. Anda duduk di sebelah seseorang yang ramah. Perkenalkan diri Anda, bertukar nama, tanya tentang usia, pekerjaan, dan dari mana mereka berasal. Tetaplah sederhana dan sopan."
+    },
+    "making-friends": {
+      "title": "Berteman",
+      "description": "Dua teman baru bertemu di taman dan memperkenalkan diri. Mereka saling bertanya usia, dari mana mereka berasal, dan apa yang mereka suka lakukan. Mereka menjadi akrab setelah menemukan bahwa mereka menyukai kegiatan yang sama.",
+      "sophieRole": "Seseorang yang ramah di taman",
+      "userRole": "Seseorang yang ingin mendapatkan teman baru",
+      "topic": "Berteman",
+      "context": "Dua teman baru bertemu di taman dan memperkenalkan diri. Mereka saling bertanya usia, dari mana mereka berasal, dan apa yang mereka suka lakukan. Mereka menjadi akrab setelah menemukan bahwa mereka menyukai kegiatan yang sama."
     }
   },
   "common": {

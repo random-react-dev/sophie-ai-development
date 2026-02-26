@@ -462,6 +462,14 @@
       "userRole": "Um recém-chegado ao encontro",
       "topic": "Introdução",
       "context": "Você está em um encontro de intercâmbio de idiomas. Você se senta ao lado de alguém amigável. Apresente-se, troque nomes, pergunte sobre a idade, profissão e de onde eles são. Mantenha a conversa simples e educada."
+    },
+    "making-friends": {
+      "title": "Fazendo amigos",
+      "description": "Dois novos amigos se encontram em um parque e se apresentam. Eles perguntam a idade um do outro, de onde são e o que gostam de fazer. Eles se conectam ao descobrir que gostam das mesmas atividades.",
+      "sophieRole": "Uma pessoa amigável no parque",
+      "userRole": "Uma pessoa que quer fazer novos amigos",
+      "topic": "Fazendo amigos",
+      "context": "Dois novos amigos se encontram em um parque e se apresentam. Eles perguntam a idade um do outro, de onde são e o que gostam de fazer. Eles se conectam ao descobrir que gostam das mesmas atividades."
     }
   },
   "common": {

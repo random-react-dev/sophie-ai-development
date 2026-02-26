@@ -94,6 +94,20 @@ export const SCENARIOS: Scenario[] = [
       "You are at a language exchange meetup. You sit down next to someone friendly. Introduce yourself, exchange names, ask about age, occupation, and where they are from. Keep it simple and polite.",
     icon: "users",
   },
+  {
+    id: "making-friends",
+    title: "Making friends",
+    category: "Beginner",
+    description:
+      "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities.",
+    sophieRole: "A friendly person at the park",
+    userRole: "A person looking to make new friends",
+    topic: "Making friends",
+    level: "S1",
+    context:
+      "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities.",
+    icon: "users",
+  },
 ];
 
 export const CATEGORIES = [

@@ -462,6 +462,14 @@
       "userRole": "En nykomling på träffen",
       "topic": "Introduktion",
       "context": "Du är på en språkutbytes-träff. Du sätter dig bredvid någon som ser trevlig ut. Presentera dig själv, byt namn, fråga om ålder, yrke och varifrån de kommer. Håll det enkelt och artigt."
+    },
+    "making-friends": {
+      "title": "Skaffa vänner",
+      "description": "Två nya vänner träffas i en park och presenterar sig. De frågar varandras ålder, var de kommer ifrån och vad de gillar att göra. De finner varandra genom att upptäcka att de gillar samma aktiviteter.",
+      "sophieRole": "En vänlig person i parken",
+      "userRole": "En person som vill skaffa nya vänner",
+      "topic": "Skaffa vänner",
+      "context": "Två nya vänner träffas i en park och presenterar sig. De frågar varandras ålder, var de kommer ifrån och vad de gillar att göra. De finner varandra genom att upptäcka att de gillar samma aktiviteter."
     }
   },
   "common": {
