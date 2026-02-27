@@ -97,7 +97,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S1",
     context:
       `You are a friendly classmate meeting someone new on the first day. Start by introducing yourself and ask the user their name, where they are from, and what they like. Keep the conversation simple and encouraging.`,
-    icon: "smile",
+    icon: "hand-metal",
   },
   {
     id: "making-friends",
@@ -125,7 +125,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S1",
     context:
       `You are a caring friend meeting at the park. Ask how your friend is feeling today. Share your own emotions and respond warmly to what they say. Use simple emotion words like happy, sad, tired, excited.`,
-    icon: "smile",
+    icon: "smile-plus",
   },
   {
     id: "introducing-family",
@@ -139,7 +139,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S1",
     context:
       `Sophie asks user about their family and user introduces their family members, including their occupations and relationships.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly.`,
-    icon: "sparkles",
+    icon: "baby",
   },
   {
     id: "hows-you-day",
@@ -153,7 +153,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S1",
     context:
       `Sophie asks user about their daily routine and what they did today, practicing talking about daily activities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly.`,
-    icon: "sparkles",
+    icon: "sun",
   },
   {
     id: "hobbies",
@@ -167,7 +167,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S1",
     context:
       `Two people meet at a social event and talk about their favorite hobbies, colors, foods, animals, and sports.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly.`,
-    icon: "sparkles",
+    icon: "palette",
   },
   {
     id: "counting-apples",
@@ -181,7 +181,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S1",
     context:
       `The customer buy three apples at the market and asks for the price, practicing counting and quantities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly.`,
-    icon: "sparkles",
+    icon: "apple",
   },
   {
     id: "first-day-of-class",
@@ -195,7 +195,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The student introduces themselves to the Sophie (teacher and classmates) on the first day of class they share their name, age, where they are from and their favorite subject.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "school",
   },
   {
     id: "favorite-subjects",
@@ -209,7 +209,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `Two classmate discuss their favorite school subject and share what they like them.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "notebook-pen",
   },
   {
     id: "favorite-food",
@@ -237,7 +237,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is shopping at a supermarket, asking for prices of fruits and where to find certain items.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "shopping-cart",
   },
   {
     id: "favorite-music",
@@ -251,7 +251,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends ask and answer simple questions about their favorite music and genre.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "headphones",
   },
   {
     id: "morning-chat",
@@ -265,7 +265,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two people have a casual morning conversation about how they slept, their plans for the day and lighthearted topic.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "sunrise",
   },
   {
     id: "asking-for-directions",
@@ -279,7 +279,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A lost tourist in the subway asks a local for directions to their hotel, clarifying the best route to take.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "map",
   },
   {
     id: "meeting-at-a-park",
@@ -293,7 +293,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends bump into each other at a park and talk about their day and recent activities, planning their next meet up.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "trees",
   },
   {
     id: "buying-ice-cream",
@@ -307,7 +307,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer buy dessert and chooses between flavors, asking what options are available and confirming their order.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "ice-cream-cone",
   },
   {
     id: "ordering-food",
@@ -321,7 +321,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer asks for seating for two people and orders food at a restaurant.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "chef-hat",
   },
   {
     id: "checking-out",
@@ -335,7 +335,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is checking out at a store, asking for the total price and whether they can pay with a card.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "credit-card",
   },
   {
     id: "getting-to-work",
@@ -349,7 +349,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two colleagues talk about how they travel to work, sharing simple details about their commute.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "building-2",
   },
   {
     id: "daily-routines",
@@ -363,7 +363,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two people exchange simple question about their daily routines, sharing details about their activities and habits.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "alarm-clock",
   },
   {
     id: "weekend-plans",
@@ -377,7 +377,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two people discuss their plans for the weekend, sharing idea for activities or events they might attend.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "calendar",
   },
   {
     id: "exchanging-compliments",
@@ -391,7 +391,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A couple sits together on the couch, exchanging sweet and basic compliments.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "sparkles",
   },
   {
     id: "buying-a-movie",
@@ -405,7 +405,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A moviegoer buys a ticket and asks the ticket seller for recommendations available genres and showtimes.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "ticket",
   },
   {
     id: "what-to-get",
@@ -419,7 +419,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is deciding between two dishes that both sound good and asks the waiter for insights and recommendations.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "menu",
   },
   {
     id: "talking-about-life",
@@ -433,7 +433,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends talk about life before going to sleep.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "message-square",
   },
   {
     id: "shopping-for-clothes",
@@ -447,7 +447,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is looking for a sweater, asking about available sizes and colors, and deciding on the one they want to buy.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "shirt",
   },
   {
     id: "exchange-student",
@@ -461,7 +461,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A new exchange student introduces themselves to their classmates. they share their name, home country and why they are excited to study in a new country.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "languages",
   },
   {
     id: "food-delivery",
@@ -475,7 +475,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer calls a restaurant to order food, asking for the menu, confirms their order and asks how long the wait will be.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "truck",
   },
   {
     id: "finally-home",
@@ -489,7 +489,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `User comes home from work and shares details about their day with Sophie, who listens and responds supportively.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "house",
   },
   {
     id: "dream-destination",
@@ -503,7 +503,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `Two friends talk about their dream travel destinations and why they want to visit them.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "globe",
   },
   {
     id: "hotel-booking",
@@ -517,7 +517,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A traveler books a hotel room, asking about availability, room types, pricing and amenities.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "calendar-check",
   },
   {
     id: "first-date",
@@ -545,7 +545,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A passenger ask about the bus fare, where the bus stops and how long the ride will take to reach their destination.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "bus",
   },
   {
     id: "favorite-ways-to-relax",
@@ -559,7 +559,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends talk about their favorite ways to relax, like reading, sports, or gaming and share tips with each other.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "armchair",
   },
   {
     id: "grocery-shopping",
@@ -573,7 +573,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is buying ingredients for a recipe and asks for directions to the vegetable section.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "carrot",
   },
   {
     id: "trying-local-food",
@@ -587,7 +587,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A tourist tries local food for the first time, asking about the ingredients and sharing their reaction to tasting these new dishes.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "soup",
   },
   {
     id: "advice-from-grandpa",
@@ -601,7 +601,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `The grandchild seeks advice from grandpa on life decisions and challenges, engaging in a thoughtful conversation.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "glasses",
   },
   {
     id: "first-day-at-work",
@@ -615,7 +615,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A new employee begins their first day at work, getting instructions on tasks, asking about their main responsibilities and clarifying expectations.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "badge",
   },
   {
     id: "cute-stranger",
@@ -629,7 +629,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A playful passenger flirts with a cute stranger at the train station, trying to strike up a conversation and ask for their number.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "eye",
   },
   {
     id: "taxi-ride",
@@ -643,7 +643,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A passenger orders a taxi to go back to the hotel and has a fun chat with the driver about the city.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "car",
   },
   {
     id: "buying-train-tickets",
@@ -657,7 +657,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A passenger buys train tickets, asking how many they need, how much it costs and confirming their destination.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "train-front",
   },
   {
     id: "company-dinner",
@@ -671,7 +671,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee introduces themselves at a company dinner, talking about their job, work schedule and hobbies outside of work to get to know their collogues.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "utensils-crossed",
   },
   {
     id: "new-dog",
@@ -685,7 +685,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A pet owner talks with their friend about their new puppy, sharing stories about its adorable habits but recently naughty behavior.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "dog",
   },
   {
     id: "buying-souvenirs",
@@ -699,7 +699,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is looking for a souvenir to bring back as a gift. they ask for recommendations and discuss the price of items.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "gift",
   },
   {
     id: "meeting-someone-new",
@@ -713,7 +713,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A party attendee meets  charming stranger for the first time, exchanging introduction and having a lighthearted conversation.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "user-plus",
   },
   {
     id: "booking-a-flight",
@@ -741,7 +741,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A fan meets their favorite celebrity at a meet and greet and tries to stay calm while expressing their excitement for the celebrity's work.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "star",
   },
   {
     id: "inviting-someone-out",
@@ -755,7 +755,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `You invite a friend to hang out or attend an event, suggesting fun activities and checking their availability.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "calendar-plus",
   },
   {
     id: "tour-guide-recommendations",
@@ -769,7 +769,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A traveler asks a tour guide about the best places to visit in the city, how to get there, and other local tips.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "map-pin",
   },
   {
     id: "captivating-classmate",
@@ -783,7 +783,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A student flirts with a cute classmate they meet in the library, using the book they're reading as a conversation starter.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "book-heart",
   },
   {
     id: "catching-up",
@@ -797,7 +797,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two old friends reconnect and catch up on life updates, discussing what they've been doing recently.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "phone",
   },
   {
     id: "exploring-local-cuisine",
@@ -811,7 +811,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A visitor asks a local resident about popular local dishes and where to try them. They discuss cultural foods and must-try specialties.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "cookie",
   },
   {
     id: "favorite-music-artist",
@@ -825,7 +825,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A fan spots their favorite famous musical artist and asks for an autograph, expressing admiration and sharing how much their music means to them.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "music",
   },
   {
     id: "at-the-bookstore",
@@ -839,7 +839,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A customer is looking for the best books to buy and asks the shopkeeper for recommendations, getting into a discussion of their favorite book.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "book-open",
   },
   {
     id: "mother-in-low-visit",
@@ -853,7 +853,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A son or daughter-in-law visits their mother-in-law and has a polite conversation about how she is doing and how her grandson is.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "door-open",
   },
   {
     id: "career-planning",
@@ -867,7 +867,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A job seeker discusses their career goals and plans with a career advisor, seeking advice on their next steps and long-term objectives.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "target",
   },
   {
     id: "cooking-together",
@@ -881,7 +881,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends plan to cook a new dish together, discussing what ingredients they need to buy and how they'll prepare the meal.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "flame",
   },
   {
     id: "bonding-over-a-band",
@@ -895,7 +895,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two concertgoers meet and bond over their shared love for the band performing, talking about their favorite songs.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "guitar",
   },
   {
     id: "rooftop-bar",
@@ -909,7 +909,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two people meet at a rooftop bar. User buys a drink for Sophie and strikes up a friendly conversation, asking abut their evening.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "wine",
   },
   {
     id: "therapy-session",
@@ -923,7 +923,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A person facing a lot of pressure and stress talks to a friend who listens empathetically and offers comfort and reassurance.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "heart-handshake",
   },
   {
     id: "buying-a-gift",
@@ -937,7 +937,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A customer is buying a gift for their partner and asks a store employee for suggestions based on what the customer thinks their partner might like.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "gift",
   },
   {
     id: "tourist-attraction",
@@ -951,7 +951,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A tourist buys tickets to a famous landmark and ask for information about its history and interesting facts about the site.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "landmark",
   },
   {
     id: "stuck-in-an-elevator",
@@ -965,7 +965,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `You and your crush are stuck in an elevator together.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "arrow-up-down",
   },
   {
     id: "heartfelt-confession",
@@ -979,7 +979,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An admirer builds up the courage to confess their feelings to their crush, choosing their words carefully.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "heart-pulse",
   },
   {
     id: "homework-help",
@@ -993,7 +993,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A student asks the teacher for clarification on homework and a project due date.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "pencil",
   },
   {
     id: "deciding-what-to-eat",
@@ -1007,7 +1007,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A couple decides where to eat, discussing restaurant and cuisine preferences. they share likes and disliked until thy finally come to an agreement.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "pizza",
   },
   {
     id: "scary-ride",
@@ -1021,7 +1021,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends at an amusement park discuss what to do next, debating whether to go on the big scary ride or choose something less intense.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "ferris-wheel",
   },
   {
     id: "running-late",
@@ -1035,7 +1035,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A student is explaining to the teacher why they are an hour late to class. The teacher asks questions while the student apologizes and makes excuses.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "timer",
   },
   {
     id: "stomach-pain",
@@ -1049,7 +1049,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A patient talks to a nurse about their stomach hurting, discussing possible reasons and symptoms to identify the cause.. Be caring and clear. Use simple medical terminology when needed.`,
-    icon: "activity",
+    icon: "stethoscope",
   },
   {
     id: "lost-wallet",
@@ -1063,7 +1063,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A tourist who lost their wallet describes it to a police officer, providing details to help locate it.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "wallet",
   },
   {
     id: "bad-grade",
@@ -1077,7 +1077,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A student received a bad grade and asks the teacher what they did wrong. They discuss how to improve while the student expresses frustration over the difficulty of the subject.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "file-x",
   },
   {
     id: "gossiping",
@@ -1091,7 +1091,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `two friends gossip about the latest drama involving a mutual friend and share their reactions to the situation.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "ear",
   },
   {
     id: "ordering-the-wrong-item",
@@ -1105,7 +1105,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A customer realizes they ordered the wrong dish and must explain their mistake to the waiter.. Be natural and conversational. Use common food-related vocabulary.`,
-    icon: "utensils",
+    icon: "circle-alert",
   },
   {
     id: "new-computer",
@@ -1119,7 +1119,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `The customer is buying a new computer for their tech  job. they ask about features, prices ad recommendations for their specific needs.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "laptop",
   },
   {
     id: "parent-teacher-conference",
@@ -1133,7 +1133,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A parent politely discusses their child's struggles in math with the teacher.. Be encouraging and supportive. Use appropriate academic language.`,
-    icon: "graduation-cap",
+    icon: "handshake",
   },
   {
     id: "weekend-getaway",
@@ -1147,7 +1147,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A couple plans a romantic weekend getaway, discussing destinations, activities and ways to make the trip special.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "mountain",
   },
   {
     id: "dance-class",
@@ -1161,7 +1161,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A friend persuades their hesitant and awkward friend to join a dance class, highlighting how fun and exciting it could be.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "footprints",
   },
   {
     id: "sharing-fitness-plans",
@@ -1175,7 +1175,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends discuss their workout routines, health goals and ways to eat healthy while motivating each other.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "dumbbell",
   },
   {
     id: "email-disaster",
@@ -1189,7 +1189,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee accidentally sends an inappropriate or embarrassing email to the whole company and must explain the mistake to their boss, apologizing and proposing a solution.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "mail-x",
   },
   {
     id: "bargaining-at-the-market",
@@ -1203,7 +1203,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A customer haggles with a market vendor over the price of fresh produce, trying to get a good deal.. Be helpful and patient. Use everyday shopping vocabulary.`,
-    icon: "shopping-bag",
+    icon: "badge-percent",
   },
   {
     id: "discussing-a-movie-ending",
@@ -1217,7 +1217,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends passionately discuss a surprising movie ending, sharing their theories and opinions.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "clapperboard",
   },
   {
     id: "missed-the-last-bus",
@@ -1231,7 +1231,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S2",
     context:
       `A stranded traveler who missed the last bus asks a local for help finding an alternative way home.. Be helpful and welcoming. Use practical travel vocabulary.`,
-    icon: "plane",
+    icon: "clock",
   },
   {
     id: "clean-your-room",
@@ -1245,7 +1245,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A parent tries to convince their messy teenager to clean their room, using various persuasion tactics.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "spray-can",
   },
   {
     id: "forgot-a-birthday",
@@ -1259,7 +1259,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A person realizes they forgot their friend's birthday and tries to make it up to them with apologies and plans.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "cake",
   },
   {
     id: "picky-eater",
@@ -1273,7 +1273,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A friend tries to convince a picky eater to try a new and unfamiliar dish at a restaurant.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "utensils-crossed",
   },
   {
     id: "meeting-the-parents",
@@ -1287,7 +1287,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A person meets their partner's parents for the first time, trying to make a great impression while navigating awkward questions.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "users-round",
   },
   {
     id: "storytelling",
@@ -1301,7 +1301,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends take turns telling each other interesting or funny stories from their past experiences.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "book-open-text",
   },
   {
     id: "spontaneous-road-trip",
@@ -1315,7 +1315,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A friend tries to convince another to drop everything and go on a spontaneous road trip this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "map-pinned",
   },
   {
     id: "hard-to-get",
@@ -1329,7 +1329,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A person playfully tries to get the attention of someone who is playing hard to get.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "shield",
   },
   {
     id: "online-vs-in-person-work",
@@ -1343,7 +1343,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two colleagues debate whether remote work or in-person office work is better, presenting arguments for both sides.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "monitor",
   },
   {
     id: "cheering-up-a-friend",
@@ -1357,7 +1357,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A caring friend tries to cheer up their friend who is feeling down, offering support and encouragement.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "flower-2",
   },
   {
     id: "debating-the-best-sports-player",
@@ -1371,7 +1371,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two sports fans passionately debate who the greatest athlete of all time is, defending their picks.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "trophy",
   },
   {
     id: "company-meeting",
@@ -1385,7 +1385,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee presents their ideas during a team meeting, responding to questions and feedback from colleagues.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "presentation",
   },
   {
     id: "intense-argument",
@@ -1399,7 +1399,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A couple gets into a heated but ultimately productive argument about a misunderstanding, working through their emotions.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "flame",
   },
   {
     id: "dreaming-big",
@@ -1413,7 +1413,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends share their wildest dreams and ambitions for the future, encouraging each other to dream big.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "rocket",
   },
   {
     id: "fears-and-phobias",
@@ -1427,7 +1427,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends open up about their deepest fears and phobias, sharing personal stories and offering support.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "ghost",
   },
   {
     id: "guilty-confessions",
@@ -1441,7 +1441,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A person opens up to a therapist about things they feel guilty about, seeking understanding and advice.. Be caring and clear. Use simple medical terminology when needed.`,
-    icon: "activity",
+    icon: "shield-alert",
   },
   {
     id: "ex-or-not",
@@ -1455,7 +1455,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends discuss whether one of them should get back together with their ex, weighing the pros and cons.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "heart-crack",
   },
   {
     id: "fitness-goals",
@@ -1469,7 +1469,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two friends discuss their fitness goals, workout routines, and healthy habits, motivating each other.. Be caring and clear. Use simple medical terminology when needed.`,
-    icon: "activity",
+    icon: "dumbbell",
   },
   {
     id: "car-accident",
@@ -1483,7 +1483,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A person involved in a minor car accident explains the situation to a police officer and exchanges information.. Be caring and clear. Use simple medical terminology when needed.`,
-    icon: "activity",
+    icon: "siren",
   },
   {
     id: "deep-talk",
@@ -1497,7 +1497,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two close friends have a deep late-night conversation about life, purpose, and what truly matters to them.. Be warm and genuine. Share thoughts and feelings openly.`,
-    icon: "heart",
+    icon: "brain",
   },
   {
     id: "career-advice",
@@ -1511,7 +1511,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A conversation scenario about career advice.. Be friendly and approachable. Keep the conversation flowing naturally.`,
-    icon: "users",
+    icon: "lightbulb",
   },
   {
     id: "abstract-art",
@@ -1525,7 +1525,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `Two art enthusiasts debate the meaning and value of abstract art while visiting a gallery together.. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "paintbrush",
   },
   {
     id: "setting-tram-goals",
@@ -1539,7 +1539,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A conversation scenario about setting tram goals.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "goal",
   },
   {
     id: "four-day-workweek",
@@ -1553,7 +1553,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate whether a four-day workweek would improve productivity and work-life balance or hurt businesses.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "calendar-minus",
   },
   {
     id: "slacking-off",
@@ -1567,7 +1567,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A manager confronts an employee about slacking off at work, while the employee tries to explain and negotiate.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "timer-off",
   },
   {
     id: "salary-negotiation",
@@ -1581,7 +1581,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee negotiates a salary raise with their manager, presenting their achievements and value to the company.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "banknote",
   },
   {
     id: "teenagers",
@@ -1595,7 +1595,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A parent tries to set rules and boundaries for their teenager, who pushes back and argues for more freedom.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "megaphone",
   },
   {
     id: "breaking-up",
@@ -1609,7 +1609,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A person initiates a difficult breakup conversation, trying to be honest and kind while ending the relationship.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "unplug",
   },
   {
     id: "hiking-trip",
@@ -1623,7 +1623,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A friend tries to convince their couch-potato friend to join an exciting hiking adventure this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "mountain-snow",
   },
   {
     id: "lowering-the-drinking-age",
@@ -1637,7 +1637,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate whether the legal drinking age should be lowered, presenting social and health arguments.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "beer",
   },
   {
     id: "performance-review",
@@ -1651,7 +1651,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee receives their performance review from their manager, discussing achievements, areas to improve, and goals.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "clipboard-check",
   },
   {
     id: "pulled-over",
@@ -1665,7 +1665,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A driver pulled over by a police officer tries to talk their way out of a speeding ticket with creative excuses.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "badge-alert",
   },
   {
     id: "wedding-proposal",
@@ -1679,7 +1679,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `A person nervously plans and delivers a heartfelt wedding proposal to their partner.. Be charming and genuine. Express emotions naturally.`,
-    icon: "heart",
+    icon: "gem",
   },
   {
     id: "dropping-out",
@@ -1693,7 +1693,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A student tries to convince their parents that dropping out of school to pursue their passion is the right decision.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "log-out",
   },
   {
     id: "requesting-a-promotion",
@@ -1707,7 +1707,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee meets with their boss to request a promotion, highlighting their contributions and readiness for growth.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "trending-up",
   },
   {
     id: "nuclear-threat",
@@ -1721,7 +1721,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A world leader addresses their cabinet about a nuclear threat, debating how to respond diplomatically or militarily.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "radiation",
   },
   {
     id: "presidential-speech",
@@ -1735,7 +1735,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S4",
     context:
       `A presidential candidate delivers a passionate campaign speech, addressing the nation's key issues and their vision.. Be passionate about your position. Use convincing arguments and compelling reasoning.`,
-    icon: "message-circle",
+    icon: "mic-vocal",
   },
   {
     id: "pitching-an-idea",
@@ -1749,7 +1749,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S3",
     context:
       `An employee pitches an innovative business idea to their boss, trying to convince them of its potential.. Be professional but friendly. Use appropriate workplace language.`,
-    icon: "briefcase",
+    icon: "lightbulb",
   },
   {
     id: "climate-change-debate",
@@ -1763,7 +1763,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate the effectiveness of current climate change policies and what more should be done.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "leaf",
   },
   {
     id: "ai-dilemma",
@@ -1777,7 +1777,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate the ethical implications of AI, discussing its impact on jobs, privacy, and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "cpu",
   },
   {
     id: "educational-policy",
@@ -1791,7 +1791,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate modern education policies, including standardized testing, curriculum changes, and student well-being.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "scroll",
   },
   {
     id: "universal-basic-income",
@@ -1805,7 +1805,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate whether universal basic income would help or hurt the economy and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "coins",
   },
   {
     id: "space-exploration",
@@ -1819,7 +1819,7 @@ export const SCENARIOS: Scenario[] = [
     level: "S5",
     context:
       `Two people debate whether space exploration funding is justified or if the money should be spent on Earth's problems.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position.`,
-    icon: "scale",
+    icon: "telescope",
   },
 
   {
@@ -1832,7 +1832,7 @@ export const SCENARIOS: Scenario[] = [
     topic: "Weather",
     level: "S1",
     context: `Two friends chat about the nice weather today and discuss what activities they might do together.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly.`,
-    icon: "smile",
+    icon: "cloud-sun",
   },
   {
     id: "likes-dislikes",
@@ -1844,7 +1844,7 @@ export const SCENARIOS: Scenario[] = [
     topic: "Likes/Dislikes",
     level: "S1",
     context: `User and Sophie talk about their likes and dislikes, sharing basic opinions about different activities and interests.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly.`,
-    icon: "sparkles",
+    icon: "thumbs-up",
   },
   {
     id: "favorite-movies-and-tv-shows",
@@ -1856,7 +1856,7 @@ export const SCENARIOS: Scenario[] = [
     topic: "Favorite Movies & Tv Shows",
     level: "S2",
     context: `Two people talk about their favorite movies or tv shows, asking question like, "How you watched (show)?" or "What's your favorite movie of all time?".. Be enthusiastic and engaging. Share opinions naturally.`,
-    icon: "film",
+    icon: "tv",
   },
   {
     id: "basic-check-up",
@@ -1868,7 +1868,7 @@ export const SCENARIOS: Scenario[] = [
     topic: "Basic Check-Up",
     level: "S2",
     context: `A patient visits the doctor for a routine check-up. the doctor asks simple questions about their daily habits to learn more about their lifestyle.. Ask clear, practical questions. Show empathy and professionalism.`,
-    icon: "activity",
+    icon: "thermometer",
   }
 ];
 
