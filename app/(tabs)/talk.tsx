@@ -15,7 +15,7 @@ import { useConversationStore, useIntroStore } from "@/stores/conversationStore"
 import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { usePathname, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { RotateCcw } from "lucide-react-native";
@@ -218,11 +218,7 @@ export default function TalkScreen() {
   const { session, user } = useAuthStore();
   const flatListRef = useRef<FlatList>(null);
   const isInitialized = useRef<boolean>(false);
-  const isFocusedRef = useRef<boolean>(false);
   const router = useRouter();
-  const pathname = usePathname();
-  const isFocused = pathname === "/talk";
-  isFocusedRef.current = isFocused;
   const { t } = useTranslation();
 
   // Derive target and native languages from active profile
@@ -298,11 +294,10 @@ export default function TalkScreen() {
     let isMounted = true;
 
     const initSession = async () => {
-      // Security check: Only start session when screen is focused
-      if (!isFocusedRef.current) {
-        Logger.info(TAG, "Screen not focused, skipping session init");
-        return;
-      }
+      // No focus guard — session must initialize even when navigating from another tab.
+      // The Zustand store update from selectScenario() triggers this effect BEFORE
+      // router.push() completes, so isFocused would be false at this point.
+      // Audio playback while unfocused is harmless (useFocusEffect handles pause/resume).
 
       if (!session) return;
 

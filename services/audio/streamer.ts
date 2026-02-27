@@ -17,7 +17,7 @@ const MIN_INITIAL_BUFFER = 7200; // 0.3s of audio before starting playback
 const FADE_IN_DURATION = 0.2; // 200ms fade-in to prevent pops
 
 // Periodic reset to prevent memory buildup
-const RESET_AFTER_RESPONSES = 5;
+const RESET_AFTER_RESPONSES = 3;
 
 type SpeakingStateCallback = (isSpeaking: boolean) => void;
 type BufferProgressCallback = (progress: number) => void; // 0-100
@@ -43,6 +43,7 @@ class AudioStreamer {
   private accumulatedLength = 0;
   private totalQueuedSamples = 0;
 
+  private watchdogTimerId: ReturnType<typeof setTimeout> | null = null;
   private isPaused = false;
   private hasResponseCompleted = false; // True once finishSpeaking() has run
   private initPromise: Promise<void> | null = null;
@@ -125,6 +126,14 @@ class AudioStreamer {
   }
 
   prepareForNewResponse(): void {
+    this.clearWatchdog();
+
+    // Cancel any pending gain automations from previous response
+    if (this.gainNode) {
+      this.gainNode.gain.cancelScheduledValues(0);
+      this.gainNode.gain.value = 1.0;
+    }
+
     // If currently playing, stop and reset first
     if (this.isPlaying) {
       this.stopCurrentPlayback();
@@ -209,6 +218,14 @@ class AudioStreamer {
   }
 
   private stopCurrentPlayback(): void {
+    this.clearWatchdog();
+
+    // Cancel gain automations to prevent stale ramps affecting next response
+    if (this.gainNode) {
+      this.gainNode.gain.cancelScheduledValues(0);
+      this.gainNode.gain.value = 1.0;
+    }
+
     if (this.queueSource) {
       try {
         this.queueSource.clearBuffers();
@@ -364,7 +381,8 @@ class AudioStreamer {
       return;
     }
 
-    // Apply fade-in to prevent audio pops
+    // Cancel any leftover gain ramps from previous response, then apply fresh fade-in
+    this.gainNode.gain.cancelScheduledValues(0);
     this.gainNode.gain.value = 0;
     const currentTime = this.audioContext?.currentTime ?? 0;
     this.gainNode.gain.linearRampToValueAtTime(
@@ -386,7 +404,8 @@ class AudioStreamer {
     const startCurrentTime = this.audioContext?.currentTime ?? 0;
 
     // First check at 500ms — attempt recovery if stalled
-    setTimeout(() => {
+    this.clearWatchdog();
+    this.watchdogTimerId = setTimeout(() => {
       if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
       const nowCurrentTime = this.audioContext?.currentTime ?? 0;
       const delta = nowCurrentTime - startCurrentTime;
@@ -400,7 +419,7 @@ class AudioStreamer {
           }
 
           const postRecoveryTime = this.audioContext?.currentTime ?? 0;
-          setTimeout(() => {
+          this.watchdogTimerId = setTimeout(() => {
             if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
             const finalTime = this.audioContext?.currentTime ?? 0;
             const recoveryDelta = finalTime - postRecoveryTime;
@@ -460,6 +479,7 @@ class AudioStreamer {
 
   private finishSpeaking(): void {
     if (!this.isPlaying) return;
+    this.clearWatchdog();
 
     Logger.info(TAG, `<<< SPEAKING finished — resp=#${this.responseId} ${this.chunkCount} chunks, ${this.flushCount} flushes, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`);
 
@@ -486,8 +506,16 @@ class AudioStreamer {
     this.totalQueuedSamples = 0;
   }
 
+  private clearWatchdog(): void {
+    if (this.watchdogTimerId !== null) {
+      clearTimeout(this.watchdogTimerId);
+      this.watchdogTimerId = null;
+    }
+  }
+
   handleInterruption(): void {
     Logger.info(TAG, "Interrupted");
+    this.clearWatchdog();
     this.isInterrupted = true;
     this.responseId++;
 
@@ -541,6 +569,7 @@ class AudioStreamer {
 
   dispose(): void {
     Logger.info(TAG, "Disposed");
+    this.clearWatchdog();
     this.stopCurrentPlayback();
 
     if (this.gainNode) {
