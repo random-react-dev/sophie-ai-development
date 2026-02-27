@@ -29,7 +29,7 @@ import {
   Users,
   Utensils,
 } from "lucide-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -76,43 +76,38 @@ export default function RoleplayScreen() {
   const router = useRouter();
   const [isCreateModalVisible, setCreateModalVisible] = useState(false);
 
-  const translatedScenarios = useMemo(() => {
-    return scenarios.map((s) => {
-      // Don't translate custom scenarios
-      if (s.isCustom) {
-        return s;
-      }
-      return {
-        ...s,
-        title: t(`scenarios_data.${s.id}.title`, { defaultValue: s.title }),
-        description: t(`scenarios_data.${s.id}.description`, {
-          defaultValue: s.description,
-        }),
-        // category: getCategoryLabel(s.category), // Keeping original category for filtering
-        sophieRole: t(`scenarios_data.${s.id}.sophieRole`, {
-          defaultValue: s.sophieRole,
-        }),
-        userRole: t(`scenarios_data.${s.id}.userRole`, {
-          defaultValue: s.userRole,
-        }),
-        topic: t(`scenarios_data.${s.id}.topic`, { defaultValue: s.topic }),
-        context: t(`scenarios_data.${s.id}.context`, {
-          defaultValue: s.context,
-        }),
-      };
-    });
-  }, [scenarios, t]);
+  const translatedScenarios = scenarios.map((s) => {
+    // Don't translate custom scenarios
+    if (s.isCustom) {
+      return s;
+    }
+    return {
+      ...s,
+      title: t(`scenarios_data.${s.id}.title`, { defaultValue: s.title }),
+      description: t(`scenarios_data.${s.id}.description`, {
+        defaultValue: s.description,
+      }),
+      sophieRole: t(`scenarios_data.${s.id}.sophieRole`, {
+        defaultValue: s.sophieRole,
+      }),
+      userRole: t(`scenarios_data.${s.id}.userRole`, {
+        defaultValue: s.userRole,
+      }),
+      topic: t(`scenarios_data.${s.id}.topic`, { defaultValue: s.topic }),
+      context: t(`scenarios_data.${s.id}.context`, {
+        defaultValue: s.context,
+      }),
+    };
+  });
 
-  const filteredScenarios = useMemo(() => {
-    return translatedScenarios.filter((s) => {
-      const matchesSearch =
-        s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "All" || s.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [translatedScenarios, searchQuery, selectedCategory]);
+  const filteredScenarios = translatedScenarios.filter((s) => {
+    const matchesSearch =
+      s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || s.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleStartScenario = (scenario: Scenario) => {
     selectScenario(scenario);

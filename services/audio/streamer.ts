@@ -5,6 +5,7 @@ import {
   AudioContext,
   GainNode,
 } from "react-native-audio-api";
+import { configureAudioSession } from "./audioManager";
 import { Logger } from "../common/Logger";
 
 const TAG = "AudioStreamer";
@@ -44,6 +45,7 @@ class AudioStreamer {
 
   private isPaused = false;
   private hasResponseCompleted = false; // True once finishSpeaking() has run
+  private initPromise: Promise<void> | null = null;
 
   private static instance: AudioStreamer;
   private constructor() {}
@@ -73,18 +75,30 @@ class AudioStreamer {
       return;
     }
 
-    const { configureAudioSession } = await import("./audioManager");
+    // Deduplicate concurrent calls — second caller awaits the same promise
+    if (this.initPromise) {
+      Logger.debug(TAG, 'initialize() — awaiting existing init');
+      return this.initPromise;
+    }
+
+    this.initPromise = this.doInitialize();
+    try {
+      await this.initPromise;
+    } finally {
+      this.initPromise = null;
+    }
+  }
+
+  private async doInitialize(): Promise<void> {
     await configureAudioSession();
 
     this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
     Logger.info(TAG, `Initialized AudioContext state=${this.audioContext.state}`);
 
-    // Create GainNode at full volume to prevent iOS fade-in effects
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 1.0;
     this.gainNode.connect(this.audioContext.destination);
 
-    // Prime iOS audio engine with silent buffer
     this.primeAudioEngine();
   }
 

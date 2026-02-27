@@ -2,7 +2,7 @@ import CircleFlag from "@/components/common/CircleFlag";
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { Feather, Ionicons } from "@expo/vector-icons";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -100,7 +100,7 @@ export default function CountryPicker({
 }: CountryPickerProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCountries = useMemo(() => {
+  const filteredCountries = (() => {
     if (!searchQuery.trim()) return COUNTRIES;
 
     const query = searchQuery.toLowerCase();
@@ -109,7 +109,7 @@ export default function CountryPicker({
         country.name.toLowerCase().includes(query) ||
         country.code.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  })();
 
   const handleSelect = (countryName: string) => {
     onSelect(countryName);

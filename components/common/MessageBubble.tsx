@@ -1,7 +1,7 @@
 import { ChatAvatar } from "@/components/common/ChatAvatar";
 import { useTranslation } from "@/hooks/useTranslation";
 import { EyeOff, Languages, Plus } from "lucide-react-native";
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 interface Message {
@@ -19,13 +19,13 @@ interface MessageBubbleProps {
   userName?: string;
 }
 
-const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
+export function MessageBubble({
   message,
   onTranslate,
   onSave,
   userAvatarUri,
   userName,
-}) => {
+}: MessageBubbleProps) {
   const isUser = message.role === "user";
   const [showTranslation, setShowTranslation] = useState(false);
   const [translation, setTranslation] = useState<string | null>(null);
@@ -152,8 +152,4 @@ const MessageBubbleComponent: React.FC<MessageBubbleProps> = ({
       </View>
     </View>
   );
-};
-
-// Memoized to prevent re-renders in FlatList when props are unchanged
-export const MessageBubble = memo(MessageBubbleComponent);
-MessageBubble.displayName = "MessageBubble";
+}

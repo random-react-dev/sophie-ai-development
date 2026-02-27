@@ -22,7 +22,6 @@ import { RotateCcw } from "lucide-react-native";
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -227,22 +226,22 @@ export default function TalkScreen() {
   const { t } = useTranslation();
 
   // Derive target and native languages from active profile
-  const targetLanguage = useMemo((): Language | null => {
+  const targetLanguage = ((): Language | null => {
     if (!activeProfile?.target_language) return null;
     return (
       SUPPORTED_LANGUAGES.find(
         (l) => l.name === activeProfile.target_language,
       ) || null
     );
-  }, [activeProfile?.target_language]);
+  })();
 
-  const nativeLanguage = useMemo((): Language | null => {
+  const nativeLanguage = ((): Language | null => {
     // Use medium_language for explanations if set, otherwise use native_language
     const langName =
       activeProfile?.medium_language || activeProfile?.native_language;
     if (!langName) return null;
     return SUPPORTED_LANGUAGES.find((l) => l.name === langName) || null;
-  }, [activeProfile?.medium_language, activeProfile?.native_language]);
+  })();
 
   // Session tracking
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
@@ -573,44 +572,38 @@ ${levelGuide}`;
     );
   };
 
-  const handleTranslate = useCallback(
-    async (text: string): Promise<string | null> => {
-      try {
-        const result = await translateText(text, "English");
-        const displayText = result.romanization
-          ? `${result.translation}\n\n${result.romanization}`
-          : result.translation;
-        return displayText;
-      } catch {
-        showAlert(
-          t("talk_screen.alerts.error_title"),
-          t("talk_screen.alerts.error_msg"),
-          undefined,
-          "error",
-        );
-        return null;
-      }
-    },
-    [showAlert, t],
-  );
+  const handleTranslate = async (text: string): Promise<string | null> => {
+    try {
+      const result = await translateText(text, "English");
+      const displayText = result.romanization
+        ? `${result.translation}\n\n${result.romanization}`
+        : result.translation;
+      return displayText;
+    } catch {
+      showAlert(
+        t("talk_screen.alerts.error_title"),
+        t("talk_screen.alerts.error_msg"),
+        undefined,
+        "error",
+      );
+      return null;
+    }
+  };
 
-  const handleSaveVocabulary = useCallback(
-    async (text: string) => {
-      const success = await saveToVocabulary({
-        phrase: text,
-        language: targetLanguage?.name,
-      });
-      if (success) {
-        showAlert(
-          t("talk_screen.alerts.success_title"),
-          t("talk_screen.alerts.vocab_added"),
-          undefined,
-          "success",
-        );
-      }
-    },
-    [showAlert, t, targetLanguage],
-  );
+  const handleSaveVocabulary = async (text: string) => {
+    const success = await saveToVocabulary({
+      phrase: text,
+      language: targetLanguage?.name,
+    });
+    if (success) {
+      showAlert(
+        t("talk_screen.alerts.success_title"),
+        t("talk_screen.alerts.vocab_added"),
+        undefined,
+        "success",
+      );
+    }
+  };
 
   // Message type for FlatList
   interface Message {
@@ -620,18 +613,14 @@ ${levelGuide}`;
     timestamp: number;
   }
 
-  // Memoized render function for FlatList performance
-  const renderMessage = useCallback(
-    ({ item: msg }: { item: Message }) => (
-      <MessageBubble
-        message={msg}
-        onTranslate={handleTranslate}
-        onSave={handleSaveVocabulary}
-        userAvatarUri={user?.user_metadata?.avatar_url}
-        userName={user?.user_metadata?.full_name || user?.email}
-      />
-    ),
-    [handleTranslate, handleSaveVocabulary, user],
+  const renderMessage = ({ item: msg }: { item: Message }) => (
+    <MessageBubble
+      message={msg}
+      onTranslate={handleTranslate}
+      onSave={handleSaveVocabulary}
+      userAvatarUri={user?.user_metadata?.avatar_url}
+      userName={user?.user_metadata?.full_name || user?.email}
+    />
   );
 
   return (

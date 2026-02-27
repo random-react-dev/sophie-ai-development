@@ -2,7 +2,7 @@ import { RainbowBorder } from "@/components/common/Rainbow";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -61,21 +61,17 @@ export default function TwoFactorOTPModal() {
     }
   }, [pending2FA]);
 
-  const handleOtpChange = useCallback(
-    (text: string) => {
-      // Only allow digits
-      const digits = text.replace(/\D/g, "").slice(0, OTP_LENGTH);
-      setOtp(digits);
-      setError("");
+  const handleOtpChange = (text: string) => {
+    // Only allow digits
+    const digits = text.replace(/\D/g, "").slice(0, OTP_LENGTH);
+    setOtp(digits);
+    setError("");
 
-      // Auto-submit when all digits entered
-      if (digits.length === OTP_LENGTH) {
-        handleVerify(digits);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+    // Auto-submit when all digits entered
+    if (digits.length === OTP_LENGTH) {
+      handleVerify(digits);
+    }
+  };
 
   const handleVerify = async (code?: string) => {
     const token = code ?? otp;

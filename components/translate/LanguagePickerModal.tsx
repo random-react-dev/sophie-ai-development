@@ -4,7 +4,7 @@ import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Feather, Ionicons } from "@expo/vector-icons";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -82,7 +82,7 @@ export default function LanguagePickerModal({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredLanguages = useMemo(() => {
+  const filteredLanguages = (() => {
     if (!searchQuery.trim()) return SUPPORTED_LANGUAGES;
 
     const query = searchQuery.toLowerCase();
@@ -92,7 +92,7 @@ export default function LanguagePickerModal({
         lang.nativeName.toLowerCase().includes(query) ||
         lang.code.toLowerCase().includes(query),
     );
-  }, [searchQuery]);
+  })();
 
   const handleSelect = (language: Language) => {
     onSelect(language);

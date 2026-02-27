@@ -26,17 +26,16 @@ interface RainbowWaveProps {
   static?: boolean;
 }
 
-export const RainbowWave = React.memo(
-  ({
-    isListening,
-    isSpeaking,
-    isProcessing = false,
-    volumeLevel,
-    width: customWidth,
-    height: customHeight = 160,
-    amplitudeScale = 1.0,
-    static: isStatic = false,
-  }: RainbowWaveProps) => {
+export function RainbowWave({
+  isListening,
+  isSpeaking,
+  isProcessing = false,
+  volumeLevel,
+  width: customWidth,
+  height: customHeight = 160,
+  amplitudeScale = 1.0,
+  static: isStatic = false,
+}: RainbowWaveProps) {
     const { width: windowWidth } = useWindowDimensions();
     const width = customWidth || windowWidth;
     const height = customHeight;
@@ -189,7 +188,4 @@ export const RainbowWave = React.memo(
         </Svg>
       </View>
     );
-  },
-);
-
-RainbowWave.displayName = "RainbowWave";
+}

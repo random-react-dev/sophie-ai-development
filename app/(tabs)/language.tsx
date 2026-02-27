@@ -33,7 +33,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -62,39 +62,36 @@ export default function LanguageScreen() {
     removeProfile,
   } = useProfileStore();
 
-  const getLocalizedLanguageName = useCallback(
-    (englishName: string) => {
-      const matchedLang = SUPPORTED_LANGUAGES.find(
-        (l) => l.name === englishName,
-      );
-      if (!matchedLang) return englishName;
+  const getLocalizedLanguageName = (englishName: string) => {
+    const matchedLang = SUPPORTED_LANGUAGES.find(
+      (l) => l.name === englishName,
+    );
+    if (!matchedLang) return englishName;
 
-      // Try Intl.DisplayNames first
-      try {
-        const localized = new Intl.DisplayNames([locale], {
-          type: "language",
-        }).of(matchedLang.code);
+    // Try Intl.DisplayNames first
+    try {
+      const localized = new Intl.DisplayNames([locale], {
+        type: "language",
+      }).of(matchedLang.code);
 
-        if (localized && localized !== englishName) {
-          return localized.charAt(0).toUpperCase() + localized.slice(1);
-        }
-
-        if (locale.startsWith("en")) return englishName;
-      } catch {
-        // Fallback below
+      if (localized && localized !== englishName) {
+        return localized.charAt(0).toUpperCase() + localized.slice(1);
       }
 
-      // Fallback: Manual Map
-      // Normalize locale (e.g. 'hi-IN' -> 'hi')
-      const simpleLocale = locale.split("-")[0];
-      const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
-      if (manualName) return manualName;
+      if (locale.startsWith("en")) return englishName;
+    } catch {
+      // Fallback below
+    }
 
-      // Final valid fallback: Native Name
-      return matchedLang.nativeName || englishName;
-    },
-    [locale],
-  );
+    // Fallback: Manual Map
+    // Normalize locale (e.g. 'hi-IN' -> 'hi')
+    const simpleLocale = locale.split("-")[0];
+    const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
+    if (manualName) return manualName;
+
+    // Final valid fallback: Native Name
+    return matchedLang.nativeName || englishName;
+  };
 
   // Accent Playground State
   const [testPhrase, setTestPhrase] = useState(

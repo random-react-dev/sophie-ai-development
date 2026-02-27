@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { audioRecorder } from "../services/audio/recorder";
+import { audioStreamer } from "../services/audio/streamer";
 import { Logger } from "../services/common/Logger";
 import { ConnectionState } from "../services/gemini/types";
 import { geminiWebSocket } from "../services/gemini/websocket";
@@ -28,10 +29,8 @@ function createVolumeHandler(
 
 /**
  * Ensure audio streamer is initialized before use.
- * Uses lazy import to break circular dependency.
  */
 async function ensureAudioStreamerReady(): Promise<void> {
-  const { audioStreamer } = await import("../services/audio/streamer");
   if (!audioStreamer.isReady()) {
     await audioStreamer.initialize();
   }
@@ -231,7 +230,6 @@ export const useConversationStore = create<ConversationState>()(
     }
 
     const { impactAsync, ImpactFeedbackStyle } = await import("expo-haptics");
-    const { audioStreamer } = await import("../services/audio/streamer");
 
     Logger.info("ConversationStore", "Stopping conversation...");
     await audioRecorder.stop();

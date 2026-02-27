@@ -41,7 +41,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -162,7 +162,7 @@ export default function TranslateScreen() {
     }
   };
 
-  const handleSwap = useCallback(() => {
+  const handleSwap = () => {
     Haptics.selectionAsync();
 
     // Animate horizontal flip - smooth
@@ -179,11 +179,9 @@ export default function TranslateScreen() {
     if (translatedText) {
       setInputText(translatedText);
       setTranslatedText(inputText);
-      // We don't have romanization for the reverse easily without re-translating,
-      // but we can clear it or leave it empty
       setRomanization("");
     }
-  }, [sourceLang, targetLang, inputText, translatedText, flipX]);
+  };
 
   const animatedIconStyle = useAnimatedStyle(() => ({
     transform: [{ scaleX: flipX.value }],

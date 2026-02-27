@@ -122,7 +122,10 @@ function MicTabButton() {
   const getButtonColor = (): string => {
     if (isPTTActive) return "bg-white shadow-red-200";
     if (isProcessing) return "bg-white shadow-orange-200";
-    if (!isTalkTab || connectionState !== "connected")
+    if (!isTalkTab) return "bg-gray-100 shadow-gray-200";
+    if (connectionState === "connecting" || connectionState === "reconnecting")
+      return "bg-yellow-50 shadow-yellow-200";
+    if (connectionState !== "connected")
       return "bg-gray-100 shadow-gray-200";
     return "bg-white shadow-blue-200";
   };
@@ -161,9 +164,18 @@ function MicTabButton() {
             containerClassName={`items-center justify-center ${getButtonColor()}`}
           >
             <Feather
-              name="mic"
+              name={
+                connectionState === "connecting" || connectionState === "reconnecting"
+                  ? "loader"
+                  : "mic"
+              }
               size={28}
-              color={isPTTActive ? "#ef4444" : "black"}
+              color={
+                isPTTActive ? "#ef4444"
+                  : connectionState === "connecting" || connectionState === "reconnecting"
+                    ? "#f59e0b"
+                    : "black"
+              }
             />
           </RainbowBorder>
         </Animated.View>

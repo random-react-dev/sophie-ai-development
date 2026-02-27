@@ -34,7 +34,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -152,65 +152,53 @@ export default function VocabScreen() {
 
 
 
-  const getLocalizedLanguageName = useCallback(
-    (englishName: string) => {
-      const matchedLang = SUPPORTED_LANGUAGES.find(
-        (l) => l.name === englishName,
-      );
-      if (!matchedLang) return englishName;
+  const getLocalizedLanguageName = (englishName: string) => {
+    const matchedLang = SUPPORTED_LANGUAGES.find(
+      (l) => l.name === englishName,
+    );
+    if (!matchedLang) return englishName;
 
-      // Try Intl.DisplayNames first
-      try {
-        const localized = new Intl.DisplayNames([locale], {
-          type: "language",
-        }).of(matchedLang.code);
+    // Try Intl.DisplayNames first
+    try {
+      const localized = new Intl.DisplayNames([locale], {
+        type: "language",
+      }).of(matchedLang.code);
 
-        // If Intl works and gives a different result than the code (it usually returns code if unknown, or English name if locale is English), use it.
-        // Wait, if locale is 'en', Intl returns 'Spanish'. If locale is 'hi', it returns 'स्पेनी'.
-        // If it returns the same as englishName (and we are NOT in English locale), it means it failed to translate.
-        if (localized && localized !== englishName) {
-          return localized.charAt(0).toUpperCase() + localized.slice(1);
-        }
-
-        // If we are in English, returning englishName is correct.
-        if (locale.startsWith("en")) return englishName;
-      } catch {
-        // Fallback below
+      if (localized && localized !== englishName) {
+        return localized.charAt(0).toUpperCase() + localized.slice(1);
       }
 
-      // Fallback: Manual Map
-      // Normalize locale (e.g. 'hi-IN' -> 'hi')
-      const simpleLocale = locale.split("-")[0];
-      const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
-      if (manualName) return manualName;
+      if (locale.startsWith("en")) return englishName;
+    } catch {
+      // Fallback below
+    }
 
-      // Final valid fallback: Native Name (e.g. Español)
-      // This is better than English "Spanish" for most users
-      return matchedLang.nativeName || englishName;
-    },
-    [locale],
-  );
+    // Fallback: Manual Map
+    const simpleLocale = locale.split("-")[0];
+    const manualName = LANGUAGE_NAMES[simpleLocale]?.[matchedLang.code];
+    if (manualName) return manualName;
 
-  const languages = useMemo(() => {
+    return matchedLang.nativeName || englishName;
+  };
+
+  const languages = (() => {
     const langs = new Set(items.map((i) => i.language).filter(Boolean));
     return [ALL_LABEL, ...Array.from(langs)] as string[];
-  }, [items, ALL_LABEL]);
+  })();
 
-  const filteredItems = useMemo(() => {
-    return items.filter((item) => {
-      const matchesSearch =
-        item.phrase.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.translation &&
-          item.translation.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesLang =
-        selectedLanguage === ALL_LABEL || item.language === selectedLanguage;
-      const matchesFolder =
-        selectedFolderFilter === "All" ||
-        item.folder_id === selectedFolderFilter;
+  const filteredItems = items.filter((item) => {
+    const matchesSearch =
+      item.phrase.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.translation &&
+        item.translation.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesLang =
+      selectedLanguage === ALL_LABEL || item.language === selectedLanguage;
+    const matchesFolder =
+      selectedFolderFilter === "All" ||
+      item.folder_id === selectedFolderFilter;
 
-      return matchesSearch && matchesLang && matchesFolder;
-    });
-  }, [items, searchQuery, selectedLanguage, selectedFolderFilter, ALL_LABEL]);
+    return matchesSearch && matchesLang && matchesFolder;
+  });
 
   /**
    * Speak the phrase aloud using native device Text-to-Speech (expo-speech).
@@ -1405,9 +1393,9 @@ function ActionModalContent({
   const context = useSharedValue(0);
   const DISMISS_THRESHOLD = 80;
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     onClose();
-  }, [onClose]);
+  };
 
   const panGesture = Gesture.Pan()
     .onStart(() => {

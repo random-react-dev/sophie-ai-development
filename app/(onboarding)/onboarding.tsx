@@ -26,7 +26,7 @@ import { useProfileStore } from "@/stores/profileStore";
 import { safeGoBack } from "@/utils/navigation";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -95,36 +95,27 @@ export default function OnboardingScreen() {
   const contentHeight = useRef(0);
   const containerHeight = useRef(0);
 
-  const updateBorderVisibility = useCallback((scrollY: number = 0) => {
+  const updateBorderVisibility = (scrollY: number = 0) => {
     const isScrollable = contentHeight.current > containerHeight.current;
     const isAtBottom =
       scrollY + containerHeight.current >= contentHeight.current - 10; // 10px threshold
     setShowBorder(isScrollable && !isAtBottom);
-  }, []);
+  };
 
-  const handleScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const scrollY = event.nativeEvent.contentOffset.y;
-      updateBorderVisibility(scrollY);
-    },
-    [updateBorderVisibility],
-  );
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+    updateBorderVisibility(scrollY);
+  };
 
-  const handleContentSizeChange = useCallback(
-    (width: number, height: number) => {
-      contentHeight.current = height;
-      updateBorderVisibility();
-    },
-    [updateBorderVisibility],
-  );
+  const handleContentSizeChange = (_width: number, height: number) => {
+    contentHeight.current = height;
+    updateBorderVisibility();
+  };
 
-  const handleLayout = useCallback(
-    (event: { nativeEvent: { layout: { height: number } } }) => {
-      containerHeight.current = event.nativeEvent.layout.height;
-      updateBorderVisibility();
-    },
-    [updateBorderVisibility],
-  );
+  const handleLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
+    containerHeight.current = event.nativeEvent.layout.height;
+    updateBorderVisibility();
+  };
 
   const isStepValid = (step: number) => {
     switch (step) {
