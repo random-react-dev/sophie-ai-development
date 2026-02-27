@@ -13,17 +13,24 @@ import { useScenarioStore } from "@/stores/scenarioStore";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
+  Activity,
   Bed,
   Briefcase,
   ChevronDown,
   ChevronRight,
   Coffee,
   Compass,
+  Film,
   GraduationCap,
   Headphones,
+  Heart,
+  MessageCircle,
   Mic,
   Plane,
   Plus,
+  Scale,
+  ShoppingBag,
+  Smile,
   Sparkles,
   Star,
   Users,
@@ -52,6 +59,18 @@ const IconMap: Record<string, any> = {
   compass: Compass,
   bed: Bed,
   mic: Mic,
+  sparkles: Sparkles,
+  users: Users,
+  smile: Smile,
+  utensils: Utensils,
+  "shopping-bag": ShoppingBag,
+  film: Film,
+  heart: Heart,
+  plane: Plane,
+  "graduation-cap": GraduationCap,
+  activity: Activity,
+  "message-circle": MessageCircle,
+  scale: Scale,
 };
 
 // Enable LayoutAnimation for Android
@@ -176,22 +195,27 @@ export default function RoleplayScreen() {
         >
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
-            const catLabel =
-              cat === "All"
-                ? t("scenarios_screen.categories.all")
-                : cat === "Food & Drink"
-                  ? t("scenarios_screen.categories.food_drink")
-                  : cat === "Business"
-                    ? t("scenarios_screen.categories.business")
-                    : cat === "Social"
-                      ? t("scenarios_screen.categories.social")
-                      : cat === "Travel"
-                        ? t("scenarios_screen.categories.travel")
-                        : cat === "Customer Service"
-                          ? t("scenarios_screen.categories.customer_service")
-                          : cat === "Education"
-                            ? t("scenarios_screen.categories.education")
-                            : cat;
+            const catKeyMap: Record<string, string> = {
+              All: "all",
+              Beginner: "beginner",
+              "Food & Drink": "food_drink",
+              Shopping: "shopping",
+              Entertainment: "entertainment",
+              Life: "life",
+              Travel: "travel",
+              Social: "social",
+              Work: "work",
+              Romance: "romance",
+              Health: "health",
+              Persuade: "persuade",
+              Debates: "debates",
+              Education: "education",
+              Business: "business",
+              "Customer Service": "customer_service",
+            };
+            const catLabel = catKeyMap[cat]
+              ? t(`scenarios_screen.categories.${catKeyMap[cat]}`)
+              : cat;
 
             if (isSelected) {
               return (
@@ -287,34 +311,32 @@ export default function RoleplayScreen() {
                     {item.title}
                   </Text>
                   <Text className="text-gray-400 text-sm font-medium">
-                    {item.category === "Custom"
-                      ? item.category
-                      : item.category === "Food & Drink"
-                        ? t("scenarios_screen.categories.food_drink", {
-                            defaultValue: "Food & Drink",
+                    {(() => {
+                      const cardCatKeyMap: Record<string, string> = {
+                        All: "all",
+                        Beginner: "beginner",
+                        "Food & Drink": "food_drink",
+                        Shopping: "shopping",
+                        Entertainment: "entertainment",
+                        Life: "life",
+                        Travel: "travel",
+                        Social: "social",
+                        Work: "work",
+                        Romance: "romance",
+                        Health: "health",
+                        Persuade: "persuade",
+                        Debates: "debates",
+                        Education: "education",
+                        Business: "business",
+                        "Customer Service": "customer_service",
+                      };
+                      const key = cardCatKeyMap[item.category];
+                      return key
+                        ? t(`scenarios_screen.categories.${key}`, {
+                            defaultValue: item.category,
                           })
-                        : item.category === "Business"
-                          ? t("scenarios_screen.categories.business", {
-                              defaultValue: "Business",
-                            })
-                          : item.category === "Social"
-                            ? t("scenarios_screen.categories.social", {
-                                defaultValue: "Social",
-                              })
-                            : item.category === "Travel"
-                              ? t("scenarios_screen.categories.travel", {
-                                  defaultValue: "Travel",
-                                })
-                              : item.category === "Customer Service"
-                                ? t(
-                                    "scenarios_screen.categories.customer_service",
-                                    { defaultValue: "Customer Service" },
-                                  )
-                                : item.category === "Education"
-                                  ? t("scenarios_screen.categories.education", {
-                                      defaultValue: "Education",
-                                    })
-                                  : item.category}
+                        : item.category;
+                    })()}
                   </Text>
                   <Text
                     className="text-gray-400 text-sm font-medium"

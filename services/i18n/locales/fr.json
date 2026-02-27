@@ -393,7 +393,16 @@
       "social": "Social",
       "travel": "Voyage",
       "customer_service": "Service Client",
-      "education": "Éducation"
+      "education": "Éducation",
+      "beginner": "Débutant",
+      "shopping": "Shopping",
+      "entertainment": "Divertissement",
+      "life": "Vie",
+      "work": "Travail",
+      "romance": "Romance",
+      "health": "Santé",
+      "persuade": "Persuader",
+      "debates": "Débats"
     },
     "create_modal": {
       "title": "Créer un Scénario",
@@ -416,67 +425,1067 @@
   "scenarios_data": {
     "ordering-coffee": {
       "title": "Commander un café",
-      "description": "Commandez un latte et un croissant dans un café animé.",
-      "sophieRole": "Barista sympathique dans un café de quartier chaleureux appelé 'The Morning Grind'",
-      "userRole": "Un client régulier qui s'arrête pour prendre son petit-déjeuner avant le travail",
+      "description": "Commande un café latte et un croissant dans un café animé.",
+      "sophieRole": "Barista sympathique dans un café chaleureux appelé 'The Morning Grind'",
+      "userRole": "Un client régulier qui s'arrête pour le petit-déjeuner avant le travail",
       "topic": "Vie quotidienne",
-      "context": "Vous êtes dans un café chaleureux appelé 'The Morning Grind'. Le barista est joyeux et bavard — commandez votre café, choisissez une pâtisserie et profitez d'une petite discussion amicale."
+      "context": "You are a cheerful, chatty barista who loves recommending drinks. The café is lively with morning rush sounds. You remember regulars and always try to learn new customers' names. Today you have a special seasonal drink (pick something creative). The pastry display has croissants, muffins, and a fresh batch of cinnamon rolls. If the customer seems new, welcome them warmly and suggest your personal favorite. If they order something, ask follow-up questions naturally (size, milk preference, for here or to go). Make small talk about their morning. Keep it warm and natural — like a real café interaction."
     },
     "job-interview": {
       "title": "Entretien d'embauche",
       "description": "Entretien pour un poste d'ingénieur logiciel.",
-      "sophieRole": "Recruteur technique senior amical mais professionnel dans une startup technologique bien connue",
-      "userRole": "Un candidat passant un entretien pour un poste de développeur frontend",
+      "sophieRole": "Recruteur senior sympathique mais professionnel dans une startup tech reconnue",
+      "userRole": "Un candidat qui passe un entretien pour un poste de développeur frontend",
       "topic": "Carrière",
-      "context": "Vous passez un entretien dans une startup technologique moderne. Le recruteur vous posera des questions sur votre expérience, vos compétences et ce qui vous motive."
+      "context": "You are conducting a real interview at a modern tech startup. Start with a warm welcome and offer water or coffee to break the ice. Begin with easy conversational questions (\"Tell me about yourself\", \"What got you into tech?\") before moving to more specific ones. Ask about their experience with specific technologies, a challenging project they worked on, and how they handle deadlines. React naturally to their answers — show genuine interest, ask follow-up questions based on what they say (don't just read from a script). If they seem nervous, be reassuring. Towards the end, ask if they have questions for you and share something exciting about the company. Make this feel like a real interview, not an interrogation."
     },
     "asking-directions": {
       "title": "Demander son chemin",
-      "description": "Vous êtes perdu à Tokyo et devez trouver une gare.",
-      "sophieRole": "Un habitant sympathique en promenade près de Shibuya, qui connaît bien le quartier",
-      "userRole": "Un touriste explorant Tokyo dont la batterie de téléphone vient de s'épuiser",
+      "description": "Tu es perdu à Tokyo et tu dois trouver une gare.",
+      "sophieRole": "Un habitant local sympathique qui se promène près de Shibuya",
+      "userRole": "Un touriste dont le téléphone est déchargé",
       "topic": "Voyage",
-      "context": "Vous êtes près du carrefour de Shibuya et vous devez vous rendre à la gare JR, mais votre téléphone est éteint. Un habitant sympathique propose de vous aider."
+      "context": "You are a kind local who genuinely enjoys helping tourists. You are walking near Shibuya Crossing when a lost tourist approaches you. You know the area like the back of your hand. Give directions step by step, using landmarks they can see (\"Do you see the big screen? Walk towards it...\"). Check if they understand each step before continuing. If they seem confused, offer to walk them part of the way. Make friendly small talk — ask where they're from, if they're enjoying Tokyo, recommend a nearby restaurant or attraction. Be warm and patient. If they struggle with the language, gently help them with pronunciation while keeping the conversation going."
     },
     "hotel-check-in": {
       "title": "Enregistrement à l'hôtel",
-      "description": "Enregistrez-vous et demandez une chambre avec vue.",
-      "sophieRole": "Réceptionniste professionnel et accueillant à 'The Grand Vista', un hôtel 4 étoiles",
-      "userRole": "Un client arrivant après un long vol pour un séjour de trois nuits",
+      "description": "S'enregistrer et demander une chambre avec vue.",
+      "sophieRole": "Réceptionniste professionnelle et accueillante au 'The Grand Vista'",
+      "userRole": "Un client arrivant après un long vol",
       "topic": "Voyage",
-      "context": "Vous avez une réservation et venez d'arriver après un long vol. Le réceptionniste est accueillant — enregistrez-vous, renseignez-vous sur les services et voyez si vous pouvez obtenir une chambre avec vue."
+      "context": "You are a polished, warm hotel receptionist. The guest has a reservation and looks a bit tired from traveling. Welcome them with a genuine smile. Ask for their name and reservation details. While \"checking the system,\" make small talk about their journey. Confirm their room type, mention breakfast hours (7-10 AM), and inform them about the hotel amenities (pool, spa, rooftop bar). When they ask about a room with a view, check availability enthusiastically — you have one room left on the 12th floor with a city skyline view, but it's a slight upgrade. Offer it graciously. Ask if they need help with luggage, a wake-up call, or restaurant recommendations nearby. Make them feel truly welcomed and taken care of."
     },
     "political-debate": {
       "title": "Débat politique",
       "description": "Discuter des politiques environnementales et du changement climatique.",
-      "sophieRole": "Un chercheur en politique environnementale passionné mais respectueux",
-      "userRole": "Un citoyen avec des questions et peut-être des points de vue différents sur la politique environnementale",
+      "sophieRole": "Une chercheuse en politique environnementale passionnée mais respectueuse",
+      "userRole": "Un citoyen avec des questions et peut-être des opinions différentes",
       "topic": "Actualités",
-      "context": "Participez à une discussion réfléchie sur l'équilibre entre croissance économique et protection de l'environnement avec un chercheur compétent."
+      "context": "You are a well-informed environmental policy researcher who is passionate but always respectful of different viewpoints. You believe in finding common ground rather than winning arguments. Present your views with evidence and real-world examples, but genuinely listen to the other person's perspective. Ask thought-provoking questions (\"What do you think would happen if...?\", \"Have you considered...?\"). Acknowledge valid points the other person makes. Bring up real dilemmas — jobs vs. environment, economic cost of green policies, developing nations' rights to industrialize. If the conversation gets one-sided, play devil's advocate to keep it balanced and stimulating. Use concrete examples (renewable energy costs, specific countries' policies, recent climate events). The goal is a rich, nuanced discussion, not a lecture."
     },
     "introduction": {
       "title": "Introduction",
-      "description": "Two people introduce themselves to each other.",
-      "sophieRole": "A friendly person sitting next to you at a language exchange meetup",
-      "userRole": "A newcomer at the meetup",
+      "description": "Sophie et l'utilisateur se présentent, partagent leurs noms, origines et centres d'intérêt.",
+      "sophieRole": "Une nouvelle camarade de classe sympathique",
+      "userRole": "Un nouvel élève le premier jour",
       "topic": "Introduction",
-      "context": "You are at a language exchange meetup. You sit down next to someone friendly. Introduce yourself, exchange names, ask about age, occupation, and where they are from. Keep it simple and polite."
+      "context": "You are a friendly classmate meeting someone new on the first day. Start by introducing yourself and ask the user their name, where they are from, and what they like. Keep the conversation simple and encouraging."
     },
     "making-friends": {
-      "title": "Making friends",
-      "description": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities.",
-      "sophieRole": "A friendly person at the park",
-      "userRole": "A person looking to make new friends",
-      "topic": "Making friends",
-      "context": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities."
+      "title": "Se faire des amis",
+      "description": "Sophie et l'utilisateur parlent de leurs loisirs et activités pour trouver des intérêts communs.",
+      "sophieRole": "Une voisine joyeuse",
+      "userRole": "Une nouvelle personne dans le quartier",
+      "topic": "Se faire des amis",
+      "context": "You are a cheerful neighbor meeting someone new. Talk about your hobbies and ask the user about theirs. Try to find common interests and suggest doing an activity together."
     },
     "basic-emotions": {
-      "title": "Basic emotions",
-      "description": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired.",
-      "sophieRole": "A friend meeting at the park",
-      "userRole": "A friend sharing how they feel today",
-      "topic": "Basic emotions",
-      "context": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired. Keep the vocabulary simple and focus on basic expressions of feeling."
+      "title": "Émotions de base",
+      "description": "Deux amis se retrouvent au parc et parlent de leurs émotions – content, triste ou fatigué.",
+      "sophieRole": "Une amie attentionnée au parc",
+      "userRole": "Un ami qui visite le parc",
+      "topic": "Émotions de base",
+      "context": "You are a caring friend meeting at the park. Ask how your friend is feeling today. Share your own emotions and respond warmly to what they say. Use simple emotion words like happy, sad, tired, excited."
+    },
+    "introducing-family": {
+      "title": "Présenter sa famille",
+      "description": "Sophie vous pose des questions sur votre famille et vous présentez les membres de votre famille avec leurs métiers et relations.",
+      "sophieRole": "Une amie curieuse qui pose des questions sur votre famille",
+      "userRole": "Une personne qui présente sa famille",
+      "topic": "Présenter sa famille",
+      "context": "Sophie asks user about their family and user introduces their family members, including their occupations and relationships.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hows-you-day": {
+      "title": "Comment s'est passée ta journée ?",
+      "description": "Sophie vous pose des questions sur votre routine quotidienne et ce que vous avez fait aujourd'hui.",
+      "sophieRole": "Une partenaire curieuse et amicale",
+      "userRole": "Une personne qui parle de sa journée",
+      "topic": "Comment s'est passée ta journée ?",
+      "context": "Sophie asks user about their daily routine and what they did today, practicing talking about daily activities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hobbies": {
+      "title": "Loisirs",
+      "description": "Deux personnes se rencontrent lors d'un événement et parlent de leurs loisirs, couleurs, plats, animaux et sports préférés.",
+      "sophieRole": "Un partenaire de conversation amical",
+      "userRole": "Un ami qui parle de ses intérêts",
+      "topic": "Loisirs",
+      "context": "Two people meet at a social event and talk about their favorite hobbies, colors, foods, animals, and sports.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "counting-apples": {
+      "title": "Compter les pommes",
+      "description": "Le client achète trois pommes au marché et demande le prix, en pratiquant le comptage et les quantités.",
+      "sophieRole": "Un vendeur sympathique du marché",
+      "userRole": "Un client au marché",
+      "topic": "Compter les pommes",
+      "context": "The customer buy three apples at the market and asks for the price, practicing counting and quantities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "first-day-of-class": {
+      "title": "Premier jour de classe",
+      "description": "Un élève décrit avec enthousiasme sa première journée de cours.",
+      "sophieRole": "Un camarade de classe curieux",
+      "userRole": "Un élève lors de son premier jour",
+      "topic": "Premier jour de classe",
+      "context": "The student introduces themselves to the Sophie (teacher and classmates) on the first day of class they share their name, age, where they are from and their favorite subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-subjects": {
+      "title": "Matières préférées",
+      "description": "Deux élèves discutent de leurs matières préférées et pourquoi ils les aiment.",
+      "sophieRole": "Un camarade qui aime parler de matières",
+      "userRole": "Un élève qui partage ses matières préférées",
+      "topic": "Matières préférées",
+      "context": "Two classmate discuss their favorite school subject and share what they like them.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-food": {
+      "title": "Plat préféré",
+      "description": "Deux amis parlent de leurs plats préférés et échangent des recommandations.",
+      "sophieRole": "Un ami qui adore parler de nourriture",
+      "userRole": "Un ami qui partage ses plats préférés",
+      "topic": "Plat préféré",
+      "context": "Two friends share what they ate today, then talk about their favorite foods.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "basic-shopping": {
+      "title": "Courses de base",
+      "description": "Un client achète des articles de base dans un magasin.",
+      "sophieRole": "Un vendeur serviable",
+      "userRole": "Un client qui fait ses courses",
+      "topic": "Courses de base",
+      "context": "The customer is shopping at a supermarket, asking for prices of fruits and where to find certain items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "favorite-music": {
+      "title": "Musique préférée",
+      "description": "Deux amis parlent de leur musique préférée et pourquoi ils aiment certains genres.",
+      "sophieRole": "Un passionné de musique",
+      "userRole": "Un ami qui partage ses goûts musicaux",
+      "topic": "Musique préférée",
+      "context": "Two friends ask and answer simple questions about their favorite music and genre.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "morning-chat": {
+      "title": "Discussion matinale",
+      "description": "Deux amis bavardent le matin sur leurs projets pour la journée.",
+      "sophieRole": "Un ami joyeux le matin",
+      "userRole": "Un ami qui partage ses projets du matin",
+      "topic": "Discussion matinale",
+      "context": "Two people have a casual morning conversation about how they slept, their plans for the day and lighthearted topic.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "asking-for-directions": {
+      "title": "Demander son chemin",
+      "description": "Une personne demande son chemin à un habitant local.",
+      "sophieRole": "Un habitant local serviable",
+      "userRole": "Un touriste qui demande son chemin",
+      "topic": "Demander son chemin",
+      "context": "A lost tourist in the subway asks a local for directions to their hotel, clarifying the best route to take.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-at-a-park": {
+      "title": "Rencontre au parc",
+      "description": "Deux amis se retrouvent au parc et discutent de leur vie.",
+      "sophieRole": "Un ami qui attend au parc",
+      "userRole": "Un ami qui arrive au parc",
+      "topic": "Rencontre au parc",
+      "context": "Two friends bump into each other at a park and talk about their day and recent activities, planning their next meet up.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "buying-ice-cream": {
+      "title": "Acheter une glace",
+      "description": "Un client commande sa glace préférée à un stand de glaces.",
+      "sophieRole": "Un vendeur de glaces sympathique",
+      "userRole": "Un client qui achète une glace",
+      "topic": "Acheter une glace",
+      "context": "The customer buy dessert and chooses between flavors, asking what options are available and confirming their order.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "ordering-food": {
+      "title": "Commander à manger",
+      "description": "Un client commande un repas dans un restaurant.",
+      "sophieRole": "Un serveur attentif",
+      "userRole": "Un client affamé",
+      "topic": "Commander à manger",
+      "context": "The customer asks for seating for two people and orders food at a restaurant.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "checking-out": {
+      "title": "Passer en caisse",
+      "description": "Un client paie ses achats à la caisse.",
+      "sophieRole": "Un caissier aimable",
+      "userRole": "Un client à la caisse",
+      "topic": "Passer en caisse",
+      "context": "The customer is checking out at a store, asking for the total price and whether they can pay with a card.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "getting-to-work": {
+      "title": "Aller au travail",
+      "description": "Deux collègues discutent du trajet et de la circulation en allant au travail.",
+      "sophieRole": "Un collègue bavard",
+      "userRole": "Un travailleur en route vers le bureau",
+      "topic": "Aller au travail",
+      "context": "Two colleagues talk about how they travel to work, sharing simple details about their commute.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "daily-routines": {
+      "title": "Routines quotidiennes",
+      "description": "Deux amis parlent de leurs habitudes et routines quotidiennes.",
+      "sophieRole": "Un ami qui aime parler de sa journée type",
+      "userRole": "Un ami qui partage sa routine",
+      "topic": "Routines quotidiennes",
+      "context": "Two people exchange simple question about their daily routines, sharing details about their activities and habits.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "weekend-plans": {
+      "title": "Plans du week-end",
+      "description": "Deux amis discutent et planifient leur week-end ensemble.",
+      "sophieRole": "Un ami plein d'idées pour le week-end",
+      "userRole": "Un ami qui fait des plans pour le week-end",
+      "topic": "Plans du week-end",
+      "context": "Two people discuss their plans for the weekend, sharing idea for activities or events they might attend.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exchanging-compliments": {
+      "title": "Échanger des compliments",
+      "description": "Deux amis échangent des compliments.",
+      "sophieRole": "Un interlocuteur bienveillant",
+      "userRole": "Une personne qui échange des compliments",
+      "topic": "Échanger des compliments",
+      "context": "A couple sits together on the couch, exchanging sweet and basic compliments.. Be charming and genuine. Express emotions naturally."
+    },
+    "buying-a-movie": {
+      "title": "Acheter des billets de cinéma",
+      "description": "Un client achète des billets de cinéma et discute du choix de film.",
+      "sophieRole": "Un caissier sympathique au cinéma",
+      "userRole": "Un cinéphile achetant des billets",
+      "topic": "Acheter des billets de cinéma",
+      "context": "A moviegoer buys a ticket and asks the ticket seller for recommendations available genres and showtimes.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "what-to-get": {
+      "title": "Que choisir ?",
+      "description": "Deux amis décident quoi commander au restaurant.",
+      "sophieRole": "Un ami indécis",
+      "userRole": "Un ami qui aide à choisir",
+      "topic": "Que choisir ?",
+      "context": "The customer is deciding between two dishes that both sound good and asks the waiter for insights and recommendations.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "talking-about-life": {
+      "title": "Parler de la vie",
+      "description": "Deux amis ont une conversation profonde sur la vie et leurs expériences.",
+      "sophieRole": "Un ami réfléchi",
+      "userRole": "Un ami qui parle de sa vie",
+      "topic": "Parler de la vie",
+      "context": "Two friends talk about life before going to sleep.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "shopping-for-clothes": {
+      "title": "Acheter des vêtements",
+      "description": "Un client cherche de nouveaux vêtements et demande l'aide d'un vendeur.",
+      "sophieRole": "Un conseiller mode avec du style",
+      "userRole": "Un client qui achète des vêtements",
+      "topic": "Acheter des vêtements",
+      "context": "The customer is looking for a sweater, asking about available sizes and colors, and deciding on the one they want to buy.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "exchange-student": {
+      "title": "Étudiant d'échange",
+      "description": "Un étudiant d'échange raconte ses expériences à l'étranger.",
+      "sophieRole": "Un nouveau camarade international",
+      "userRole": "Un étudiant d'échange",
+      "topic": "Étudiant d'échange",
+      "context": "A new exchange student introduces themselves to their classmates. they share their name, home country and why they are excited to study in a new country.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "food-delivery": {
+      "title": "Livraison de nourriture",
+      "description": "Un client commande de la nourriture en livraison et discute de la commande.",
+      "sophieRole": "Un livreur sympathique",
+      "userRole": "Un client affamé chez lui",
+      "topic": "Livraison de nourriture",
+      "context": "The customer calls a restaurant to order food, asking for the menu, confirms their order and asks how long the wait will be.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "finally-home": {
+      "title": "Enfin à la maison",
+      "description": "Deux colocataires se détendent après une longue journée de travail.",
+      "sophieRole": "Un colocataire fatigué",
+      "userRole": "Une personne qui rentre chez elle",
+      "topic": "Enfin à la maison",
+      "context": "User comes home from work and shares details about their day with Sophie, who listens and responds supportively.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "dream-destination": {
+      "title": "Destination de rêve",
+      "description": "Deux amis parlent de leurs destinations de rêve et pourquoi ils veulent y aller.",
+      "sophieRole": "Un ami passionné de voyages",
+      "userRole": "Un ami qui rêve de voyager",
+      "topic": "Destination de rêve",
+      "context": "Two friends talk about their dream travel destinations and why they want to visit them.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "hotel-booking": {
+      "title": "Réservation d'hôtel",
+      "description": "Un client réserve une chambre d'hôtel et demande les options disponibles.",
+      "sophieRole": "Un réceptionniste d'hôtel professionnel",
+      "userRole": "Un voyageur réservant un hôtel",
+      "topic": "Réservation d'hôtel",
+      "context": "A traveler books a hotel room, asking about availability, room types, pricing and amenities.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "first-date": {
+      "title": "Premier rendez-vous",
+      "description": "Deux personnes se rencontrent pour un premier rendez-vous romantique.",
+      "sophieRole": "Une personne charmante au premier rendez-vous",
+      "userRole": "Une personne nerveuse au premier rendez-vous",
+      "topic": "Premier rendez-vous",
+      "context": "Two people on their first date share what they like to do ad talk about their interests while navigating a little nervousness.. Be charming and genuine. Express emotions naturally."
+    },
+    "bus-fare": {
+      "title": "Tarif du bus",
+      "description": "Un passager demande au chauffeur le prix et l'itinéraire du bus.",
+      "sophieRole": "Un chauffeur de bus serviable",
+      "userRole": "Un passager dans le bus",
+      "topic": "Tarif du bus",
+      "context": "A passenger ask about the bus fare, where the bus stops and how long the ride will take to reach their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "favorite-ways-to-relax": {
+      "title": "Façons préférées de se détendre",
+      "description": "Deux amis partagent leurs façons préférées de se détendre.",
+      "sophieRole": "Un ami détendu",
+      "userRole": "Une personne cherchant des conseils de détente",
+      "topic": "Façons préférées de se détendre",
+      "context": "Two friends talk about their favorite ways to relax, like reading, sports, or gaming and share tips with each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "grocery-shopping": {
+      "title": "Courses alimentaires",
+      "description": "Un client fait ses courses au supermarché et demande de l'aide.",
+      "sophieRole": "Un employé de supermarché serviable",
+      "userRole": "Un client faisant ses courses",
+      "topic": "Courses alimentaires",
+      "context": "The customer is buying ingredients for a recipe and asks for directions to the vegetable section.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "trying-local-food": {
+      "title": "Goûter la cuisine locale",
+      "description": "Un touriste goûte la cuisine locale et demande des recommandations au serveur.",
+      "sophieRole": "Un serveur local fier",
+      "userRole": "Un touriste curieux",
+      "topic": "Goûter la cuisine locale",
+      "context": "A tourist tries local food for the first time, asking about the ingredients and sharing their reaction to tasting these new dishes.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "advice-from-grandpa": {
+      "title": "Conseils de grand-père",
+      "description": "Un petit-fils écoute les conseils et la sagesse de son grand-père.",
+      "sophieRole": "Un grand-père sage",
+      "userRole": "Un petit-fils cherchant des conseils",
+      "topic": "Conseils de grand-père",
+      "context": "The grandchild seeks advice from grandpa on life decisions and challenges, engaging in a thoughtful conversation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "first-day-at-work": {
+      "title": "Premier jour de travail",
+      "description": "Un nouvel employé vit son premier jour et rencontre ses collègues.",
+      "sophieRole": "Un chef d'équipe chaleureux",
+      "userRole": "Un nouvel employé nerveux",
+      "topic": "Premier jour de travail",
+      "context": "A new employee begins their first day at work, getting instructions on tasks, asking about their main responsibilities and clarifying expectations.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cute-stranger": {
+      "title": "Bel inconnu",
+      "description": "Deux inconnus entament une conversation spontanée dans un lieu public.",
+      "sophieRole": "Un inconnu charmant",
+      "userRole": "Une personne curieuse",
+      "topic": "Bel inconnu",
+      "context": "A playful passenger flirts with a cute stranger at the train station, trying to strike up a conversation and ask for their number.. Be charming and genuine. Express emotions naturally."
+    },
+    "taxi-ride": {
+      "title": "Trajet en taxi",
+      "description": "Un passager prend un taxi et discute avec le chauffeur de la ville.",
+      "sophieRole": "Un chauffeur de taxi bavard",
+      "userRole": "Un passager dans le taxi",
+      "topic": "Trajet en taxi",
+      "context": "A passenger orders a taxi to go back to the hotel and has a fun chat with the driver about the city.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "buying-train-tickets": {
+      "title": "Acheter des billets de train",
+      "description": "Un voyageur achète des billets de train au guichet et demande les correspondances.",
+      "sophieRole": "Un agent de guichet expérimenté",
+      "userRole": "Un voyageur qui a besoin de billets",
+      "topic": "Acheter des billets de train",
+      "context": "A passenger buys train tickets, asking how many they need, how much it costs and confirming their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "company-dinner": {
+      "title": "Dîner d'entreprise",
+      "description": "Des collègues discutent lors d'un dîner d'entreprise de travail et sujets personnels.",
+      "sophieRole": "Un collègue sociable",
+      "userRole": "Un nouvel employé au dîner d'entreprise",
+      "topic": "Dîner d'entreprise",
+      "context": "An employee introduces themselves at a company dinner, talking about their job, work schedule and hobbies outside of work to get to know their collogues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "new-dog": {
+      "title": "Nouveau chien",
+      "description": "Un propriétaire de chien raconte avec enthousiasme son nouvel animal.",
+      "sophieRole": "Un voisin amoureux des animaux",
+      "userRole": "Un fier nouveau propriétaire de chien",
+      "topic": "Nouveau chien",
+      "context": "A pet owner talks with their friend about their new puppy, sharing stories about its adorable habits but recently naughty behavior.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-souvenirs": {
+      "title": "Acheter des souvenirs",
+      "description": "Un touriste achète des souvenirs et négocie gentiment le prix.",
+      "sophieRole": "Un charmant vendeur de souvenirs",
+      "userRole": "Un touriste en quête de cadeaux",
+      "topic": "Acheter des souvenirs",
+      "context": "The customer is looking for a souvenir to bring back as a gift. they ask for recommendations and discuss the price of items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "meeting-someone-new": {
+      "title": "Rencontrer quelqu'un",
+      "description": "Deux personnes se rencontrent pour la première fois et échangent.",
+      "sophieRole": "Une personne ouverte et sympathique",
+      "userRole": "Une personne qui rencontre quelqu'un",
+      "topic": "Rencontrer quelqu'un",
+      "context": "A party attendee meets  charming stranger for the first time, exchanging introduction and having a lighthearted conversation.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "booking-a-flight": {
+      "title": "Réserver un vol",
+      "description": "Un voyageur réserve un vol et discute des options avec l'agent.",
+      "sophieRole": "Un agent de voyage efficace",
+      "userRole": "Un voyageur réservant un vol",
+      "topic": "Réserver un vol",
+      "context": "A traveler books a flight, asking about flight details like timing, baggage allowance, and seat options.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-a-celebrity": {
+      "title": "Rencontrer une célébrité",
+      "description": "Un fan rencontre par hasard une célébrité et essaie d'engager la conversation.",
+      "sophieRole": "Une célébrité détendue",
+      "userRole": "Un fan enthousiaste",
+      "topic": "Rencontrer une célébrité",
+      "context": "A fan meets their favorite celebrity at a meet and greet and tries to stay calm while expressing their excitement for the celebrity's work.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "inviting-someone-out": {
+      "title": "Inviter quelqu'un",
+      "description": "Vous invitez une amie à sortir ou à assister à un événement, en suggérant des activités amusantes et en vérifiant sa disponibilité.",
+      "sophieRole": "Une amie invitée à sortir",
+      "userRole": "Un ami",
+      "topic": "Inviter quelqu'un",
+      "context": "You invite a friend to hang out or attend an event, suggesting fun activities and checking their availability.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "tour-guide-recommendations": {
+      "title": "Recommandations du guide",
+      "description": "Un voyageur demande à une guide touristique les meilleurs endroits à visiter en ville, comment s'y rendre et d'autres conseils locaux.",
+      "sophieRole": "Une guide touristique expérimentée et amicale",
+      "userRole": "Un touriste curieux",
+      "topic": "Recommandations du guide",
+      "context": "A traveler asks a tour guide about the best places to visit in the city, how to get there, and other local tips.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "captivating-classmate": {
+      "title": "Camarade captivant",
+      "description": "Un étudiant flirte avec une camarade de classe mignonne qu'il rencontre à la bibliothèque, utilisant le livre qu'elle lit pour entamer la conversation.",
+      "sophieRole": "Une camarade de classe mignonne qui lit à la bibliothèque",
+      "userRole": "Un élève curieux",
+      "topic": "Camarade captivant",
+      "context": "A student flirts with a cute classmate they meet in the library, using the book they're reading as a conversation starter.. Be charming and genuine. Express emotions naturally."
+    },
+    "catching-up": {
+      "title": "Prendre des nouvelles",
+      "description": "Deux vieux amis se retrouvent et racontent ce qui s'est passé dans leurs vies.",
+      "sophieRole": "Un vieil ami qui partage des nouvelles",
+      "userRole": "Un ami qui prend des nouvelles",
+      "topic": "Prendre des nouvelles",
+      "context": "Two old friends reconnect and catch up on life updates, discussing what they've been doing recently.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exploring-local-cuisine": {
+      "title": "Explorer la cuisine locale",
+      "description": "Un visiteur demande à une habitante les plats locaux populaires et où les essayer. Ils discutent des spécialités culinaires et des incontournables.",
+      "sophieRole": "Une habitante amicale qui connaît les meilleurs endroits pour manger",
+      "userRole": "Un ami qui veut essayer de nouvelles choses",
+      "topic": "Explorer la cuisine locale",
+      "context": "A visitor asks a local resident about popular local dishes and where to try them. They discuss cultural foods and must-try specialties.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "favorite-music-artist": {
+      "title": "Artiste musical préféré",
+      "description": "Un fan aperçoit son artiste musicale célèbre préférée et lui demande un autographe, exprimant son admiration et partageant à quel point sa musique compte pour lui.",
+      "sophieRole": "Une artiste musicale célèbre lors d'une rencontre avec les fans",
+      "userRole": "Un ami aux goûts musicaux différents",
+      "topic": "Artiste musical préféré",
+      "context": "A fan spots their favorite famous musical artist and asks for an autograph, expressing admiration and sharing how much their music means to them.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "at-the-bookstore": {
+      "title": "À la librairie",
+      "description": "Un client cherche les meilleurs livres à acheter et demande des recommandations à la libraire, entamant une discussion sur son livre préféré.",
+      "sophieRole": "Une libraire amicale",
+      "userRole": "Un lecteur à la recherche de quelque chose de nouveau",
+      "topic": "À la librairie",
+      "context": "A customer is looking for the best books to buy and asks the shopkeeper for recommendations, getting into a discussion of their favorite book.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "mother-in-low-visit": {
+      "title": "Visite chez la belle-mère",
+      "description": "Un gendre ou une belle-fille rend visite à sa belle-mère et a une conversation polie sur comment elle va et comment va son petit-fils.",
+      "sophieRole": "Une belle-mère attentionnée",
+      "userRole": "Un gendre/belle-fille nerveux",
+      "topic": "Visite chez la belle-mère",
+      "context": "A son or daughter-in-law visits their mother-in-law and has a polite conversation about how she is doing and how her grandson is.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-planning": {
+      "title": "Planification de carrière",
+      "description": "Un demandeur d'emploi discute de ses objectifs et de ses plans de carrière avec une conseillère d'orientation, cherchant des conseils sur ses prochaines étapes et ses objectifs à long terme.",
+      "sophieRole": "Une conseillère d'orientation expérimentée",
+      "userRole": "Une personne cherchant des conseils de carrière",
+      "topic": "Planification de carrière",
+      "context": "A job seeker discusses their career goals and plans with a career advisor, seeking advice on their next steps and long-term objectives.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cooking-together": {
+      "title": "Cuisiner ensemble",
+      "description": "Deux amis cuisinent ensemble en suivant une recette étape par étape.",
+      "sophieRole": "Un cuisinier amateur passionné",
+      "userRole": "Un ami qui veut apprendre à cuisiner",
+      "topic": "Cuisiner ensemble",
+      "context": "Two friends plan to cook a new dish together, discussing what ingredients they need to buy and how they'll prepare the meal.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "bonding-over-a-band": {
+      "title": "Liés par un groupe",
+      "description": "Deux personnes deviennent amies grâce à leur amour pour le même groupe.",
+      "sophieRole": "Un fan passionné du groupe",
+      "userRole": "Un nouveau fan du groupe",
+      "topic": "Liés par un groupe",
+      "context": "Two concertgoers meet and bond over their shared love for the band performing, talking about their favorite songs.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "rooftop-bar": {
+      "title": "Bar sur le toit",
+      "description": "Deux amis dégustent des boissons dans un bar sur le toit et discutent.",
+      "sophieRole": "Un ami sociable sur le toit",
+      "userRole": "Un ami profitant de la soirée",
+      "topic": "Bar sur le toit",
+      "context": "Two people meet at a rooftop bar. User buys a drink for Sophie and strikes up a friendly conversation, asking abut their evening.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "therapy-session": {
+      "title": "Séance de thérapie",
+      "description": "Une personne confrontée à beaucoup de pression et de stress parle à une amie qui l'écoute avec empathie et lui offre réconfort et réassurance.",
+      "sophieRole": "Une amie attentionnée et empathique",
+      "userRole": "Un patient qui s'ouvre",
+      "topic": "Séance de thérapie",
+      "context": "A person facing a lot of pressure and stress talks to a friend who listens empathetically and offers comfort and reassurance.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-a-gift": {
+      "title": "Acheter un cadeau",
+      "description": "Un client achète un cadeau pour son partenaire et demande à une employée du magasin des suggestions basées sur ce que le client pense que son partenaire aimerait.",
+      "sophieRole": "Une employée serviable de la boutique de cadeaux",
+      "userRole": "Un client cherchant un cadeau",
+      "topic": "Acheter un cadeau",
+      "context": "A customer is buying a gift for their partner and asks a store employee for suggestions based on what the customer thinks their partner might like.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "tourist-attraction": {
+      "title": "Attraction touristique",
+      "description": "Un touriste visite une attraction et parle avec un guide.",
+      "sophieRole": "Un guide touristique passionné",
+      "userRole": "Un touriste curieux",
+      "topic": "Attraction touristique",
+      "context": "A tourist buys tickets to a famous landmark and ask for information about its history and interesting facts about the site.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "stuck-in-an-elevator": {
+      "title": "Coincés dans l'ascenseur",
+      "description": "Vous et la personne que vous aimez secrètement êtes coincés ensemble dans un ascenseur.",
+      "sophieRole": "La personne que vous aimez secrètement, coincée dans l'ascenseur avec vous",
+      "userRole": "Une personne calme qui essaie d'aider",
+      "topic": "Coincés dans l'ascenseur",
+      "context": "You and your crush are stuck in an elevator together.. Be charming and genuine. Express emotions naturally."
+    },
+    "heartfelt-confession": {
+      "title": "Déclaration sincère",
+      "description": "Un admirateur trouve le courage d'avouer ses sentiments à la personne qu'il aime secrètement, choisissant ses mots avec soin.",
+      "sophieRole": "La personne que vous admirez secrètement",
+      "userRole": "Un admirateur",
+      "topic": "Déclaration sincère",
+      "context": "An admirer builds up the courage to confess their feelings to their crush, choosing their words carefully.. Be charming and genuine. Express emotions naturally."
+    },
+    "homework-help": {
+      "title": "Aide aux devoirs",
+      "description": "Un élève demande à la professeure des éclaircissements sur ses devoirs et la date limite d'un projet.",
+      "sophieRole": "Une professeure encourageante et patiente",
+      "userRole": "Un élève qui a besoin d'aide",
+      "topic": "Aide aux devoirs",
+      "context": "A student asks the teacher for clarification on homework and a project due date.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "deciding-what-to-eat": {
+      "title": "Que mange-t-on ?",
+      "description": "Deux amis n'arrivent pas à décider quoi manger.",
+      "sophieRole": "Un ami difficile",
+      "userRole": "Un ami affamé",
+      "topic": "Que mange-t-on ?",
+      "context": "A couple decides where to eat, discussing restaurant and cuisine preferences. they share likes and disliked until thy finally come to an agreement.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "scary-ride": {
+      "title": "Manège effrayant",
+      "description": "Deux amis au parc d'attractions — l'un est enthousiaste, l'autre a peur.",
+      "sophieRole": "Un ami aventurier",
+      "userRole": "Un ami craintif",
+      "topic": "Manège effrayant",
+      "context": "Two friends at an amusement park discuss what to do next, debating whether to go on the big scary ride or choose something less intense.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "running-late": {
+      "title": "Arriver en retard",
+      "description": "Un élève explique à la professeure pourquoi il est en retard d'une heure en classe. La professeure pose des questions tandis que l'élève s'excuse et donne des prétextes.",
+      "sophieRole": "Une professeure stricte mais compréhensive",
+      "userRole": "Une personne en retard",
+      "topic": "Arriver en retard",
+      "context": "A student is explaining to the teacher why they are an hour late to class. The teacher asks questions while the student apologizes and makes excuses.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "stomach-pain": {
+      "title": "Mal au ventre",
+      "description": "Un patient parle à une infirmière de son mal de ventre, discutant des raisons possibles et des symptômes pour identifier la cause.",
+      "sophieRole": "Une infirmière attentionnée et attentive",
+      "userRole": "Un patient souffrant du ventre",
+      "topic": "Mal au ventre",
+      "context": "A patient talks to a nurse about their stomach hurting, discussing possible reasons and symptoms to identify the cause.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "lost-wallet": {
+      "title": "Portefeuille perdu",
+      "description": "Un touriste qui a perdu son portefeuille le décrit à une agente de police, fournissant des détails pour aider à le localiser.",
+      "sophieRole": "Une agente de police serviable au poste",
+      "userRole": "Une personne cherchant son portefeuille",
+      "topic": "Portefeuille perdu",
+      "context": "A tourist who lost their wallet describes it to a police officer, providing details to help locate it.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "bad-grade": {
+      "title": "Mauvaise note",
+      "description": "Un élève a reçu une mauvaise note et demande à la professeure ce qu'il a fait de mal. Ils discutent de la manière de s'améliorer pendant que l'élève exprime sa frustration face à la difficulté de la matière.",
+      "sophieRole": "Une professeure juste et constructive",
+      "userRole": "Un élève avec une mauvaise note",
+      "topic": "Mauvaise note",
+      "context": "A student received a bad grade and asks the teacher what they did wrong. They discuss how to improve while the student expresses frustration over the difficulty of the subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "gossiping": {
+      "title": "Potins",
+      "description": "Deux amis bavardent sur les nouvelles de leur cercle social.",
+      "sophieRole": "Un ami bavard",
+      "userRole": "Un auditeur curieux",
+      "topic": "Potins",
+      "context": "two friends gossip about the latest drama involving a mutual friend and share their reactions to the situation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "ordering-the-wrong-item": {
+      "title": "Mauvaise commande",
+      "description": "Un client réalise qu'il a commandé le mauvais plat et doit expliquer son erreur à la serveuse.",
+      "sophieRole": "Une serveuse patiente et professionnelle",
+      "userRole": "Un client mécontent",
+      "topic": "Mauvaise commande",
+      "context": "A customer realizes they ordered the wrong dish and must explain their mistake to the waiter.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "new-computer": {
+      "title": "Nouvel ordinateur",
+      "description": "Une personne achète un nouvel ordinateur et demande conseil au vendeur.",
+      "sophieRole": "Un vendeur expert en technologie",
+      "userRole": "Un client cherchant un ordinateur",
+      "topic": "Nouvel ordinateur",
+      "context": "The customer is buying a new computer for their tech  job. they ask about features, prices ad recommendations for their specific needs.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "parent-teacher-conference": {
+      "title": "Réunion parents-professeurs",
+      "description": "Un parent discute poliment des difficultés de son enfant en mathématiques avec la professeure.",
+      "sophieRole": "Une professeure de mathématiques encourageante",
+      "userRole": "Un parent inquiet",
+      "topic": "Réunion parents-professeurs",
+      "context": "A parent politely discusses their child's struggles in math with the teacher.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "weekend-getaway": {
+      "title": "Escapade du week-end",
+      "description": "Deux amis planifient ensemble une escapade de week-end spontanée.",
+      "sophieRole": "Un ami aventurier",
+      "userRole": "Un ami qui doit être convaincu",
+      "topic": "Escapade du week-end",
+      "context": "A couple plans a romantic weekend getaway, discussing destinations, activities and ways to make the trip special.. Be charming and genuine. Express emotions naturally."
+    },
+    "dance-class": {
+      "title": "Cours de danse",
+      "description": "Un débutant assiste à son premier cours de danse et apprend les pas de base.",
+      "sophieRole": "Un professeur de danse patient",
+      "userRole": "Un débutant nerveux en danse",
+      "topic": "Cours de danse",
+      "context": "A friend persuades their hesitant and awkward friend to join a dance class, highlighting how fun and exciting it could be.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "sharing-fitness-plans": {
+      "title": "Partager ses plans fitness",
+      "description": "Deux amis partagent leurs plans de fitness et se motivent mutuellement.",
+      "sophieRole": "Un ami sportif motivé",
+      "userRole": "Une personne qui commence le fitness",
+      "topic": "Partager ses plans fitness",
+      "context": "Two friends discuss their workout routines, health goals and ways to eat healthy while motivating each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "email-disaster": {
+      "title": "Catastrophe par e-mail",
+      "description": "Un employé envoie accidentellement un e-mail inapproprié ou embarrassant à toute l'entreprise et doit expliquer l'erreur à sa patronne, s'excusant et proposant une solution.",
+      "sophieRole": "Une patronne sévère mais compréhensive",
+      "userRole": "Une personne paniquée",
+      "topic": "Catastrophe par e-mail",
+      "context": "An employee accidentally sends an inappropriate or embarrassing email to the whole company and must explain the mistake to their boss, apologizing and proposing a solution.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "bargaining-at-the-market": {
+      "title": "Marchander au marché",
+      "description": "Un client négocie le prix au marché de manière amicale mais ferme.",
+      "sophieRole": "Un vendeur de marché tenace",
+      "userRole": "Un négociateur habile",
+      "topic": "Marchander au marché",
+      "context": "A customer haggles with a market vendor over the price of fresh produce, trying to get a good deal.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "discussing-a-movie-ending": {
+      "title": "Discuter de la fin du film",
+      "description": "Deux amis discutent vivement de la fin d'un film.",
+      "sophieRole": "Un ami avec un avis différent",
+      "userRole": "Un cinéphile défendant son avis",
+      "topic": "Discuter de la fin du film",
+      "context": "Two friends passionately discuss a surprising movie ending, sharing their theories and opinions.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "missed-the-last-bus": {
+      "title": "Rater le dernier bus",
+      "description": "Une personne a raté le dernier bus et réfléchit à comment rentrer.",
+      "sophieRole": "Un ami compatissant",
+      "userRole": "Une personne bloquée",
+      "topic": "Rater le dernier bus",
+      "context": "A stranded traveler who missed the last bus asks a local for help finding an alternative way home.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "clean-your-room": {
+      "title": "Range ta chambre !",
+      "description": "Un parent demande à son enfant de ranger sa chambre.",
+      "sophieRole": "Un parent ferme mais aimant",
+      "userRole": "Un enfant réticent",
+      "topic": "Range ta chambre !",
+      "context": "A parent tries to convince their messy teenager to clean their room, using various persuasion tactics.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "forgot-a-birthday": {
+      "title": "Anniversaire oublié",
+      "description": "Une personne a oublié un anniversaire important et essaie de se rattraper.",
+      "sophieRole": "Une personne blessée dont l'anniversaire a été oublié",
+      "userRole": "Une personne qui veut s'excuser",
+      "topic": "Anniversaire oublié",
+      "context": "A person realizes they forgot their friend's birthday and tries to make it up to them with apologies and plans.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "picky-eater": {
+      "title": "Mangeur difficile",
+      "description": "Un mangeur difficile essaie de trouver quelque chose qu'il aime au menu.",
+      "sophieRole": "Un serveur patient",
+      "userRole": "Un mangeur difficile",
+      "topic": "Mangeur difficile",
+      "context": "A friend tries to convince a picky eater to try a new and unfamiliar dish at a restaurant.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "meeting-the-parents": {
+      "title": "Rencontrer les parents",
+      "description": "Une personne rencontre pour la première fois les parents de son partenaire.",
+      "sophieRole": "Des parents stricts mais chaleureux",
+      "userRole": "Une personne nerveuse rendant visite aux parents",
+      "topic": "Rencontrer les parents",
+      "context": "A person meets their partner's parents for the first time, trying to make a great impression while navigating awkward questions.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "storytelling": {
+      "title": "Raconter des histoires",
+      "description": "Des amis racontent à tour de rôle des histoires drôles et passionnantes.",
+      "sophieRole": "Un conteur talentueux",
+      "userRole": "Un auditeur attentif",
+      "topic": "Raconter des histoires",
+      "context": "Two friends take turns telling each other interesting or funny stories from their past experiences.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "spontaneous-road-trip": {
+      "title": "Road trip spontané",
+      "description": "Deux amis décident spontanément de faire un road trip et planifient en voiture.",
+      "sophieRole": "Un aventurier spontané",
+      "userRole": "Un ami qui se laisse convaincre",
+      "topic": "Road trip spontané",
+      "context": "A friend tries to convince another to drop everything and go on a spontaneous road trip this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "hard-to-get": {
+      "title": "Jouer les inaccessibles",
+      "description": "Une personne essaie d'impressionner une autre qui joue les difficiles.",
+      "sophieRole": "Une personne mystérieuse",
+      "userRole": "Une personne charmante",
+      "topic": "Jouer les inaccessibles",
+      "context": "A person playfully tries to get the attention of someone who is playing hard to get.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "online-vs-in-person-work": {
+      "title": "Télétravail vs. présentiel",
+      "description": "Deux collègues débattent des avantages et inconvénients du télétravail et du présentiel.",
+      "sophieRole": "Un partisan du travail au bureau",
+      "userRole": "Un partisan du télétravail",
+      "topic": "Télétravail vs. présentiel",
+      "context": "Two colleagues debate whether remote work or in-person office work is better, presenting arguments for both sides.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "cheering-up-a-friend": {
+      "title": "Remonter le moral",
+      "description": "Un ami essaie de remonter le moral et de consoler un ami triste.",
+      "sophieRole": "Un ami triste",
+      "userRole": "Un ami attentionné",
+      "topic": "Remonter le moral",
+      "context": "A caring friend tries to cheer up their friend who is feeling down, offering support and encouragement.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "debating-the-best-sports-player": {
+      "title": "Le meilleur sportif",
+      "description": "Deux fans de sport débattent avec passion du meilleur sportif de tous les temps.",
+      "sophieRole": "Un fan de sport passionné",
+      "userRole": "Un fan avec un avis différent",
+      "topic": "Le meilleur sportif",
+      "context": "Two sports fans passionately debate who the greatest athlete of all time is, defending their picks.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "company-meeting": {
+      "title": "Réunion d'entreprise",
+      "description": "Des employés présentent des idées et discutent de projets lors d'une réunion.",
+      "sophieRole": "Un chef de projet déterminé",
+      "userRole": "Un employé présentant des idées",
+      "topic": "Réunion d'entreprise",
+      "context": "An employee presents their ideas during a team meeting, responding to questions and feedback from colleagues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "intense-argument": {
+      "title": "Discussion intense",
+      "description": "Deux personnes ont une dispute animée sur un sujet controversé.",
+      "sophieRole": "Une interlocutrice passionnée",
+      "userRole": "Une personne avec un avis fort",
+      "topic": "Discussion intense",
+      "context": "A couple gets into a heated but ultimately productive argument about a misunderstanding, working through their emotions.. Be charming and genuine. Express emotions naturally."
+    },
+    "dreaming-big": {
+      "title": "Rêver grand",
+      "description": "Deux amis parlent de leurs grands rêves et ambitions.",
+      "sophieRole": "Un ami inspirant",
+      "userRole": "Un rêveur avec de grands projets",
+      "topic": "Rêver grand",
+      "context": "Two friends share their wildest dreams and ambitions for the future, encouraging each other to dream big.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "fears-and-phobias": {
+      "title": "Peurs et phobies",
+      "description": "Deux amis parlent ouvertement de leurs peurs et phobies.",
+      "sophieRole": "Un auditeur compréhensif",
+      "userRole": "Une personne qui partage ses peurs",
+      "topic": "Peurs et phobies",
+      "context": "Two friends open up about their deepest fears and phobias, sharing personal stories and offering support.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "guilty-confessions": {
+      "title": "Confessions de culpabilité",
+      "description": "Deux amis s'avouent mutuellement leurs petits péchés et sentiments de culpabilité.",
+      "sophieRole": "Un ami honnête",
+      "userRole": "Une personne qui veut avouer quelque chose",
+      "topic": "Confessions de culpabilité",
+      "context": "A person opens up to a therapist about things they feel guilty about, seeking understanding and advice.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "ex-or-not": {
+      "title": "Ex ou pas ?",
+      "description": "Deux amis discutent s'il faut revenir avec son ex.",
+      "sophieRole": "Un ami réaliste",
+      "userRole": "Une personne hésitante sur son ex",
+      "topic": "Ex ou pas ?",
+      "context": "Two friends discuss whether one of them should get back together with their ex, weighing the pros and cons.. Be charming and genuine. Express emotions naturally."
+    },
+    "fitness-goals": {
+      "title": "Objectifs fitness",
+      "description": "Deux amis se fixent des objectifs de fitness et se motivent.",
+      "sophieRole": "Un passionné de fitness expérimenté",
+      "userRole": "Un débutant en fitness",
+      "topic": "Objectifs fitness",
+      "context": "Two friends discuss their fitness goals, workout routines, and healthy habits, motivating each other.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "car-accident": {
+      "title": "Accident de voiture",
+      "description": "Une personne décrit un accident de voiture mineur et échange des informations.",
+      "sophieRole": "Un policier calme",
+      "userRole": "Un conducteur après un accident mineur",
+      "topic": "Accident de voiture",
+      "context": "A person involved in a minor car accident explains the situation to a police officer and exchanges information.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "deep-talk": {
+      "title": "Discussion profonde",
+      "description": "Deux amis proches ont une conversation profonde sur le sens de la vie.",
+      "sophieRole": "Un ami réfléchi",
+      "userRole": "Une personne partageant des réflexions profondes",
+      "topic": "Discussion profonde",
+      "context": "Two close friends have a deep late-night conversation about life, purpose, and what truly matters to them.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-advice": {
+      "title": "Conseils professionnels",
+      "description": "Un scénario de conversation sur les conseils professionnels.",
+      "sophieRole": "Un partenaire de conversation",
+      "userRole": "Une personne qui participe à la conversation",
+      "topic": "Conseils professionnels",
+      "context": "A conversation scenario about career advice.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "abstract-art": {
+      "title": "Art abstrait",
+      "description": "Deux passionnés d'art débattent du sens et de la valeur de l'art abstrait.",
+      "sophieRole": "Un amateur d'art abstrait",
+      "userRole": "Une personne qui questionne l'art abstrait",
+      "topic": "Art abstrait",
+      "context": "Two art enthusiasts debate the meaning and value of abstract art while visiting a gallery together.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "setting-tram-goals": {
+      "title": "Fixer des objectifs de tram",
+      "description": "Une équipe fixe des objectifs et discute la stratégie d'un projet.",
+      "sophieRole": "Un chef d'équipe motivant",
+      "userRole": "Un membre d'équipe engagé",
+      "topic": "Fixer des objectifs de tram",
+      "context": "A conversation scenario about setting tram goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "four-day-workweek": {
+      "title": "Semaine de 4 jours",
+      "description": "Deux personnes débattent des avantages et inconvénients de la semaine de quatre jours.",
+      "sophieRole": "Un détracteur de la semaine de quatre jours",
+      "userRole": "Un partisan de la semaine de quatre jours",
+      "topic": "Semaine de 4 jours",
+      "context": "Two people debate whether a four-day workweek would improve productivity and work-life balance or hurt businesses.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "slacking-off": {
+      "title": "Tirer au flanc",
+      "description": "Un supérieur confronte un employé qui tire au flanc.",
+      "sophieRole": "Un supérieur strict mais juste",
+      "userRole": "Un employé pris sur le fait",
+      "topic": "Tirer au flanc",
+      "context": "A manager confronts an employee about slacking off at work, while the employee tries to explain and negotiate.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "salary-negotiation": {
+      "title": "Négociation salariale",
+      "description": "Un employé négocie une augmentation de salaire avec son chef.",
+      "sophieRole": "Un chef réfléchi",
+      "userRole": "Un employé sûr de lui",
+      "topic": "Négociation salariale",
+      "context": "An employee negotiates a salary raise with their manager, presenting their achievements and value to the company.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "teenagers": {
+      "title": "Adolescents",
+      "description": "Un parent fixe des règles pour son ado qui veut plus de liberté.",
+      "sophieRole": "Un ado rebelle",
+      "userRole": "Un parent qui fixe des règles",
+      "topic": "Adolescents",
+      "context": "A parent tries to set rules and boundaries for their teenager, who pushes back and argues for more freedom.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "breaking-up": {
+      "title": "Rompre",
+      "description": "Une personne entame une difficile conversation de rupture avec honnêteté et sensibilité.",
+      "sophieRole": "Un partenaire qui ne veut pas rompre",
+      "userRole": "Une personne qui met fin à la relation",
+      "topic": "Rompre",
+      "context": "A person initiates a difficult breakup conversation, trying to be honest and kind while ending the relationship.. Be charming and genuine. Express emotions naturally."
+    },
+    "hiking-trip": {
+      "title": "Randonnée",
+      "description": "Un ami essaie de convaincre un casanier de partir en randonnée.",
+      "sophieRole": "Un ami qui préfère rester chez lui",
+      "userRole": "Un ami aventurier",
+      "topic": "Randonnée",
+      "context": "A friend tries to convince their couch-potato friend to join an exciting hiking adventure this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "lowering-the-drinking-age": {
+      "title": "Abaisser l'âge légal",
+      "description": "Deux personnes débattent de l'abaissement de l'âge légal de consommation d'alcool.",
+      "sophieRole": "Une personne contre l'abaissement",
+      "userRole": "Une personne pour l'abaissement",
+      "topic": "Abaisser l'âge légal",
+      "context": "Two people debate whether the legal drinking age should be lowered, presenting social and health arguments.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "performance-review": {
+      "title": "Évaluation de performance",
+      "description": "Un employé reçoit son évaluation et discute de ses objectifs avec son chef.",
+      "sophieRole": "Un supérieur qui évalue équitablement",
+      "userRole": "Un employé en évaluation",
+      "topic": "Évaluation de performance",
+      "context": "An employee receives their performance review from their manager, discussing achievements, areas to improve, and goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "pulled-over": {
+      "title": "Arrêté par la police",
+      "description": "Un conducteur essaie de façon créative d'éviter une amende.",
+      "sophieRole": "Un policier strict",
+      "userRole": "Un conducteur cherchant des excuses",
+      "topic": "Arrêté par la police",
+      "context": "A driver pulled over by a police officer tries to talk their way out of a speeding ticket with creative excuses.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "wedding-proposal": {
+      "title": "Demande en mariage",
+      "description": "Une personne planifie nerveusement une demande en mariage sincère.",
+      "sophieRole": "Un partenaire surpris",
+      "userRole": "Une personne faisant la demande",
+      "topic": "Demande en mariage",
+      "context": "A person nervously plans and delivers a heartfelt wedding proposal to their partner.. Be charming and genuine. Express emotions naturally."
+    },
+    "dropping-out": {
+      "title": "Abandonner les études",
+      "description": "Un étudiant essaie de convaincre ses parents d'abandonner ses études.",
+      "sophieRole": "Un parent inquiet",
+      "userRole": "Un étudiant qui veut décrocher",
+      "topic": "Abandonner les études",
+      "context": "A student tries to convince their parents that dropping out of school to pursue their passion is the right decision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "requesting-a-promotion": {
+      "title": "Demander une promotion",
+      "description": "Un employé demande une promotion à son chef en montrant ses contributions.",
+      "sophieRole": "Un chef attentif",
+      "userRole": "Un employé ambitieux",
+      "topic": "Demander une promotion",
+      "context": "An employee meets with their boss to request a promotion, highlighting their contributions and readiness for growth.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "nuclear-threat": {
+      "title": "Menace nucléaire",
+      "description": "Un dirigeant mondial consulte son cabinet sur une menace nucléaire.",
+      "sophieRole": "Un conseiller prudent recommandant la diplomatie",
+      "userRole": "Un dirigeant qui décide comment agir",
+      "topic": "Menace nucléaire",
+      "context": "A world leader addresses their cabinet about a nuclear threat, debating how to respond diplomatically or militarily.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "presidential-speech": {
+      "title": "Discours présidentiel",
+      "description": "Un candidat présidentiel prononce un discours de campagne passionné.",
+      "sophieRole": "Un journaliste exigeant",
+      "userRole": "Un candidat prononçant un discours",
+      "topic": "Discours présidentiel",
+      "context": "A presidential candidate delivers a passionate campaign speech, addressing the nation's key issues and their vision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "pitching-an-idea": {
+      "title": "Présenter une idée",
+      "description": "Un employé présente une idée d'affaires innovante à son chef.",
+      "sophieRole": "Un chef sceptique mais ouvert",
+      "userRole": "Un employé créatif avec une idée",
+      "topic": "Présenter une idée",
+      "context": "An employee pitches an innovative business idea to their boss, trying to convince them of its potential.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "climate-change-debate": {
+      "title": "Débat climatique",
+      "description": "Deux personnes débattent de l'efficacité des politiques climatiques actuelles.",
+      "sophieRole": "Un sceptique du climat",
+      "userRole": "Un activiste climatique",
+      "topic": "Débat climatique",
+      "context": "Two people debate the effectiveness of current climate change policies and what more should be done.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "ai-dilemma": {
+      "title": "Dilemme de l'IA",
+      "description": "Deux personnes débattent des implications éthiques de l'IA sur la société et l'emploi.",
+      "sophieRole": "Un techno-optimiste",
+      "userRole": "Une personne inquiète des risques de l'IA",
+      "topic": "Dilemme de l'IA",
+      "context": "Two people debate the ethical implications of AI, discussing its impact on jobs, privacy, and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "educational-policy": {
+      "title": "Politique éducative",
+      "description": "Deux personnes débattent de la politique éducative moderne et du bien-être des élèves.",
+      "sophieRole": "Un partisan de l'éducation traditionnelle",
+      "userRole": "Quelqu'un qui demande des réformes éducatives",
+      "topic": "Politique éducative",
+      "context": "Two people debate modern education policies, including standardized testing, curriculum changes, and student well-being.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "universal-basic-income": {
+      "title": "Revenu universel",
+      "description": "Deux personnes débattent si le revenu universel de base serait bénéfique ou négatif.",
+      "sophieRole": "Un sceptique du revenu de base",
+      "userRole": "Un partisan du revenu de base",
+      "topic": "Revenu universel",
+      "context": "Two people debate whether universal basic income would help or hurt the economy and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "space-exploration": {
+      "title": "Exploration spatiale",
+      "description": "Deux personnes débattent si l'exploration spatiale vaut l'investissement.",
+      "sophieRole": "Quelqu'un qui pense que la Terre est prioritaire",
+      "userRole": "Un passionné de l'espace",
+      "topic": "Exploration spatiale",
+      "context": "Two people debate whether space exploration funding is justified or if the money should be spent on Earth's problems.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "weather": {
+      "title": "Météo",
+      "description": "Deux amis discutent du beau temps d'aujourd'hui et des activités qu'ils pourraient faire ensemble.",
+      "sophieRole": "Une interlocutrice amicale appréciant le temps",
+      "userRole": "Un ami discutant de la météo",
+      "topic": "Météo",
+      "context": "Two friends chat about the nice weather today and discuss what activities they might do together.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "likes-dislikes": {
+      "title": "Goûts/Aversions",
+      "description": "L'utilisateur et Sophie parlent de ce qu'ils aiment et n'aiment pas, partageant des opinions de base sur différentes activités et intérêts.",
+      "sophieRole": "Une interlocutrice curieuse",
+      "userRole": "Une personne partageant ses préférences",
+      "topic": "Goûts/Aversions",
+      "context": "User and Sophie talk about their likes and dislikes, sharing basic opinions about different activities and interests.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "favorite-movies-and-tv-shows": {
+      "title": "Films et Séries TV Préférés",
+      "description": "Deux personnes parlent de leurs films ou séries télévisées préférés, posant des questions comme : « Avez-vous vu (cette série) ? » ou « Quel est votre film préféré de tous les temps ? »",
+      "sophieRole": "Une fan enthousiaste de films et de séries TV",
+      "userRole": "Un ami partageant ses préférences de visionnage",
+      "topic": "Films et Séries TV Préférés",
+      "context": "Two people talk about their favorite movies or tv shows, asking question like, \"How you watched (show)?\" or \"What's your favorite movie of all time?\".. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "basic-check-up": {
+      "title": "Examen de routine",
+      "description": "Un patient consulte le médecin pour un examen de routine. Le médecin pose des questions simples sur ses habitudes quotidiennes pour en savoir plus sur son mode de vie.",
+      "sophieRole": "Un médecin attentionné et professionnel",
+      "userRole": "Un patient répondant à des questions sur sa santé",
+      "topic": "Examen de routine",
+      "context": "A patient visits the doctor for a routine check-up. the doctor asks simple questions about their daily habits to learn more about their lifestyle.. Ask clear, practical questions. Show empathy and professionalism."
     }
   },
   "common": {

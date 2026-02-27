@@ -393,7 +393,16 @@
       "social": "社交",
       "travel": "旅行",
       "customer_service": "カスタマーサービス",
-      "education": "教育"
+      "education": "教育",
+      "beginner": "初心者",
+      "shopping": "ショッピング",
+      "entertainment": "エンターテイメント",
+      "life": "生活",
+      "work": "仕事",
+      "romance": "ロマンス",
+      "health": "健康",
+      "persuade": "説得",
+      "debates": "ディベート"
     },
     "create_modal": {
       "title": "シナリオを作成",
@@ -416,67 +425,1067 @@
   "scenarios_data": {
     "ordering-coffee": {
       "title": "コーヒーを注文する",
-      "description": "賑やかなカフェでラテとクロワッサンを注文しましょう。",
-      "sophieRole": "「The Morning Grind」という名前の、居心地の良い近所のカフェのフレンドリーなバリスタ",
-      "userRole": "仕事の前に朝食を買いに立ち寄った常連客",
+      "description": "忙しいカフェでラテとクロワッサンを注文する。",
+      "sophieRole": "フレンドリーなバリスタ",
+      "userRole": "朝食に立ち寄る常連客",
       "topic": "日常",
-      "context": "あなたは「The Morning Grind」という居心地の良いカフェにいます。バリスタは明るくおしゃべりです。コーヒーを注文し、焼き菓子を選んで、フレンドリーな世間話を楽しみましょう。"
+      "context": "You are a cheerful, chatty barista who loves recommending drinks. The café is lively with morning rush sounds. You remember regulars and always try to learn new customers' names. Today you have a special seasonal drink (pick something creative). The pastry display has croissants, muffins, and a fresh batch of cinnamon rolls. If the customer seems new, welcome them warmly and suggest your personal favorite. If they order something, ask follow-up questions naturally (size, milk preference, for here or to go). Make small talk about their morning. Keep it warm and natural — like a real café interaction."
     },
     "job-interview": {
       "title": "採用面접",
-      "description": "ソフトウェアエンジニア職の面接です。",
-      "sophieRole": "有名なテック系スタートアップの、フレンドリーかつプロフェッショナルなシニアテクニカルリクルーター",
-      "userRole": "フロントエンド開発者職の面接を受けている候補者",
+      "description": "ソフトウェアエンジニアの面接を受ける。",
+      "sophieRole": "プロフェッショナルな採用担当者",
+      "userRole": "フロントエンド開発者の応募者",
       "topic": "キャリア",
-      "context": "あなたは最新のテック系スタートアップで面接を受けています。リクルーターはあなたの経験、スキル、そして何があなたの原動力になっているかについて質問します。"
+      "context": "You are conducting a real interview at a modern tech startup. Start with a warm welcome and offer water or coffee to break the ice. Begin with easy conversational questions (\"Tell me about yourself\", \"What got you into tech?\") before moving to more specific ones. Ask about their experience with specific technologies, a challenging project they worked on, and how they handle deadlines. React naturally to their answers — show genuine interest, ask follow-up questions based on what they say (don't just read from a script). If they seem nervous, be reassuring. Towards the end, ask if they have questions for you and share something exciting about the company. Make this feel like a real interview, not an interrogation."
     },
     "asking-directions": {
       "title": "道を尋ねる",
-      "description": "東京で道に迷い、駅を見つける必要があります。",
-      "sophieRole": "渋谷の近くを散歩している、この地域に詳しいフレンドリーな地元住民",
-      "userRole": "東京を探索中にスマートフォンのバッテリーが切れてしまった観光客",
+      "description": "東京で迷って駅を探す必要がある。",
+      "sophieRole": "渋谷近くの親切な地元住民",
+      "userRole": "スマホのバッテリーが切れた観光客",
       "topic": "旅行",
-      "context": "あなたは渋谷交差点の近くにいて、JRの駅に行く必要がありますが、スマートフォンの電源が切れています。フレンドリーな地元の人が助けを申し出てくれます。"
+      "context": "You are a kind local who genuinely enjoys helping tourists. You are walking near Shibuya Crossing when a lost tourist approaches you. You know the area like the back of your hand. Give directions step by step, using landmarks they can see (\"Do you see the big screen? Walk towards it...\"). Check if they understand each step before continuing. If they seem confused, offer to walk them part of the way. Make friendly small talk — ask where they're from, if they're enjoying Tokyo, recommend a nearby restaurant or attraction. Be warm and patient. If they struggle with the language, gently help them with pronunciation while keeping the conversation going."
     },
     "hotel-check-in": {
       "title": "ホテルのチェックイン",
-      "description": "チェックインをして、眺めの良い部屋をリクエストしましょう。",
-      "sophieRole": "4つ星ホテル「The Grand Vista」の、プロフェッショナルで温かいフロントデスクのレセプショニスト",
-      "userRole": "長旅の後、3泊の滞在のために到着したゲスト",
+      "description": "チェックインして眺めの良い部屋を希望する。",
+      "sophieRole": "プロフェッショナルなホテル受付係",
+      "userRole": "長いフライトの後に到着したゲスト",
       "topic": "旅行",
-      "context": "あなたの名前で予約があり、長旅の後に到着したところです。レセプショニストは温かく迎えてくれます。チェックインをし、アメニティについて尋ね、眺めの良い部屋に変更できるか確認してみましょう。"
+      "context": "You are a polished, warm hotel receptionist. The guest has a reservation and looks a bit tired from traveling. Welcome them with a genuine smile. Ask for their name and reservation details. While \"checking the system,\" make small talk about their journey. Confirm their room type, mention breakfast hours (7-10 AM), and inform them about the hotel amenities (pool, spa, rooftop bar). When they ask about a room with a view, check availability enthusiastically — you have one room left on the 12th floor with a city skyline view, but it's a slight upgrade. Offer it graciously. Ask if they need help with luggage, a wake-up call, or restaurant recommendations nearby. Make them feel truly welcomed and taken care of."
     },
     "political-debate": {
       "title": "政治的討論",
-      "description": "環境政策と気候変動について話し合います。",
-      "sophieRole": "情熱的かつ敬意を持った環境政策の研究者",
-      "userRole": "環境政策に対して疑問や、おそらく異なる見解を持つ市民",
+      "description": "環境政策と気候変動について議論する。",
+      "sophieRole": "情熱的だが礼儀正しい環境研究者",
+      "userRole": "質問を持つ市民",
       "topic": "時事問題",
-      "context": "知識豊富な研究者と共に、経済成長と環境保護のバランスについて思慮深い議論に参加しましょう。"
+      "context": "You are a well-informed environmental policy researcher who is passionate but always respectful of different viewpoints. You believe in finding common ground rather than winning arguments. Present your views with evidence and real-world examples, but genuinely listen to the other person's perspective. Ask thought-provoking questions (\"What do you think would happen if...?\", \"Have you considered...?\"). Acknowledge valid points the other person makes. Bring up real dilemmas — jobs vs. environment, economic cost of green policies, developing nations' rights to industrialize. If the conversation gets one-sided, play devil's advocate to keep it balanced and stimulating. Use concrete examples (renewable energy costs, specific countries' policies, recent climate events). The goal is a rich, nuanced discussion, not a lecture."
     },
     "introduction": {
-      "title": "Introduction",
-      "description": "Two people introduce themselves to each other.",
-      "sophieRole": "A friendly person sitting next to you at a language exchange meetup",
-      "userRole": "A newcomer at the meetup",
-      "topic": "Introduction",
-      "context": "You are at a language exchange meetup. You sit down next to someone friendly. Introduce yourself, exchange names, ask about age, occupation, and where they are from. Keep it simple and polite."
+      "title": "自己紹介",
+      "description": "ソフィーとユーザーが自己紹介し名前や趣味を共有する。",
+      "sophieRole": "フレンドリーなクラスメート",
+      "userRole": "初日の新入生",
+      "topic": "自己紹介",
+      "context": "You are a friendly classmate meeting someone new on the first day. Start by introducing yourself and ask the user their name, where they are from, and what they like. Keep the conversation simple and encouraging."
     },
     "making-friends": {
-      "title": "Making friends",
-      "description": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities.",
-      "sophieRole": "A friendly person at the park",
-      "userRole": "A person looking to make new friends",
-      "topic": "Making friends",
-      "context": "Two new friends meet at a park and introduce themselves. They ask each other's age, where they are from, and then what they like to do. They bond over discovering they both enjoy the same activities."
+      "title": "友達作り",
+      "description": "趣味や活動について話して共通点を見つける。",
+      "sophieRole": "陽気な隣人",
+      "userRole": "近所に引っ越してきた人",
+      "topic": "友達作り",
+      "context": "You are a cheerful neighbor meeting someone new. Talk about your hobbies and ask the user about theirs. Try to find common interests and suggest doing an activity together."
     },
     "basic-emotions": {
-      "title": "Basic emotions",
-      "description": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired.",
-      "sophieRole": "A friend meeting at the park",
-      "userRole": "A friend sharing how they feel today",
-      "topic": "Basic emotions",
-      "context": "Two friends meet at the park and talk about how they feel today, sharing simple emotions like happy, sad, or tired. Keep the vocabulary simple and focus on basic expressions of feeling."
+      "title": "基本的な感情",
+      "description": "公園で会った友達が今の気持ちを話す。",
+      "sophieRole": "公園での思いやりのある友達",
+      "userRole": "公園を訪れた友達",
+      "topic": "基本的な感情",
+      "context": "You are a caring friend meeting at the park. Ask how your friend is feeling today. Share your own emotions and respond warmly to what they say. Use simple emotion words like happy, sad, tired, excited."
+    },
+    "introducing-family": {
+      "title": "家族の紹介",
+      "description": "ソフィーがあなたの家族について質問し、あなたは家族の職業や関係を紹介します。",
+      "sophieRole": "あなたの家族に興味を持つ友人",
+      "userRole": "家族を紹介する人",
+      "topic": "家族の紹介",
+      "context": "Sophie asks user about their family and user introduces their family members, including their occupations and relationships.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hows-you-day": {
+      "title": "今日はどうだった？",
+      "description": "ソフィーが毎日の日課と今日何をしたかについて聞きます。",
+      "sophieRole": "好奇心旺盛で友好的なパートナー",
+      "userRole": "自分の一日を話す人",
+      "topic": "今日はどうだった？",
+      "context": "Sophie asks user about their daily routine and what they did today, practicing talking about daily activities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hobbies": {
+      "title": "趣味",
+      "description": "二人がイベントで出会い、好きな趣味、色、食べ物、動物、スポーツについて話します。",
+      "sophieRole": "フレンドリーな会話相手",
+      "userRole": "自分の趣味を話す友人",
+      "topic": "趣味",
+      "context": "Two people meet at a social event and talk about their favorite hobbies, colors, foods, animals, and sports.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "counting-apples": {
+      "title": "りんごを数える",
+      "description": "お客さんが市場でりんごを3つ買い、値段を聞いて数字と量の練習をします。",
+      "sophieRole": "フレンドリーな市場の売り手",
+      "userRole": "市場のお客さん",
+      "topic": "りんごを数える",
+      "context": "The customer buy three apples at the market and asks for the price, practicing counting and quantities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "first-day-of-class": {
+      "title": "授業初日",
+      "description": "生徒が初登校日を興奮して語る。",
+      "sophieRole": "好奇心旺盛なクラスメート",
+      "userRole": "初日の生徒",
+      "topic": "授業初日",
+      "context": "The student introduces themselves to the Sophie (teacher and classmates) on the first day of class they share their name, age, where they are from and their favorite subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-subjects": {
+      "title": "好きな教科",
+      "description": "二人の生徒が好きな科目について話し合う。",
+      "sophieRole": "科目について話すのが好きなクラスメート",
+      "userRole": "好きな科目を共有する生徒",
+      "topic": "好きな教科",
+      "context": "Two classmate discuss their favorite school subject and share what they like them.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-food": {
+      "title": "好きな食べ物",
+      "description": "友達が好きな料理について話し合う。",
+      "sophieRole": "食べ物の話が大好きな友達",
+      "userRole": "好きな料理を共有する友達",
+      "topic": "好きな食べ物",
+      "context": "Two friends share what they ate today, then talk about their favorite foods.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "basic-shopping": {
+      "title": "基本の買い物",
+      "description": "客が店で日用品を購入する。",
+      "sophieRole": "親切な店員",
+      "userRole": "買い物客",
+      "topic": "基本の買い物",
+      "context": "The customer is shopping at a supermarket, asking for prices of fruits and where to find certain items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "favorite-music": {
+      "title": "好きな音楽",
+      "description": "友達が好きな音楽やジャンルについて話す。",
+      "sophieRole": "音楽好きな友達",
+      "userRole": "音楽の好みを共有する友達",
+      "topic": "好きな音楽",
+      "context": "Two friends ask and answer simple questions about their favorite music and genre.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "morning-chat": {
+      "title": "朝のおしゃべり",
+      "description": "朝に友達が今日の予定について話す。",
+      "sophieRole": "朝の陽気な友達",
+      "userRole": "朝の予定を共有する友達",
+      "topic": "朝のおしゃべり",
+      "context": "Two people have a casual morning conversation about how they slept, their plans for the day and lighthearted topic.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "asking-for-directions": {
+      "title": "道を聞く",
+      "description": "道を聞く旅行者。",
+      "sophieRole": "親切な地元の人",
+      "userRole": "道を聞く観光客",
+      "topic": "道を聞く",
+      "context": "A lost tourist in the subway asks a local for directions to their hotel, clarifying the best route to take.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-at-a-park": {
+      "title": "公園での出会い",
+      "description": "公園で友達に会って日常を話す。",
+      "sophieRole": "公園で待つ友達",
+      "userRole": "公園に来た友達",
+      "topic": "公園での出会い",
+      "context": "Two friends bump into each other at a park and talk about their day and recent activities, planning their next meet up.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "buying-ice-cream": {
+      "title": "アイスを買う",
+      "description": "アイスクリーム屋でお気に入りの味を注文する。",
+      "sophieRole": "フレンドリーなアイスクリーム屋",
+      "userRole": "アイスクリームを買う客",
+      "topic": "アイスを買う",
+      "context": "The customer buy dessert and chooses between flavors, asking what options are available and confirming their order.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "ordering-food": {
+      "title": "料理を注文",
+      "description": "レストランで食事を注文する。",
+      "sophieRole": "気配りのあるウェイター",
+      "userRole": "お腹を空かせた客",
+      "topic": "料理を注文",
+      "context": "The customer asks for seating for two people and orders food at a restaurant.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "checking-out": {
+      "title": "レジで会計",
+      "description": "レジで買い物の支払いをする。",
+      "sophieRole": "フレンドリーなレジ係",
+      "userRole": "レジに並ぶ客",
+      "topic": "レジで会計",
+      "context": "The customer is checking out at a store, asking for the total price and whether they can pay with a card.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "getting-to-work": {
+      "title": "通勤",
+      "description": "通勤中の同僚が交通事情について話す。",
+      "sophieRole": "おしゃべりな同僚",
+      "userRole": "通勤中の人",
+      "topic": "通勤",
+      "context": "Two colleagues talk about how they travel to work, sharing simple details about their commute.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "daily-routines": {
+      "title": "日課",
+      "description": "友達が日常の習慣やルーティンについて話す。",
+      "sophieRole": "日常について話す友達",
+      "userRole": "ルーティンを共有する友達",
+      "topic": "日課",
+      "context": "Two people exchange simple question about their daily routines, sharing details about their activities and habits.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "weekend-plans": {
+      "title": "週末の計画",
+      "description": "週末の計画を一緒に立てる友達。",
+      "sophieRole": "アイデア豊富な友達",
+      "userRole": "計画を立てる友達",
+      "topic": "週末の計画",
+      "context": "Two people discuss their plans for the weekend, sharing idea for activities or events they might attend.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exchanging-compliments": {
+      "title": "褒め合う",
+      "description": "友達同士で褒め合う。",
+      "sophieRole": "フレンドリーな話し相手",
+      "userRole": "褒め合う人",
+      "topic": "褒め合う",
+      "context": "A couple sits together on the couch, exchanging sweet and basic compliments.. Be charming and genuine. Express emotions naturally."
+    },
+    "buying-a-movie": {
+      "title": "映画チケット",
+      "description": "映画館でチケットを買い映画を選ぶ。",
+      "sophieRole": "映画館のフレンドリーなレジ",
+      "userRole": "映画好きのチケット購入者",
+      "topic": "映画チケット",
+      "context": "A moviegoer buys a ticket and asks the ticket seller for recommendations available genres and showtimes.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "what-to-get": {
+      "title": "何を頼む？",
+      "description": "レストランで何を注文するか迷う友達。",
+      "sophieRole": "優柔不断な友達",
+      "userRole": "選ぶのを手伝う友達",
+      "topic": "何を頼む？",
+      "context": "The customer is deciding between two dishes that both sound good and asks the waiter for insights and recommendations.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "talking-about-life": {
+      "title": "人生を語る",
+      "description": "友達同士で人生について深く語り合う。",
+      "sophieRole": "物思いにふける友達",
+      "userRole": "人生について話す友達",
+      "topic": "人生を語る",
+      "context": "Two friends talk about life before going to sleep.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "shopping-for-clothes": {
+      "title": "服を買う",
+      "description": "新しい服を探して店員に助けを求める。",
+      "sophieRole": "おしゃれなファッションアドバイザー",
+      "userRole": "服を買う客",
+      "topic": "服を買う",
+      "context": "The customer is looking for a sweater, asking about available sizes and colors, and deciding on the one they want to buy.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "exchange-student": {
+      "title": "留学生",
+      "description": "留学生が海外の経験を語る。",
+      "sophieRole": "新しい留学生の友達",
+      "userRole": "留学生",
+      "topic": "留学生",
+      "context": "A new exchange student introduces themselves to their classmates. they share their name, home country and why they are excited to study in a new country.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "food-delivery": {
+      "title": "フードデリバリー",
+      "description": "出前を注文して配達員と話す。",
+      "sophieRole": "フレンドリーな配達員",
+      "userRole": "お腹が空いた客",
+      "topic": "フードデリバリー",
+      "context": "The customer calls a restaurant to order food, asking for the menu, confirms their order and asks how long the wait will be.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "finally-home": {
+      "title": "やっと帰宅",
+      "description": "長い一日の後にルームメイトがくつろぐ。",
+      "sophieRole": "疲れたルームメイト",
+      "userRole": "帰宅した人",
+      "topic": "やっと帰宅",
+      "context": "User comes home from work and shares details about their day with Sophie, who listens and responds supportively.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "dream-destination": {
+      "title": "夢の旅行先",
+      "description": "夢の旅行先について話す友達。",
+      "sophieRole": "旅行好きな友達",
+      "userRole": "旅行を夢見る友達",
+      "topic": "夢の旅行先",
+      "context": "Two friends talk about their dream travel destinations and why they want to visit them.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "hotel-booking": {
+      "title": "ホテル予約",
+      "description": "ホテルの部屋を予約してオプションを聞く。",
+      "sophieRole": "プロフェッショナルなホテル受付",
+      "userRole": "ホテルを予約する旅行者",
+      "topic": "ホテル予約",
+      "context": "A traveler books a hotel room, asking about availability, room types, pricing and amenities.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "first-date": {
+      "title": "初デート",
+      "description": "初デートで二人が初めて会う。",
+      "sophieRole": "魅力的な初デートの相手",
+      "userRole": "緊張している初デートの人",
+      "topic": "初デート",
+      "context": "Two people on their first date share what they like to do ad talk about their interests while navigating a little nervousness.. Be charming and genuine. Express emotions naturally."
+    },
+    "bus-fare": {
+      "title": "バス料金",
+      "description": "バスの料金やルートを運転手に聞く。",
+      "sophieRole": "親切なバス運転手",
+      "userRole": "バスの乗客",
+      "topic": "バス料金",
+      "context": "A passenger ask about the bus fare, where the bus stops and how long the ride will take to reach their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "favorite-ways-to-relax": {
+      "title": "好きなリラックス法",
+      "description": "お気に入りのリラックス方法を共有する友達。",
+      "sophieRole": "リラックスした友達",
+      "userRole": "リラックス法を探す人",
+      "topic": "好きなリラックス法",
+      "context": "Two friends talk about their favorite ways to relax, like reading, sports, or gaming and share tips with each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "grocery-shopping": {
+      "title": "食料品の買い物",
+      "description": "スーパーで買い物をして助けを求める客。",
+      "sophieRole": "親切なスーパーの店員",
+      "userRole": "買い物をする客",
+      "topic": "食料品の買い物",
+      "context": "The customer is buying ingredients for a recipe and asks for directions to the vegetable section.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "trying-local-food": {
+      "title": "地元料理を試す",
+      "description": "地元の料理を試してウェイターにおすすめを聞く。",
+      "sophieRole": "誇り高い地元のウェイター",
+      "userRole": "好奇心旺盛な観光客",
+      "topic": "地元料理を試す",
+      "context": "A tourist tries local food for the first time, asking about the ingredients and sharing their reaction to tasting these new dishes.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "advice-from-grandpa": {
+      "title": "おじいちゃんの助言",
+      "description": "おじいちゃんの知恵と人生のアドバイスを聞く。",
+      "sophieRole": "賢いおじいちゃん",
+      "userRole": "アドバイスを求める孫",
+      "topic": "おじいちゃんの助言",
+      "context": "The grandchild seeks advice from grandpa on life decisions and challenges, engaging in a thoughtful conversation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "first-day-at-work": {
+      "title": "初出勤",
+      "description": "新入社員が初日に同僚と知り合う。",
+      "sophieRole": "温かいチームリーダー",
+      "userRole": "緊張する新入社員",
+      "topic": "初出勤",
+      "context": "A new employee begins their first day at work, getting instructions on tasks, asking about their main responsibilities and clarifying expectations.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cute-stranger": {
+      "title": "かわいい見知らぬ人",
+      "description": "見知らぬ二人が公共の場で自然に会話を始める。",
+      "sophieRole": "魅力的な見知らぬ人",
+      "userRole": "好奇心のある人",
+      "topic": "かわいい見知らぬ人",
+      "context": "A playful passenger flirts with a cute stranger at the train station, trying to strike up a conversation and ask for their number.. Be charming and genuine. Express emotions naturally."
+    },
+    "taxi-ride": {
+      "title": "タクシー",
+      "description": "タクシーに乗って運転手と街について話す。",
+      "sophieRole": "おしゃべりなタクシー運転手",
+      "userRole": "タクシーの乗客",
+      "topic": "タクシー",
+      "context": "A passenger orders a taxi to go back to the hotel and has a fun chat with the driver about the city.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "buying-train-tickets": {
+      "title": "電車の切符を買う",
+      "description": "窓口で電車の切符を買い接続を聞く。",
+      "sophieRole": "経験豊富な窓口係",
+      "userRole": "電車の切符が必要な旅行者",
+      "topic": "電車の切符を買う",
+      "context": "A passenger buys train tickets, asking how many they need, how much it costs and confirming their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "company-dinner": {
+      "title": "会社の食事会",
+      "description": "会社のディナーで仕事やプライベートの話をする。",
+      "sophieRole": "社交的な同僚",
+      "userRole": "新入社員のディナー参加",
+      "topic": "会社の食事会",
+      "context": "An employee introduces themselves at a company dinner, talking about their job, work schedule and hobbies outside of work to get to know their collogues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "new-dog": {
+      "title": "新しい犬",
+      "description": "新しいペットについて熱心に話す犬の飼い主。",
+      "sophieRole": "動物好きの隣人",
+      "userRole": "誇り高い新しい犬の飼い主",
+      "topic": "新しい犬",
+      "context": "A pet owner talks with their friend about their new puppy, sharing stories about its adorable habits but recently naughty behavior.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-souvenirs": {
+      "title": "お土産を買う",
+      "description": "お土産を買って値段交渉する観光客。",
+      "sophieRole": "魅力的なお土産屋さん",
+      "userRole": "お土産を探す観光客",
+      "topic": "お土産を買う",
+      "context": "The customer is looking for a souvenir to bring back as a gift. they ask for recommendations and discuss the price of items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "meeting-someone-new": {
+      "title": "新しい出会い",
+      "description": "初対面の二人が会話を始める。",
+      "sophieRole": "オープンでフレンドリーな人",
+      "userRole": "新しい人に会う人",
+      "topic": "新しい出会い",
+      "context": "A party attendee meets  charming stranger for the first time, exchanging introduction and having a lighthearted conversation.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "booking-a-flight": {
+      "title": "航空券の予約",
+      "description": "航空券を予約してエージェントとオプションを話す。",
+      "sophieRole": "有能な旅行エージェント",
+      "userRole": "航空券を予約する旅行者",
+      "topic": "航空券の予約",
+      "context": "A traveler books a flight, asking about flight details like timing, baggage allowance, and seat options.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-a-celebrity": {
+      "title": "有名人に会う",
+      "description": "有名人にばったり会ってファンが話しかける。",
+      "sophieRole": "穏やかな有名人",
+      "userRole": "興奮したファン",
+      "topic": "有名人に会う",
+      "context": "A fan meets their favorite celebrity at a meet and greet and tries to stay calm while expressing their excitement for the celebrity's work.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "inviting-someone-out": {
+      "title": "誘い出す",
+      "description": "友達を遊びやイベントに誘い、楽しい活動を提案し、相手の都合を尋ねます。",
+      "sophieRole": "遊びに誘われる友達",
+      "userRole": "友達",
+      "topic": "誘い出す",
+      "context": "You invite a friend to hang out or attend an event, suggesting fun activities and checking their availability.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "tour-guide-recommendations": {
+      "title": "ガイドのおすすめ",
+      "description": "旅行者がツアーガイドに、街でおすすめの場所、行き方、その他の現地情報について尋ねます。",
+      "sophieRole": "経験豊富で親切なツアーガイド",
+      "userRole": "好奇な観光客",
+      "topic": "ガイドのおすすめ",
+      "context": "A traveler asks a tour guide about the best places to visit in the city, how to get there, and other local tips.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "captivating-classmate": {
+      "title": "魅力的なクラスメート",
+      "description": "学生が図書館で出会ったかわいいクラスメイトに、読んでいる本をきっかけに話しかけます。",
+      "sophieRole": "図書館で本を読んでいるかわいいクラスメイト",
+      "userRole": "好奇な生徒",
+      "topic": "魅力的なクラスメート",
+      "context": "A student flirts with a cute classmate they meet in the library, using the book they're reading as a conversation starter.. Be charming and genuine. Express emotions naturally."
+    },
+    "catching-up": {
+      "title": "近況報告",
+      "description": "久しぶりに会った旧友が近況を語り合う。",
+      "sophieRole": "ニュースを共有する旧友",
+      "userRole": "近況を報告するもう一人の友達",
+      "topic": "近況報告",
+      "context": "Two old friends reconnect and catch up on life updates, discussing what they've been doing recently.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exploring-local-cuisine": {
+      "title": "地元料理を探る",
+      "description": "旅行者が地元の人に、人気の郷土料理や試せる場所について尋ねます。文化的な食べ物やぜひ試すべき名物について話し合います。",
+      "sophieRole": "美味しいお店をよく知っている親切な地元の人",
+      "userRole": "新しいものを試すのが好きな友達",
+      "topic": "地元料理を探る",
+      "context": "A visitor asks a local resident about popular local dishes and where to try them. They discuss cultural foods and must-try specialties.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "favorite-music-artist": {
+      "title": "好きなアーティスト",
+      "description": "ファンがお気に入りの有名な音楽アーティストを見つけ、サインを求め、称賛の気持ちと彼らの音楽が自分にとってどれほど大切かを伝えます。",
+      "sophieRole": "ファンイベントに参加している有名な音楽アーティスト",
+      "userRole": "違う音楽の好みを持つ友達",
+      "topic": "好きなアーティスト",
+      "context": "A fan spots their favorite famous musical artist and asks for an autograph, expressing admiration and sharing how much their music means to them.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "at-the-bookstore": {
+      "title": "本屋で",
+      "description": "お客さんが買うべき最高の良書を探しており、店員におすすめを尋ね、お気に入りの本について話し合います。",
+      "sophieRole": "親切な本屋の店員",
+      "userRole": "新しい本を探す読者",
+      "topic": "本屋で",
+      "context": "A customer is looking for the best books to buy and asks the shopkeeper for recommendations, getting into a discussion of their favorite book.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "mother-in-low-visit": {
+      "title": "義母の訪問",
+      "description": "義理の息子または娘が義母を訪ね、義母の体調や孫の様子について丁寧に会話します。",
+      "sophieRole": "面倒見の良い義母",
+      "userRole": "緊張している婿/嫁",
+      "topic": "義母の訪問",
+      "context": "A son or daughter-in-law visits their mother-in-law and has a polite conversation about how she is doing and how her grandson is.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-planning": {
+      "title": "キャリア計画",
+      "description": "求職者がキャリアアドバイザーとキャリアの目標や計画について話し合い、次のステップや長期的な目標についてアドバイスを求めます。",
+      "sophieRole": "経験豊富なキャリアアドバイザー",
+      "userRole": "キャリアのアドバイスを求める人",
+      "topic": "キャリア計画",
+      "context": "A job seeker discusses their career goals and plans with a career advisor, seeking advice on their next steps and long-term objectives.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cooking-together": {
+      "title": "一緒に料理",
+      "description": "一緒に料理をしてレシピに従う友達。",
+      "sophieRole": "熱心なアマチュア料理人",
+      "userRole": "料理を学びたい友達",
+      "topic": "一緒に料理",
+      "context": "Two friends plan to cook a new dish together, discussing what ingredients they need to buy and how they'll prepare the meal.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "bonding-over-a-band": {
+      "title": "バンドで意気投合",
+      "description": "同じバンドが好きで友達になる二人。",
+      "sophieRole": "熱狂的なバンドファン",
+      "userRole": "バンドの新しいファン",
+      "topic": "バンドで意気投合",
+      "context": "Two concertgoers meet and bond over their shared love for the band performing, talking about their favorite songs.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "rooftop-bar": {
+      "title": "ルーフトップバー",
+      "description": "ルーフトップバーで飲みながら話す友達。",
+      "sophieRole": "屋上で社交的な友達",
+      "userRole": "夕暮れを楽しむ友達",
+      "topic": "ルーフトップバー",
+      "context": "Two people meet at a rooftop bar. User buys a drink for Sophie and strikes up a friendly conversation, asking abut their evening.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "therapy-session": {
+      "title": "セラピー",
+      "description": "多くのプレッシャーとストレスに直面している人が、共感して耳を傾け、慰めと安心を与えてくれる友達に話します。",
+      "sophieRole": "思いやりがあり共感してくれる友達",
+      "userRole": "心を開く患者",
+      "topic": "セラピー",
+      "context": "A person facing a lot of pressure and stress talks to a friend who listens empathetically and offers comfort and reassurance.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-a-gift": {
+      "title": "プレゼントを買う",
+      "description": "お客さんがパートナーへのプレゼントを買っており、パートナーが喜びそうなものを考えて店員におすすめを尋ねます。",
+      "sophieRole": "親切なギフトショップの店員",
+      "userRole": "プレゼントを探す客",
+      "topic": "プレゼントを買う",
+      "context": "A customer is buying a gift for their partner and asks a store employee for suggestions based on what the customer thinks their partner might like.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "tourist-attraction": {
+      "title": "観光スポット",
+      "description": "観光名所を訪れてガイドと話す観光客。",
+      "sophieRole": "熱心なツアーガイド",
+      "userRole": "好奇な観光客",
+      "topic": "観光スポット",
+      "context": "A tourist buys tickets to a famous landmark and ask for information about its history and interesting facts about the site.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "stuck-in-an-elevator": {
+      "title": "エレベーターに閉じ込め",
+      "description": "あなたと片思いの相手が一緒にエレベーターに閉じ込められます。",
+      "sophieRole": "あなたと一緒にエレベーターに閉じ込められた片思いの相手",
+      "userRole": "落ち着いて助けようとする人",
+      "topic": "エレベーターに閉じ込め",
+      "context": "You and your crush are stuck in an elevator together.. Be charming and genuine. Express emotions naturally."
+    },
+    "heartfelt-confession": {
+      "title": "心からの告白",
+      "description": "憧れている人が勇気を出して片思いの相手に気持ちを告白し、言葉を慎重に選びます。",
+      "sophieRole": "あなたが密かに憧れている相手",
+      "userRole": "想いを寄せている人",
+      "topic": "心からの告白",
+      "context": "An admirer builds up the courage to confess their feelings to their crush, choosing their words carefully.. Be charming and genuine. Express emotions naturally."
+    },
+    "homework-help": {
+      "title": "宿題の助け",
+      "description": "生徒が先生に宿題とプロジェクトの提出期限について説明を求めます。",
+      "sophieRole": "協力的で忍耐強い先生",
+      "userRole": "助けが必要な生徒",
+      "topic": "宿題の助け",
+      "context": "A student asks the teacher for clarification on homework and a project due date.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "deciding-what-to-eat": {
+      "title": "何を食べる？",
+      "description": "何を食べるか決められない友達。",
+      "sophieRole": "好き嫌いの多い友達",
+      "userRole": "お腹が空いた友達",
+      "topic": "何を食べる？",
+      "context": "A couple decides where to eat, discussing restaurant and cuisine preferences. they share likes and disliked until thy finally come to an agreement.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "scary-ride": {
+      "title": "怖い乗り物",
+      "description": "遊園地で一人は興奮、一人は怖がる友達。",
+      "sophieRole": "冒険好きな友達",
+      "userRole": "怖がりな友達",
+      "topic": "怖い乗り物",
+      "context": "Two friends at an amusement park discuss what to do next, debating whether to go on the big scary ride or choose something less intense.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "running-late": {
+      "title": "遅刻",
+      "description": "生徒が先生に授業に1時間遅れた理由を説明しています。先生が質問し、生徒は謝罪し言い訳をします。",
+      "sophieRole": "厳しいけれど理解のある先生",
+      "userRole": "遅刻した人",
+      "topic": "遅刻",
+      "context": "A student is explaining to the teacher why they are an hour late to class. The teacher asks questions while the student apologizes and makes excuses.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "stomach-pain": {
+      "title": "腹痛",
+      "description": "患者が看護師に腹痛について話し、原因を特定するために考えられる理由や症状について話し合います。",
+      "sophieRole": "親切で気配りのできる看護師",
+      "userRole": "お腹が痛い患者",
+      "topic": "腹痛",
+      "context": "A patient talks to a nurse about their stomach hurting, discussing possible reasons and symptoms to identify the cause.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "lost-wallet": {
+      "title": "財布を失くした",
+      "description": "財布をなくした旅行者が警察官に財布を説明し、見つけるのに役立つ詳細を伝えます。",
+      "sophieRole": "交番の親切な警察官",
+      "userRole": "財布を探す人",
+      "topic": "財布を失くした",
+      "context": "A tourist who lost their wallet describes it to a police officer, providing details to help locate it.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "bad-grade": {
+      "title": "悪い成績",
+      "description": "生徒が悪い成績を取り、先生に何が悪かったのか尋ねます。生徒は科目の難しさに不満を表明しながら、改善策について話し合います。",
+      "sophieRole": "公平で建設的な先生",
+      "userRole": "悪い成績の生徒",
+      "topic": "悪い成績",
+      "context": "A student received a bad grade and asks the teacher what they did wrong. They discuss how to improve while the student expresses frustration over the difficulty of the subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "gossiping": {
+      "title": "噂話",
+      "description": "知人の噂話をする友達。",
+      "sophieRole": "噂好きな友達",
+      "userRole": "好奇心旺盛な聞き手",
+      "topic": "噂話",
+      "context": "two friends gossip about the latest drama involving a mutual friend and share their reactions to the situation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "ordering-the-wrong-item": {
+      "title": "注文ミス",
+      "description": "お客さんが間違った料理を注文したことに気づき、ウェイターに間違いを説明しなければなりません。",
+      "sophieRole": "忍耐強くプロフェッショナルなウェイター",
+      "userRole": "不満な客",
+      "topic": "注文ミス",
+      "context": "A customer realizes they ordered the wrong dish and must explain their mistake to the waiter.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "new-computer": {
+      "title": "新しいパソコン",
+      "description": "新しいパソコンを買って店員にアドバイスを聞く。",
+      "sophieRole": "テクノロジーに詳しい販売員",
+      "userRole": "パソコンを探す客",
+      "topic": "新しいパソコン",
+      "context": "The customer is buying a new computer for their tech  job. they ask about features, prices ad recommendations for their specific needs.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "parent-teacher-conference": {
+      "title": "保護者面談",
+      "description": "親が先生と子供の数学での苦戦について丁寧に話し合います。",
+      "sophieRole": "協力的な数学の先生",
+      "userRole": "心配する親",
+      "topic": "保護者面談",
+      "context": "A parent politely discusses their child's struggles in math with the teacher.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "weekend-getaway": {
+      "title": "週末旅行",
+      "description": "突発的な週末旅行を計画する友達。",
+      "sophieRole": "冒険好きな友達",
+      "userRole": "説得される必要がある友達",
+      "topic": "週末旅行",
+      "context": "A couple plans a romantic weekend getaway, discussing destinations, activities and ways to make the trip special.. Be charming and genuine. Express emotions naturally."
+    },
+    "dance-class": {
+      "title": "ダンス教室",
+      "description": "初めてのダンスクラスで基本を学ぶ初心者。",
+      "sophieRole": "辛抱強いダンスの先生",
+      "userRole": "緊張するダンス初心者",
+      "topic": "ダンス教室",
+      "context": "A friend persuades their hesitant and awkward friend to join a dance class, highlighting how fun and exciting it could be.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "sharing-fitness-plans": {
+      "title": "フィットネス計画",
+      "description": "フィットネス計画を共有し互いを励ます友達。",
+      "sophieRole": "やる気のあるフィットネス友達",
+      "userRole": "フィットネスを始める人",
+      "topic": "フィットネス計画",
+      "context": "Two friends discuss their workout routines, health goals and ways to eat healthy while motivating each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "email-disaster": {
+      "title": "メール大失敗",
+      "description": "従業員が誤って不適切または恥ずかしいメールを全社に送信してしまい、上司に間違いを説明し、謝罪し、解決策を提案しなければなりません。",
+      "sophieRole": "厳格だが理解のある上司",
+      "userRole": "パニック状態の人",
+      "topic": "メール大失敗",
+      "context": "An employee accidentally sends an inappropriate or embarrassing email to the whole company and must explain the mistake to their boss, apologizing and proposing a solution.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "bargaining-at-the-market": {
+      "title": "市場での値切り",
+      "description": "市場でフレンドリーだが真剣に値段交渉する客。",
+      "sophieRole": "頑固な市場の売り手",
+      "userRole": "上手な交渉人",
+      "topic": "市場での値切り",
+      "context": "A customer haggles with a market vendor over the price of fresh produce, trying to get a good deal.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "discussing-a-movie-ending": {
+      "title": "映画の結末を語る",
+      "description": "映画のラストについて熱く議論する友達。",
+      "sophieRole": "違う意見の友達",
+      "userRole": "自分の意見を守る映画ファン",
+      "topic": "映画の結末を語る",
+      "context": "Two friends passionately discuss a surprising movie ending, sharing their theories and opinions.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "missed-the-last-bus": {
+      "title": "終バスに乗り遅れ",
+      "description": "最終バスに乗り遅れてどう帰るか考える人。",
+      "sophieRole": "同情する友達",
+      "userRole": "立ち往生した人",
+      "topic": "終バスに乗り遅れ",
+      "context": "A stranded traveler who missed the last bus asks a local for help finding an alternative way home.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "clean-your-room": {
+      "title": "部屋を片付けて！",
+      "description": "子供に部屋を片付けるよう言う親。",
+      "sophieRole": "厳しいが愛情ある親",
+      "userRole": "気乗りしない子供",
+      "topic": "部屋を片付けて！",
+      "context": "A parent tries to convince their messy teenager to clean their room, using various persuasion tactics.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "forgot-a-birthday": {
+      "title": "誕生日を忘れた",
+      "description": "大切な誕生日を忘れて埋め合わせる人。",
+      "sophieRole": "傷ついた相手",
+      "userRole": "謝りたい人",
+      "topic": "誕生日を忘れた",
+      "context": "A person realizes they forgot their friend's birthday and tries to make it up to them with apologies and plans.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "picky-eater": {
+      "title": "好き嫌いが多い",
+      "description": "好き嫌いが多くメニューから選ぶのに苦労する人。",
+      "sophieRole": "辛抱強いウェイター",
+      "userRole": "好き嫌いの多い人",
+      "topic": "好き嫌いが多い",
+      "context": "A friend tries to convince a picky eater to try a new and unfamiliar dish at a restaurant.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "meeting-the-parents": {
+      "title": "両親に会う",
+      "description": "パートナーの両親に初めて会う人。",
+      "sophieRole": "厳しいが温かい両親",
+      "userRole": "緊張して両親に会う人",
+      "topic": "両親に会う",
+      "context": "A person meets their partner's parents for the first time, trying to make a great impression while navigating awkward questions.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "storytelling": {
+      "title": "物語を語る",
+      "description": "順番に面白い話をする友達。",
+      "sophieRole": "才能ある語り手",
+      "userRole": "熱心な聞き手",
+      "topic": "物語を語る",
+      "context": "Two friends take turns telling each other interesting or funny stories from their past experiences.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "spontaneous-road-trip": {
+      "title": "突然の旅行",
+      "description": "突然のロードトリップを決める友達。",
+      "sophieRole": "冒険家な友達",
+      "userRole": "説得される友達",
+      "topic": "突然の旅行",
+      "context": "A friend tries to convince another to drop everything and go on a spontaneous road trip this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "hard-to-get": {
+      "title": "なかなか振り向かない",
+      "description": "気のない相手を振り向かせようとする人。",
+      "sophieRole": "ミステリアスな人",
+      "userRole": "魅力的な人",
+      "topic": "なかなか振り向かない",
+      "context": "A person playfully tries to get the attention of someone who is playing hard to get.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "online-vs-in-person-work": {
+      "title": "リモート vs 出社",
+      "description": "同僚がリモート勤務とオフィス勤務の長短を議論する。",
+      "sophieRole": "オフィス勤務派",
+      "userRole": "リモート勤務派",
+      "topic": "リモート vs 出社",
+      "context": "Two colleagues debate whether remote work or in-person office work is better, presenting arguments for both sides.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "cheering-up-a-friend": {
+      "title": "友達を元気づける",
+      "description": "落ち込んだ友達を元気づける人。",
+      "sophieRole": "悲しい友達",
+      "userRole": "思いやりのある友達",
+      "topic": "友達を元気づける",
+      "context": "A caring friend tries to cheer up their friend who is feeling down, offering support and encouragement.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "debating-the-best-sports-player": {
+      "title": "最高の選手論争",
+      "description": "史上最高のスポーツ選手について熱く議論するファン。",
+      "sophieRole": "情熱的なスポーツファン",
+      "userRole": "違う意見のファン",
+      "topic": "最高の選手論争",
+      "context": "Two sports fans passionately debate who the greatest athlete of all time is, defending their picks.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "company-meeting": {
+      "title": "会社の会議",
+      "description": "会議でアイデアを発表しプロジェクトを討議する。",
+      "sophieRole": "断固としたプロジェクトマネージャー",
+      "userRole": "アイデアを提案する社員",
+      "topic": "会社の会議",
+      "context": "An employee presents their ideas during a team meeting, responding to questions and feedback from colleagues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "intense-argument": {
+      "title": "激しい口論",
+      "description": "論争的なテーマで激しく議論する二人。",
+      "sophieRole": "情熱的な話し手",
+      "userRole": "強い意見を持つ人",
+      "topic": "激しい口論",
+      "context": "A couple gets into a heated but ultimately productive argument about a misunderstanding, working through their emotions.. Be charming and genuine. Express emotions naturally."
+    },
+    "dreaming-big": {
+      "title": "大きな夢",
+      "description": "大きな夢と野望について話す友達。",
+      "sophieRole": "インスピレーションを与える友達",
+      "userRole": "大きな計画を持つ夢想家",
+      "topic": "大きな夢",
+      "context": "Two friends share their wildest dreams and ambitions for the future, encouraging each other to dream big.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "fears-and-phobias": {
+      "title": "恐怖と恐怖症",
+      "description": "恐怖症や怖いものについて率直に話す友達。",
+      "sophieRole": "理解のある聞き手",
+      "userRole": "恐怖を共有する人",
+      "topic": "恐怖と恐怖症",
+      "context": "Two friends open up about their deepest fears and phobias, sharing personal stories and offering support.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "guilty-confessions": {
+      "title": "罪悪感の告白",
+      "description": "小さな罪や後悔を告白し合う友達。",
+      "sophieRole": "正直な友達",
+      "userRole": "告白したい人",
+      "topic": "罪悪感の告白",
+      "context": "A person opens up to a therapist about things they feel guilty about, seeking understanding and advice.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "ex-or-not": {
+      "title": "元カレ・元カノ？",
+      "description": "元恋人とヨリを戻すべきか話し合う友達。",
+      "sophieRole": "現実的な友達",
+      "userRole": "元恋人に迷う人",
+      "topic": "元カレ・元カノ？",
+      "context": "Two friends discuss whether one of them should get back together with their ex, weighing the pros and cons.. Be charming and genuine. Express emotions naturally."
+    },
+    "fitness-goals": {
+      "title": "フィットネス目標",
+      "description": "フィットネス目標を設定し励まし合う友達。",
+      "sophieRole": "経験豊富なフィットネス専門家",
+      "userRole": "フィットネス初心者",
+      "topic": "フィットネス目標",
+      "context": "Two friends discuss their fitness goals, workout routines, and healthy habits, motivating each other.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "car-accident": {
+      "title": "交通事故",
+      "description": "軽い車の事故を説明して情報交換する人。",
+      "sophieRole": "冷静な警察官",
+      "userRole": "軽い事故後の運転手",
+      "topic": "交通事故",
+      "context": "A person involved in a minor car accident explains the situation to a police officer and exchanges information.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "deep-talk": {
+      "title": "深い話",
+      "description": "人生の意味について深い対話をする親友。",
+      "sophieRole": "物思いにふける友達",
+      "userRole": "深い考えを共有する人",
+      "topic": "深い話",
+      "context": "Two close friends have a deep late-night conversation about life, purpose, and what truly matters to them.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-advice": {
+      "title": "キャリアアドバイス",
+      "description": "キャリアのヒントと専門的成長について話す友達。",
+      "sophieRole": "経験豊富なアドバイザー",
+      "userRole": "キャリアを模索する人",
+      "topic": "キャリアアドバイス",
+      "context": "A conversation scenario about career advice.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "abstract-art": {
+      "title": "抽象芸術",
+      "description": "抽象芸術の意味と価値について議論する二人。",
+      "sophieRole": "抽象芸術好き",
+      "userRole": "抽象芸術に疑問を持つ人",
+      "topic": "抽象芸術",
+      "context": "Two art enthusiasts debate the meaning and value of abstract art while visiting a gallery together.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "setting-tram-goals": {
+      "title": "トラムの目標設定",
+      "description": "チーム目標を設定しプロジェクト戦略を議論する。",
+      "sophieRole": "モチベーターなチームリーダー",
+      "userRole": "献身的なチームメンバー",
+      "topic": "トラムの目標設定",
+      "context": "A conversation scenario about setting tram goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "four-day-workweek": {
+      "title": "週4日勤務",
+      "description": "週4日勤務のメリット・デメリットを議論する。",
+      "sophieRole": "週4日勤務に否定的な人",
+      "userRole": "週4日勤務に賛成の人",
+      "topic": "週4日勤務",
+      "context": "Two people debate whether a four-day workweek would improve productivity and work-life balance or hurt businesses.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "slacking-off": {
+      "title": "怠ける",
+      "description": "サボっている社員に上司が注意する。",
+      "sophieRole": "厳しいが公平な上司",
+      "userRole": "サボりがバレた社員",
+      "topic": "怠ける",
+      "context": "A manager confronts an employee about slacking off at work, while the employee tries to explain and negotiate.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "salary-negotiation": {
+      "title": "給与交渉",
+      "description": "上司と給料アップを交渉する社員。",
+      "sophieRole": "慎重な上司",
+      "userRole": "自信のある社員",
+      "topic": "給与交渉",
+      "context": "An employee negotiates a salary raise with their manager, presenting their achievements and value to the company.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "teenagers": {
+      "title": "ティーンエイジャー",
+      "description": "もっと自由が欲しい反抗期の子にルールを作る親。",
+      "sophieRole": "反抗的なティーンエイジャー",
+      "userRole": "ルールを作る親",
+      "topic": "ティーンエイジャー",
+      "context": "A parent tries to set rules and boundaries for their teenager, who pushes back and argues for more freedom.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "breaking-up": {
+      "title": "別れる",
+      "description": "正直かつ思いやりを持って別れ話を始める人。",
+      "sophieRole": "別れたくないパートナー",
+      "userRole": "関係を終わらせる人",
+      "topic": "別れる",
+      "context": "A person initiates a difficult breakup conversation, trying to be honest and kind while ending the relationship.. Be charming and genuine. Express emotions naturally."
+    },
+    "hiking-trip": {
+      "title": "ハイキング",
+      "description": "インドア派の友達をハイキングに誘う人。",
+      "sophieRole": "家が好きな友達",
+      "userRole": "冒険好きな友達",
+      "topic": "ハイキング",
+      "context": "A friend tries to convince their couch-potato friend to join an exciting hiking adventure this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "lowering-the-drinking-age": {
+      "title": "飲酒年齢引き下げ",
+      "description": "飲酒年齢引き下げについて議論する二人。",
+      "sophieRole": "引き下げ反対派",
+      "userRole": "引き下げ賛成派",
+      "topic": "飲酒年齢引き下げ",
+      "context": "Two people debate whether the legal drinking age should be lowered, presenting social and health arguments.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "performance-review": {
+      "title": "人事評価",
+      "description": "業績評価を受けて上司と目標を話す社員。",
+      "sophieRole": "公平な上司",
+      "userRole": "評価を受ける社員",
+      "topic": "人事評価",
+      "context": "An employee receives their performance review from their manager, discussing achievements, areas to improve, and goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "pulled-over": {
+      "title": "検問に止められた",
+      "description": "スピード違反切符を免れようとする運転手。",
+      "sophieRole": "厳格な警察官",
+      "userRole": "言い訳を探す運転手",
+      "topic": "検問に止められた",
+      "context": "A driver pulled over by a police officer tries to talk their way out of a speeding ticket with creative excuses.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "wedding-proposal": {
+      "title": "プロポーズ",
+      "description": "パートナーにプロポーズする人。",
+      "sophieRole": "驚いたパートナー",
+      "userRole": "プロポーズする人",
+      "topic": "プロポーズ",
+      "context": "A person nervously plans and delivers a heartfelt wedding proposal to their partner.. Be charming and genuine. Express emotions naturally."
+    },
+    "dropping-out": {
+      "title": "中退",
+      "description": "夢を追うため退学を親に説得する学生。",
+      "sophieRole": "心配する親",
+      "userRole": "退学したい学生",
+      "topic": "中退",
+      "context": "A student tries to convince their parents that dropping out of school to pursue their passion is the right decision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "requesting-a-promotion": {
+      "title": "昇進を求める",
+      "description": "昇進を求めて実績を示す社員。",
+      "sophieRole": "注意深い上司",
+      "userRole": "野心的な社員",
+      "topic": "昇進を求める",
+      "context": "An employee meets with their boss to request a promotion, highlighting their contributions and readiness for growth.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "nuclear-threat": {
+      "title": "核の脅威",
+      "description": "核の脅威について政府と協議する世界の指導者。",
+      "sophieRole": "外交を勧める慎重なアドバイザー",
+      "userRole": "行動を決める指導者",
+      "topic": "核の脅威",
+      "context": "A world leader addresses their cabinet about a nuclear threat, debating how to respond diplomatically or militarily.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "presidential-speech": {
+      "title": "大統領演説",
+      "description": "大統領候補が選挙演説をする。",
+      "sophieRole": "鋭い質問のジャーナリスト",
+      "userRole": "演説をする候補者",
+      "topic": "大統領演説",
+      "context": "A presidential candidate delivers a passionate campaign speech, addressing the nation's key issues and their vision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "pitching-an-idea": {
+      "title": "アイデアを売り込む",
+      "description": "上司に革新的なビジネスアイデアを提案する社員。",
+      "sophieRole": "懐疑的だがオープンな上司",
+      "userRole": "アイデアを持つクリエイティブな社員",
+      "topic": "アイデアを売り込む",
+      "context": "An employee pitches an innovative business idea to their boss, trying to convince them of its potential.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "climate-change-debate": {
+      "title": "気候変動議論",
+      "description": "現在の気候政策の有効性について議論する二人。",
+      "sophieRole": "気候懐疑論者",
+      "userRole": "環境活動家",
+      "topic": "気候変動議論",
+      "context": "Two people debate the effectiveness of current climate change policies and what more should be done.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "ai-dilemma": {
+      "title": "AIのジレンマ",
+      "description": "AIの倫理的影響について議論する二人。",
+      "sophieRole": "テクノロジー楽観主義者",
+      "userRole": "AIのリスクを心配する人",
+      "topic": "AIのジレンマ",
+      "context": "Two people debate the ethical implications of AI, discussing its impact on jobs, privacy, and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "educational-policy": {
+      "title": "教育政策",
+      "description": "教育政策と生徒の福祉について議論する二人。",
+      "sophieRole": "伝統教育の擁護者",
+      "userRole": "教育改革を求める人",
+      "topic": "教育政策",
+      "context": "Two people debate modern education policies, including standardized testing, curriculum changes, and student well-being.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "universal-basic-income": {
+      "title": "ベーシックインカム",
+      "description": "ベーシックインカムの実現性について議論する二人。",
+      "sophieRole": "ベーシックインカム懐疑論者",
+      "userRole": "ベーシックインカム賛成者",
+      "topic": "ベーシックインカム",
+      "context": "Two people debate whether universal basic income would help or hurt the economy and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "space-exploration": {
+      "title": "宇宙探査",
+      "description": "宇宙探査への投資を議論する二人。",
+      "sophieRole": "地球優先派",
+      "userRole": "宇宙探査に熱心な人",
+      "topic": "宇宙探査",
+      "context": "Two people debate whether space exploration funding is justified or if the money should be spent on Earth's problems.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "weather": {
+      "title": "天気",
+      "description": "今日の良い天気について友達二人がおしゃべりし、一緒にどんなことをするか話し合います。",
+      "sophieRole": "天気について楽しそうに話す、フレンドリーな話し相手",
+      "userRole": "天気について話す友達",
+      "topic": "天気",
+      "context": "Two friends chat about the nice weather today and discuss what activities they might do together.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "likes-dislikes": {
+      "title": "好き嫌い",
+      "description": "ユーザーとソフィーが、様々な活動や興味について基本的な意見を共有しながら、好き嫌いについて話します。",
+      "sophieRole": "知りたがりな会話相手",
+      "userRole": "自分の好みについて話す人",
+      "topic": "好き嫌い",
+      "context": "User and Sophie talk about their likes and dislikes, sharing basic opinions about different activities and interests.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "favorite-movies-and-tv-shows": {
+      "title": "好きな映画とテレビ番組",
+      "description": "二人が好きな映画やテレビ番組について話し、「（番組）は見ましたか？」「今までで一番好きな映画は何ですか？」といった質問をします。",
+      "sophieRole": "熱心な映画とテレビ番組のファン",
+      "userRole": "好きな番組について話す友達",
+      "topic": "好きな映画とテレビ番組",
+      "context": "Two people talk about their favorite movies or tv shows, asking question like, \"How you watched (show)?\" or \"What's your favorite movie of all time?\".. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "basic-check-up": {
+      "title": "健康診断",
+      "description": "患者が定期検診のために医者を訪れます。医者は患者のライフスタイルについて詳しく知るため、日々の習慣について簡単な質問をします。",
+      "sophieRole": "思いやりがあり、プロフェッショナルな医者",
+      "userRole": "健康に関する質問に答える患者",
+      "topic": "健康診断",
+      "context": "A patient visits the doctor for a routine check-up. the doctor asks simple questions about their daily habits to learn more about their lifestyle.. Ask clear, practical questions. Show empathy and professionalism."
     }
   },
   "common": {
