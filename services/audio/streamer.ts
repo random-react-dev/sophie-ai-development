@@ -1,6 +1,6 @@
 import { decode } from "base64-arraybuffer";
 import {
-  AudioBufferQueueSourceNode,
+  AudioBufferSourceNode,
   AudioContext,
   GainNode,
 } from "react-native-audio-api";
@@ -12,7 +12,7 @@ const SAMPLE_RATE = 24000; // Gemini output rate
 
 // Accumulate chunks into 0.2s buffers before sending to native
 const ACCUMULATION_TARGET = 4800; // 0.2s of audio at 24kHz (5 Gemini chunks)
-const MIN_INITIAL_BUFFER = 7200; // 0.3s of audio before starting playback
+const MIN_INITIAL_BUFFER = 24000; // 1.0s of audio before starting playback
 const FADE_IN_DURATION = 0.01; // 10ms fade-in to prevent pops
 
 // Reset AudioContext every response to prevent silence on reused contexts.
@@ -27,7 +27,6 @@ type BufferProgressCallback = (progress: number) => void; // 0-100
 class AudioStreamer {
   private audioContext: AudioContext | null = null;
   private gainNode: GainNode | null = null;
-  private queueSource: AudioBufferQueueSourceNode | null = null;
   private isPlaying = false;
   private isInterrupted = false;
   private isGenerationComplete = false;
@@ -45,10 +44,14 @@ class AudioStreamer {
   private accumulatedLength = 0;
   private totalQueuedSamples = 0;
 
-  private watchdogTimerId: ReturnType<typeof setTimeout> | null = null;
   private isPaused = false;
   private hasResponseCompleted = false; // True once finishSpeaking() has run
   private initPromise: Promise<void> | null = null;
+
+  // Scheduled playback state
+  private nextPlaybackTime = 0; // ctx.currentTime when next buffer should start
+  private pendingBuffers: AudioBuffer[] = []; // buffers waiting for startSpeaking()
+  private lastScheduledSource: AudioBufferSourceNode | null = null; // for onEnded
 
   private static instance: AudioStreamer;
   private constructor() {}
@@ -132,8 +135,6 @@ class AudioStreamer {
     const entryTime = this.audioContext?.currentTime ?? 0;
     Logger.debug(TAG, `[DIAG] prepareForNewResponse entry ctx.state=${entryState} ctx.time=${entryTime.toFixed(3)}`);
 
-    this.clearWatchdog();
-
     // Cancel any pending gain automations from previous response
     if (this.gainNode) {
       this.gainNode.gain.cancelScheduledValues(0);
@@ -156,15 +157,6 @@ class AudioStreamer {
       this.responsesSinceReset = 0;
     }
 
-    // NOTE: suspend()→resume() was intentionally REMOVED here.
-    // Those calls return Promises but were never awaited, causing a race
-    // condition where createFreshQueueSource() would connect to a context
-    // still in "suspended" state. This broke audio on the 2nd+ response.
-    // The periodic full reset (every 2 responses) handles engine staleness.
-
-    // Create a FRESH queueSource for each response
-    this.createFreshQueueSource();
-
     this.isInterrupted = false;
     this.isGenerationComplete = false;
     this.hasStartedPlayback = false;
@@ -175,6 +167,9 @@ class AudioStreamer {
     this.totalQueuedSamples = 0;
     this.isPaused = false;
     this.hasResponseCompleted = false;
+    this.pendingBuffers = [];
+    this.nextPlaybackTime = 0;
+    this.lastScheduledSource = null;
 
     const exitState = this.audioContext?.state ?? 'null';
     const exitTime = this.audioContext?.currentTime ?? 0;
@@ -183,19 +178,6 @@ class AudioStreamer {
 
   private performFullReset(): void {
     Logger.info(TAG, "Full reset — recreating AudioContext");
-
-    // Close and recreate AudioContext to release all native resources.
-    // NOTE: stop() is intentionally omitted — it writes directly to native
-    // stopTime_ (audio thread sees immediately), while disconnect() goes
-    // through the SPSC channel (processed next render quantum). This timing
-    // mismatch can corrupt the GainNode's numberOfEnabledInputNodes_ counter.
-    if (this.queueSource) {
-      try {
-        this.queueSource.clearBuffers();
-        this.queueSource.disconnect();
-      } catch {}
-      this.queueSource = null;
-    }
 
     if (this.gainNode) {
       try {
@@ -225,24 +207,22 @@ class AudioStreamer {
   }
 
   private stopCurrentPlayback(): void {
-    this.clearWatchdog();
-
     // Cancel gain automations to prevent stale ramps affecting next response
     if (this.gainNode) {
       this.gainNode.gain.cancelScheduledValues(0);
       this.gainNode.gain.value = 1.0;
     }
 
-    // NOTE: stop() is intentionally omitted — see performFullReset() comment.
-    if (this.queueSource) {
-      try {
-        this.queueSource.clearBuffers();
-        this.queueSource.disconnect();
-      } catch {
-        /* ignore errors from already-stopped sources */
-      }
-      this.queueSource = null; // Explicit null to help GC
+    // Disconnect and recreate gain node to instantly silence all scheduled sources
+    if (this.gainNode && this.audioContext) {
+      this.gainNode.disconnect();
+      this.gainNode = this.audioContext.createGain();
+      this.gainNode.gain.value = 1.0;
+      this.gainNode.connect(this.audioContext.destination);
     }
+
+    this.pendingBuffers = [];
+    this.lastScheduledSource = null;
 
     const wasPlaying = this.isPlaying;
     this.isPlaying = false;
@@ -258,38 +238,26 @@ class AudioStreamer {
     }
   }
 
-  private createFreshQueueSource(): void {
-    if (!this.audioContext || !this.gainNode) {
-      Logger.warn(TAG, `Cannot create queueSource — ctx=${!!this.audioContext} gain=${!!this.gainNode}`);
-      return;
+  /**
+   * Schedule an AudioBuffer for playback at the next available time.
+   * Uses the native audio engine's timeline for sample-accurate scheduling.
+   */
+  private scheduleBuffer(audioBuffer: AudioBuffer): void {
+    if (!this.audioContext || !this.gainNode) return;
+
+    const source = this.audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(this.gainNode);
+
+    const now = this.audioContext.currentTime;
+    if (this.nextPlaybackTime < now) {
+      // Delivery fell behind — skip to now with small offset
+      this.nextPlaybackTime = now + 0.02;
     }
 
-    // CRITICAL: Fully cleanup old queue source to prevent degradation.
-    // NOTE: stop() is intentionally omitted — see performFullReset() comment.
-    if (this.queueSource) {
-      try {
-        this.queueSource.clearBuffers();
-        this.queueSource.disconnect();
-      } catch {
-        /* ignore errors from already-stopped sources */
-      }
-      this.queueSource = null; // Explicit null to help GC
-    }
-
-    // Create fresh queue source and connect through GainNode
-    this.queueSource = this.audioContext.createBufferQueueSource();
-    this.queueSource.connect(this.gainNode);
-
-    // Use native callback for reliable completion detection
-    const currentResponseId = this.responseId;
-    this.queueSource.onEnded = (event: { bufferId: string | undefined; isLast: boolean | undefined }) => {
-      // Only act on isLast from the current response while generation is complete
-      if (!event.isLast || this.responseId !== currentResponseId) return;
-      if (this.isGenerationComplete) {
-        Logger.info(TAG, `onEnded — last buffer done, finishing`);
-        this.finishSpeaking();
-      }
-    };
+    source.start(this.nextPlaybackTime);
+    this.nextPlaybackTime += audioBuffer.duration;
+    this.lastScheduledSource = source;
   }
 
   /**
@@ -297,9 +265,9 @@ class AudioStreamer {
    * (0.2s) before sending to native layer to reduce bridge traffic.
    */
   queueAudio(base64Pcm: string): void {
-    if (this.isInterrupted || !this.audioContext || !this.queueSource) {
-      if (!this.audioContext || !this.queueSource) {
-        Logger.warn(TAG, `queueAudio dropped — ctx=${!!this.audioContext} src=${!!this.queueSource}`);
+    if (this.isInterrupted || !this.audioContext) {
+      if (!this.audioContext) {
+        Logger.warn(TAG, `queueAudio dropped — ctx=${!!this.audioContext}`);
       }
       return;
     }
@@ -338,7 +306,7 @@ class AudioStreamer {
         this.bufferProgressCallback?.(progress);
       }
 
-      // Start playback once we have enough initial buffer (0.3s)
+      // Start playback once we have enough initial buffer (1.0s)
       if (
         !this.hasStartedPlayback &&
         this.totalQueuedSamples >= MIN_INITIAL_BUFFER
@@ -352,10 +320,11 @@ class AudioStreamer {
   }
 
   /**
-   * Flush accumulated samples into a single AudioBuffer and queue it.
+   * Flush accumulated samples into a single AudioBuffer and either
+   * schedule it immediately (if playback started) or queue for later.
    */
   private flushAccumulatedBuffer(): void {
-    if (!this.audioContext || !this.queueSource || this.accumulatedLength === 0)
+    if (!this.audioContext || this.accumulatedLength === 0)
       return;
 
     // Merge all accumulated samples
@@ -366,18 +335,24 @@ class AudioStreamer {
       offset += chunk.length;
     }
 
-    // Create AudioBuffer and queue
+    // Create AudioBuffer
     const audioBuffer = this.audioContext.createBuffer(
       1,
       this.accumulatedLength,
       SAMPLE_RATE,
     );
     audioBuffer.getChannelData(0).set(merged);
-    this.queueSource.enqueueBuffer(audioBuffer);
 
     // Track total queued
     this.totalQueuedSamples += this.accumulatedLength;
     this.flushCount++;
+
+    // Either schedule immediately or queue for startSpeaking()
+    if (this.hasStartedPlayback) {
+      this.scheduleBuffer(audioBuffer);
+    } else {
+      this.pendingBuffers.push(audioBuffer);
+    }
 
     // Explicit memory cleanup
     this.accumulatedSamples.length = 0;
@@ -386,8 +361,8 @@ class AudioStreamer {
   }
 
   private startSpeaking(): void {
-    if (this.isPlaying || !this.queueSource || !this.gainNode) {
-      Logger.warn(TAG, `startSpeaking skipped — playing=${this.isPlaying} src=${!!this.queueSource} gain=${!!this.gainNode}`);
+    if (this.isPlaying || !this.gainNode) {
+      Logger.warn(TAG, `startSpeaking skipped — playing=${this.isPlaying} gain=${!!this.gainNode}`);
       return;
     }
 
@@ -405,39 +380,18 @@ class AudioStreamer {
 
     Logger.debug(TAG, `[DIAG] startSpeaking ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`);
 
-    // Start the queue source playback
-    this.queueSource.start();
+    // Schedule all pending buffers starting now
+    this.nextPlaybackTime = currentTime;
+    for (const buffer of this.pendingBuffers) {
+      this.scheduleBuffer(buffer);
+    }
+    this.pendingBuffers = [];
 
     this.isPlaying = true;
     this.hasStartedPlayback = true;
     this.bufferProgressCallback?.(100); // Clear progress
     Logger.info(TAG, `>>> SPEAKING started — resp=#${this.responseId} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`);
     this.speakingStateCallback?.(true);
-
-    // Watchdog: verify AudioContext.currentTime is advancing (engine truly running)
-    // Unified logic for all platforms — if stalled, go directly to full reset.
-    // The previous iOS two-tier recovery (suspend→resume then escalate) had the
-    // same unawaited-Promise race condition. Direct full reset is faster and safer.
-    const watchdogResponseId = this.responseId;
-    const startCurrentTime = this.audioContext?.currentTime ?? 0;
-
-    this.clearWatchdog();
-    this.watchdogTimerId = setTimeout(() => {
-      if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
-      const nowCurrentTime = this.audioContext?.currentTime ?? 0;
-      const delta = nowCurrentTime - startCurrentTime;
-      Logger.debug(TAG, `[DIAG] WATCHDOG check start=${startCurrentTime.toFixed(3)} now=${nowCurrentTime.toFixed(3)} delta=${delta.toFixed(3)}`);
-      if (delta < 0.1) {
-        Logger.warn(TAG, `WATCHDOG: Stalled delta=${delta.toFixed(3)} — full reset`);
-        this.performFullReset();
-        this.createFreshQueueSource();
-        this.isPlaying = false;
-        this.hasStartedPlayback = false;
-        this.speakingStateCallback?.(false);
-      } else {
-        Logger.debug(TAG, `WATCHDOG: OK delta=${delta.toFixed(3)}`);
-      }
-    }, 500);
   }
 
   onGenerationComplete(): void {
@@ -464,13 +418,18 @@ class AudioStreamer {
       this.startSpeaking();
     }
 
-    // The onEnded callback (with isLast=true) will call finishSpeaking()
-    // No setTimeout needed — native callback is more reliable
+    // Set onEnded on last scheduled source for native completion detection
+    if (this.lastScheduledSource && this.isPlaying) {
+      const currentResponseId = this.responseId;
+      this.lastScheduledSource.onEnded = () => {
+        if (this.responseId !== currentResponseId) return;
+        this.finishSpeaking();
+      };
+    }
   }
 
   private finishSpeaking(): void {
     if (!this.isPlaying) return;
-    this.clearWatchdog();
 
     Logger.info(TAG, `<<< SPEAKING finished — resp=#${this.responseId} ${this.chunkCount} chunks, ${this.flushCount} flushes, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`);
 
@@ -487,6 +446,9 @@ class AudioStreamer {
     this.hasStartedPlayback = false;
     this.chunkCount = 0;
     this.flushCount = 0;
+    this.pendingBuffers = [];
+    this.nextPlaybackTime = 0;
+    this.lastScheduledSource = null;
 
     // Explicit memory cleanup
     if (this.accumulatedSamples.length > 0) {
@@ -497,16 +459,8 @@ class AudioStreamer {
     this.totalQueuedSamples = 0;
   }
 
-  private clearWatchdog(): void {
-    if (this.watchdogTimerId !== null) {
-      clearTimeout(this.watchdogTimerId);
-      this.watchdogTimerId = null;
-    }
-  }
-
   handleInterruption(): void {
     Logger.info(TAG, "Interrupted");
-    this.clearWatchdog();
     this.isInterrupted = true;
     this.responseId++;
 
@@ -521,46 +475,30 @@ class AudioStreamer {
   }
 
   /**
-   * Pause playback using native pause() which preserves queue position.
+   * Pause playback by muting gain. Scheduled audio continues silently.
    */
   pausePlayback(): void {
-    if (this.hasResponseCompleted) {
-      this.isPaused = false;
-      return;
-    }
+    if (this.hasResponseCompleted || !this.isPlaying) return;
 
-    if (!this.audioContext || !this.queueSource || !this.isPlaying) return;
-
-    Logger.info(TAG, "Paused");
-    this.queueSource.pause();
-    this.isPlaying = false;
+    this.gainNode?.gain.cancelScheduledValues(0);
+    if (this.gainNode) this.gainNode.gain.value = 0;
     this.isPaused = true;
     this.speakingStateCallback?.(false);
   }
 
   /**
-   * Resume playback using native start() after a pause.
+   * Resume playback by restoring gain.
    */
   resumePlayback(): void {
-    if (!this.audioContext || !this.queueSource) return;
-    if (this.hasResponseCompleted) return;
-    if (!this.isPaused) return;
+    if (!this.isPaused || this.hasResponseCompleted) return;
 
-    Logger.info(TAG, "Resumed");
-
-    if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
-    }
-
-    this.queueSource.start();
-    this.isPlaying = true;
+    if (this.gainNode) this.gainNode.gain.value = 1.0;
     this.isPaused = false;
     this.speakingStateCallback?.(true);
   }
 
   dispose(): void {
     Logger.info(TAG, "Disposed");
-    this.clearWatchdog();
     this.stopCurrentPlayback();
 
     if (this.gainNode) {

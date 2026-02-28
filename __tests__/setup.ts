@@ -31,6 +31,13 @@ const mockBufferSource = {
   disconnect: jest.fn(),
   start: jest.fn(),
   stop: jest.fn(),
+  _onEnded: null as (() => void) | null,
+  get onEnded() {
+    return this._onEnded;
+  },
+  set onEnded(cb: (() => void) | null) {
+    this._onEnded = cb;
+  },
 };
 
 const mockQueueSource = {
@@ -65,7 +72,18 @@ const mockAudioContext = {
       set: jest.fn(),
     })),
   })),
-  createBufferSource: jest.fn(() => ({ ...mockBufferSource })),
+  createBufferSource: jest.fn(() => {
+    let _onEnded: (() => void) | null = null;
+    return {
+      buffer: null,
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      start: jest.fn(),
+      stop: jest.fn(),
+      get onEnded() { return _onEnded; },
+      set onEnded(cb: (() => void) | null) { _onEnded = cb; },
+    };
+  }),
   createBufferQueueSource: jest.fn(() => ({ ...mockQueueSource })),
   suspend: jest.fn(() => Promise.resolve(true)),
   resume: jest.fn(() => Promise.resolve(true)),
@@ -75,7 +93,7 @@ const mockAudioContext = {
 jest.mock('react-native-audio-api', () => ({
   AudioContext: jest.fn(() => ({ ...mockAudioContext })),
   GainNode: jest.fn(),
-  AudioBufferQueueSourceNode: jest.fn(),
+  AudioBufferSourceNode: jest.fn(),
   AudioManager: {
     setAudioSessionOptions: jest.fn(),
     setAudioSessionActivity: jest.fn(() => Promise.resolve()),

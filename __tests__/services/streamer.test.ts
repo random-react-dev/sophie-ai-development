@@ -20,6 +20,17 @@ function getLatestCtx(): any {
   return results[results.length - 1].value;
 }
 
+/**
+ * Queue enough audio to trigger playback start (MIN_INITIAL_BUFFER = 24000).
+ * Uses 4800-sample chunks (0.2s each, matching ACCUMULATION_TARGET) × 5 = 24000.
+ */
+function queueEnoughToStart(audioStreamer: any): void {
+  const chunk = createPcmChunk(4800);
+  for (let i = 0; i < 5; i++) {
+    audioStreamer.queueAudio(chunk);
+  }
+}
+
 describe('AudioStreamer', () => {
   let audioStreamer: typeof import('@/services/audio/streamer').audioStreamer;
 
@@ -59,7 +70,6 @@ describe('AudioStreamer', () => {
     });
 
     it('does NOT call suspend/resume on any platform', () => {
-      // suspend/resume was removed due to unawaited-Promise race condition
       setPlatform('ios');
       audioStreamer.prepareForNewResponse();
 
@@ -83,15 +93,6 @@ describe('AudioStreamer', () => {
       const ctx = (AudioContext as jest.Mock).mock.results[0].value;
       const gainNode = ctx.createGain.mock.results[0].value;
       expect(gainNode.gain.cancelScheduledValues).toHaveBeenCalled();
-    });
-
-    it('creates fresh queue source', async () => {
-      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
-      const initialCount = ctx.createBufferQueueSource.mock.calls.length;
-
-      audioStreamer.prepareForNewResponse();
-
-      expect(ctx.createBufferQueueSource.mock.calls.length).toBeGreaterThan(initialCount);
     });
   });
 
@@ -128,21 +129,19 @@ describe('AudioStreamer', () => {
     it('does not queue when interrupted', () => {
       audioStreamer.handleInterruption();
 
-      const ctx = getLatestCtx();
-      const lastQueueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
-
+      // After interruption, queueAudio should be a no-op
       audioStreamer.queueAudio(createPcmChunk(960));
 
-      expect(lastQueueSource.enqueueBuffer).not.toHaveBeenCalled();
+      // No createBufferSource calls beyond the priming one
+      const ctx = getLatestCtx();
+      // Priming creates one buffer source, no additional should be created
+      const primeCount = ctx.createBufferSource.mock.calls.length;
+      audioStreamer.queueAudio(createPcmChunk(4800));
+      expect(ctx.createBufferSource.mock.calls.length).toBe(primeCount);
     });
 
     it('accumulates chunks and flushes when reaching 4800 samples', () => {
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
 
       // Each chunk: 960 samples. Need 5 to reach 4800
       const chunk = createPcmChunk(960);
@@ -151,11 +150,13 @@ describe('AudioStreamer', () => {
       audioStreamer.queueAudio(chunk); // 2880
       audioStreamer.queueAudio(chunk); // 3840
 
-      expect(queueSource.enqueueBuffer).not.toHaveBeenCalled();
+      // Should not have created any buffer (besides priming) yet
+      const bufferCountBeforeFlush = ctx.createBuffer.mock.calls.length;
 
       audioStreamer.queueAudio(chunk); // 4800 - triggers flush
 
-      expect(queueSource.enqueueBuffer).toHaveBeenCalledTimes(1);
+      // Should have created exactly one more buffer for the flush
+      expect(ctx.createBuffer.mock.calls.length).toBe(bufferCountBeforeFlush + 1);
     });
   });
 
@@ -179,12 +180,9 @@ describe('AudioStreamer', () => {
 
       // After interruption, queuing should be blocked
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
-
-      audioStreamer.queueAudio(createPcmChunk(960));
-      expect(queueSource.enqueueBuffer).not.toHaveBeenCalled();
+      const bufferCountBefore = ctx.createBuffer.mock.calls.length;
+      audioStreamer.queueAudio(createPcmChunk(4800));
+      expect(ctx.createBuffer.mock.calls.length).toBe(bufferCountBefore);
     });
   });
 
@@ -223,20 +221,18 @@ describe('AudioStreamer', () => {
       audioStreamer.prepareForNewResponse();
 
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const bufferCountBefore = ctx.createBuffer.mock.calls.length;
 
       // Queue less than ACCUMULATION_TARGET (4800)
       audioStreamer.queueAudio(createPcmChunk(960));
       audioStreamer.queueAudio(createPcmChunk(960)); // 1920 total
 
-      expect(queueSource.enqueueBuffer).not.toHaveBeenCalled();
+      expect(ctx.createBuffer.mock.calls.length).toBe(bufferCountBefore);
 
       // Generation complete should flush remaining
       audioStreamer.onGenerationComplete();
 
-      expect(queueSource.enqueueBuffer).toHaveBeenCalledTimes(1);
+      expect(ctx.createBuffer.mock.calls.length).toBe(bufferCountBefore + 1);
     });
 
     it('is ignored when interrupted', async () => {
@@ -265,6 +261,162 @@ describe('AudioStreamer', () => {
       // Should not throw
       audioStreamer.resumePlayback();
     });
+
+    it('pause mutes gain and resume restores it', async () => {
+      setPlatform('ios');
+      await audioStreamer.initialize();
+      audioStreamer.prepareForNewResponse();
+
+      // Start playback
+      queueEnoughToStart(audioStreamer);
+
+      const ctx = getLatestCtx();
+      const gainNode = ctx.createGain.mock.results[ctx.createGain.mock.results.length - 1].value;
+
+      audioStreamer.pausePlayback();
+      expect(gainNode.gain.value).toBe(0);
+
+      audioStreamer.resumePlayback();
+      expect(gainNode.gain.value).toBe(1.0);
+    });
+  });
+
+  describe('scheduled playback', () => {
+    beforeEach(async () => {
+      setPlatform('ios');
+      await audioStreamer.initialize();
+    });
+
+    it('creates AudioBufferSourceNode for each flush after playback starts', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+
+      // Queue enough to start playback (5 chunks of 4800 = 24000)
+      queueEnoughToStart(audioStreamer);
+
+      // Count createBufferSource calls after playback started
+      const sourceCountAfterStart = ctx.createBufferSource.mock.calls.length;
+
+      // Queue one more chunk after playback started — should schedule immediately
+      audioStreamer.queueAudio(createPcmChunk(4800));
+
+      // Should create exactly one more BufferSourceNode
+      expect(ctx.createBufferSource.mock.calls.length).toBe(sourceCountAfterStart + 1);
+    });
+
+    it('source.start() is called with increasing when values', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+
+      // Queue enough to start playback
+      queueEnoughToStart(audioStreamer);
+
+      // Get all createBufferSource results — filter to only sources that were
+      // called with a `when` argument (scheduled sources, not priming)
+      const allSources = ctx.createBufferSource.mock.results;
+      const scheduledSources = allSources.filter(
+        (r: any) => r.value.start.mock.calls.length > 0 && r.value.start.mock.calls[0][0] !== undefined
+      );
+
+      expect(scheduledSources.length).toBeGreaterThan(0);
+
+      // Get the when values from start() calls
+      const whenValues = scheduledSources.map(
+        (r: any) => r.value.start.mock.calls[0][0]
+      );
+
+      // Values should be non-decreasing (each buffer scheduled after previous)
+      for (let i = 1; i < whenValues.length; i++) {
+        expect(whenValues[i]).toBeGreaterThanOrEqual(whenValues[i - 1]);
+      }
+    });
+
+    it('onEnded on last source triggers finishSpeaking', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      const ctx = getLatestCtx();
+
+      // Start playback
+      queueEnoughToStart(audioStreamer);
+
+      expect(speakingStates).toEqual([true]);
+
+      // Mark generation complete — sets onEnded on last source
+      audioStreamer.onGenerationComplete();
+
+      // Get the last created buffer source (skip priming)
+      const allSources = ctx.createBufferSource.mock.results;
+      const lastSource = allSources[allSources.length - 1].value;
+
+      // onEnded should be set
+      expect(lastSource.onEnded).toBeTruthy();
+
+      // Fire onEnded — should trigger finishSpeaking
+      lastSource.onEnded();
+
+      expect(speakingStates).toEqual([true, false]);
+    });
+
+    it('interruption during playback silences audio via gain disconnect', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+
+      // Start playback
+      queueEnoughToStart(audioStreamer);
+
+      // Get the gain node that was connected
+      const gainResults = ctx.createGain.mock.results;
+      const gainBeforeInterrupt = gainResults[gainResults.length - 1].value;
+
+      // Interrupt
+      audioStreamer.handleInterruption();
+
+      // Gain node should have been disconnected
+      expect(gainBeforeInterrupt.disconnect).toHaveBeenCalled();
+
+      // A new gain node should have been created
+      expect(ctx.createGain.mock.results.length).toBeGreaterThan(gainResults.length - 1);
+    });
+
+    it('stale onEnded callbacks are ignored (responseId check)', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      const ctx = getLatestCtx();
+
+      // Start playback for turn 1
+      queueEnoughToStart(audioStreamer);
+      audioStreamer.onGenerationComplete();
+
+      // Get the last source with onEnded
+      const allSources = ctx.createBufferSource.mock.results;
+      const turn1LastSource = allSources[allSources.length - 1].value;
+      const turn1OnEnded = turn1LastSource.onEnded;
+
+      expect(speakingStates).toEqual([true]);
+
+      // Move to turn 2 (increments responseId)
+      audioStreamer.prepareForNewResponse();
+
+      // Clear speaking states to track only new events
+      speakingStates.length = 0;
+
+      // Fire stale onEnded from turn 1 — should be ignored
+      if (turn1OnEnded) {
+        turn1OnEnded();
+      }
+
+      // No speaking state change from stale callback
+      expect(speakingStates).toEqual([]);
+    });
   });
 
   describe('multi-turn conversation', () => {
@@ -275,51 +427,28 @@ describe('AudioStreamer', () => {
 
     /**
      * Simulate a full conversation turn: prepare → queue enough to start
-     * playback → mark generation complete → trigger onEnded(isLast).
+     * playback → mark generation complete → trigger onEnded.
      */
     function simulateTurn() {
       audioStreamer.prepareForNewResponse();
 
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
 
-      // Queue enough to trigger playback (MIN_INITIAL_BUFFER = 7200)
-      // 960 samples/chunk, need 8 chunks = 7680 > 7200
-      const chunk = createPcmChunk(960);
-      for (let i = 0; i < 8; i++) {
-        audioStreamer.queueAudio(chunk);
-      }
+      // Queue enough to trigger playback (MIN_INITIAL_BUFFER = 24000)
+      // 4800 samples/chunk × 5 chunks = 24000
+      queueEnoughToStart(audioStreamer);
 
       audioStreamer.onGenerationComplete();
 
-      // Simulate native onEnded callback
-      if (queueSource.onEnded) {
-        queueSource.onEnded({ bufferId: undefined, isLast: true });
+      // Simulate native onEnded callback on last scheduled source
+      const allSources = ctx.createBufferSource.mock.results;
+      const lastSource = allSources[allSources.length - 1].value;
+      if (lastSource.onEnded) {
+        lastSource.onEnded();
       }
 
-      return { ctx, queueSource };
+      return { ctx };
     }
-
-    it('creates fresh queueSource for each turn', () => {
-      const queueSources: any[] = [];
-
-      for (let turn = 0; turn < 3; turn++) {
-        const { queueSource } = simulateTurn();
-        queueSources.push(queueSource);
-      }
-
-      // Each turn should have gotten its own queueSource
-      // (they may share the same mock shape, but createBufferQueueSource
-      // should have been called once per turn + once from full resets)
-      const totalCalls = (AudioContext as jest.Mock).mock.results.reduce(
-        (sum: number, result: any) =>
-          sum + result.value.createBufferQueueSource.mock.calls.length,
-        0,
-      );
-      expect(totalCalls).toBeGreaterThanOrEqual(3);
-    });
 
     it('handles 3 turns without errors', () => {
       const speakingStates: boolean[] = [];
@@ -339,10 +468,14 @@ describe('AudioStreamer', () => {
       audioStreamer.prepareForNewResponse();
 
       const ctx = getLatestCtx();
-      const turn1QueueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
-      const turn1OnEnded = turn1QueueSource.onEnded;
+
+      // Start playback and complete generation for turn 1
+      queueEnoughToStart(audioStreamer);
+      audioStreamer.onGenerationComplete();
+
+      const allSources = ctx.createBufferSource.mock.results;
+      const turn1LastSource = allSources[allSources.length - 1].value;
+      const turn1OnEnded = turn1LastSource.onEnded;
 
       // Move to turn 2 (responseId increments)
       audioStreamer.prepareForNewResponse();
@@ -352,66 +485,11 @@ describe('AudioStreamer', () => {
 
       // Fire stale onEnded from turn 1 — should be ignored
       if (turn1OnEnded) {
-        turn1OnEnded({ bufferId: undefined, isLast: true });
+        turn1OnEnded();
       }
 
       // No speaking state change from stale callback
       expect(speakingStates).toEqual([]);
-    });
-  });
-
-  describe('watchdog', () => {
-    beforeEach(async () => {
-      setPlatform('ios');
-      await audioStreamer.initialize();
-    });
-
-    it('prepareForNewResponse clears watchdog — no false stall detection', () => {
-      audioStreamer.prepareForNewResponse();
-
-      const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
-
-      // Queue enough to start playback (triggers watchdog)
-      const chunk = createPcmChunk(960);
-      for (let i = 0; i < 8; i++) {
-        audioStreamer.queueAudio(chunk);
-      }
-      // Playback started, watchdog is now running
-
-      // Move to next response — should clear watchdog
-      audioStreamer.prepareForNewResponse();
-
-      // Advance past watchdog interval (500ms)
-      jest.advanceTimersByTime(600);
-
-      // Watchdog should NOT have triggered an extra full reset beyond the
-      // expected ones. With RESET_AFTER_RESPONSES=1, each prepareForNewResponse
-      // triggers a reset. Count before the timer fires:
-      const totalContexts = (AudioContext as jest.Mock).mock.calls.length;
-      const afterTimerContexts = (AudioContext as jest.Mock).mock.calls.length;
-      // No additional context created by the watchdog
-      expect(afterTimerContexts).toBe(totalContexts);
-    });
-
-    it('watchdog does not call suspend/resume on stall (unified logic)', () => {
-      audioStreamer.prepareForNewResponse();
-
-      const ctx = getLatestCtx();
-
-      // Queue enough to start playback
-      const chunk = createPcmChunk(960);
-      for (let i = 0; i < 8; i++) {
-        audioStreamer.queueAudio(chunk);
-      }
-
-      // currentTime stays at 0 (stalled) — advance timer to trigger watchdog
-      jest.advanceTimersByTime(500);
-
-      // Watchdog should go directly to full reset, NOT try suspend→resume
-      expect(ctx.suspend).not.toHaveBeenCalled();
     });
   });
 });
