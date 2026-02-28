@@ -257,6 +257,7 @@ export default function RoleplayScreen() {
         </View>
 
         <FlatList
+          testID="scenario-list"
           data={filteredScenarios}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{

@@ -1,0 +1,23 @@
+# Select a scenario from home, verify Talk screen loads
+appId: ai.speakwithsophie.app
+---
+- launchApp
+- tapOn:
+    text: "Maybe later"
+    optional: true
+# Navigate to Scenarios tab explicitly
+- tapOn: "Scenarios"
+- extendedWaitUntil:
+    visible:
+      id: "scenario-list"
+    timeout: 15000
+# Tap first scenario in the list
+- tapOn:
+    id: "scenario-list"
+    childOf:
+      index: 0
+# Should navigate to talk tab — verify talk screen elements visible
+- extendedWaitUntil:
+    visible:
+      id: "talk-reset-button"
+    timeout: 20000

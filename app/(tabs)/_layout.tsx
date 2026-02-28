@@ -132,6 +132,7 @@ function MicTabButton() {
 
   return (
     <View
+      testID="mic-tab-button"
       className="items-center justify-center -top-8"
       style={{ zIndex: 50 }}
     >

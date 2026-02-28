@@ -1,0 +1,18 @@
+# Navigate to Talk tab and verify it loads
+# Expects: user is logged in with at least one language profile
+appId: ai.speakwithsophie.app
+---
+- launchApp
+- tapOn:
+    text: "Maybe later"
+    optional: true
+# Wait for app to fully load
+- extendedWaitUntil:
+    visible: "Scenarios"
+    timeout: 20000
+# Navigate to Talk tab via tab label (not mic button — it has gesture handlers)
+- tapOn: "Talk"
+# Verify Talk screen loaded by checking for Transcript toggle
+- extendedWaitUntil:
+    visible: "Transcript"
+    timeout: 10000

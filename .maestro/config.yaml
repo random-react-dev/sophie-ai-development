@@ -1,0 +1,5 @@
+# Maestro E2E test configuration for Sophie (Speak With Sophie)
+# Run: maestro test .maestro/flows/
+# Requires: development build running on simulator/emulator
+
+appId: ai.speakwithsophie.app

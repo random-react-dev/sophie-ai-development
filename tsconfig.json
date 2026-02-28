@@ -16,6 +16,7 @@
     "stores/**/*.ts",
     "constants/**/*.ts",
     "hooks/**/*.ts",
+    "__tests__/**/*.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"

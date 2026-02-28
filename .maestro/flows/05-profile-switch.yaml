@@ -1,0 +1,23 @@
+# Navigate to profile tab, verify profile list loads
+# Expects: user is logged in with at least one language profile
+appId: ai.speakwithsophie.app
+---
+- launchApp
+- tapOn:
+    text: "Maybe later"
+    optional: true
+# Wait for app to fully load
+- extendedWaitUntil:
+    visible: "Scenarios"
+    timeout: 20000
+# Navigate to Scenarios first to ensure stable state
+- tapOn: "Scenarios"
+# Tap Profile tab by coordinate (emojis in accessibility text prevent text matching)
+# Profile tab center: [316,791][394,840] in 402x874 screen = (88%, 93%)
+- tapOn:
+    point: "88%,93%"
+# Wait for profile list to load
+- extendedWaitUntil:
+    visible:
+      id: "profile-list"
+    timeout: 10000

@@ -1,0 +1,24 @@
+# Verify Talk screen loads with mic button and controls
+# Note: Actual PTT long-press requires granted mic permissions + connected
+# WebSocket, which may not be available in automated testing.
+# PTT functionality should be tested manually on device.
+appId: ai.speakwithsophie.app
+---
+- launchApp
+- tapOn:
+    text: "Maybe later"
+    optional: true
+# Wait for app to fully load
+- extendedWaitUntil:
+    visible: "Scenarios"
+    timeout: 20000
+# Navigate to Talk tab
+- tapOn: "Talk"
+# Verify Talk screen elements are present
+- extendedWaitUntil:
+    visible: "Transcript"
+    timeout: 10000
+- assertVisible:
+    id: "mic-tab-button"
+- assertVisible:
+    id: "talk-reset-button"

@@ -706,6 +706,7 @@ ${levelGuide}`;
 
               {/* Reset Control */}
               <TouchableOpacity
+                testID="talk-reset-button"
                 activeOpacity={0.7}
                 onPress={handleReset}
                 className="w-8 h-8 items-center justify-center bg-white rounded-full border border-gray-100 shadow-sm"
@@ -748,7 +749,7 @@ ${levelGuide}`;
             {/* Status Text - shows buffering progress, thinking state, etc */}
             {(!!isProcessing || isSpeaking || isListening) && (
               <View className="absolute bottom-4">
-                <Text className="text-gray-600 text-sm font-medium">
+                <Text testID="talk-status-text" className="text-gray-600 text-sm font-medium">
                   {getStatusText()}
                 </Text>
               </View>
@@ -778,6 +779,7 @@ ${levelGuide}`;
             </View>
           ) : (
             <FlatList
+              testID="talk-message-list"
               ref={flatListRef}
               data={messages}
               renderItem={renderMessage}

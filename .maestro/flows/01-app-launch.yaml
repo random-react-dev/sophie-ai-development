@@ -1,0 +1,15 @@
+# Smoke test: app launches and tabs are visible
+appId: ai.speakwithsophie.app
+---
+- launchApp
+- tapOn:
+    text: "Maybe later"
+    optional: true
+# Navigate to Scenarios tab explicitly (app may open on any tab)
+- tapOn: "Scenarios"
+- extendedWaitUntil:
+    visible:
+      id: "scenario-list"
+    timeout: 15000
+- assertVisible:
+    id: "mic-tab-button"
