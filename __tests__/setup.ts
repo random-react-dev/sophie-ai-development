@@ -66,6 +66,7 @@ const mockAudioContext = {
   createGain: jest.fn(() => ({ ...mockGainNode })),
   createBuffer: jest.fn((_channels: number, length: number, sampleRate: number) => ({
     ...mockAudioBuffer,
+    duration: length / sampleRate,
     length,
     sampleRate,
     getChannelData: jest.fn(() => ({

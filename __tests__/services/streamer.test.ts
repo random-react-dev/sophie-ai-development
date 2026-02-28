@@ -2,6 +2,21 @@ import { AudioContext } from 'react-native-audio-api';
 import { setPlatform } from '../helpers/platform';
 import { encode } from 'base64-arraybuffer';
 
+type MockBufferSource = {
+  start: jest.Mock;
+  onEnded: (() => void) | null;
+};
+
+type MockAudioContext = {
+  createBuffer: jest.Mock;
+  createBufferSource: jest.Mock<MockBufferSource, []>;
+  createGain: jest.Mock;
+  close: jest.Mock;
+  resume: jest.Mock;
+  suspend: jest.Mock;
+  _advanceTime: (seconds: number) => void;
+};
+
 // Helper to create base64 PCM chunks
 function createPcmChunk(sampleCount: number): string {
   const int16 = new Int16Array(sampleCount);
@@ -15,18 +30,31 @@ function createPcmChunk(sampleCount: number): string {
  * Get the most recently created AudioContext mock instance.
  * After performFullReset(), the original ctx is closed and a new one is created.
  */
-function getLatestCtx(): any {
+function getLatestCtx(): MockAudioContext {
   const results = (AudioContext as jest.Mock).mock.results;
-  return results[results.length - 1].value;
+  return results[results.length - 1].value as MockAudioContext;
 }
 
 /**
  * Queue enough audio to trigger playback start (MIN_INITIAL_BUFFER = 24000).
  * Uses 4800-sample chunks (0.2s each, matching ACCUMULATION_TARGET) × 5 = 24000.
  */
-function queueEnoughToStart(audioStreamer: any): void {
+function queueEnoughToStart(
+  audioStreamer: typeof import('@/services/audio/streamer').audioStreamer,
+): void {
   const chunk = createPcmChunk(4800);
   for (let i = 0; i < 5; i++) {
+    audioStreamer.queueAudio(chunk);
+  }
+}
+
+function queueChunks(
+  audioStreamer: typeof import('@/services/audio/streamer').audioStreamer,
+  count: number,
+  sampleCount: number = 4800,
+): void {
+  const chunk = createPcmChunk(sampleCount);
+  for (let i = 0; i < count; i++) {
     audioStreamer.queueAudio(chunk);
   }
 }
@@ -116,6 +144,20 @@ describe('AudioStreamer', () => {
       audioStreamer.prepareForNewResponse();
 
       expect((AudioContext as jest.Mock).mock.calls.length).toBeGreaterThan(afterOneCount);
+    });
+
+    it('uses slower full reset cadence on Android', async () => {
+      setPlatform('android');
+      await audioStreamer.initialize();
+
+      const initialCallCount = (AudioContext as jest.Mock).mock.calls.length;
+
+      audioStreamer.prepareForNewResponse(); // #1
+      audioStreamer.prepareForNewResponse(); // #2
+      expect((AudioContext as jest.Mock).mock.calls.length).toBe(initialCallCount);
+
+      audioStreamer.prepareForNewResponse(); // #3 -> reset
+      expect((AudioContext as jest.Mock).mock.calls.length).toBeGreaterThan(initialCallCount);
     });
   });
 
@@ -305,6 +347,32 @@ describe('AudioStreamer', () => {
       expect(ctx.createBufferSource.mock.calls.length).toBe(sourceCountAfterStart + 1);
     });
 
+    it('defers playback when using onGenerationComplete policy', () => {
+      audioStreamer.prepareForNewResponse({ startPolicy: 'onGenerationComplete' });
+
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      queueEnoughToStart(audioStreamer);
+      expect(speakingStates).toEqual([]);
+
+      audioStreamer.onGenerationComplete();
+      expect(speakingStates).toEqual([true]);
+    });
+
+    it('starts before generationComplete in adaptive mode', async () => {
+      setPlatform('android');
+      await audioStreamer.initialize();
+      audioStreamer.prepareForNewResponse({ startPolicy: 'adaptive' });
+
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      // Adaptive target is 1.2s => 6 * 0.2s chunks.
+      queueChunks(audioStreamer, 6, 4800);
+      expect(speakingStates).toEqual([true]);
+    });
+
     it('source.start() is called with increasing when values', () => {
       audioStreamer.prepareForNewResponse();
 
@@ -315,16 +383,16 @@ describe('AudioStreamer', () => {
 
       // Get all createBufferSource results — filter to only sources that were
       // called with a `when` argument (scheduled sources, not priming)
-      const allSources = ctx.createBufferSource.mock.results;
+      const allSources = ctx.createBufferSource.mock.results as Array<{ value: MockBufferSource }>;
       const scheduledSources = allSources.filter(
-        (r: any) => r.value.start.mock.calls.length > 0 && r.value.start.mock.calls[0][0] !== undefined
+        (r) => r.value.start.mock.calls.length > 0 && r.value.start.mock.calls[0][0] !== undefined,
       );
 
       expect(scheduledSources.length).toBeGreaterThan(0);
 
       // Get the when values from start() calls
       const whenValues = scheduledSources.map(
-        (r: any) => r.value.start.mock.calls[0][0]
+        (r) => r.value.start.mock.calls[0][0] as number,
       );
 
       // Values should be non-decreasing (each buffer scheduled after previous)
