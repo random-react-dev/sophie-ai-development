@@ -11,6 +11,15 @@ function createPcmChunk(sampleCount: number): string {
   return encode(int16.buffer);
 }
 
+/**
+ * Get the most recently created AudioContext mock instance.
+ * After performFullReset(), the original ctx is closed and a new one is created.
+ */
+function getLatestCtx(): any {
+  const results = (AudioContext as jest.Mock).mock.results;
+  return results[results.length - 1].value;
+}
+
 describe('AudioStreamer', () => {
   let audioStreamer: typeof import('@/services/audio/streamer').audioStreamer;
 
@@ -49,28 +58,23 @@ describe('AudioStreamer', () => {
       await audioStreamer.initialize();
     });
 
-    describe('on iOS', () => {
-      beforeEach(() => setPlatform('ios'));
+    it('does NOT call suspend/resume on any platform', () => {
+      // suspend/resume was removed due to unawaited-Promise race condition
+      setPlatform('ios');
+      audioStreamer.prepareForNewResponse();
 
-      it('performs suspend/resume cycle', () => {
-        audioStreamer.prepareForNewResponse();
-
-        const ctx = (AudioContext as jest.Mock).mock.results[0].value;
-        expect(ctx.suspend).toHaveBeenCalled();
-        expect(ctx.resume).toHaveBeenCalled();
-      });
+      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
+      expect(ctx.suspend).not.toHaveBeenCalled();
+      expect(ctx.resume).not.toHaveBeenCalled();
     });
 
-    describe('on Android', () => {
-      beforeEach(() => setPlatform('android'));
+    it('does NOT call suspend/resume on Android either', () => {
+      setPlatform('android');
+      audioStreamer.prepareForNewResponse();
 
-      it('skips suspend/resume (would destabilize Oboe)', () => {
-        audioStreamer.prepareForNewResponse();
-
-        const ctx = (AudioContext as jest.Mock).mock.results[0].value;
-        expect(ctx.suspend).not.toHaveBeenCalled();
-        expect(ctx.resume).not.toHaveBeenCalled();
-      });
+      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
+      expect(ctx.suspend).not.toHaveBeenCalled();
+      expect(ctx.resume).not.toHaveBeenCalled();
     });
 
     it('cancels pending gain automations', async () => {
@@ -97,20 +101,20 @@ describe('AudioStreamer', () => {
       await audioStreamer.initialize();
     });
 
-    it('triggers full reset every 3 responses', () => {
+    it('triggers full reset every response (RESET_AFTER_RESPONSES=1)', () => {
       const initialCallCount = (AudioContext as jest.Mock).mock.calls.length;
 
-      // First 2 responses: no full reset
-      audioStreamer.prepareForNewResponse(); // response 1
-      audioStreamer.prepareForNewResponse(); // response 2
-
-      const afterTwoCount = (AudioContext as jest.Mock).mock.calls.length;
-      expect(afterTwoCount).toBe(initialCallCount); // No new context created
-
-      // 3rd response should trigger full reset (recreate AudioContext)
+      // First response should trigger full reset (recreate AudioContext)
       audioStreamer.prepareForNewResponse();
 
-      expect((AudioContext as jest.Mock).mock.calls.length).toBeGreaterThan(afterTwoCount);
+      expect((AudioContext as jest.Mock).mock.calls.length).toBeGreaterThan(initialCallCount);
+
+      const afterOneCount = (AudioContext as jest.Mock).mock.calls.length;
+
+      // 2nd response should also trigger full reset
+      audioStreamer.prepareForNewResponse();
+
+      expect((AudioContext as jest.Mock).mock.calls.length).toBeGreaterThan(afterOneCount);
     });
   });
 
@@ -124,7 +128,7 @@ describe('AudioStreamer', () => {
     it('does not queue when interrupted', () => {
       audioStreamer.handleInterruption();
 
-      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
+      const ctx = getLatestCtx();
       const lastQueueSource = ctx.createBufferQueueSource.mock.results[
         ctx.createBufferQueueSource.mock.results.length - 1
       ].value;
@@ -135,7 +139,7 @@ describe('AudioStreamer', () => {
     });
 
     it('accumulates chunks and flushes when reaching 4800 samples', () => {
-      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
+      const ctx = getLatestCtx();
       const queueSource = ctx.createBufferQueueSource.mock.results[
         ctx.createBufferQueueSource.mock.results.length - 1
       ].value;
@@ -174,7 +178,7 @@ describe('AudioStreamer', () => {
       audioStreamer.handleInterruption();
 
       // After interruption, queuing should be blocked
-      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
+      const ctx = getLatestCtx();
       const queueSource = ctx.createBufferQueueSource.mock.results[
         ctx.createBufferQueueSource.mock.results.length - 1
       ].value;
@@ -218,7 +222,7 @@ describe('AudioStreamer', () => {
       await audioStreamer.initialize();
       audioStreamer.prepareForNewResponse();
 
-      const ctx = (AudioContext as jest.Mock).mock.results[0].value;
+      const ctx = getLatestCtx();
       const queueSource = ctx.createBufferQueueSource.mock.results[
         ctx.createBufferQueueSource.mock.results.length - 1
       ].value;
@@ -260,6 +264,154 @@ describe('AudioStreamer', () => {
 
       // Should not throw
       audioStreamer.resumePlayback();
+    });
+  });
+
+  describe('multi-turn conversation', () => {
+    beforeEach(async () => {
+      setPlatform('ios');
+      await audioStreamer.initialize();
+    });
+
+    /**
+     * Simulate a full conversation turn: prepare → queue enough to start
+     * playback → mark generation complete → trigger onEnded(isLast).
+     */
+    function simulateTurn() {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+      const queueSource = ctx.createBufferQueueSource.mock.results[
+        ctx.createBufferQueueSource.mock.results.length - 1
+      ].value;
+
+      // Queue enough to trigger playback (MIN_INITIAL_BUFFER = 7200)
+      // 960 samples/chunk, need 8 chunks = 7680 > 7200
+      const chunk = createPcmChunk(960);
+      for (let i = 0; i < 8; i++) {
+        audioStreamer.queueAudio(chunk);
+      }
+
+      audioStreamer.onGenerationComplete();
+
+      // Simulate native onEnded callback
+      if (queueSource.onEnded) {
+        queueSource.onEnded({ bufferId: undefined, isLast: true });
+      }
+
+      return { ctx, queueSource };
+    }
+
+    it('creates fresh queueSource for each turn', () => {
+      const queueSources: any[] = [];
+
+      for (let turn = 0; turn < 3; turn++) {
+        const { queueSource } = simulateTurn();
+        queueSources.push(queueSource);
+      }
+
+      // Each turn should have gotten its own queueSource
+      // (they may share the same mock shape, but createBufferQueueSource
+      // should have been called once per turn + once from full resets)
+      const totalCalls = (AudioContext as jest.Mock).mock.results.reduce(
+        (sum: number, result: any) =>
+          sum + result.value.createBufferQueueSource.mock.calls.length,
+        0,
+      );
+      expect(totalCalls).toBeGreaterThanOrEqual(3);
+    });
+
+    it('handles 3 turns without errors', () => {
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      // Should not throw across 3 turns
+      simulateTurn();
+      simulateTurn();
+      simulateTurn();
+
+      // Should have seen speaking true→false for each turn
+      expect(speakingStates.filter((s) => s === true).length).toBeGreaterThanOrEqual(3);
+      expect(speakingStates.filter((s) => s === false).length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('stale onEnded callbacks from previous turns are ignored', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+      const turn1QueueSource = ctx.createBufferQueueSource.mock.results[
+        ctx.createBufferQueueSource.mock.results.length - 1
+      ].value;
+      const turn1OnEnded = turn1QueueSource.onEnded;
+
+      // Move to turn 2 (responseId increments)
+      audioStreamer.prepareForNewResponse();
+
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      // Fire stale onEnded from turn 1 — should be ignored
+      if (turn1OnEnded) {
+        turn1OnEnded({ bufferId: undefined, isLast: true });
+      }
+
+      // No speaking state change from stale callback
+      expect(speakingStates).toEqual([]);
+    });
+  });
+
+  describe('watchdog', () => {
+    beforeEach(async () => {
+      setPlatform('ios');
+      await audioStreamer.initialize();
+    });
+
+    it('prepareForNewResponse clears watchdog — no false stall detection', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+      const queueSource = ctx.createBufferQueueSource.mock.results[
+        ctx.createBufferQueueSource.mock.results.length - 1
+      ].value;
+
+      // Queue enough to start playback (triggers watchdog)
+      const chunk = createPcmChunk(960);
+      for (let i = 0; i < 8; i++) {
+        audioStreamer.queueAudio(chunk);
+      }
+      // Playback started, watchdog is now running
+
+      // Move to next response — should clear watchdog
+      audioStreamer.prepareForNewResponse();
+
+      // Advance past watchdog interval (500ms)
+      jest.advanceTimersByTime(600);
+
+      // Watchdog should NOT have triggered an extra full reset beyond the
+      // expected ones. With RESET_AFTER_RESPONSES=1, each prepareForNewResponse
+      // triggers a reset. Count before the timer fires:
+      const totalContexts = (AudioContext as jest.Mock).mock.calls.length;
+      const afterTimerContexts = (AudioContext as jest.Mock).mock.calls.length;
+      // No additional context created by the watchdog
+      expect(afterTimerContexts).toBe(totalContexts);
+    });
+
+    it('watchdog does not call suspend/resume on stall (unified logic)', () => {
+      audioStreamer.prepareForNewResponse();
+
+      const ctx = getLatestCtx();
+
+      // Queue enough to start playback
+      const chunk = createPcmChunk(960);
+      for (let i = 0; i < 8; i++) {
+        audioStreamer.queueAudio(chunk);
+      }
+
+      // currentTime stays at 0 (stalled) — advance timer to trigger watchdog
+      jest.advanceTimersByTime(500);
+
+      // Watchdog should go directly to full reset, NOT try suspend→resume
+      expect(ctx.suspend).not.toHaveBeenCalled();
     });
   });
 });

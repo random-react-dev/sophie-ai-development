@@ -46,7 +46,14 @@ const mockQueueSource = {
 
 const mockAudioContext = {
   state: 'running' as string,
-  currentTime: 0,
+  _currentTime: 0,
+  get currentTime() {
+    return this._currentTime;
+  },
+  /** Advance mock currentTime (call in tests to simulate real-time progression) */
+  _advanceTime(seconds: number) {
+    this._currentTime += seconds;
+  },
   sampleRate: 24000,
   destination: {},
   createGain: jest.fn(() => ({ ...mockGainNode })),
@@ -60,8 +67,8 @@ const mockAudioContext = {
   })),
   createBufferSource: jest.fn(() => ({ ...mockBufferSource })),
   createBufferQueueSource: jest.fn(() => ({ ...mockQueueSource })),
-  suspend: jest.fn(),
-  resume: jest.fn(),
+  suspend: jest.fn(() => Promise.resolve(true)),
+  resume: jest.fn(() => Promise.resolve(true)),
   close: jest.fn(),
 };
 

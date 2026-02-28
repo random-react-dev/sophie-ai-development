@@ -1,0 +1,89 @@
+# E2E: Multi-turn audio conversation — verifies audio doesn't break after 1-2 turns
+# This flow tests the fix for the suspend/resume race condition in audioStreamer.
+# It exercises 3 full conversation turns:
+#   Turn 1: Auto-greeting (fresh AudioContext — always worked)
+#   Turn 2: First user-initiated turn (where audio previously broke)
+#   Turn 3: After periodic full reset (RESET_AFTER_RESPONSES=2)
+#
+# Prerequisites:
+#   - Development build installed and running on simulator
+#   - User logged in with at least one language profile
+#   - Metro bundler running
+appId: ai.speakwithsophie.app
+---
+- launchApp
+
+# Dismiss any onboarding / rating / error prompts
+- tapOn:
+    text: "Maybe later"
+    optional: true
+- tapOn:
+    text: "Dismiss"
+    optional: true
+
+# Wait for home screen to load
+- extendedWaitUntil:
+    visible: "Scenarios"
+    timeout: 20000
+
+# === TURN 1: Navigate to Talk — Sophie auto-greets ===
+- tapOn: "Talk"
+
+# Wait for Talk screen to fully load
+- extendedWaitUntil:
+    visible:
+      id: "talk-reset-button"
+    timeout: 10000
+
+# Wait for WebSocket to connect and Sophie to start speaking (auto-greeting)
+# "Sophie AI Speaking..." appears while audio is playing
+- extendedWaitUntil:
+    visible: "Sophie AI Speaking..."
+    timeout: 30000
+
+# Wait for Sophie to finish speaking (status text disappears when done)
+- extendedWaitUntil:
+    notVisible: "Sophie AI Speaking..."
+    timeout: 30000
+
+# Verify transcript appeared (Sophie's greeting message)
+- extendedWaitUntil:
+    visible:
+      id: "talk-message-list"
+    timeout: 5000
+
+# === TURN 2: User speaks, Sophie responds (where audio previously broke) ===
+# Long-press the mic button (~3 seconds, hardcoded by Maestro)
+- longPressOn:
+    id: "mic-tab-button"
+
+# Wait for Sophie to start speaking again — THIS IS THE CRITICAL CHECK
+# Audio previously broke here because of the suspend/resume race condition
+- extendedWaitUntil:
+    visible: "Sophie AI Speaking..."
+    timeout: 30000
+
+# Wait for Turn 2 response to finish
+- extendedWaitUntil:
+    notVisible: "Sophie AI Speaking..."
+    timeout: 30000
+
+# === TURN 3: Another user turn — after periodic full reset (RESET_AFTER_RESPONSES=2) ===
+- longPressOn:
+    id: "mic-tab-button"
+
+# Sophie speaks again — verifies audio works after full AudioContext reset
+- extendedWaitUntil:
+    visible: "Sophie AI Speaking..."
+    timeout: 30000
+
+# Wait for Turn 3 to finish
+- extendedWaitUntil:
+    notVisible: "Sophie AI Speaking..."
+    timeout: 30000
+
+# === VERIFICATION ===
+# If we got here, all 3 turns played audio successfully.
+# The transcript should have messages from both user and AI.
+- assertVisible:
+    id: "talk-message-list"

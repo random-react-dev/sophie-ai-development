@@ -1,5 +1,4 @@
 import { decode } from "base64-arraybuffer";
-import { Platform } from "react-native";
 import {
   AudioBufferQueueSourceNode,
   AudioContext,
@@ -14,10 +13,13 @@ const SAMPLE_RATE = 24000; // Gemini output rate
 // Accumulate chunks into 0.2s buffers before sending to native
 const ACCUMULATION_TARGET = 4800; // 0.2s of audio at 24kHz (5 Gemini chunks)
 const MIN_INITIAL_BUFFER = 7200; // 0.3s of audio before starting playback
-const FADE_IN_DURATION = 0.2; // 200ms fade-in to prevent pops
+const FADE_IN_DURATION = 0.01; // 10ms fade-in to prevent pops
 
-// Periodic reset to prevent memory buildup
-const RESET_AFTER_RESPONSES = 3;
+// Reset AudioContext every response to prevent silence on reused contexts.
+// Reusing an AudioContext across turns causes silent audio on iOS (the
+// AVAudioEngine session gets disrupted by speech recognition ending between
+// turns). A fresh context per response is fast and guarantees clean state.
+const RESET_AFTER_RESPONSES = 1;
 
 type SpeakingStateCallback = (isSpeaking: boolean) => void;
 type BufferProgressCallback = (progress: number) => void; // 0-100
@@ -126,6 +128,10 @@ class AudioStreamer {
   }
 
   prepareForNewResponse(): void {
+    const entryState = this.audioContext?.state ?? 'null';
+    const entryTime = this.audioContext?.currentTime ?? 0;
+    Logger.debug(TAG, `[DIAG] prepareForNewResponse entry ctx.state=${entryState} ctx.time=${entryTime.toFixed(3)}`);
+
     this.clearWatchdog();
 
     // Cancel any pending gain automations from previous response
@@ -150,15 +156,11 @@ class AudioStreamer {
       this.responsesSinceReset = 0;
     }
 
-    // Force native engine restart to clear any stall.
-    // The AVAudioEngine can silently stop processing while still reporting
-    // "running". This suspend→resume cycle forces a clean engine restart.
-    // Only needed on iOS — on Android (Oboe/AAudio) this can destabilize playback.
-    if (this.audioContext && Platform.OS === 'ios') {
-      Logger.debug(TAG, 'iOS suspend→resume cycle');
-      this.audioContext.suspend();
-      this.audioContext.resume();
-    }
+    // NOTE: suspend()→resume() was intentionally REMOVED here.
+    // Those calls return Promises but were never awaited, causing a race
+    // condition where createFreshQueueSource() would connect to a context
+    // still in "suspended" state. This broke audio on the 2nd+ response.
+    // The periodic full reset (every 2 responses) handles engine staleness.
 
     // Create a FRESH queueSource for each response
     this.createFreshQueueSource();
@@ -174,17 +176,22 @@ class AudioStreamer {
     this.isPaused = false;
     this.hasResponseCompleted = false;
 
-    Logger.info(TAG, `Prepared response #${this.responseId} ctx=${this.audioContext?.state ?? 'null'} platform=${Platform.OS}`);
+    const exitState = this.audioContext?.state ?? 'null';
+    const exitTime = this.audioContext?.currentTime ?? 0;
+    Logger.info(TAG, `[DIAG] Prepared response #${this.responseId} ctx.state=${exitState} ctx.time=${exitTime.toFixed(3)}`);
   }
 
   private performFullReset(): void {
     Logger.info(TAG, "Full reset — recreating AudioContext");
 
-    // Close and recreate AudioContext to release all native resources
+    // Close and recreate AudioContext to release all native resources.
+    // NOTE: stop() is intentionally omitted — it writes directly to native
+    // stopTime_ (audio thread sees immediately), while disconnect() goes
+    // through the SPSC channel (processed next render quantum). This timing
+    // mismatch can corrupt the GainNode's numberOfEnabledInputNodes_ counter.
     if (this.queueSource) {
       try {
         this.queueSource.clearBuffers();
-        this.queueSource.stop();
         this.queueSource.disconnect();
       } catch {}
       this.queueSource = null;
@@ -226,10 +233,10 @@ class AudioStreamer {
       this.gainNode.gain.value = 1.0;
     }
 
+    // NOTE: stop() is intentionally omitted — see performFullReset() comment.
     if (this.queueSource) {
       try {
         this.queueSource.clearBuffers();
-        this.queueSource.stop();
         this.queueSource.disconnect();
       } catch {
         /* ignore errors from already-stopped sources */
@@ -257,12 +264,11 @@ class AudioStreamer {
       return;
     }
 
-    // CRITICAL: Fully cleanup old queue source to prevent degradation
-    // AudioBufferQueueSourceNode is single-use after stop()
+    // CRITICAL: Fully cleanup old queue source to prevent degradation.
+    // NOTE: stop() is intentionally omitted — see performFullReset() comment.
     if (this.queueSource) {
       try {
         this.queueSource.clearBuffers();
-        this.queueSource.stop();
         this.queueSource.disconnect();
       } catch {
         /* ignore errors from already-stopped sources */
@@ -309,6 +315,10 @@ class AudioStreamer {
       }
 
       this.chunkCount++;
+
+      if (this.chunkCount === 1) {
+        Logger.debug(TAG, `[DIAG] First chunk arrived ctx.state=${this.audioContext?.state} ctx.time=${(this.audioContext?.currentTime ?? 0).toFixed(3)}`);
+      }
 
       // Accumulate samples
       this.accumulatedSamples.push(float32Array);
@@ -381,14 +391,19 @@ class AudioStreamer {
       return;
     }
 
-    // Cancel any leftover gain ramps from previous response, then apply fresh fade-in
+    // Cancel any leftover gain ramps from previous response, then apply fresh fade-in.
+    // Per Web Audio spec, linearRampToValueAtTime ramps from the previous
+    // automation event's value — NOT from gain.value. Without setValueAtTime
+    // first, the ramp goes 1.0→1.0 (no-op), providing no fade-in protection.
     this.gainNode.gain.cancelScheduledValues(0);
-    this.gainNode.gain.value = 0;
     const currentTime = this.audioContext?.currentTime ?? 0;
+    this.gainNode.gain.setValueAtTime(0, currentTime);
     this.gainNode.gain.linearRampToValueAtTime(
       1.0,
       currentTime + FADE_IN_DURATION,
     );
+
+    Logger.debug(TAG, `[DIAG] startSpeaking ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`);
 
     // Start the queue source playback
     this.queueSource.start();
@@ -400,49 +415,25 @@ class AudioStreamer {
     this.speakingStateCallback?.(true);
 
     // Watchdog: verify AudioContext.currentTime is advancing (engine truly running)
+    // Unified logic for all platforms — if stalled, go directly to full reset.
+    // The previous iOS two-tier recovery (suspend→resume then escalate) had the
+    // same unawaited-Promise race condition. Direct full reset is faster and safer.
     const watchdogResponseId = this.responseId;
     const startCurrentTime = this.audioContext?.currentTime ?? 0;
 
-    // First check at 500ms — attempt recovery if stalled
     this.clearWatchdog();
     this.watchdogTimerId = setTimeout(() => {
       if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
       const nowCurrentTime = this.audioContext?.currentTime ?? 0;
       const delta = nowCurrentTime - startCurrentTime;
+      Logger.debug(TAG, `[DIAG] WATCHDOG check start=${startCurrentTime.toFixed(3)} now=${nowCurrentTime.toFixed(3)} delta=${delta.toFixed(3)}`);
       if (delta < 0.1) {
-        if (Platform.OS === 'ios') {
-          // iOS: try suspend→resume first, then escalate to full reset
-          Logger.warn(TAG, `WATCHDOG: Stalled delta=${delta.toFixed(3)} — trying suspend→resume`);
-          if (this.audioContext) {
-            this.audioContext.suspend();
-            this.audioContext.resume();
-          }
-
-          const postRecoveryTime = this.audioContext?.currentTime ?? 0;
-          this.watchdogTimerId = setTimeout(() => {
-            if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
-            const finalTime = this.audioContext?.currentTime ?? 0;
-            const recoveryDelta = finalTime - postRecoveryTime;
-            if (recoveryDelta < 0.1) {
-              Logger.warn(TAG, `WATCHDOG: Still stalled delta=${recoveryDelta.toFixed(3)} — full reset`);
-              this.performFullReset();
-              this.createFreshQueueSource();
-              this.isPlaying = false;
-              this.hasStartedPlayback = false;
-              this.speakingStateCallback?.(false);
-            } else {
-              Logger.info(TAG, `WATCHDOG: Recovered delta=${recoveryDelta.toFixed(3)}`);
-            }
-          }, 500);
-        } else {
-          // Android: skip suspend→resume (can destabilize Oboe), go directly to full reset
-          Logger.warn(TAG, `WATCHDOG: Android stalled delta=${delta.toFixed(3)} — full reset`);
-          this.performFullReset();
-          this.createFreshQueueSource();
-          this.isPlaying = false;
-          this.hasStartedPlayback = false;
-          this.speakingStateCallback?.(false);
-        }
+        Logger.warn(TAG, `WATCHDOG: Stalled delta=${delta.toFixed(3)} — full reset`);
+        this.performFullReset();
+        this.createFreshQueueSource();
+        this.isPlaying = false;
+        this.hasStartedPlayback = false;
+        this.speakingStateCallback?.(false);
       } else {
         Logger.debug(TAG, `WATCHDOG: OK delta=${delta.toFixed(3)}`);
       }
