@@ -87,6 +87,20 @@ describe('GeminiWebSocket', () => {
       // WebSocket constructor should be called only once
       expect(global.WebSocket).toHaveBeenCalledTimes(1);
     });
+
+    it('sends setup with input transcription only (audio-first mode)', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      mockWs.onopen?.({} as Event);
+
+      expect(mockWs.send).toHaveBeenCalled();
+      const setupRaw = mockWs.send.mock.calls[0][0];
+      const setupMsg = JSON.parse(setupRaw);
+
+      expect(setupMsg.setup.inputAudioTranscription).toEqual({});
+      expect(setupMsg.setup.outputAudioTranscription).toBeUndefined();
+    });
   });
 
   describe('error categorization', () => {
@@ -240,6 +254,36 @@ describe('GeminiWebSocket', () => {
     it('does not send when not ready', () => {
       geminiWebSocket.sendAudioChunk('SGVsbG8=');
       // Should warn but not throw
+    });
+  });
+
+  describe('transcription handling', () => {
+    it('skips model output transcription updates but keeps user transcription', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'Model says hello' },
+          },
+        }),
+      } as MessageEvent);
+
+      expect(mockConversationStore.addMessage).not.toHaveBeenCalledWith(
+        'model',
+        expect.any(String),
+      );
+
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            inputTranscription: { text: 'Hello' },
+          },
+        }),
+      } as MessageEvent);
+
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('user', 'Hello');
     });
   });
 });

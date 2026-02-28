@@ -18,6 +18,8 @@ const TAG = "GeminiWS";
 const MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025";
 const MAX_RECONNECT_ATTEMPTS = 3;
 const INITIAL_RECONNECT_DELAY_MS = 1000;
+const ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION = false;
+const ENABLE_LIVE_MODEL_TEXT_UPDATES = false;
 
 class GeminiWebSocket {
   private ws: WebSocket | null = null;
@@ -256,35 +258,43 @@ class GeminiWebSocket {
     }
 
     // IMPORTANT: Gemini API expects camelCase in setup message (not snake_case)
-    const setupMsg = {
-      setup: {
-        model: MODEL,
-        generationConfig: {
-          responseModalities: ["AUDIO"],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: {
-                voiceName: "Aoede",
-              },
+    const setupPayload: Record<string, unknown> = {
+      model: MODEL,
+      generationConfig: {
+        responseModalities: ["AUDIO"],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: "Aoede",
             },
           },
-          thinkingConfig: {
-            thinkingBudget: 0,
-          },
         },
-        systemInstruction: {
-          parts: [{ text: finalInstruction }],
-        },
-        inputAudioTranscription: {},
-        outputAudioTranscription: {},
-        // PTT Mode: Disable automatic VAD, use manual activity control
-        // Client sends activityStart/activityEnd to control turn-taking
-        realtimeInputConfig: {
-          automaticActivityDetection: {
-            disabled: true,
-          },
+        thinkingConfig: {
+          thinkingBudget: 0,
         },
       },
+      systemInstruction: {
+        parts: [{ text: finalInstruction }],
+      },
+      inputAudioTranscription: {},
+      // PTT Mode: Disable automatic VAD, use manual activity control
+      // Client sends activityStart/activityEnd to control turn-taking
+      realtimeInputConfig: {
+        automaticActivityDetection: {
+          disabled: true,
+        },
+      },
+    };
+    if (ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION) {
+      setupPayload.outputAudioTranscription = {};
+    } else {
+      Logger.info(
+        TAG,
+        "Live model output transcription disabled (audio-first mode)",
+      );
+    }
+    const setupMsg = {
+      setup: setupPayload,
     };
     Logger.debug(TAG, `Setup message: ${JSON.stringify(setupMsg)}`);
     this.send(JSON.stringify(setupMsg));
@@ -407,7 +417,7 @@ class GeminiWebSocket {
     this.isAudioOnlyMode = audioOnly;
 
     // Prepare audio streamer for new audio response
-    audioStreamer.prepareForNewResponse();
+    audioStreamer.prepareForNewResponse({ startPolicy: "streaming" });
     this.isFirstAudioChunk = true; // Reset for incoming audio
 
     const speakMsg: GeminiClientContent = {
@@ -558,7 +568,11 @@ class GeminiWebSocket {
               if (this.isFirstAudioChunk) {
                 this.audioChunksReceived = 0;
                 Logger.info(TAG, `First audio chunk — preparing response (dataLen=${inlineData.data.length})`);
-                audioStreamer.prepareForNewResponse();
+                audioStreamer.prepareForNewResponse({
+                  startPolicy: this.isAudioOnlyMode
+                    ? "streaming"
+                    : undefined,
+                });
                 this.isFirstAudioChunk = false;
               }
               this.audioChunksReceived++;
@@ -567,7 +581,12 @@ class GeminiWebSocket {
           }
           // Only add text if transcription is not enabled or not received
           // Skip in audio-only mode (Vocab TTS)l
-          if (part.text && !outputTranscription && !this.isAudioOnlyMode) {
+          if (
+            ENABLE_LIVE_MODEL_TEXT_UPDATES &&
+            part.text &&
+            !outputTranscription &&
+            !this.isAudioOnlyMode
+          ) {
             const filteredText = filterTranscriptText(part.text);
             if (filteredText) {
               Logger.info(
@@ -590,7 +609,11 @@ class GeminiWebSocket {
       }
 
       // Handle model's speech transcription (skip in audio-only mode)
-      if (outputTranscription?.text && !this.isAudioOnlyMode) {
+      if (
+        ENABLE_LIVE_MODEL_TEXT_UPDATES &&
+        outputTranscription?.text &&
+        !this.isAudioOnlyMode
+      ) {
         const text = filterTranscriptText(outputTranscription.text.trim());
         if (text) {
           Logger.info(TAG, `Model transcribed: ${text}`);
