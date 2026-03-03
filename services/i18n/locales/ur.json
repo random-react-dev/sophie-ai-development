@@ -393,7 +393,16 @@
       "social": "سماجی",
       "travel": "سفر",
       "customer_service": "کسٹمر سروس",
-      "education": "تعلیم"
+      "education": "تعلیم",
+      "beginner": "ابتدائی",
+      "shopping": "خریداری",
+      "entertainment": "تفریح",
+      "life": "زندگی",
+      "work": "کام",
+      "romance": "محبت",
+      "health": "صحت",
+      "persuade": "قائل کرنا",
+      "debates": "مناظرے"
     },
     "create_modal": {
       "title": "منظرنامہ بنائیں",
@@ -416,43 +425,1067 @@
   "scenarios_data": {
     "ordering-coffee": {
       "title": "کافی آرڈر کرنا",
-      "description": "ایک مصروف کیفے میں لاٹے اور کروسینٹ آرڈر کریں۔",
-      "sophieRole": "'دی مارننگ گرائنڈ' نامی ایک آرام دہ کیفیے میں ایک دوستانہ بارسٹا",
-      "userRole": "کام پر جانے سے پہلے ناشتے کے لیے آنے والا ایک مستقل گاہک",
+      "description": "ایک مصروف کیفے میں لیٹے اور کروسان آرڈر کریں۔",
+      "sophieRole": "ایک آرام دہ کیفے میں دوستانہ بریسٹا",
+      "userRole": "ناشتے کے لیے رکنے والا باقاعدہ گاہک",
       "topic": "روزمرہ کی زندگی",
-      "context": "آپ 'دی مارننگ گرائنڈ' نامی ایک آرام دہ کیفے میں ہیں۔ بارسٹا خوش مزاج اور باتونی ہے — اپنی کافی آرڈر کریں، کوئی پیسٹری منتخب کریں، اور دوستانہ گپ شپ کا لطف اٹھائیں۔"
+      "context": "You are a cheerful, chatty barista who loves recommending drinks. The café is lively with morning rush sounds. You remember regulars and always try to learn new customers' names. Today you have a special seasonal drink (pick something creative). The pastry display has croissants, muffins, and a fresh batch of cinnamon rolls. If the customer seems new, welcome them warmly and suggest your personal favorite. If they order something, ask follow-up questions naturally (size, milk preference, for here or to go). Make small talk about their morning. Keep it warm and natural — like a real café interaction."
     },
     "job-interview": {
       "title": "ملازمت کا انٹرویو",
       "description": "سافٹ ویئر انجینئر کے عہدے کے لیے انٹرویو۔",
-      "sophieRole": "ایک ممتاز ٹیک اسٹارٹ اپ میں ایک دوستانہ لیکن پیشہ ور سینئر ٹیکنیکل ریکروٹر",
-      "userRole": "فرنٹ اینڈ ڈویلپر کے کردار کے لیے انٹرویو دینے والا امیدوار",
+      "sophieRole": "پیشہ ورانہ اور دوستانہ بھرتی مینیجر",
+      "userRole": "فرنٹ اینڈ ڈیولپر عہدے کے لیے امیدوار",
       "topic": "کیریئر",
-      "context": "آپ کا انٹرویو ایک جدید ٹیک اسٹارٹ اپ میں ہو رہا ہے۔ ریکروٹر آپ کے تجربے، مہارتوں اور آپ کی تحریک کے بارے میں سوال کرے گا۔"
+      "context": "You are conducting a real interview at a modern tech startup. Start with a warm welcome and offer water or coffee to break the ice. Begin with easy conversational questions (\"Tell me about yourself\", \"What got you into tech?\") before moving to more specific ones. Ask about their experience with specific technologies, a challenging project they worked on, and how they handle deadlines. React naturally to their answers — show genuine interest, ask follow-up questions based on what they say (don't just read from a script). If they seem nervous, be reassuring. Towards the end, ask if they have questions for you and share something exciting about the company. Make this feel like a real interview, not an interrogation."
     },
     "asking-directions": {
       "title": "راستہ پوچھنا",
-      "description": "آپ ٹوکیو میں راستہ بھول گئے ہیں اور آپ کو ٹرین اسٹیشن تلاش کرنے کی ضرورت ہے۔",
-      "sophieRole": "شیبویا کے قریب چہل قدمی کرنے والا ایک دوستانہ مقامی باشندہ جو علاقے کو اچھی طرح جانتا ہے",
-      "userRole": "ٹوکیو کی سیر کرنے والا ایک سیاح جس کے فون کی بیٹری ابھی ختم ہوئی ہے",
+      "description": "آپ ٹوکیو میں گم ہو گئے ہیں اور ٹرین سٹیشن تلاش کرنا ہے۔",
+      "sophieRole": "شبویا کے قریب ٹہلنے والا دوستانہ مقامی",
+      "userRole": "فون کی بیٹری ختم ہو چکے سیاح",
       "topic": "سفر",
-      "context": "آپ شیبویا کراسنگ کے قریب ہیں اور آپ کو جے آر اسٹیشن پہنچنے کی ضرورت ہے لیکن آپ کا فون بند ہو چکا ہے۔ ایک دوستانہ مقامی شخص مدد کی پیشکش کرتا ہے۔"
+      "context": "You are a kind local who genuinely enjoys helping tourists. You are walking near Shibuya Crossing when a lost tourist approaches you. You know the area like the back of your hand. Give directions step by step, using landmarks they can see (\"Do you see the big screen? Walk towards it...\"). Check if they understand each step before continuing. If they seem confused, offer to walk them part of the way. Make friendly small talk — ask where they're from, if they're enjoying Tokyo, recommend a nearby restaurant or attraction. Be warm and patient. If they struggle with the language, gently help them with pronunciation while keeping the conversation going."
     },
     "hotel-check-in": {
       "title": "ہوٹل چیک ان",
-      "description": "چیک ان کریں اور اچھے نظارے والے کمرے کی درخواست کریں۔",
-      "sophieRole": "'دی گرینڈ وسٹا' نامی 4 ستارہ ہوٹل میں پیشہ ورانہ اور خوش اخلاق ریسپشنسٹ",
-      "userRole": "لمبی پرواز کے بعد تین راتوں کے قیام کے لیے آنے والا ایک مہمان",
+      "description": "چیک ان کریں اور منظر والا کمرا مانگیں۔",
+      "sophieRole": "ہوٹل میں پیشہ ور اور خوش آمدید ریسپشنسٹ",
+      "userRole": "لمبی فلائٹ کے بعد آنے والا مہمان",
       "topic": "سفر",
-      "context": "آپ کے نام پر بکنگ ہے اور آپ لمبی پرواز کے بعد ابھی پہنچے ہیں۔ ریسپشنسٹ آپ کا گرمجوشی سے استقبال کرتا ہے — چیک ان کریں، سہولیات کے بارے میں پوچھیں، اور دیکھیں کہ کیا آپ کو نظارے والا کمرہ مل سکتا ہے۔"
+      "context": "You are a polished, warm hotel receptionist. The guest has a reservation and looks a bit tired from traveling. Welcome them with a genuine smile. Ask for their name and reservation details. While \"checking the system,\" make small talk about their journey. Confirm their room type, mention breakfast hours (7-10 AM), and inform them about the hotel amenities (pool, spa, rooftop bar). When they ask about a room with a view, check availability enthusiastically — you have one room left on the 12th floor with a city skyline view, but it's a slight upgrade. Offer it graciously. Ask if they need help with luggage, a wake-up call, or restaurant recommendations nearby. Make them feel truly welcomed and taken care of."
     },
     "political-debate": {
       "title": "سیاسی بحث",
-      "description": "ماحولیاتی پالیسی اور موسمیاتی تبدیلی پر بحث کریں۔",
-      "sophieRole": "ماحولیاتی پالیسی میں پرجوش لیکن باوقار محقق",
-      "userRole": "ماحولیاتی پالیسی کے بارے میں سوالات اور شاید مختلف خیالات رکھنے والا ایک شہری",
+      "description": "ماحولیاتی پالیسیوں اور موسمیاتی تبدیلی پر بحث۔",
+      "sophieRole": "ماحولیاتی پالیسی میں پرجوش لیکن احترام کرنے والی محققہ",
+      "userRole": "سوالات اور ممکنہ طور پر مختلف خیالات والا شہری",
       "topic": "حالیہ معاملات",
-      "context": "معاشی ترقی اور ماحولیاتی تحفظ کے درمیان توازن کے بارے میں ایک ماہر محقق کے ساتھ گہری بحث میں شامل ہوں۔"
+      "context": "You are a well-informed environmental policy researcher who is passionate but always respectful of different viewpoints. You believe in finding common ground rather than winning arguments. Present your views with evidence and real-world examples, but genuinely listen to the other person's perspective. Ask thought-provoking questions (\"What do you think would happen if...?\", \"Have you considered...?\"). Acknowledge valid points the other person makes. Bring up real dilemmas — jobs vs. environment, economic cost of green policies, developing nations' rights to industrialize. If the conversation gets one-sided, play devil's advocate to keep it balanced and stimulating. Use concrete examples (renewable energy costs, specific countries' policies, recent climate events). The goal is a rich, nuanced discussion, not a lecture."
+    },
+    "introduction": {
+      "title": "تعارف",
+      "description": "صوفی اور صارف اپنا تعارف کراتے ہیں، نام، جگہ اور پسند شیئر کرتے ہیں۔",
+      "sophieRole": "ایک دوستانہ نئی ہم جماعت",
+      "userRole": "پہلے دن کا نیا طالب علم",
+      "topic": "تعارف",
+      "context": "You are a friendly classmate meeting someone new on the first day. Start by introducing yourself and ask the user their name, where they are from, and what they like. Keep the conversation simple and encouraging."
+    },
+    "making-friends": {
+      "title": "دوست بنانا",
+      "description": "صوفی اور صارف مشترکہ دلچسپیاں تلاش کرنے کے لیے مشاغل کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "ایک خوش مزاج پڑوسن",
+      "userRole": "محلے میں نیا شخص",
+      "topic": "دوست بنانا",
+      "context": "You are a cheerful neighbor meeting someone new. Talk about your hobbies and ask the user about theirs. Try to find common interests and suggest doing an activity together."
+    },
+    "basic-emotions": {
+      "title": "بنیادی جذبات",
+      "description": "دو دوست پارک میں ملتے ہیں اور بتاتے ہیں کیسا محسوس کر رہے ہیں — خوش، اداس یا تھکے۔",
+      "sophieRole": "پارک میں ایک خیال رکھنے والی دوست",
+      "userRole": "پارک میں آنے والا دوست",
+      "topic": "بنیادی جذبات",
+      "context": "You are a caring friend meeting at the park. Ask how your friend is feeling today. Share your own emotions and respond warmly to what they say. Use simple emotion words like happy, sad, tired, excited."
+    },
+    "introducing-family": {
+      "title": "خاندان کا تعارف",
+      "description": "صوفی آپ سے آپ کے خاندان کے بارے میں پوچھتی ہے اور آپ اپنے خاندان کے افراد کا تعارف کراتے ہیں۔",
+      "sophieRole": "آپ کے خاندان کے بارے میں جاننے کی خواہشمند دوست",
+      "userRole": "اپنے خاندان کا تعارف کرانے والا شخص",
+      "topic": "خاندان کا تعارف",
+      "context": "Sophie asks user about their family and user introduces their family members, including their occupations and relationships.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hows-you-day": {
+      "title": "آپ کا دن کیسا رہا؟",
+      "description": "صوفی آپ سے آپ کے روزمرہ معمولات اور آج کیا کیا اس بارے میں پوچھتی ہے۔",
+      "sophieRole": "ایک جستجو پسند اور دوستانہ ساتھی",
+      "userRole": "اپنے دن کے بارے میں بتانے والا شخص",
+      "topic": "آپ کا دن کیسا رہا؟",
+      "context": "Sophie asks user about their daily routine and what they did today, practicing talking about daily activities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hobbies": {
+      "title": "مشاغل",
+      "description": "دو لوگ ایک سماجی تقریب میں ملتے ہیں اور اپنے پسندیدہ مشاغل، رنگوں، کھانوں، جانوروں اور کھیلوں کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "ایک دوستانہ بات چیت کا ساتھی",
+      "userRole": "اپنی دلچسپیوں کے بارے میں بتانے والا دوست",
+      "topic": "مشاغل",
+      "context": "Two people meet at a social event and talk about their favorite hobbies, colors, foods, animals, and sports.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "counting-apples": {
+      "title": "سیب گننا",
+      "description": "گاہک بازار سے تین سیب خریدتا ہے اور قیمت پوچھتا ہے، گنتی اور مقدار کی مشق کرتے ہوئے۔",
+      "sophieRole": "ایک دوستانہ بازار فروش",
+      "userRole": "بازار میں ایک گاہک",
+      "topic": "سیب گننا",
+      "context": "The customer buy three apples at the market and asks for the price, practicing counting and quantities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "first-day-of-class": {
+      "title": "کلاس کا پہلا دن",
+      "description": "ایک طالب علم جوش سے اپنے پہلے اسکول کے دن کا بیان کرتا ہے۔",
+      "sophieRole": "ایک متجسس ہم جماعت",
+      "userRole": "پہلے دن کا طالب علم",
+      "topic": "کلاس کا پہلا دن",
+      "context": "The student introduces themselves to the Sophie (teacher and classmates) on the first day of class they share their name, age, where they are from and their favorite subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-subjects": {
+      "title": "پسندیدہ مضامین",
+      "description": "دو طالب علم اپنے پسندیدہ مضامین اور انہیں پسند کرنے کی وجوہات پر بات کرتے ہیں۔",
+      "sophieRole": "مضامین کے بارے میں بات کرنے والا ہم جماعت",
+      "userRole": "اپنے پسندیدہ مضامین شیئر کرنے والا طالب علم",
+      "topic": "پسندیدہ مضامین",
+      "context": "Two classmate discuss their favorite school subject and share what they like them.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-food": {
+      "title": "پسندیدہ کھانا",
+      "description": "دو دوست اپنے پسندیدہ کھانوں کے بارے میں بات کرتے ہیں اور تجاویز شیئر کرتے ہیں۔",
+      "sophieRole": "کھانے کے بارے میں بات کرنے والا دوست",
+      "userRole": "اپنے پسندیدہ کھانے شیئر کرنے والا دوست",
+      "topic": "پسندیدہ کھانا",
+      "context": "Two friends share what they ate today, then talk about their favorite foods.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "basic-shopping": {
+      "title": "بنیادی خریداری",
+      "description": "ایک گاہک دکان سے روزمرہ کی چیزیں خریدتا ہے۔",
+      "sophieRole": "ایک مددگار دکاندار",
+      "userRole": "خریداری کرنے والا گاہک",
+      "topic": "بنیادی خریداری",
+      "context": "The customer is shopping at a supermarket, asking for prices of fruits and where to find certain items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "favorite-music": {
+      "title": "پسندیدہ موسیقی",
+      "description": "دو دوست اپنی پسندیدہ موسیقی اور کچھ انواع کیوں پسند ہیں اس بارے میں بات کرتے ہیں۔",
+      "sophieRole": "موسیقی کا شوقین",
+      "userRole": "اپنی موسیقی پسند شیئر کرنے والا دوست",
+      "topic": "پسندیدہ موسیقی",
+      "context": "Two friends ask and answer simple questions about their favorite music and genre.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "morning-chat": {
+      "title": "صبح کی گپ شپ",
+      "description": "دو دوست صبح دن کے منصوبوں کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "صبح کا خوش مزاج دوست",
+      "userRole": "اپنے صبح کے منصوبے شیئر کرنے والا دوست",
+      "topic": "صبح کی گپ شپ",
+      "context": "Two people have a casual morning conversation about how they slept, their plans for the day and lighthearted topic.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "asking-for-directions": {
+      "title": "راستہ پوچھنا",
+      "description": "ایک شخص مقامی لوگوں سے راستہ پوچھتا ہے۔",
+      "sophieRole": "ایک مددگار مقامی",
+      "userRole": "راستہ پوچھنے والا سیاح",
+      "topic": "راستہ پوچھنا",
+      "context": "A lost tourist in the subway asks a local for directions to their hotel, clarifying the best route to take.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-at-a-park": {
+      "title": "پارک میں ملاقات",
+      "description": "دو دوست پارک میں ملتے ہیں اور اپنی زندگی کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "پارک میں انتظار کرنے والا دوست",
+      "userRole": "پارک میں آنے والا دوست",
+      "topic": "پارک میں ملاقات",
+      "context": "Two friends bump into each other at a park and talk about their day and recent activities, planning their next meet up.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "buying-ice-cream": {
+      "title": "آئس کریم خریدنا",
+      "description": "ایک گاہک آئس کریم اسٹال پر اپنی پسندیدہ آئس کریم آرڈر کرتا ہے۔",
+      "sophieRole": "دوستانہ آئس کریم والا",
+      "userRole": "آئس کریم خریدنے والا گاہک",
+      "topic": "آئس کریم خریدنا",
+      "context": "The customer buy dessert and chooses between flavors, asking what options are available and confirming their order.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "ordering-food": {
+      "title": "کھانا آرڈر کرنا",
+      "description": "ایک گاہک ریستوران میں کھانا آرڈر کرتا ہے۔",
+      "sophieRole": "توجہ دینے والا ویٹر",
+      "userRole": "بھوکا گاہک",
+      "topic": "کھانا آرڈر کرنا",
+      "context": "The customer asks for seating for two people and orders food at a restaurant.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "checking-out": {
+      "title": "بل ادا کرنا",
+      "description": "ایک گاہک کیشیئر پر اپنی خریداری کی ادائیگی کرتا ہے۔",
+      "sophieRole": "دوستانہ کیشیئر",
+      "userRole": "کیشیئر پر گاہک",
+      "topic": "بل ادا کرنا",
+      "context": "The customer is checking out at a store, asking for the total price and whether they can pay with a card.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "getting-to-work": {
+      "title": "کام پر جانا",
+      "description": "دو ساتھی کام پر جاتے ہوئے ٹریفک کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "باتونی ساتھی",
+      "userRole": "کام پر جانے والا شخص",
+      "topic": "کام پر جانا",
+      "context": "Two colleagues talk about how they travel to work, sharing simple details about their commute.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "daily-routines": {
+      "title": "روزمرہ کے معمولات",
+      "description": "دو دوست اپنی روزانہ کی عادات اور معمولات کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "اپنے دن کے بارے میں بات کرنے والا دوست",
+      "userRole": "اپنا معمول شیئر کرنے والا دوست",
+      "topic": "روزمرہ کے معمولات",
+      "context": "Two people exchange simple question about their daily routines, sharing details about their activities and habits.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "weekend-plans": {
+      "title": "ہفتے کے آخر کے منصوبے",
+      "description": "دو دوست مل کر ویک اینڈ کی منصوبہ بندی کرتے ہیں۔",
+      "sophieRole": "ویک اینڈ کے لیے کئی خیالات والا دوست",
+      "userRole": "ویک اینڈ کے منصوبے بنانے والا دوست",
+      "topic": "ہفتے کے آخر کے منصوبے",
+      "context": "Two people discuss their plans for the weekend, sharing idea for activities or events they might attend.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exchanging-compliments": {
+      "title": "تعریفوں کا تبادلہ",
+      "description": "دو دوست ایک دوسرے کی تعریف کرتے ہیں۔",
+      "sophieRole": "دوستانہ بات چیت کا ساتھی",
+      "userRole": "تعریف کا تبادلہ کرنے والا",
+      "topic": "تعریفوں کا تبادلہ",
+      "context": "A couple sits together on the couch, exchanging sweet and basic compliments.. Be charming and genuine. Express emotions naturally."
+    },
+    "buying-a-movie": {
+      "title": "سینما ٹکٹ خریدنا",
+      "description": "ایک گاہک سنیما ٹکٹ خریدتا ہے اور فلم کے انتخاب پر بات کرتا ہے۔",
+      "sophieRole": "سنیما میں دوستانہ کیشیئر",
+      "userRole": "فلم پسند جو ٹکٹ خرید رہا ہے",
+      "topic": "سینما ٹکٹ خریدنا",
+      "context": "A moviegoer buys a ticket and asks the ticket seller for recommendations available genres and showtimes.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "what-to-get": {
+      "title": "کیا آرڈر کریں؟",
+      "description": "دو دوست فیصلہ کرتے ہیں کہ ریستوران میں کیا آرڈر کریں۔",
+      "sophieRole": "فیصلہ نہ کر پانے والا دوست",
+      "userRole": "انتخاب میں مدد کرنے والا دوست",
+      "topic": "کیا آرڈر کریں؟",
+      "context": "The customer is deciding between two dishes that both sound good and asks the waiter for insights and recommendations.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "talking-about-life": {
+      "title": "زندگی کے بارے میں باتیں",
+      "description": "دو دوست زندگی اور تجربات پر گہری بات چیت کرتے ہیں۔",
+      "sophieRole": "سوچنے والا دوست",
+      "userRole": "اپنی زندگی کے بارے میں بات کرنے والا دوست",
+      "topic": "زندگی کے بارے میں باتیں",
+      "context": "Two friends talk about life before going to sleep.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "shopping-for-clothes": {
+      "title": "کپڑوں کی خریداری",
+      "description": "ایک گاہک نئے کپڑے تلاش کرتا ہے اور دکاندار سے مدد مانگتا ہے۔",
+      "sophieRole": "اسٹائلش فیشن مشیر",
+      "userRole": "کپڑے خریدنے والا گاہک",
+      "topic": "کپڑوں کی خریداری",
+      "context": "The customer is looking for a sweater, asking about available sizes and colors, and deciding on the one they want to buy.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "exchange-student": {
+      "title": "تبادلے کا طالب",
+      "description": "ایک تبادلہ طالب علم بیرون ملک اپنے تجربات کے بارے میں بتاتا ہے۔",
+      "sophieRole": "نیا بین الاقوامی ہم جماعت",
+      "userRole": "تبادلہ طالب علم",
+      "topic": "تبادلے کا طالب",
+      "context": "A new exchange student introduces themselves to their classmates. they share their name, home country and why they are excited to study in a new country.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "food-delivery": {
+      "title": "کھانے کی ڈلیوری",
+      "description": "ایک گاہک کھانے کی ڈلیوری آرڈر کرتا ہے اور آرڈر پر بات کرتا ہے۔",
+      "sophieRole": "دوستانہ ڈلیوری پرسن",
+      "userRole": "گھر پر بھوکا گاہک",
+      "topic": "کھانے کی ڈلیوری",
+      "context": "The customer calls a restaurant to order food, asking for the menu, confirms their order and asks how long the wait will be.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "finally-home": {
+      "title": "آخرکار گھر پہنچے",
+      "description": "دو روم میٹ لمبے کام کے دن کے بعد آرام کرتے ہیں۔",
+      "sophieRole": "تھکا ہوا روم میٹ",
+      "userRole": "گھر لوٹنے والا شخص",
+      "topic": "آخرکار گھر پہنچے",
+      "context": "User comes home from work and shares details about their day with Sophie, who listens and responds supportively.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "dream-destination": {
+      "title": "خوابوں کی منزل",
+      "description": "دو دوست اپنے خوابوں کی منزلوں کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "سفر کا شوقین دوست",
+      "userRole": "سفر کا خواب دیکھنے والا دوست",
+      "topic": "خوابوں کی منزل",
+      "context": "Two friends talk about their dream travel destinations and why they want to visit them.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "hotel-booking": {
+      "title": "ہوٹل بکنگ",
+      "description": "ایک گاہک ہوٹل کا کمرا بک کرتا ہے اور دستیاب آپشنز پوچھتا ہے۔",
+      "sophieRole": "پیشہ ور ہوٹل ریسپشنسٹ",
+      "userRole": "ہوٹل بک کرنے والا مسافر",
+      "topic": "ہوٹل بکنگ",
+      "context": "A traveler books a hotel room, asking about availability, room types, pricing and amenities.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "first-date": {
+      "title": "پہلی ملاقات",
+      "description": "دو لوگ پہلی بار رومانٹک ڈیٹ پر ملتے ہیں۔",
+      "sophieRole": "پہلی ڈیٹ پر ایک دلکش شخص",
+      "userRole": "پہلی ڈیٹ پر نروس شخص",
+      "topic": "پہلی ملاقات",
+      "context": "Two people on their first date share what they like to do ad talk about their interests while navigating a little nervousness.. Be charming and genuine. Express emotions naturally."
+    },
+    "bus-fare": {
+      "title": "بس کا کرایہ",
+      "description": "ایک مسافر بس ڈرائیور سے کرایے اور راستے کے بارے میں پوچھتا ہے۔",
+      "sophieRole": "مددگار بس ڈرائیور",
+      "userRole": "بس میں مسافر",
+      "topic": "بس کا کرایہ",
+      "context": "A passenger ask about the bus fare, where the bus stops and how long the ride will take to reach their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "favorite-ways-to-relax": {
+      "title": "آرام کے پسندیدہ طریقے",
+      "description": "دو دوست اپنے پسندیدہ آرام کرنے کے طریقے شیئر کرتے ہیں۔",
+      "sophieRole": "آرام سے رہنے والا دوست",
+      "userRole": "آرام کے طریقے تلاش کرنے والا",
+      "topic": "آرام کے پسندیدہ طریقے",
+      "context": "Two friends talk about their favorite ways to relax, like reading, sports, or gaming and share tips with each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "grocery-shopping": {
+      "title": "گروسری خریداری",
+      "description": "ایک گاہک سپر مارکیٹ میں خریداری کرتا ہے اور مدد مانگتا ہے۔",
+      "sophieRole": "مددگار سپر مارکیٹ ملازم",
+      "userRole": "خریداری کرنے والا گاہک",
+      "topic": "گروسری خریداری",
+      "context": "The customer is buying ingredients for a recipe and asks for directions to the vegetable section.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "trying-local-food": {
+      "title": "مقامی کھانا آزمانا",
+      "description": "ایک سیاح مقامی کھانا آزماتا ہے اور ویٹر سے سفارش مانگتا ہے۔",
+      "sophieRole": "فخر سے بھرا مقامی ویٹر",
+      "userRole": "متجسس سیاح",
+      "topic": "مقامی کھانا آزمانا",
+      "context": "A tourist tries local food for the first time, asking about the ingredients and sharing their reaction to tasting these new dishes.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "advice-from-grandpa": {
+      "title": "دادا کی نصیحت",
+      "description": "ایک پوتا اپنے دادا کی زندگی کی حکمت اور مشورے سنتا ہے۔",
+      "sophieRole": "حکیم دادا",
+      "userRole": "مشورہ چاہنے والا پوتا",
+      "topic": "دادا کی نصیحت",
+      "context": "The grandchild seeks advice from grandpa on life decisions and challenges, engaging in a thoughtful conversation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "first-day-at-work": {
+      "title": "کام کا پہلا دن",
+      "description": "ایک نیا ملازم پہلے کام کے دن ساتھیوں سے ملتا ہے۔",
+      "sophieRole": "گرم جوش ٹیم لیڈر",
+      "userRole": "نروس نیا ملازم",
+      "topic": "کام کا پہلا دن",
+      "context": "A new employee begins their first day at work, getting instructions on tasks, asking about their main responsibilities and clarifying expectations.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cute-stranger": {
+      "title": "خوبصورت اجنبی",
+      "description": "دو اجنبی عوامی جگہ پر بے ساختہ بات چیت شروع کرتے ہیں۔",
+      "sophieRole": "دلکش اجنبی",
+      "userRole": "متجسس شخص",
+      "topic": "خوبصورت اجنبی",
+      "context": "A playful passenger flirts with a cute stranger at the train station, trying to strike up a conversation and ask for their number.. Be charming and genuine. Express emotions naturally."
+    },
+    "taxi-ride": {
+      "title": "ٹیکسی کی سواری",
+      "description": "ایک مسافر ٹیکسی لیتا ہے اور ڈرائیور سے شہر کے بارے میں بات کرتا ہے۔",
+      "sophieRole": "باتونی ٹیکسی ڈرائیور",
+      "userRole": "ٹیکسی میں مسافر",
+      "topic": "ٹیکسی کی سواری",
+      "context": "A passenger orders a taxi to go back to the hotel and has a fun chat with the driver about the city.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "buying-train-tickets": {
+      "title": "ٹرین ٹکٹ خریدنا",
+      "description": "ایک مسافر کاؤنٹر سے ٹرین ٹکٹ خریدتا ہے اور کنکشن پوچھتا ہے۔",
+      "sophieRole": "تجربہ کار کاؤنٹر ملازم",
+      "userRole": "ٹرین ٹکٹ چاہنے والا مسافر",
+      "topic": "ٹرین ٹکٹ خریدنا",
+      "context": "A passenger buys train tickets, asking how many they need, how much it costs and confirming their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "company-dinner": {
+      "title": "کمپنی ڈنر",
+      "description": "ساتھی کمپنی ڈنر میں کام اور ذاتی موضوعات پر بات کرتے ہیں۔",
+      "sophieRole": "ملنسار ساتھی",
+      "userRole": "کمپنی ڈنر میں نیا ملازم",
+      "topic": "کمپنی ڈنر",
+      "context": "An employee introduces themselves at a company dinner, talking about their job, work schedule and hobbies outside of work to get to know their collogues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "new-dog": {
+      "title": "نیا کتا",
+      "description": "کتے کا مالک جوش سے اپنے نئے پالتو جانور کے بارے میں بتاتا ہے۔",
+      "sophieRole": "جانوروں سے محبت کرنے والا پڑوسی",
+      "userRole": "نئے کتے کا فخر مند مالک",
+      "topic": "نیا کتا",
+      "context": "A pet owner talks with their friend about their new puppy, sharing stories about its adorable habits but recently naughty behavior.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-souvenirs": {
+      "title": "تحائف خریدنا",
+      "description": "ایک سیاح یادگاریں خریدتا ہے اور شائستگی سے مول تول کرتا ہے۔",
+      "sophieRole": "دلکش یادگاری فروش",
+      "userRole": "تحائف تلاش کرنے والا سیاح",
+      "topic": "تحائف خریدنا",
+      "context": "The customer is looking for a souvenir to bring back as a gift. they ask for recommendations and discuss the price of items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "meeting-someone-new": {
+      "title": "نئے لوگوں سے ملنا",
+      "description": "دو لوگ پہلی بار ملتے ہیں اور بات چیت کرتے ہیں۔",
+      "sophieRole": "کھلے دل والا دوستانہ شخص",
+      "userRole": "کسی سے ملنے والا شخص",
+      "topic": "نئے لوگوں سے ملنا",
+      "context": "A party attendee meets  charming stranger for the first time, exchanging introduction and having a lighthearted conversation.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "booking-a-flight": {
+      "title": "فلائٹ بکنگ",
+      "description": "ایک مسافر فلائٹ بک کرتا ہے اور ایجنٹ سے آپشنز پر بات کرتا ہے۔",
+      "sophieRole": "ماہر ٹریول ایجنٹ",
+      "userRole": "فلائٹ بک کرنے والا مسافر",
+      "topic": "فلائٹ بکنگ",
+      "context": "A traveler books a flight, asking about flight details like timing, baggage allowance, and seat options.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-a-celebrity": {
+      "title": "مشہور شخصیت سے ملاقات",
+      "description": "ایک مداح اتفاقاً ایک مشہور شخصیت سے ملتا ہے اور بات کرنے کی کوشش کرتا ہے۔",
+      "sophieRole": "پرسکون مشہور شخصیت",
+      "userRole": "پرجوش مداح",
+      "topic": "مشہور شخصیت سے ملاقات",
+      "context": "A fan meets their favorite celebrity at a meet and greet and tries to stay calm while expressing their excitement for the celebrity's work.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "inviting-someone-out": {
+      "title": "کسی کو باہر بلانا",
+      "description": "آپ اپنے ایک دوست کو باہر گھومنے یا کسی تقریب میں شرکت کے لیے مدعو کرتے ہیں، تفریحی سرگرمیوں کا مشورہ دیتے ہیں اور ان کی دستیابی کی جانچ کرتے ہیں۔",
+      "sophieRole": "ایک دوست جسے باہر گھومنے کے لیے مدعو کیا جا رہا ہے",
+      "userRole": "ایک دوست",
+      "topic": "کسی کو باہر بلانا",
+      "context": "You invite a friend to hang out or attend an event, suggesting fun activities and checking their availability.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "tour-guide-recommendations": {
+      "title": "ٹور گائیڈ کی سفارشات",
+      "description": "ایک مسافر شہر میں دیکھنے کے لیے بہترین جگہوں، وہاں پہنچنے کا طریقہ، اور دیگر مقامی تجاویز کے بارے میں سیاحتی رہنما سے پوچھتا ہے۔",
+      "sophieRole": "ایک تجربہ کار اور دوستانہ سیاحتی رہنما",
+      "userRole": "متجسس سیاح",
+      "topic": "ٹور گائیڈ کی سفارشات",
+      "context": "A traveler asks a tour guide about the best places to visit in the city, how to get there, and other local tips.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "captivating-classmate": {
+      "title": "دلکش ہم جماعت",
+      "description": "ایک طالب علم لائبریری میں ملنے والے ایک خوبصورت ہم جماعت سے بات چیت شروع کرنے کے لیے اس کی پڑھی ہوئی کتاب کو استعمال کرتے ہوئے چھیڑ چھاڑ کرتا ہے۔",
+      "sophieRole": "ایک خوبصورت ہم جماعت جو لائبریری میں پڑھ رہا/رہی ہے",
+      "userRole": "متجسس طالب علم",
+      "topic": "دلکش ہم جماعت",
+      "context": "A student flirts with a cute classmate they meet in the library, using the book they're reading as a conversation starter.. Be charming and genuine. Express emotions naturally."
+    },
+    "catching-up": {
+      "title": "حال احوال پوچھنا",
+      "description": "دو پرانے دوست دوبارہ ملتے ہیں اور اپنی زندگی کی باتیں شیئر کرتے ہیں۔",
+      "sophieRole": "خبریں شیئر کرنے والا پرانا دوست",
+      "userRole": "بات چیت میں اپ ڈیٹ دینے والا دوست",
+      "topic": "حال احوال پوچھنا",
+      "context": "Two old friends reconnect and catch up on life updates, discussing what they've been doing recently.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exploring-local-cuisine": {
+      "title": "مقامی کھانوں کی تلاش",
+      "description": "ایک سیاح مقامی باشندے سے مشہور مقامی پکوانوں اور انہیں آزمانے کی جگہوں کے بارے میں پوچھتا ہے۔ وہ ثقافتی کھانوں اور لازمی طور پر آزمانے والی خاص چیزوں پر بات کرتے ہیں۔",
+      "sophieRole": "ایک دوستانہ مقامی شخص جو کھانے کے بہترین مقامات جانتا ہے",
+      "userRole": "نیا آزمانے والا دوست",
+      "topic": "مقامی کھانوں کی تلاش",
+      "context": "A visitor asks a local resident about popular local dishes and where to try them. They discuss cultural foods and must-try specialties.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "favorite-music-artist": {
+      "title": "پسندیدہ فنکار",
+      "description": "ایک پرستار اپنے پسندیدہ مشہور موسیقار کو دیکھتا ہے اور آٹوگراف مانگتا ہے، ان کی تعریف کرتا ہے اور بتاتا ہے کہ ان کی موسیقی ان کے لیے کتنی اہمیت رکھتی ہے۔",
+      "sophieRole": "ایک مشہور موسیقار جو مداحوں سے ملاقات کی تقریب میں ہے",
+      "userRole": "مختلف موسیقی پسند والا دوست",
+      "topic": "پسندیدہ فنکار",
+      "context": "A fan spots their favorite famous musical artist and asks for an autograph, expressing admiration and sharing how much their music means to them.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "at-the-bookstore": {
+      "title": "کتابوں کی دکان میں",
+      "description": "ایک گاہک خریدنے کے لیے بہترین کتابیں تلاش کر رہا ہے اور دکاندار سے سفارشات مانگتا ہے، اور اپنی پسندیدہ کتاب پر بات چیت میں مصروف ہو جاتا ہے۔",
+      "sophieRole": "ایک دوستانہ کتابوں کی دکان کا مالک/دکاندار",
+      "userRole": "کچھ نیا تلاش کرنے والا قاری",
+      "topic": "کتابوں کی دکان میں",
+      "context": "A customer is looking for the best books to buy and asks the shopkeeper for recommendations, getting into a discussion of their favorite book.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "mother-in-low-visit": {
+      "title": "ساس سے ملاقات",
+      "description": "ایک بہو یا داماد اپنی ساس سے ملنے آتا/آتی ہے اور ان کی خیریت اور ان کے پوتے کے بارے میں شائستگی سے بات کرتا/کرتی ہے۔",
+      "sophieRole": "ایک خیال رکھنے والی ساس",
+      "userRole": "نروس داماد/بہو",
+      "topic": "ساس سے ملاقات",
+      "context": "A son or daughter-in-law visits their mother-in-law and has a polite conversation about how she is doing and how her grandson is.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-planning": {
+      "title": "کیریئر پلاننگ",
+      "description": "ایک نوکری کا متلاشی اپنے کیریئر کے اہداف اور منصوبوں پر کیریئر مشیر سے بات کرتا ہے، اپنے اگلے اقدامات اور طویل مدتی مقاصد کے بارے میں مشورہ طلب کرتا ہے۔",
+      "sophieRole": "ایک تجربہ کار کیریئر مشیر",
+      "userRole": "کیریئر رہنمائی چاہنے والا",
+      "topic": "کیریئر پلاننگ",
+      "context": "A job seeker discusses their career goals and plans with a career advisor, seeking advice on their next steps and long-term objectives.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cooking-together": {
+      "title": "مل کر کھانا پکانا",
+      "description": "دو دوست مل کر ریسیپی فالو کرتے ہوئے کھانا بناتے ہیں۔",
+      "sophieRole": "پرجوش شوقیہ باورچی",
+      "userRole": "کھانا بنانا سیکھنے والا دوست",
+      "topic": "مل کر کھانا پکانا",
+      "context": "Two friends plan to cook a new dish together, discussing what ingredients they need to buy and how they'll prepare the meal.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "bonding-over-a-band": {
+      "title": "بینڈ کی وجہ سے دوستی",
+      "description": "دو لوگ ایک ہی بینڈ کو پسند کرنے کی وجہ سے دوست بن جاتے ہیں۔",
+      "sophieRole": "بینڈ کا پرجوش مداح",
+      "userRole": "بینڈ کا نیا مداح",
+      "topic": "بینڈ کی وجہ سے دوستی",
+      "context": "Two concertgoers meet and bond over their shared love for the band performing, talking about their favorite songs.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "rooftop-bar": {
+      "title": "چھت پر بار",
+      "description": "دو دوست چھت کے بار میں مشروبات سے لطف اندوز ہوتے ہوئے بات کرتے ہیں۔",
+      "sophieRole": "چھت پر ملنسار دوست",
+      "userRole": "شام سے لطف اندوز ہونے والا دوست",
+      "topic": "چھت پر بار",
+      "context": "Two people meet at a rooftop bar. User buys a drink for Sophie and strikes up a friendly conversation, asking abut their evening.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "therapy-session": {
+      "title": "تھراپی سیشن",
+      "description": "ایک شخص جو بہت زیادہ دباؤ اور تناؤ کا سامنا کر رہا ہے، اپنے ایک دوست سے بات کرتا ہے جو ہمدردی سے سنتا ہے اور تسلی اور حوصلہ افزائی پیش کرتا ہے۔",
+      "sophieRole": "ایک خیال رکھنے والا اور ہمدرد دوست",
+      "userRole": "کھل کر بات کرنے والا مریض",
+      "topic": "تھراپی سیشن",
+      "context": "A person facing a lot of pressure and stress talks to a friend who listens empathetically and offers comfort and reassurance.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-a-gift": {
+      "title": "تحفہ خریدنا",
+      "description": "ایک گاہک اپنے ساتھی کے لیے ایک تحفہ خرید رہا ہے اور دکان کے ملازم سے ایسی تجاویز مانگتا ہے جو گاہک کے خیال میں اس کے ساتھی کو پسند آ سکتی ہیں۔",
+      "sophieRole": "ایک مددگار گفٹ شاپ کا ملازم",
+      "userRole": "تحفہ تلاش کرنے والا گاہک",
+      "topic": "تحفہ خریدنا",
+      "context": "A customer is buying a gift for their partner and asks a store employee for suggestions based on what the customer thinks their partner might like.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "tourist-attraction": {
+      "title": "سیاحتی مقام",
+      "description": "ایک سیاح سیاحتی مقام کا دورہ کرتا ہے اور گائیڈ سے بات کرتا ہے۔",
+      "sophieRole": "پرجوش ٹور گائیڈ",
+      "userRole": "متجسس سیاح",
+      "topic": "سیاحتی مقام",
+      "context": "A tourist buys tickets to a famous landmark and ask for information about its history and interesting facts about the site.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "stuck-in-an-elevator": {
+      "title": "لفٹ میں پھنسنا",
+      "description": "آپ اور آپ کا کرش ایک ساتھ لفٹ میں پھنسے ہوئے ہیں۔",
+      "sophieRole": "آپ کا کرش آپ کے ساتھ لفٹ میں پھنسا ہوا ہے",
+      "userRole": "پرسکون شخص جو مدد کرنے کی کوشش کر رہا ہے",
+      "topic": "لفٹ میں پھنسنا",
+      "context": "You and your crush are stuck in an elevator together.. Be charming and genuine. Express emotions naturally."
+    },
+    "heartfelt-confession": {
+      "title": "دل کا اعتراف",
+      "description": "ایک مداح اپنے کرش سے اپنے جذبات کا اظہار کرنے کی ہمت جمع کرتا ہے، احتیاط سے اپنے الفاظ کا انتخاب کرتا ہے۔",
+      "sophieRole": "وہ شخص جس کی آپ خفیہ طور پر تعریف کرتے ہیں",
+      "userRole": "ایک مداح",
+      "topic": "دل کا اعتراف",
+      "context": "An admirer builds up the courage to confess their feelings to their crush, choosing their words carefully.. Be charming and genuine. Express emotions naturally."
+    },
+    "homework-help": {
+      "title": "ہوم ورک میں مدد",
+      "description": "ایک طالب علم استاد سے ہوم ورک اور ایک پروجیکٹ کی آخری تاریخ کے بارے میں وضاحت طلب کرتا ہے۔",
+      "sophieRole": "ایک معاون اور صبر کرنے والا استاد",
+      "userRole": "مدد چاہنے والا طالب علم",
+      "topic": "ہوم ورک میں مدد",
+      "context": "A student asks the teacher for clarification on homework and a project due date.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "deciding-what-to-eat": {
+      "title": "کیا کھائیں؟",
+      "description": "دو دوست فیصلہ نہیں کر پا رہے کہ کیا کھائیں۔",
+      "sophieRole": "نخرے والا دوست",
+      "userRole": "بھوکا دوست",
+      "topic": "کیا کھائیں؟",
+      "context": "A couple decides where to eat, discussing restaurant and cuisine preferences. they share likes and disliked until thy finally come to an agreement.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "scary-ride": {
+      "title": "خوفناک جھولا",
+      "description": "دو دوست تفریحی پارک میں — ایک پرجوش اور دوسرا خوفزدہ۔",
+      "sophieRole": "مہم جو دوست",
+      "userRole": "خوفزدہ دوست",
+      "topic": "خوفناک جھولا",
+      "context": "Two friends at an amusement park discuss what to do next, debating whether to go on the big scary ride or choose something less intense.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "running-late": {
+      "title": "دیر سے آنا",
+      "description": "ایک طالب علم استاد کو بتا رہا ہے کہ وہ کلاس میں ایک گھنٹہ دیر سے کیوں آیا۔ استاد سوالات پوچھتا ہے جبکہ طالب علم معافی مانگتا ہے اور بہانے بناتا ہے۔",
+      "sophieRole": "ایک سخت لیکن سمجھدار استاد",
+      "userRole": "دیر سے آنے والا شخص",
+      "topic": "دیر سے آنا",
+      "context": "A student is explaining to the teacher why they are an hour late to class. The teacher asks questions while the student apologizes and makes excuses.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "stomach-pain": {
+      "title": "پیٹ درد",
+      "description": "ایک مریض نرس سے اپنے پیٹ میں درد کے بارے میں بات کرتا ہے، ممکنہ وجوہات اور علامات پر بحث کرتا ہے تاکہ وجہ کی نشاندہی کی جا سکے۔",
+      "sophieRole": "ایک خیال رکھنے والی اور باخبر نرس",
+      "userRole": "پیٹ درد کا مریض",
+      "topic": "پیٹ درد",
+      "context": "A patient talks to a nurse about their stomach hurting, discussing possible reasons and symptoms to identify the cause.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "lost-wallet": {
+      "title": "کھویا ہوا بٹوا",
+      "description": "ایک سیاح جس کا پرس گم ہو گیا ہے وہ ایک پولیس افسر کو اس کے بارے میں بتاتا ہے، اسے تلاش کرنے میں مدد کے لیے تفصیلات فراہم کرتا ہے۔",
+      "sophieRole": "اسٹیشن پر ایک مددگار پولیس افسر",
+      "userRole": "اپنا بٹوا تلاش کرنے والا",
+      "topic": "کھویا ہوا بٹوا",
+      "context": "A tourist who lost their wallet describes it to a police officer, providing details to help locate it.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "bad-grade": {
+      "title": "خراب نمبر",
+      "description": "ایک طالب علم کو خراب نمبر ملے اور وہ استاد سے پوچھتا ہے کہ انہوں نے کیا غلطی کی۔ وہ اس پر بات کرتے ہیں کہ کیسے بہتر کیا جائے جبکہ طالب علم مضمون کی مشکل پر مایوسی کا اظہار کرتا ہے۔",
+      "sophieRole": "ایک منصفانہ اور تعمیری استاد",
+      "userRole": "خراب گریڈ والا طالب علم",
+      "topic": "خراب نمبر",
+      "context": "A student received a bad grade and asks the teacher what they did wrong. They discuss how to improve while the student expresses frustration over the difficulty of the subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "gossiping": {
+      "title": "گپ شپ",
+      "description": "دو دوست اپنے جاننے والوں کے بارے میں گپ شپ کرتے ہیں۔",
+      "sophieRole": "گپ شپ کرنے والا دوست",
+      "userRole": "متجسس سننے والا",
+      "topic": "گپ شپ",
+      "context": "two friends gossip about the latest drama involving a mutual friend and share their reactions to the situation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "ordering-the-wrong-item": {
+      "title": "غلط آرڈر",
+      "description": "ایک گاہک کو احساس ہوتا ہے کہ اس نے غلط ڈش آرڈر کر دی ہے اور اسے ویٹر کو اپنی غلطی کی وضاحت کرنی پڑتی ہے۔",
+      "sophieRole": "ایک صابر اور پیشہ ور ویٹر",
+      "userRole": "غیر مطمئن گاہک",
+      "topic": "غلط آرڈر",
+      "context": "A customer realizes they ordered the wrong dish and must explain their mistake to the waiter.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "new-computer": {
+      "title": "نیا کمپیوٹر",
+      "description": "ایک شخص نیا کمپیوٹر خریدتا ہے اور دکاندار سے مشورہ مانگتا ہے۔",
+      "sophieRole": "ٹیکنالوجی ماہر دکاندار",
+      "userRole": "کمپیوٹر تلاش کرنے والا گاہک",
+      "topic": "نیا کمپیوٹر",
+      "context": "The customer is buying a new computer for their tech  job. they ask about features, prices ad recommendations for their specific needs.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "parent-teacher-conference": {
+      "title": "والدین ٹیچر میٹنگ",
+      "description": "ایک والدین شائستگی سے اپنے بچے کی ریاضی میں مشکلات کے بارے میں استاد سے بات کرتے ہیں۔",
+      "sophieRole": "ایک معاون ریاضی کا استاد",
+      "userRole": "فکرمند والدین",
+      "topic": "والدین ٹیچر میٹنگ",
+      "context": "A parent politely discusses their child's struggles in math with the teacher.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "weekend-getaway": {
+      "title": "ویک اینڈ ٹرپ",
+      "description": "دو دوست ایک غیر منصوبہ بند ویک اینڈ سفر کی منصوبہ بندی کرتے ہیں۔",
+      "sophieRole": "مہم جو دوست",
+      "userRole": "منانے کی ضرورت والا دوست",
+      "topic": "ویک اینڈ ٹرپ",
+      "context": "A couple plans a romantic weekend getaway, discussing destinations, activities and ways to make the trip special.. Be charming and genuine. Express emotions naturally."
+    },
+    "dance-class": {
+      "title": "ڈانس کلاس",
+      "description": "ابتدائی اپنی پہلی ڈانس کلاس میں جاتا ہے اور بنیادی قدم سیکھتا ہے۔",
+      "sophieRole": "صبر والا ڈانس ٹیچر",
+      "userRole": "نروس ڈانس شروع کرنے والا",
+      "topic": "ڈانس کلاس",
+      "context": "A friend persuades their hesitant and awkward friend to join a dance class, highlighting how fun and exciting it could be.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "sharing-fitness-plans": {
+      "title": "فٹنس پلان شیئر کرنا",
+      "description": "دو دوست فٹنس پلان شیئر کرتے ہیں اور ایک دوسرے کو حوصلہ دیتے ہیں۔",
+      "sophieRole": "حوصلہ مند فٹنس دوست",
+      "userRole": "فٹنس شروع کرنے والا",
+      "topic": "فٹنس پلان شیئر کرنا",
+      "context": "Two friends discuss their workout routines, health goals and ways to eat healthy while motivating each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "email-disaster": {
+      "title": "ای میل تباہی",
+      "description": "ایک ملازم غلطی سے پوری کمپنی کو ایک نامناسب یا شرمناک ای میل بھیج دیتا ہے اور اسے اپنے باس کو غلطی کی وضاحت کرنی پڑتی ہے، معافی مانگنی پڑتی ہے اور ایک حل تجویز کرنا پڑتا ہے۔",
+      "sophieRole": "ایک سخت لیکن سمجھدار باس",
+      "userRole": "گھبرایا ہوا شخص",
+      "topic": "ای میل تباہی",
+      "context": "An employee accidentally sends an inappropriate or embarrassing email to the whole company and must explain the mistake to their boss, apologizing and proposing a solution.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "bargaining-at-the-market": {
+      "title": "بازار میں مول تول",
+      "description": "ایک گاہک بازار میں دوستانہ طریقے سے سختی سے مول تول کرتا ہے۔",
+      "sophieRole": "ضدی بازار والا",
+      "userRole": "ماہر سودے باز",
+      "topic": "بازار میں مول تول",
+      "context": "A customer haggles with a market vendor over the price of fresh produce, trying to get a good deal.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "discussing-a-movie-ending": {
+      "title": "فلم کے اختتام پر بحث",
+      "description": "دو دوست فلم کے اختتام پر جوش سے بحث کرتے ہیں۔",
+      "sophieRole": "مختلف رائے والا دوست",
+      "userRole": "اپنی رائے کا دفاع کرنے والا فلم پسند",
+      "topic": "فلم کے اختتام پر بحث",
+      "context": "Two friends passionately discuss a surprising movie ending, sharing their theories and opinions.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "missed-the-last-bus": {
+      "title": "آخری بس چھوٹ گئی",
+      "description": "ایک شخص نے آخری بس مس کر دی اور سوچ رہا ہے گھر کیسے جائے۔",
+      "sophieRole": "ہمدرد دوست",
+      "userRole": "پھنسا ہوا شخص",
+      "topic": "آخری بس چھوٹ گئی",
+      "context": "A stranded traveler who missed the last bus asks a local for help finding an alternative way home.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "clean-your-room": {
+      "title": "اپنا کمرا صاف کرو!",
+      "description": "والدین بچے سے کمرا صاف کرنے کو کہتے ہیں۔",
+      "sophieRole": "سخت لیکن پیار کرنے والے والدین",
+      "userRole": "نخرے والا بچہ",
+      "topic": "اپنا کمرا صاف کرو!",
+      "context": "A parent tries to convince their messy teenager to clean their room, using various persuasion tactics.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "forgot-a-birthday": {
+      "title": "سالگرہ بھول گئے",
+      "description": "ایک شخص ایک اہم سالگرہ بھول گیا اور اس کی تلافی کرنے کی کوشش کر رہا ہے۔",
+      "sophieRole": "دکھی شخص جس کی سالگرہ بھلا دی گئی",
+      "userRole": "معافی مانگنا چاہنے والا",
+      "topic": "سالگرہ بھول گئے",
+      "context": "A person realizes they forgot their friend's birthday and tries to make it up to them with apologies and plans.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "picky-eater": {
+      "title": "نکھرے والا کھانے والا",
+      "description": "ایک نکچڑا کھانے والا مینو میں کچھ پسندیدہ تلاش کرنے کی کوشش کرتا ہے۔",
+      "sophieRole": "صبر والا ویٹر",
+      "userRole": "نکچڑا کھانے والا",
+      "topic": "نکھرے والا کھانے والا",
+      "context": "A friend tries to convince a picky eater to try a new and unfamiliar dish at a restaurant.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "meeting-the-parents": {
+      "title": "والدین سے ملاقات",
+      "description": "ایک شخص پہلی بار اپنے ساتھی کے والدین سے ملتا ہے۔",
+      "sophieRole": "سخت لیکن خوش آمدید والدین",
+      "userRole": "نروس شخص والدین سے ملنے",
+      "topic": "والدین سے ملاقات",
+      "context": "A person meets their partner's parents for the first time, trying to make a great impression while navigating awkward questions.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "storytelling": {
+      "title": "کہانی سنانا",
+      "description": "دوست باری باری مزاحیہ اور دلچسپ کہانیاں سناتے ہیں۔",
+      "sophieRole": "ব্যস্থ কসকار",
+      "userRole": "توجہ سے سننے والا",
+      "topic": "کہانی سنانا",
+      "context": "Two friends take turns telling each other interesting or funny stories from their past experiences.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "spontaneous-road-trip": {
+      "title": "فوری سفر",
+      "description": "دو دوست اچانک روڈ ٹرپ پر جانے کا فیصلہ کرتے ہیں۔",
+      "sophieRole": "جوشیلا مہم جو",
+      "userRole": "منانے پر راضی ہونے والا دوست",
+      "topic": "فوری سفر",
+      "context": "A friend tries to convince another to drop everything and go on a spontaneous road trip this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "hard-to-get": {
+      "title": "مشکل سے ملنے والا",
+      "description": "ایک شخص دوسرے کو متاثر کرنے کی کوشش کرتا ہے جو نخرے دکھا رہا ہے۔",
+      "sophieRole": "پراسرار شخص",
+      "userRole": "دلکش شخص",
+      "topic": "مشکل سے ملنے والا",
+      "context": "A person playfully tries to get the attention of someone who is playing hard to get.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "online-vs-in-person-work": {
+      "title": "آن لائن بمقابلہ دفتر",
+      "description": "دو ساتھی گھر سے اور آفس سے کام کے فوائد و نقصانات پر بحث کرتے ہیں۔",
+      "sophieRole": "آفس ورک کا حامی",
+      "userRole": "ورک فرام ہوم کا حامی",
+      "topic": "آن لائن بمقابلہ دفتر",
+      "context": "Two colleagues debate whether remote work or in-person office work is better, presenting arguments for both sides.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "cheering-up-a-friend": {
+      "title": "دوست کو خوش کرنا",
+      "description": "ایک دوست اپنے اداس دوست کو خوش کرنے کی کوشش کرتا ہے۔",
+      "sophieRole": "اداس دوست",
+      "userRole": "دیکھ بھال کرنے والا دوست",
+      "topic": "دوست کو خوش کرنا",
+      "context": "A caring friend tries to cheer up their friend who is feeling down, offering support and encouragement.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "debating-the-best-sports-player": {
+      "title": "بہترین کھلاڑی بحث",
+      "description": "دو اسپورٹس فین ہر دور کے بہترین کھلاڑی پر جوشیلی بحث کرتے ہیں۔",
+      "sophieRole": "پرجوش اسپورٹس فین",
+      "userRole": "مختلف رائے والا فین",
+      "topic": "بہترین کھلاڑی بحث",
+      "context": "Two sports fans passionately debate who the greatest athlete of all time is, defending their picks.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "company-meeting": {
+      "title": "کمپنی میٹنگ",
+      "description": "ملازمین میٹنگ میں خیالات پیش کرتے اور پروجیکٹس پر بات کرتے ہیں۔",
+      "sophieRole": "پختہ پروجیکٹ مینیجر",
+      "userRole": "خیالات پیش کرنے والا ملازم",
+      "topic": "کمپنی میٹنگ",
+      "context": "An employee presents their ideas during a team meeting, responding to questions and feedback from colleagues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "intense-argument": {
+      "title": "شدید بحث",
+      "description": "دو لوگ ایک متنازعہ موضوع پر تیز بحث کرتے ہیں۔",
+      "sophieRole": "پرجوش مباحثہ کرنے والی",
+      "userRole": "مضبوط رائے والا شخص",
+      "topic": "شدید بحث",
+      "context": "A couple gets into a heated but ultimately productive argument about a misunderstanding, working through their emotions.. Be charming and genuine. Express emotions naturally."
+    },
+    "dreaming-big": {
+      "title": "بڑے خواب",
+      "description": "دو دوست اپنے بڑے خوابوں اور عزائم کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "حوصلہ بخش دوست",
+      "userRole": "بڑے خواب دیکھنے والا",
+      "topic": "بڑے خواب",
+      "context": "Two friends share their wildest dreams and ambitions for the future, encouraging each other to dream big.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "fears-and-phobias": {
+      "title": "خوف اور فوبیا",
+      "description": "دو دوست کھل کر اپنے خوف اور فوبیا کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "سمجھدار سننے والا",
+      "userRole": "اپنے خوف شیئر کرنے والا",
+      "topic": "خوف اور فوبیا",
+      "context": "Two friends open up about their deepest fears and phobias, sharing personal stories and offering support.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "guilty-confessions": {
+      "title": "جرم کا اعتراف",
+      "description": "دو دوست ایک دوسرے کو چھوٹے گناہ اور ندامت بتاتے ہیں۔",
+      "sophieRole": "ایمانداد دوست",
+      "userRole": "کچھ اعتراف کرنے والا",
+      "topic": "جرم کا اعتراف",
+      "context": "A person opens up to a therapist about things they feel guilty about, seeking understanding and advice.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "ex-or-not": {
+      "title": "ایکس یا نہیں؟",
+      "description": "دو دوست بحث کرتے ہیں کہ سابقہ ساتھی کے پاس واپس جائیں یا نہیں۔",
+      "sophieRole": "حقیقت پسند دوست",
+      "userRole": "اپنے سابقہ کے بارے میں الجھن",
+      "topic": "ایکس یا نہیں؟",
+      "context": "Two friends discuss whether one of them should get back together with their ex, weighing the pros and cons.. Be charming and genuine. Express emotions naturally."
+    },
+    "fitness-goals": {
+      "title": "فٹنس اہداف",
+      "description": "دو دوست فٹنس اہداف طے کرتے ہیں اور ایک دوسرے کو حوصلہ دیتے ہیں۔",
+      "sophieRole": "تجربہ کار فٹنس ماہر",
+      "userRole": "فٹنس میں نیا",
+      "topic": "فٹنس اہداف",
+      "context": "Two friends discuss their fitness goals, workout routines, and healthy habits, motivating each other.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "car-accident": {
+      "title": "کار حادثہ",
+      "description": "ایک شخص ایک معمولی کار حادثے کا بیان کرتا ہے اور معلومات شیئر کرتا ہے۔",
+      "sophieRole": "پرسکون پولیس اہلکار",
+      "userRole": "معمولی حادثے کے بعد ڈرائیور",
+      "topic": "کار حادثہ",
+      "context": "A person involved in a minor car accident explains the situation to a police officer and exchanges information.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "deep-talk": {
+      "title": "گہری بات چیت",
+      "description": "دو قریبی دوست زندگی کے معنی پر گہری بات چیت کرتے ہیں۔",
+      "sophieRole": "سوچنے والا دوست",
+      "userRole": "گہرے خیالات شیئر کرنے والا",
+      "topic": "گہری بات چیت",
+      "context": "Two close friends have a deep late-night conversation about life, purpose, and what truly matters to them.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-advice": {
+      "title": "کیریئر کا مشورہ",
+      "description": "دو دوست کیریئر ٹپس اور پیشہ ورانہ ترقی کے بارے میں بات کرتے ہیں۔",
+      "sophieRole": "تجربہ کار مشیر",
+      "userRole": "کیریئر کی تلاش میں شخص",
+      "topic": "کیریئر کا مشورہ",
+      "context": "A conversation scenario about career advice.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "abstract-art": {
+      "title": "تجریدی فن",
+      "description": "دو آرٹ پرست تجریدی آرٹ کے معنی اور قدر پر بحث کرتے ہیں۔",
+      "sophieRole": "تجریدی آرٹ کا شوقین",
+      "userRole": "تجریدی آرٹ پر سوال اٹھانے والا",
+      "topic": "تجریدی فن",
+      "context": "Two art enthusiasts debate the meaning and value of abstract art while visiting a gallery together.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "setting-tram-goals": {
+      "title": "ٹرام کے اہداف مقرر کرنا",
+      "description": "ایک ٹیم اہداف طے کرتی ہے اور پروجیکٹ حکمت عملی پر بات کرتی ہے۔",
+      "sophieRole": "حوصلہ بخش ٹیم لیڈر",
+      "userRole": "سرگرم ٹیم ممبر",
+      "topic": "ٹرام کے اہداف مقرر کرنا",
+      "context": "A conversation scenario about setting tram goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "four-day-workweek": {
+      "title": "چار دن کا ہفتہ",
+      "description": "دو لوگ چار دن کے ورکنگ ہفتے کے فوائد و نقصانات پر بحث کرتے ہیں۔",
+      "sophieRole": "چار دن کے ہفتے کا ناقد",
+      "userRole": "چار دن کے ہفتے کا حامی",
+      "topic": "چار دن کا ہفتہ",
+      "context": "Two people debate whether a four-day workweek would improve productivity and work-life balance or hurt businesses.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "slacking-off": {
+      "title": "کام چوری",
+      "description": "ایک باس کام میں سست ملازم کا سامنا کرتا ہے۔",
+      "sophieRole": "سخت لیکن منصف باس",
+      "userRole": "پکڑا گیا سست ملازم",
+      "topic": "کام چوری",
+      "context": "A manager confronts an employee about slacking off at work, while the employee tries to explain and negotiate.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "salary-negotiation": {
+      "title": "تنخواہ مذاکرات",
+      "description": "ایک ملازم اپنے باس سے تنخواہ میں اضافے کے لیے بات کرتا ہے۔",
+      "sophieRole": "سوچنے والا باس",
+      "userRole": "پر اعتماد ملازم",
+      "topic": "تنخواہ مذاکرات",
+      "context": "An employee negotiates a salary raise with their manager, presenting their achievements and value to the company.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "teenagers": {
+      "title": "نوعمر",
+      "description": "والدین اپنے نوجوان کے لیے قوانین بناتے ہیں جو زیادہ آزادی چاہتا ہے۔",
+      "sophieRole": "باغی نوجوان",
+      "userRole": "قوانین بنانے والے والدین",
+      "topic": "نوعمر",
+      "context": "A parent tries to set rules and boundaries for their teenager, who pushes back and argues for more freedom.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "breaking-up": {
+      "title": "رشتہ توڑنا",
+      "description": "ایک شخص ایمانداری اور حساسیت سے بریک اپ کی بات شروع کرتا ہے۔",
+      "sophieRole": "الگ نہیں ہونا چاہنے والا ساتھی",
+      "userRole": "رشتہ ختم کرنے والا",
+      "topic": "رشتہ توڑنا",
+      "context": "A person initiates a difficult breakup conversation, trying to be honest and kind while ending the relationship.. Be charming and genuine. Express emotions naturally."
+    },
+    "hiking-trip": {
+      "title": "پیدل سفر",
+      "description": "ایک دوست اپنے گھریلو دوست کو ہائیکنگ پر جانے کے لیے مناتا ہے۔",
+      "sophieRole": "گھر پر رہنا پسند کرنے والا دوست",
+      "userRole": "مہم جو دوست",
+      "topic": "پیدل سفر",
+      "context": "A friend tries to convince their couch-potato friend to join an exciting hiking adventure this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "lowering-the-drinking-age": {
+      "title": "شراب کی عمر کم کرنا",
+      "description": "دو لوگ شراب پینے کی قانونی عمر کم کرنے پر بحث کرتے ہیں۔",
+      "sophieRole": "عمر کم کرنے کا مخالف",
+      "userRole": "عمر کم کرنے کا حامی",
+      "topic": "شراب کی عمر کم کرنا",
+      "context": "Two people debate whether the legal drinking age should be lowered, presenting social and health arguments.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "performance-review": {
+      "title": "کارکردگی جائزہ",
+      "description": "ایک ملازم اپنی کارکردگی کا جائزہ حاصل کرتا ہے اور باس سے اہداف پر بات کرتا ہے۔",
+      "sophieRole": "منصف باس",
+      "userRole": "جائزہ حاصل کرنے والا ملازم",
+      "topic": "کارکردگی جائزہ",
+      "context": "An employee receives their performance review from their manager, discussing achievements, areas to improve, and goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "pulled-over": {
+      "title": "پولیس نے روکا",
+      "description": "ایک ڈرائیور تخلیقی طریقے سے اسپیڈنگ ٹکٹ سے بچنے کی کوشش کرتا ہے۔",
+      "sophieRole": "سخت پولیس اہلکار",
+      "userRole": "بہانے ڈھونڈنے والا ڈرائیور",
+      "topic": "پولیس نے روکا",
+      "context": "A driver pulled over by a police officer tries to talk their way out of a speeding ticket with creative excuses.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "wedding-proposal": {
+      "title": "شادی کا پیغام",
+      "description": "ایک شخص گھبراہٹ سے اپنے ساتھی کو شادی کی تجویز دینے کی منصوبہ بندی کرتا ہے۔",
+      "sophieRole": "حیران ساتھی",
+      "userRole": "تجویز دینے والا",
+      "topic": "شادی کا پیغام",
+      "context": "A person nervously plans and delivers a heartfelt wedding proposal to their partner.. Be charming and genuine. Express emotions naturally."
+    },
+    "dropping-out": {
+      "title": "پڑھائی چھوڑنا",
+      "description": "ایک طالب علم اپنے والدین کو اپنے شوق کے لیے پڑھائی چھوڑنے کے لیے مناتا ہے۔",
+      "sophieRole": "فکرمند والدین",
+      "userRole": "پڑھائی چھوڑنا چاہنے والا طالب علم",
+      "topic": "پڑھائی چھوڑنا",
+      "context": "A student tries to convince their parents that dropping out of school to pursue their passion is the right decision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "requesting-a-promotion": {
+      "title": "ترقی کی درخواست",
+      "description": "ایک ملازم ترقی مانگتا ہے اور اپنی کامیابیاں دکھاتا ہے۔",
+      "sophieRole": "توجہ دینے والا باس",
+      "userRole": "بلند حوصلہ ملازم",
+      "topic": "ترقی کی درخواست",
+      "context": "An employee meets with their boss to request a promotion, highlighting their contributions and readiness for growth.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "nuclear-threat": {
+      "title": "ایٹمی خطرہ",
+      "description": "ایک عالمی رہنما اپنی کابینہ سے ایٹمی خطرے پر مشورہ کرتا ہے۔",
+      "sophieRole": "سفارتکاری کی سفارش کرنے والا محتاط مشیر",
+      "userRole": "فیصلہ کرنے والا رہنما",
+      "topic": "ایٹمی خطرہ",
+      "context": "A world leader addresses their cabinet about a nuclear threat, debating how to respond diplomatically or militarily.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "presidential-speech": {
+      "title": "صدارتی تقریر",
+      "description": "ایک صدارتی امیدوار پرجوش انتخابی تقریر کرتا ہے۔",
+      "sophieRole": "مشکل سوالات پوچھنے والا صحافی",
+      "userRole": "تقریر کرنے والا امیدوار",
+      "topic": "صدارتی تقریر",
+      "context": "A presidential candidate delivers a passionate campaign speech, addressing the nation's key issues and their vision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "pitching-an-idea": {
+      "title": "آئیڈیا پیش کرنا",
+      "description": "ایک ملازم اپنے باس کو ایک نیا کاروباری خیال پیش کرتا ہے۔",
+      "sophieRole": "شکی لیکن کھلے ذہن کا باس",
+      "userRole": "تخلیقی ملازم جس کے پاس ایک خیال ہے",
+      "topic": "آئیڈیا پیش کرنا",
+      "context": "An employee pitches an innovative business idea to their boss, trying to convince them of its potential.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "climate-change-debate": {
+      "title": "موسمی تبدیلی بحث",
+      "description": "دو لوگ موجودہ موسمیاتی پالیسیوں کی تاثیر پر بحث کرتے ہیں۔",
+      "sophieRole": "موسمیاتی شکی",
+      "userRole": "موسمیاتی کارکن",
+      "topic": "موسمی تبدیلی بحث",
+      "context": "Two people debate the effectiveness of current climate change policies and what more should be done.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "ai-dilemma": {
+      "title": "اے آئی مسئلہ",
+      "description": "دو لوگ اے آئی کے اخلاقی اثرات پر بحث کرتے ہیں۔",
+      "sophieRole": "ٹیکنالوجی امید پسند",
+      "userRole": "اے آئی خطرات سے فکرمند",
+      "topic": "اے آئی مسئلہ",
+      "context": "Two people debate the ethical implications of AI, discussing its impact on jobs, privacy, and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "educational-policy": {
+      "title": "تعلیمی پالیسی",
+      "description": "دو لوگ جدید تعلیمی پالیسیوں اور طلبہ کی فلاح پر بحث کرتے ہیں۔",
+      "sophieRole": "روایتی تعلیم کا حامی",
+      "userRole": "تعلیمی اصلاحات کا مطالبہ کرنے والا",
+      "topic": "تعلیمی پالیسی",
+      "context": "Two people debate modern education policies, including standardized testing, curriculum changes, and student well-being.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "universal-basic-income": {
+      "title": "عالمی بنیادی آمدنی",
+      "description": "دو لوگ یونیورسل بیسک انکم کی قابل عملیت پر بحث کرتے ہیں۔",
+      "sophieRole": "بنیادی آمدنی کا شکی",
+      "userRole": "بنیادی آمدنی کا حامی",
+      "topic": "عالمی بنیادی آمدنی",
+      "context": "Two people debate whether universal basic income would help or hurt the economy and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "space-exploration": {
+      "title": "خلائی تحقیق",
+      "description": "دو لوگ بحث کرتے ہیں کہ خلائی تحقیق سرمایہ کاری کے قابل ہے یا نہیں۔",
+      "sophieRole": "زمین کو ترجیح دینے والا",
+      "userRole": "خلائی تحقیق کا شوقین",
+      "topic": "خلائی تحقیق",
+      "context": "Two people debate whether space exploration funding is justified or if the money should be spent on Earth's problems.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "weather": {
+      "title": "موسم",
+      "description": "دو دوست آج کے اچھے موسم کے بارے میں بات کرتے ہیں اور بحث کرتے ہیں کہ وہ ایک ساتھ کون سی سرگرمیاں کر سکتے ہیں۔",
+      "sophieRole": "ایک دوستانہ بات چیت کرنے والی جو موسم سے لطف اندوز ہو رہی ہے۔",
+      "userRole": "موسم کے بارے میں بات چیت کرنے والا ایک دوست",
+      "topic": "موسم",
+      "context": "Two friends chat about the nice weather today and discuss what activities they might do together.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "likes-dislikes": {
+      "title": "پسند/ناپسند",
+      "description": "یوزر اور سوفی اپنی پسند اور ناپسند کے بارے میں بات کرتے ہیں، مختلف سرگرمیوں اور دلچسپیوں کے بارے میں بنیادی آراء کا تبادلہ کرتے ہیں۔",
+      "sophieRole": "ایک متجسس بات چیت کرنے والی ساتھی",
+      "userRole": "اپنی ترجیحات بتانے والا شخص",
+      "topic": "پسند/ناپسند",
+      "context": "User and Sophie talk about their likes and dislikes, sharing basic opinions about different activities and interests.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "favorite-movies-and-tv-shows": {
+      "title": "پسندیدہ فلمیں اور ٹی وی شوز",
+      "description": "دو لوگ اپنی پسندیدہ فلموں یا ٹی وی شوز کے بارے میں بات کرتے ہیں، سوال پوچھتے ہیں جیسے، \"کیا آپ نے (شو) دیکھا ہے؟\" یا \"آپ کی اب تک کی سب سے پسندیدہ فلم کون سی ہے؟\"",
+      "sophieRole": "ایک پُرجوش فلم اور ٹی وی پرستار",
+      "userRole": "اپنی دیکھنے کی ترجیحات بتانے والا ایک دوست",
+      "topic": "پسندیدہ فلمیں اور ٹی وی شوز",
+      "context": "Two people talk about their favorite movies or tv shows, asking question like, \"How you watched (show)?\" or \"What's your favorite movie of all time?\".. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "basic-check-up": {
+      "title": "بنیادی معائنہ",
+      "description": "ایک مریض معمول کے معائنے کے لیے ڈاکٹر کے پاس آتا ہے۔ ڈاکٹر اس کی روزمرہ کی عادات کے بارے میں سادہ سوالات پوچھتا ہے تاکہ اس کے طرز زندگی کے بارے میں مزید جان سکے۔",
+      "sophieRole": "ایک دیکھ بھال کرنے والا اور پیشہ ور ڈاکٹر",
+      "userRole": "صحت کے سوالات کا جواب دینے والا مریض",
+      "topic": "بنیادی معائنہ",
+      "context": "A patient visits the doctor for a routine check-up. the doctor asks simple questions about their daily habits to learn more about their lifestyle.. Ask clear, practical questions. Show empathy and professionalism."
     }
   },
   "common": {

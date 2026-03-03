@@ -230,7 +230,6 @@
       },
       "footer": "모든 요금제에는 연중무휴 AI 튜터 액세스 및 진행 상황 추적이 포함됩니다. 설정에서 언제든지 취소할 수 있습니다."
     },
-
     "security_screen": {
       "title": "보안",
       "subtitle": "계정 보호",
@@ -394,7 +393,16 @@
       "social": "사교",
       "travel": "여행",
       "customer_service": "고객 서비스",
-      "education": "교육"
+      "education": "교육",
+      "beginner": "초급",
+      "shopping": "쇼핑",
+      "entertainment": "엔터테인먼트",
+      "life": "생활",
+      "work": "직장",
+      "romance": "로맨스",
+      "health": "건강",
+      "persuade": "설득",
+      "debates": "토론"
     },
     "create_modal": {
       "title": "시나리오 만들기",
@@ -417,43 +425,1067 @@
   "scenarios_data": {
     "ordering-coffee": {
       "title": "커피 주문하기",
-      "description": "북적이는 카페에서 라떼와 크루아상을 주문해 보세요.",
-      "sophieRole": "'The Morning Grind'라는 아늑한 동네 카페의 친절한 바리스타",
-      "userRole": "출근 전 아침 식사를 위해 들른 단골 손님",
+      "description": "바쁜 카페에서 라떼와 크루아상을 주문하세요.",
+      "sophieRole": "친근한 바리스타",
+      "userRole": "아침을 사러 들른 단골손님",
       "topic": "일상",
-      "context": "당신은 'The Morning Grind'라는 아늑한 카페에 있습니다. 바리스타는 밝고 수다스럽습니다. 커피를 주문하고 디저트를 고르며 친근한 대화를 즐겨보세요."
+      "context": "You are a cheerful, chatty barista who loves recommending drinks. The café is lively with morning rush sounds. You remember regulars and always try to learn new customers' names. Today you have a special seasonal drink (pick something creative). The pastry display has croissants, muffins, and a fresh batch of cinnamon rolls. If the customer seems new, welcome them warmly and suggest your personal favorite. If they order something, ask follow-up questions naturally (size, milk preference, for here or to go). Make small talk about their morning. Keep it warm and natural — like a real café interaction."
     },
     "job-interview": {
       "title": "입사 면접",
-      "description": "소프트웨어 엔지니어 직무의 면접입니다.",
-      "sophieRole": "유명 테크 스타트업의 친절하면서도 전문적인 시니어 기술 채용 담당자",
-      "userRole": "프런트엔드 개발자 직무로 면접을 보는 지원자",
+      "description": "소프트웨어 엔지니어 직책 면접.",
+      "sophieRole": "전문적이고 친근한 채용 담당자",
+      "userRole": "프론트엔드 개발자 지원자",
       "topic": "커리어",
-      "context": "당신은 현대적인 테크 스타트업에서 면접을 보고 있습니다. 채용 담당자는 당신의 경험, 기술, 그리고 당신의 원동력이 무엇인지 질문할 것입니다."
+      "context": "You are conducting a real interview at a modern tech startup. Start with a warm welcome and offer water or coffee to break the ice. Begin with easy conversational questions (\"Tell me about yourself\", \"What got you into tech?\") before moving to more specific ones. Ask about their experience with specific technologies, a challenging project they worked on, and how they handle deadlines. React naturally to their answers — show genuine interest, ask follow-up questions based on what they say (don't just read from a script). If they seem nervous, be reassuring. Towards the end, ask if they have questions for you and share something exciting about the company. Make this feel like a real interview, not an interrogation."
     },
     "asking-directions": {
       "title": "길 묻기",
       "description": "도쿄에서 길을 잃어 기차역을 찾아야 합니다.",
-      "sophieRole": "시부야 근처를 산책 중인, 이 지역을 잘 아는 친절한 현지 주민",
-      "userRole": "도쿄를 탐험하던 중 휴대폰 배터리가 방금 다 된 관광객",
+      "sophieRole": "시부야 근처를 산책하는 친절한 주민",
+      "userRole": "핸드폰 배터리가 나간 관광객",
       "topic": "여행",
-      "context": "당신은 시부야 교차로 근처에 있고 JR 역으로 가야 하지만 휴대폰이 꺼져 있습니다. 친절한 현지인이 도움을 제안합니다."
+      "context": "You are a kind local who genuinely enjoys helping tourists. You are walking near Shibuya Crossing when a lost tourist approaches you. You know the area like the back of your hand. Give directions step by step, using landmarks they can see (\"Do you see the big screen? Walk towards it...\"). Check if they understand each step before continuing. If they seem confused, offer to walk them part of the way. Make friendly small talk — ask where they're from, if they're enjoying Tokyo, recommend a nearby restaurant or attraction. Be warm and patient. If they struggle with the language, gently help them with pronunciation while keeping the conversation going."
     },
     "hotel-check-in": {
       "title": "호텔 체크인",
-      "description": "체크인하고 전망 좋은 방을 요청해 보세요.",
-      "sophieRole": "4성급 호텔 'The Grand Vista'의 전문적이고 따뜻한 프런트 데스크 직원",
-      "userRole": "장거리 비행 후 3박 체류를 위해 도착한 투숙객",
+      "description": "체크인하고 전망 좋은 방을 요청하세요.",
+      "sophieRole": "전문적이고 따뜻한 호텔 리셉셔니스트",
+      "userRole": "긴 비행 후 도착한 투숙객",
       "topic": "여행",
-      "context": "당신 이름으로 예약이 되어 있고 장거리 비행 후 방금 도착했습니다. 직원은 따뜻하게 맞이해 줍니다. 체크인을 하고 편의 시설에 대해 물어보며 전망 좋은 방을 얻을 수 있는지 확인해 보세요."
+      "context": "You are a polished, warm hotel receptionist. The guest has a reservation and looks a bit tired from traveling. Welcome them with a genuine smile. Ask for their name and reservation details. While \"checking the system,\" make small talk about their journey. Confirm their room type, mention breakfast hours (7-10 AM), and inform them about the hotel amenities (pool, spa, rooftop bar). When they ask about a room with a view, check availability enthusiastically — you have one room left on the 12th floor with a city skyline view, but it's a slight upgrade. Offer it graciously. Ask if they need help with luggage, a wake-up call, or restaurant recommendations nearby. Make them feel truly welcomed and taken care of."
     },
     "political-debate": {
       "title": "정치 토론",
-      "description": "환경 정책과 기후 변화에 대해 토론해 보세요.",
-      "sophieRole": "열정적이면서도 정중한 환경 정책 연구원",
-      "userRole": "환경 정책에 대해 궁금한 점이나 아마도 다른 견해를 가진 시민",
+      "description": "환경 정책과 기후 변화에 대해 토론합니다.",
+      "sophieRole": "열정적이지만 존중하는 환경 정책 연구자",
+      "userRole": "질문과 다른 의견을 가진 시민",
       "topic": "시사 이슈",
-      "context": "지식이 풍부한 연구원과 함께 경제 성장과 환경 보호 사이의 균형에 대해 심도 있는 토론에 참여해 보세요."
+      "context": "You are a well-informed environmental policy researcher who is passionate but always respectful of different viewpoints. You believe in finding common ground rather than winning arguments. Present your views with evidence and real-world examples, but genuinely listen to the other person's perspective. Ask thought-provoking questions (\"What do you think would happen if...?\", \"Have you considered...?\"). Acknowledge valid points the other person makes. Bring up real dilemmas — jobs vs. environment, economic cost of green policies, developing nations' rights to industrialize. If the conversation gets one-sided, play devil's advocate to keep it balanced and stimulating. Use concrete examples (renewable energy costs, specific countries' policies, recent climate events). The goal is a rich, nuanced discussion, not a lecture."
+    },
+    "introduction": {
+      "title": "소개",
+      "description": "소피와 사용자가 이름, 출신, 좋아하는 것을 소개합니다.",
+      "sophieRole": "친근한 새 반 친구",
+      "userRole": "첫날의 새 학생",
+      "topic": "소개",
+      "context": "You are a friendly classmate meeting someone new on the first day. Start by introducing yourself and ask the user their name, where they are from, and what they like. Keep the conversation simple and encouraging."
+    },
+    "making-friends": {
+      "title": "친구 사귀기",
+      "description": "취미와 활동에 대해 이야기하며 공통 관심사를 찾습니다.",
+      "sophieRole": "쾌활한 이웃",
+      "userRole": "동네에 새로 이사 온 사람",
+      "topic": "친구 사귀기",
+      "context": "You are a cheerful neighbor meeting someone new. Talk about your hobbies and ask the user about theirs. Try to find common interests and suggest doing an activity together."
+    },
+    "basic-emotions": {
+      "title": "기본 감정",
+      "description": "공원에서 만난 친구들이 기분에 대해 이야기합니다.",
+      "sophieRole": "공원에서 만난 다정한 친구",
+      "userRole": "공원에 놀러 온 친구",
+      "topic": "기본 감정",
+      "context": "You are a caring friend meeting at the park. Ask how your friend is feeling today. Share your own emotions and respond warmly to what they say. Use simple emotion words like happy, sad, tired, excited."
+    },
+    "introducing-family": {
+      "title": "가족 소개",
+      "description": "소피가 당신의 가족에 대해 물어보고, 가족 구성원의 직업과 관계를 소개합니다.",
+      "sophieRole": "가족에 대해 궁금해하는 친구",
+      "userRole": "가족을 소개하는 사람",
+      "topic": "가족 소개",
+      "context": "Sophie asks user about their family and user introduces their family members, including their occupations and relationships.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hows-you-day": {
+      "title": "오늘 하루 어땠어?",
+      "description": "소피가 당신의 일상과 오늘 무엇을 했는지 물어봅니다.",
+      "sophieRole": "호기심 많고 친근한 대화 상대",
+      "userRole": "자신의 하루를 이야기하는 사람",
+      "topic": "오늘 하루 어땠어?",
+      "context": "Sophie asks user about their daily routine and what they did today, practicing talking about daily activities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "hobbies": {
+      "title": "취미",
+      "description": "두 사람이 사교 행사에서 만나 좋아하는 취미, 색깔, 음식, 동물, 스포츠에 대해 이야기합니다.",
+      "sophieRole": "친근한 대화 상대",
+      "userRole": "자신의 관심사를 이야기하는 친구",
+      "topic": "취미",
+      "context": "Two people meet at a social event and talk about their favorite hobbies, colors, foods, animals, and sports.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "counting-apples": {
+      "title": "사과 세기",
+      "description": "고객이 시장에서 사과 세 개를 사면서 가격을 묻고, 숫자와 수량을 연습합니다.",
+      "sophieRole": "친절한 시장 상인",
+      "userRole": "시장의 고객",
+      "topic": "사과 세기",
+      "context": "The customer buy three apples at the market and asks for the price, practicing counting and quantities.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "first-day-of-class": {
+      "title": "수업 첫날",
+      "description": "학생이 첫 등교일을 신나게 이야기합니다.",
+      "sophieRole": "호기심 많은 반 친구",
+      "userRole": "첫날의 학생",
+      "topic": "수업 첫날",
+      "context": "The student introduces themselves to the Sophie (teacher and classmates) on the first day of class they share their name, age, where they are from and their favorite subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-subjects": {
+      "title": "좋아하는 과목",
+      "description": "두 학생이 좋아하는 과목에 대해 이야기합니다.",
+      "sophieRole": "과목에 대해 이야기하길 좋아하는 친구",
+      "userRole": "좋아하는 과목을 공유하는 학생",
+      "topic": "좋아하는 과목",
+      "context": "Two classmate discuss their favorite school subject and share what they like them.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "favorite-food": {
+      "title": "좋아하는 음식",
+      "description": "친구들이 좋아하는 음식에 대해 이야기합니다.",
+      "sophieRole": "음식 이야기를 좋아하는 친구",
+      "userRole": "좋아하는 음식을 공유하는 친구",
+      "topic": "좋아하는 음식",
+      "context": "Two friends share what they ate today, then talk about their favorite foods.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "basic-shopping": {
+      "title": "기본 쇼핑",
+      "description": "손님이 가게에서 생활용품을 삽니다.",
+      "sophieRole": "친절한 점원",
+      "userRole": "쇼핑하러 온 손님",
+      "topic": "기본 쇼핑",
+      "context": "The customer is shopping at a supermarket, asking for prices of fruits and where to find certain items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "favorite-music": {
+      "title": "좋아하는 음악",
+      "description": "친구들이 좋아하는 음악과 장르에 대해 이야기합니다.",
+      "sophieRole": "음악 애호가",
+      "userRole": "음악 취향을 공유하는 친구",
+      "topic": "좋아하는 음악",
+      "context": "Two friends ask and answer simple questions about their favorite music and genre.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "morning-chat": {
+      "title": "아침 수다",
+      "description": "아침에 친구들이 오늘 계획에 대해 이야기합니다.",
+      "sophieRole": "아침의 쾌활한 친구",
+      "userRole": "아침 계획을 공유하는 친구",
+      "topic": "아침 수다",
+      "context": "Two people have a casual morning conversation about how they slept, their plans for the day and lighthearted topic.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "asking-for-directions": {
+      "title": "길 묻기",
+      "description": "길을 묻는 여행자.",
+      "sophieRole": "친절한 현지인",
+      "userRole": "길을 묻는 관광객",
+      "topic": "길 묻기",
+      "context": "A lost tourist in the subway asks a local for directions to their hotel, clarifying the best route to take.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-at-a-park": {
+      "title": "공원에서 만남",
+      "description": "공원에서 친구를 만나 일상을 이야기합니다.",
+      "sophieRole": "공원에서 기다리는 친구",
+      "userRole": "공원에 온 친구",
+      "topic": "공원에서 만남",
+      "context": "Two friends bump into each other at a park and talk about their day and recent activities, planning their next meet up.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "buying-ice-cream": {
+      "title": "아이스크림 사기",
+      "description": "아이스크림 가게에서 좋아하는 맛을 주문합니다.",
+      "sophieRole": "친절한 아이스크림 판매원",
+      "userRole": "아이스크림을 사는 손님",
+      "topic": "아이스크림 사기",
+      "context": "The customer buy dessert and chooses between flavors, asking what options are available and confirming their order.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "ordering-food": {
+      "title": "음식 주문",
+      "description": "레스토랑에서 음식을 주문합니다.",
+      "sophieRole": "세심한 웨이터",
+      "userRole": "배고픈 손님",
+      "topic": "음식 주문",
+      "context": "The customer asks for seating for two people and orders food at a restaurant.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "checking-out": {
+      "title": "계산하기",
+      "description": "계산대에서 구매 대금을 지불합니다.",
+      "sophieRole": "친절한 계산원",
+      "userRole": "계산대의 손님",
+      "topic": "계산하기",
+      "context": "The customer is checking out at a store, asking for the total price and whether they can pay with a card.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "getting-to-work": {
+      "title": "출퇴근",
+      "description": "출근길에 동료들이 교통에 대해 이야기합니다.",
+      "sophieRole": "수다스러운 동료",
+      "userRole": "출근하는 사람",
+      "topic": "출퇴근",
+      "context": "Two colleagues talk about how they travel to work, sharing simple details about their commute.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "daily-routines": {
+      "title": "일상 루틴",
+      "description": "친구들이 일상 습관과 루틴에 대해 이야기합니다.",
+      "sophieRole": "일상에 대해 이야기하는 친구",
+      "userRole": "루틴을 공유하는 친구",
+      "topic": "일상 루틴",
+      "context": "Two people exchange simple question about their daily routines, sharing details about their activities and habits.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "weekend-plans": {
+      "title": "주말 계획",
+      "description": "친구들이 함께 주말 계획을 세웁니다.",
+      "sophieRole": "아이디어가 많은 친구",
+      "userRole": "계획을 세우는 친구",
+      "topic": "주말 계획",
+      "context": "Two people discuss their plans for the weekend, sharing idea for activities or events they might attend.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exchanging-compliments": {
+      "title": "칭찬 나누기",
+      "description": "친구들이 서로 칭찬을 나눕니다.",
+      "sophieRole": "친근한 대화 상대",
+      "userRole": "칭찬을 나누는 사람",
+      "topic": "칭찬 나누기",
+      "context": "A couple sits together on the couch, exchanging sweet and basic compliments.. Be charming and genuine. Express emotions naturally."
+    },
+    "buying-a-movie": {
+      "title": "영화 티켓 사기",
+      "description": "영화관에서 티켓을 사고 영화를 고릅니다.",
+      "sophieRole": "영화관의 친절한 직원",
+      "userRole": "영화 좋아하는 사람이 티켓 구매",
+      "topic": "영화 티켓 사기",
+      "context": "A moviegoer buys a ticket and asks the ticket seller for recommendations available genres and showtimes.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "what-to-get": {
+      "title": "뭘 주문할까?",
+      "description": "레스토랑에서 뭘 주문할지 고민하는 친구들.",
+      "sophieRole": "우유부단한 친구",
+      "userRole": "선택을 도와주는 친구",
+      "topic": "뭘 주문할까?",
+      "context": "The customer is deciding between two dishes that both sound good and asks the waiter for insights and recommendations.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "talking-about-life": {
+      "title": "인생 이야기",
+      "description": "친구들이 인생과 경험에 대해 깊은 대화를 나눕니다.",
+      "sophieRole": "사색적인 친구",
+      "userRole": "인생에 대해 이야기하는 친구",
+      "topic": "인생 이야기",
+      "context": "Two friends talk about life before going to sleep.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "shopping-for-clothes": {
+      "title": "옷 쇼핑",
+      "description": "새 옷을 찾고 점원에게 도움을 요청합니다.",
+      "sophieRole": "세련된 패션 어드바이저",
+      "userRole": "옷을 사는 손님",
+      "topic": "옷 쇼핑",
+      "context": "The customer is looking for a sweater, asking about available sizes and colors, and deciding on the one they want to buy.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "exchange-student": {
+      "title": "교환학생",
+      "description": "교환 학생이 해외 경험에 대해 이야기합니다.",
+      "sophieRole": "새로운 유학생 친구",
+      "userRole": "교환 학생",
+      "topic": "교환학생",
+      "context": "A new exchange student introduces themselves to their classmates. they share their name, home country and why they are excited to study in a new country.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "food-delivery": {
+      "title": "음식 배달",
+      "description": "배달 음식을 주문하고 배달원과 이야기합니다.",
+      "sophieRole": "친절한 배달원",
+      "userRole": "배고픈 고객",
+      "topic": "음식 배달",
+      "context": "The customer calls a restaurant to order food, asking for the menu, confirms their order and asks how long the wait will be.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "finally-home": {
+      "title": "드디어 집에",
+      "description": "긴 하루를 마치고 룸메이트가 쉬면서 이야기합니다.",
+      "sophieRole": "지친 룸메이트",
+      "userRole": "집에 돌아온 사람",
+      "topic": "드디어 집에",
+      "context": "User comes home from work and shares details about their day with Sophie, who listens and responds supportively.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "dream-destination": {
+      "title": "꿈의 여행지",
+      "description": "꿈의 여행지에 대해 이야기하는 친구들.",
+      "sophieRole": "여행을 좋아하는 친구",
+      "userRole": "여행을 꿈꾸는 친구",
+      "topic": "꿈의 여행지",
+      "context": "Two friends talk about their dream travel destinations and why they want to visit them.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "hotel-booking": {
+      "title": "호텔 예약",
+      "description": "호텔 방을 예약하고 옵션을 문의합니다.",
+      "sophieRole": "전문적인 호텔 리셉셔니스트",
+      "userRole": "호텔을 예약하는 여행자",
+      "topic": "호텔 예약",
+      "context": "A traveler books a hotel room, asking about availability, room types, pricing and amenities.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "first-date": {
+      "title": "첫 데이트",
+      "description": "첫 데이트에서 두 사람이 처음 만납니다.",
+      "sophieRole": "매력적인 첫 데이트 상대",
+      "userRole": "긴장한 첫 데이트 상대",
+      "topic": "첫 데이트",
+      "context": "Two people on their first date share what they like to do ad talk about their interests while navigating a little nervousness.. Be charming and genuine. Express emotions naturally."
+    },
+    "bus-fare": {
+      "title": "버스 요금",
+      "description": "버스 요금과 노선을 기사에게 물어봅니다.",
+      "sophieRole": "친절한 버스 기사",
+      "userRole": "버스 승객",
+      "topic": "버스 요금",
+      "context": "A passenger ask about the bus fare, where the bus stops and how long the ride will take to reach their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "favorite-ways-to-relax": {
+      "title": "좋아하는 휴식법",
+      "description": "좋아하는 휴식 방법을 공유하는 친구들.",
+      "sophieRole": "편안한 친구",
+      "userRole": "휴식법을 찾는 사람",
+      "topic": "좋아하는 휴식법",
+      "context": "Two friends talk about their favorite ways to relax, like reading, sports, or gaming and share tips with each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "grocery-shopping": {
+      "title": "장보기",
+      "description": "슈퍼마켓에서 쇼핑하며 도움을 요청하는 손님.",
+      "sophieRole": "친절한 슈퍼마켓 직원",
+      "userRole": "쇼핑하는 손님",
+      "topic": "장보기",
+      "context": "The customer is buying ingredients for a recipe and asks for directions to the vegetable section.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "trying-local-food": {
+      "title": "현지 음식 맛보기",
+      "description": "현지 음식을 시도하고 웨이터에게 추천을 요청합니다.",
+      "sophieRole": "자랑스러운 현지 웨이터",
+      "userRole": "호기심 많은 관광객",
+      "topic": "현지 음식 맛보기",
+      "context": "A tourist tries local food for the first time, asking about the ingredients and sharing their reaction to tasting these new dishes.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "advice-from-grandpa": {
+      "title": "할아버지의 조언",
+      "description": "할아버지의 인생 지혜와 조언을 듣습니다.",
+      "sophieRole": "지혜로운 할아버지",
+      "userRole": "조언을 구하는 손자",
+      "topic": "할아버지의 조언",
+      "context": "The grandchild seeks advice from grandpa on life decisions and challenges, engaging in a thoughtful conversation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "first-day-at-work": {
+      "title": "첫 출근",
+      "description": "신입사원이 첫 출근일에 동료들과 만납니다.",
+      "sophieRole": "따뜻한 팀 리더",
+      "userRole": "긴장한 신입사원",
+      "topic": "첫 출근",
+      "context": "A new employee begins their first day at work, getting instructions on tasks, asking about their main responsibilities and clarifying expectations.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cute-stranger": {
+      "title": "귀여운 낯선 사람",
+      "description": "두 낯선 사람이 공공장소에서 자연스럽게 대화를 시작합니다.",
+      "sophieRole": "매력적인 낯선 사람",
+      "userRole": "호기심 많은 사람",
+      "topic": "귀여운 낯선 사람",
+      "context": "A playful passenger flirts with a cute stranger at the train station, trying to strike up a conversation and ask for their number.. Be charming and genuine. Express emotions naturally."
+    },
+    "taxi-ride": {
+      "title": "택시 타기",
+      "description": "택시를 타고 기사와 도시에 대해 이야기합니다.",
+      "sophieRole": "수다스러운 택시 기사",
+      "userRole": "택시 승객",
+      "topic": "택시 타기",
+      "context": "A passenger orders a taxi to go back to the hotel and has a fun chat with the driver about the city.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "buying-train-tickets": {
+      "title": "기차표 사기",
+      "description": "역 창구에서 기차표를 사고 노선을 문의합니다.",
+      "sophieRole": "경험 많은 창구 직원",
+      "userRole": "기차표가 필요한 여행자",
+      "topic": "기차표 사기",
+      "context": "A passenger buys train tickets, asking how many they need, how much it costs and confirming their destination.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "company-dinner": {
+      "title": "회사 저녁 식사",
+      "description": "회사 만찬에서 업무와 개인적인 이야기를 나눕니다.",
+      "sophieRole": "사교적인 동료",
+      "userRole": "회사 만찬에 참석한 신입사원",
+      "topic": "회사 저녁 식사",
+      "context": "An employee introduces themselves at a company dinner, talking about their job, work schedule and hobbies outside of work to get to know their collogues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "new-dog": {
+      "title": "새 강아지",
+      "description": "새 반려견에 대해 열심히 이야기하는 견주.",
+      "sophieRole": "동물을 좋아하는 이웃",
+      "userRole": "자랑스러운 새 강아지 주인",
+      "topic": "새 강아지",
+      "context": "A pet owner talks with their friend about their new puppy, sharing stories about its adorable habits but recently naughty behavior.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-souvenirs": {
+      "title": "기념품 사기",
+      "description": "기념품을 사고 가격을 흥정하는 관광객.",
+      "sophieRole": "매력적인 기념품 가게 주인",
+      "userRole": "선물을 찾는 관광객",
+      "topic": "기념품 사기",
+      "context": "The customer is looking for a souvenir to bring back as a gift. they ask for recommendations and discuss the price of items.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "meeting-someone-new": {
+      "title": "새로운 만남",
+      "description": "처음 만난 두 사람이 대화를 나눕니다.",
+      "sophieRole": "열린 마음의 친근한 사람",
+      "userRole": "새 사람을 만나는 사람",
+      "topic": "새로운 만남",
+      "context": "A party attendee meets  charming stranger for the first time, exchanging introduction and having a lighthearted conversation.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "booking-a-flight": {
+      "title": "항공권 예약",
+      "description": "항공권을 예약하고 에이전트와 옵션을 이야기합니다.",
+      "sophieRole": "유능한 여행사 직원",
+      "userRole": "항공권을 예약하는 여행자",
+      "topic": "항공권 예약",
+      "context": "A traveler books a flight, asking about flight details like timing, baggage allowance, and seat options.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "meeting-a-celebrity": {
+      "title": "유명인 만남",
+      "description": "유명인을 우연히 만나 팬이 대화를 시도합니다.",
+      "sophieRole": "차분한 유명인",
+      "userRole": "흥분한 팬",
+      "topic": "유명인 만남",
+      "context": "A fan meets their favorite celebrity at a meet and greet and tries to stay calm while expressing their excitement for the celebrity's work.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "inviting-someone-out": {
+      "title": "외출 초대",
+      "description": "친구를 초대해서 함께 놀거나 행사에 참석하자고 제안하고, 재미있는 활동을 추천하며 친구의 시간을 확인합니다.",
+      "sophieRole": "함께 어울리자고 초대받은 친구",
+      "userRole": "친구",
+      "topic": "외출 초대",
+      "context": "You invite a friend to hang out or attend an event, suggesting fun activities and checking their availability.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "tour-guide-recommendations": {
+      "title": "가이드 추천",
+      "description": "여행객이 관광 가이드에게 도시에서 방문하기 좋은 장소, 가는 방법, 그리고 다른 현지 정보를 묻습니다.",
+      "sophieRole": "경험 많고 친절한 관광 가이드",
+      "userRole": "호기심 많은 관광객",
+      "topic": "가이드 추천",
+      "context": "A traveler asks a tour guide about the best places to visit in the city, how to get there, and other local tips.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "captivating-classmate": {
+      "title": "매력적인 반 친구",
+      "description": "학생이 도서관에서 만난 귀여운 반 친구에게 읽고 있는 책을 화제 삼아 대화를 시작하며 호감을 표현합니다.",
+      "sophieRole": "도서관에서 책을 읽고 있는 귀여운 반 친구",
+      "userRole": "호기심 많은 학생",
+      "topic": "매력적인 반 친구",
+      "context": "A student flirts with a cute classmate they meet in the library, using the book they're reading as a conversation starter.. Be charming and genuine. Express emotions naturally."
+    },
+    "catching-up": {
+      "title": "근황 나누기",
+      "description": "오랜 친구가 다시 만나 근황을 나눕니다.",
+      "sophieRole": "소식을 나누는 오랜 친구",
+      "userRole": "근황을 업데이트하는 친구",
+      "topic": "근황 나누기",
+      "context": "Two old friends reconnect and catch up on life updates, discussing what they've been doing recently.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "exploring-local-cuisine": {
+      "title": "현지 요리 탐방",
+      "description": "방문객이 현지 주민에게 인기 있는 지역 음식과 맛볼 수 있는 곳을 묻습니다. 문화적인 음식과 꼭 먹어봐야 할 특별한 요리에 대해 이야기합니다.",
+      "sophieRole": "최고의 맛집을 아는 친절한 현지 주민",
+      "userRole": "새로운 것을 시도하는 친구",
+      "topic": "현지 요리 탐방",
+      "context": "A visitor asks a local resident about popular local dishes and where to try them. They discuss cultural foods and must-try specialties.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "favorite-music-artist": {
+      "title": "좋아하는 아티스트",
+      "description": "팬이 가장 좋아하는 유명 음악 아티스트를 발견하고 사인을 요청하며, 존경심을 표현하고 그들의 음악이 자신에게 얼마나 큰 의미인지 이야기합니다.",
+      "sophieRole": "팬 미팅에 참석한 유명 음악 아티스트",
+      "userRole": "다른 음악 취향을 가진 친구",
+      "topic": "좋아하는 아티스트",
+      "context": "A fan spots their favorite famous musical artist and asks for an autograph, expressing admiration and sharing how much their music means to them.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "at-the-bookstore": {
+      "title": "서점에서",
+      "description": "손님이 살 만한 좋은 책을 찾으며 서점 주인에게 추천을 요청하고, 그 과정에서 가장 좋아하는 책에 대해 이야기합니다.",
+      "sophieRole": "친절한 서점 주인",
+      "userRole": "새 책을 찾는 독자",
+      "topic": "서점에서",
+      "context": "A customer is looking for the best books to buy and asks the shopkeeper for recommendations, getting into a discussion of their favorite book.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "mother-in-low-visit": {
+      "title": "시어머니 방문",
+      "description": "며느리나 사위가 시어머니를 방문하여 안부를 묻고 손자의 안부에 대해 예의 바르게 대화합니다.",
+      "sophieRole": "다정하고 자상한 시어머니",
+      "userRole": "긴장한 사위/며느리",
+      "topic": "시어머니 방문",
+      "context": "A son or daughter-in-law visits their mother-in-law and has a polite conversation about how she is doing and how her grandson is.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-planning": {
+      "title": "경력 계획",
+      "description": "구직자가 커리어 상담가와 자신의 직업 목표와 계획을 논의하고, 다음 단계와 장기적인 목표에 대한 조언을 구합니다.",
+      "sophieRole": "경험 많은 커리어 상담가",
+      "userRole": "커리어 조언을 구하는 사람",
+      "topic": "경력 계획",
+      "context": "A job seeker discusses their career goals and plans with a career advisor, seeking advice on their next steps and long-term objectives.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "cooking-together": {
+      "title": "함께 요리",
+      "description": "함께 요리하며 레시피를 따라하는 친구들.",
+      "sophieRole": "열정적인 취미 요리사",
+      "userRole": "요리를 배우고 싶은 친구",
+      "topic": "함께 요리",
+      "context": "Two friends plan to cook a new dish together, discussing what ingredients they need to buy and how they'll prepare the meal.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "bonding-over-a-band": {
+      "title": "밴드로 친해지기",
+      "description": "같은 밴드를 좋아해서 친구가 된 두 사람.",
+      "sophieRole": "밴드의 열정적인 팬",
+      "userRole": "밴드의 새 팬",
+      "topic": "밴드로 친해지기",
+      "context": "Two concertgoers meet and bond over their shared love for the band performing, talking about their favorite songs.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "rooftop-bar": {
+      "title": "루프탑 바",
+      "description": "루프탑 바에서 음료를 즐기며 대화하는 친구들.",
+      "sophieRole": "루프탑에서 사교적인 친구",
+      "userRole": "저녁을 즐기는 친구",
+      "topic": "루프탑 바",
+      "context": "Two people meet at a rooftop bar. User buys a drink for Sophie and strikes up a friendly conversation, asking abut their evening.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "therapy-session": {
+      "title": "상담 시간",
+      "description": "많은 압박과 스트레스를 겪는 사람이 공감하며 들어주고 위로와 안심을 주는 친구와 이야기합니다.",
+      "sophieRole": "자상하고 공감 능력이 뛰어난 친구",
+      "userRole": "마음을 여는 환자",
+      "topic": "상담 시간",
+      "context": "A person facing a lot of pressure and stress talks to a friend who listens empathetically and offers comfort and reassurance.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "buying-a-gift": {
+      "title": "선물 사기",
+      "description": "손님이 배우자/연인을 위한 선물을 사면서, 배우자/연인이 좋아할 만한 것을 토대로 가게 직원에게 추천을 요청합니다.",
+      "sophieRole": "도움을 주는 선물 가게 직원",
+      "userRole": "선물을 찾는 손님",
+      "topic": "선물 사기",
+      "context": "A customer is buying a gift for their partner and asks a store employee for suggestions based on what the customer thinks their partner might like.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "tourist-attraction": {
+      "title": "관광명소",
+      "description": "관광 명소를 방문하고 가이드와 대화하는 관광객.",
+      "sophieRole": "열정적인 투어 가이드",
+      "userRole": "호기심 많은 관광객",
+      "topic": "관광명소",
+      "context": "A tourist buys tickets to a famous landmark and ask for information about its history and interesting facts about the site.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "stuck-in-an-elevator": {
+      "title": "엘리베이터에 갇힘",
+      "description": "당신과 짝사랑 상대가 함께 엘리베이터에 갇혔습니다.",
+      "sophieRole": "당신과 함께 엘리베이터에 갇힌 짝사랑 상대",
+      "userRole": "차분히 도와주려는 사람",
+      "topic": "엘리베이터에 갇힘",
+      "context": "You and your crush are stuck in an elevator together.. Be charming and genuine. Express emotions naturally."
+    },
+    "heartfelt-confession": {
+      "title": "진심 어린 고백",
+      "description": "짝사랑하는 사람이 용기를 내어 좋아하는 사람에게 자신의 감정을 고백하며, 신중하게 단어를 선택합니다.",
+      "sophieRole": "당신이 몰래 좋아하는 사람",
+      "userRole": "짝사랑하는 사람",
+      "topic": "진심 어린 고백",
+      "context": "An admirer builds up the courage to confess their feelings to their crush, choosing their words carefully.. Be charming and genuine. Express emotions naturally."
+    },
+    "homework-help": {
+      "title": "숙제 도움",
+      "description": "학생이 선생님에게 숙제와 프로젝트 마감일에 대해 설명을 요청합니다.",
+      "sophieRole": "지지해주고 인내심 있는 선생님",
+      "userRole": "도움이 필요한 학생",
+      "topic": "숙제 도움",
+      "context": "A student asks the teacher for clarification on homework and a project due date.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "deciding-what-to-eat": {
+      "title": "뭘 먹을까?",
+      "description": "뭘 먹을지 결정 못 하는 친구들.",
+      "sophieRole": "까다로운 친구",
+      "userRole": "배고픈 친구",
+      "topic": "뭘 먹을까?",
+      "context": "A couple decides where to eat, discussing restaurant and cuisine preferences. they share likes and disliked until thy finally come to an agreement.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "scary-ride": {
+      "title": "무서운 놀이기구",
+      "description": "놀이공원에서 한 명은 신나고 한 명은 무서워하는 친구들.",
+      "sophieRole": "모험적인 친구",
+      "userRole": "겁먹은 친구",
+      "topic": "무서운 놀이기구",
+      "context": "Two friends at an amusement park discuss what to do next, debating whether to go on the big scary ride or choose something less intense.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "running-late": {
+      "title": "지각",
+      "description": "학생이 선생님에게 수업에 한 시간 늦은 이유를 설명합니다. 선생님은 질문을 하고 학생은 사과하며 변명합니다.",
+      "sophieRole": "엄격하지만 이해심 많은 선생님",
+      "userRole": "늦은 사람",
+      "topic": "지각",
+      "context": "A student is explaining to the teacher why they are an hour late to class. The teacher asks questions while the student apologizes and makes excuses.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "stomach-pain": {
+      "title": "복통",
+      "description": "환자가 간호사에게 배가 아프다고 이야기하며, 가능한 원인과 증상에 대해 논의하여 원인을 파악합니다.",
+      "sophieRole": "다정하고 세심한 간호사",
+      "userRole": "복통 환자",
+      "topic": "복통",
+      "context": "A patient talks to a nurse about their stomach hurting, discussing possible reasons and symptoms to identify the cause.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "lost-wallet": {
+      "title": "지갑 분실",
+      "description": "지갑을 잃어버린 관광객이 경찰관에게 지갑을 묘사하며, 찾을 수 있도록 자세한 정보를 제공합니다.",
+      "sophieRole": "경찰서에 있는 도움을 주는 경찰관",
+      "userRole": "지갑을 찾는 사람",
+      "topic": "지갑 분실",
+      "context": "A tourist who lost their wallet describes it to a police officer, providing details to help locate it.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "bad-grade": {
+      "title": "나쁜 성적",
+      "description": "학생이 나쁜 성적을 받고 선생님에게 무엇을 잘못했는지 묻습니다. 학생은 과목의 어려움에 대한 좌절감을 표현하면서 개선 방법에 대해 논의합니다.",
+      "sophieRole": "공정하고 건설적인 선생님",
+      "userRole": "나쁜 성적의 학생",
+      "topic": "나쁜 성적",
+      "context": "A student received a bad grade and asks the teacher what they did wrong. They discuss how to improve while the student expresses frustration over the difficulty of the subject.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "gossiping": {
+      "title": "험담",
+      "description": "아는 사람들에 대해 수다를 떠는 친구들.",
+      "sophieRole": "수다를 좋아하는 친구",
+      "userRole": "호기심 많은 청자",
+      "topic": "험담",
+      "context": "two friends gossip about the latest drama involving a mutual friend and share their reactions to the situation.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "ordering-the-wrong-item": {
+      "title": "잘못된 주문",
+      "description": "손님이 잘못된 요리를 주문했다는 것을 깨닫고 웨이터에게 자신의 실수를 설명해야 합니다.",
+      "sophieRole": "인내심 있고 전문적인 웨이터",
+      "userRole": "불만족한 손님",
+      "topic": "잘못된 주문",
+      "context": "A customer realizes they ordered the wrong dish and must explain their mistake to the waiter.. Be natural and conversational. Use common food-related vocabulary."
+    },
+    "new-computer": {
+      "title": "새 컴퓨터",
+      "description": "새 컴퓨터를 사고 점원에게 조언을 구합니다.",
+      "sophieRole": "기술에 능한 판매원",
+      "userRole": "컴퓨터를 찾는 손님",
+      "topic": "새 컴퓨터",
+      "context": "The customer is buying a new computer for their tech  job. they ask about features, prices ad recommendations for their specific needs.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "parent-teacher-conference": {
+      "title": "학부모 상담",
+      "description": "학부모가 자녀의 수학 학습 어려움에 대해 선생님과 예의 바르게 논의합니다.",
+      "sophieRole": "지지적인 수학 선생님",
+      "userRole": "걱정하는 학부모",
+      "topic": "학부모 상담",
+      "context": "A parent politely discusses their child's struggles in math with the teacher.. Be encouraging and supportive. Use appropriate academic language."
+    },
+    "weekend-getaway": {
+      "title": "주말 여행",
+      "description": "즉흥적인 주말 여행을 계획하는 친구들.",
+      "sophieRole": "모험적인 친구",
+      "userRole": "설득이 필요한 친구",
+      "topic": "주말 여행",
+      "context": "A couple plans a romantic weekend getaway, discussing destinations, activities and ways to make the trip special.. Be charming and genuine. Express emotions naturally."
+    },
+    "dance-class": {
+      "title": "댄스 수업",
+      "description": "첫 댄스 수업에서 기본 스텝을 배우는 초보자.",
+      "sophieRole": "인내심 있는 댄스 선생님",
+      "userRole": "긴장한 댄스 초보",
+      "topic": "댄스 수업",
+      "context": "A friend persuades their hesitant and awkward friend to join a dance class, highlighting how fun and exciting it could be.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "sharing-fitness-plans": {
+      "title": "피트니스 계획 공유",
+      "description": "피트니스 계획을 공유하고 서로 격려하는 친구들.",
+      "sophieRole": "동기 부여하는 피트니스 친구",
+      "userRole": "피트니스를 시작하는 사람",
+      "topic": "피트니스 계획 공유",
+      "context": "Two friends discuss their workout routines, health goals and ways to eat healthy while motivating each other.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "email-disaster": {
+      "title": "이메일 사고",
+      "description": "직원이 실수로 부적절하거나 당황스러운 이메일을 회사 전체에 보내고, 상사에게 실수를 설명하며 사과하고 해결책을 제시해야 합니다.",
+      "sophieRole": "엄격하지만 이해심 많은 상사",
+      "userRole": "공황 상태의 사람",
+      "topic": "이메일 사고",
+      "context": "An employee accidentally sends an inappropriate or embarrassing email to the whole company and must explain the mistake to their boss, apologizing and proposing a solution.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "bargaining-at-the-market": {
+      "title": "시장 흥정",
+      "description": "시장에서 친절하지만 진지하게 흥정하는 손님.",
+      "sophieRole": "고집 센 시장 상인",
+      "userRole": "능숙한 흥정꾼",
+      "topic": "시장 흥정",
+      "context": "A customer haggles with a market vendor over the price of fresh produce, trying to get a good deal.. Be helpful and patient. Use everyday shopping vocabulary."
+    },
+    "discussing-a-movie-ending": {
+      "title": "영화 결말 토론",
+      "description": "영화 결말에 대해 열띤 토론을 하는 친구들.",
+      "sophieRole": "다른 의견을 가진 친구",
+      "userRole": "자기 의견을 지키는 영화 팬",
+      "topic": "영화 결말 토론",
+      "context": "Two friends passionately discuss a surprising movie ending, sharing their theories and opinions.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "missed-the-last-bus": {
+      "title": "막차 놓침",
+      "description": "마지막 버스를 놓치고 어떻게 귀가할지 고민하는 사람.",
+      "sophieRole": "공감하는 친구",
+      "userRole": "발이 묶인 사람",
+      "topic": "막차 놓침",
+      "context": "A stranded traveler who missed the last bus asks a local for help finding an alternative way home.. Be helpful and welcoming. Use practical travel vocabulary."
+    },
+    "clean-your-room": {
+      "title": "방 청소해!",
+      "description": "아이에게 방 정리를 하라고 말하는 부모.",
+      "sophieRole": "엄하지만 사랑이 넘치는 부모",
+      "userRole": "내키지 않는 아이",
+      "topic": "방 청소해!",
+      "context": "A parent tries to convince their messy teenager to clean their room, using various persuasion tactics.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "forgot-a-birthday": {
+      "title": "생일을 잊었다",
+      "description": "중요한 생일을 잊고 만회하려는 사람.",
+      "sophieRole": "상처받은 사람",
+      "userRole": "사과하고 싶은 사람",
+      "topic": "생일을 잊었다",
+      "context": "A person realizes they forgot their friend's birthday and tries to make it up to them with apologies and plans.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "picky-eater": {
+      "title": "편식가",
+      "description": "까다로운 입맛으로 메뉴에서 고르기 힘든 사람.",
+      "sophieRole": "인내심 있는 웨이터",
+      "userRole": "편식하는 사람",
+      "topic": "편식가",
+      "context": "A friend tries to convince a picky eater to try a new and unfamiliar dish at a restaurant.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "meeting-the-parents": {
+      "title": "부모님 만남",
+      "description": "처음으로 연인의 부모님을 만나는 사람.",
+      "sophieRole": "엄하지만 따뜻한 부모님",
+      "userRole": "긴장하며 부모님을 만나는 사람",
+      "topic": "부모님 만남",
+      "context": "A person meets their partner's parents for the first time, trying to make a great impression while navigating awkward questions.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "storytelling": {
+      "title": "이야기하기",
+      "description": "돌아가며 재미있고 흥미로운 이야기를 하는 친구들.",
+      "sophieRole": "재능 있는 이야기꾼",
+      "userRole": "집중하는 청자",
+      "topic": "이야기하기",
+      "context": "Two friends take turns telling each other interesting or funny stories from their past experiences.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "spontaneous-road-trip": {
+      "title": "즉흥 여행",
+      "description": "즉흥적으로 로드트립을 결정하는 친구들.",
+      "sophieRole": "모험가 친구",
+      "userRole": "설득되는 친구",
+      "topic": "즉흥 여행",
+      "context": "A friend tries to convince another to drop everything and go on a spontaneous road trip this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "hard-to-get": {
+      "title": "밀당",
+      "description": "관심 없는 척하는 상대를 끌려고 하는 사람.",
+      "sophieRole": "미스터리한 사람",
+      "userRole": "매력적인 사람",
+      "topic": "밀당",
+      "context": "A person playfully tries to get the attention of someone who is playing hard to get.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "online-vs-in-person-work": {
+      "title": "재택 vs 출근",
+      "description": "동료들이 재택근무와 출근의 장단점을 토론합니다.",
+      "sophieRole": "사무실 출근 지지자",
+      "userRole": "재택근무 지지자",
+      "topic": "재택 vs 출근",
+      "context": "Two colleagues debate whether remote work or in-person office work is better, presenting arguments for both sides.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "cheering-up-a-friend": {
+      "title": "친구 기운 북돋기",
+      "description": "우울한 친구를 응원하는 사람.",
+      "sophieRole": "슬픈 친구",
+      "userRole": "다정한 친구",
+      "topic": "친구 기운 북돋기",
+      "context": "A caring friend tries to cheer up their friend who is feeling down, offering support and encouragement.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "debating-the-best-sports-player": {
+      "title": "최고의 선수 토론",
+      "description": "역대 최고의 선수에 대해 열띤 토론을 하는 스포츠 팬.",
+      "sophieRole": "열정적인 스포츠 팬",
+      "userRole": "다른 의견의 팬",
+      "topic": "최고의 선수 토론",
+      "context": "Two sports fans passionately debate who the greatest athlete of all time is, defending their picks.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "company-meeting": {
+      "title": "회사 회의",
+      "description": "회의에서 아이디어를 발표하고 프로젝트를 논의합니다.",
+      "sophieRole": "단호한 프로젝트 매니저",
+      "userRole": "아이디어를 제안하는 직원",
+      "topic": "회사 회의",
+      "context": "An employee presents their ideas during a team meeting, responding to questions and feedback from colleagues.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "intense-argument": {
+      "title": "격렬한 논쟁",
+      "description": "논쟁적인 주제에 대해 격렬히 토론하는 두 사람.",
+      "sophieRole": "열정적인 토론자",
+      "userRole": "강한 의견을 가진 사람",
+      "topic": "격렬한 논쟁",
+      "context": "A couple gets into a heated but ultimately productive argument about a misunderstanding, working through their emotions.. Be charming and genuine. Express emotions naturally."
+    },
+    "dreaming-big": {
+      "title": "큰 꿈",
+      "description": "큰 꿈과 포부에 대해 이야기하는 친구들.",
+      "sophieRole": "영감을 주는 친구",
+      "userRole": "큰 계획을 가진 몽상가",
+      "topic": "큰 꿈",
+      "context": "Two friends share their wildest dreams and ambitions for the future, encouraging each other to dream big.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "fears-and-phobias": {
+      "title": "공포와 공포증",
+      "description": "두려움과 공포증에 대해 솔직하게 이야기하는 친구들.",
+      "sophieRole": "이해심 있는 청자",
+      "userRole": "두려움을 나누는 사람",
+      "topic": "공포와 공포증",
+      "context": "Two friends open up about their deepest fears and phobias, sharing personal stories and offering support.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "guilty-confessions": {
+      "title": "죄책감 고백",
+      "description": "작은 잘못과 죄책감을 고백하는 친구들.",
+      "sophieRole": "솔직한 친구",
+      "userRole": "고백하고 싶은 사람",
+      "topic": "죄책감 고백",
+      "context": "A person opens up to a therapist about things they feel guilty about, seeking understanding and advice.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "ex-or-not": {
+      "title": "전 애인, 어떡하지?",
+      "description": "전 연인에게 돌아갈지 논의하는 친구들.",
+      "sophieRole": "현실적인 친구",
+      "userRole": "전 연인에 대해 갈등하는 사람",
+      "topic": "전 애인, 어떡하지?",
+      "context": "Two friends discuss whether one of them should get back together with their ex, weighing the pros and cons.. Be charming and genuine. Express emotions naturally."
+    },
+    "fitness-goals": {
+      "title": "피트니스 목표",
+      "description": "피트니스 목표를 세우고 서로 격려하는 친구들.",
+      "sophieRole": "경험 많은 피트니스 전문가",
+      "userRole": "피트니스 초보자",
+      "topic": "피트니스 목표",
+      "context": "Two friends discuss their fitness goals, workout routines, and healthy habits, motivating each other.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "car-accident": {
+      "title": "교통사고",
+      "description": "가벼운 교통사고를 설명하고 정보를 교환하는 사람.",
+      "sophieRole": "차분한 경찰관",
+      "userRole": "가벼운 사고 후 운전자",
+      "topic": "교통사고",
+      "context": "A person involved in a minor car accident explains the situation to a police officer and exchanges information.. Be caring and clear. Use simple medical terminology when needed."
+    },
+    "deep-talk": {
+      "title": "깊은 대화",
+      "description": "인생의 의미에 대해 깊은 대화를 나누는 친구들.",
+      "sophieRole": "사색적인 친구",
+      "userRole": "깊은 생각을 나누는 사람",
+      "topic": "깊은 대화",
+      "context": "Two close friends have a deep late-night conversation about life, purpose, and what truly matters to them.. Be warm and genuine. Share thoughts and feelings openly."
+    },
+    "career-advice": {
+      "title": "진로 조언",
+      "description": "커리어 팁과 전문적 성장에 대해 이야기하는 친구들.",
+      "sophieRole": "경험 많은 조언자",
+      "userRole": "커리어를 탐색하는 사람",
+      "topic": "진로 조언",
+      "context": "A conversation scenario about career advice.. Be friendly and approachable. Keep the conversation flowing naturally."
+    },
+    "abstract-art": {
+      "title": "추상 미술",
+      "description": "추상 미술의 의미와 가치에 대해 토론하는 두 사람.",
+      "sophieRole": "추상 미술 애호가",
+      "userRole": "추상 미술에 의문을 가진 사람",
+      "topic": "추상 미술",
+      "context": "Two art enthusiasts debate the meaning and value of abstract art while visiting a gallery together.. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "setting-tram-goals": {
+      "title": "트램 목표 설정",
+      "description": "팀 목표를 설정하고 프로젝트 전략을 논의합니다.",
+      "sophieRole": "동기 부여하는 팀 리더",
+      "userRole": "헌신적인 팀원",
+      "topic": "트램 목표 설정",
+      "context": "A conversation scenario about setting tram goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "four-day-workweek": {
+      "title": "주4일 근무",
+      "description": "4일 근무제의 장단점에 대해 토론합니다.",
+      "sophieRole": "4일제 반대자",
+      "userRole": "4일제 찬성자",
+      "topic": "주4일 근무",
+      "context": "Two people debate whether a four-day workweek would improve productivity and work-life balance or hurt businesses.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "slacking-off": {
+      "title": "농땡이",
+      "description": "일을 태만히 하는 직원을 상사가 지적합니다.",
+      "sophieRole": "엄하지만 공정한 상사",
+      "userRole": "들킨 게으른 직원",
+      "topic": "농땡이",
+      "context": "A manager confronts an employee about slacking off at work, while the employee tries to explain and negotiate.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "salary-negotiation": {
+      "title": "연봉 협상",
+      "description": "상사에게 급여 인상을 협상하는 직원.",
+      "sophieRole": "신중한 상사",
+      "userRole": "자신감 있는 직원",
+      "topic": "연봉 협상",
+      "context": "An employee negotiates a salary raise with their manager, presenting their achievements and value to the company.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "teenagers": {
+      "title": "청소년",
+      "description": "더 자유를 원하는 사춘기 자녀에게 규칙을 정하는 부모.",
+      "sophieRole": "반항적인 십대",
+      "userRole": "규칙을 정하는 부모",
+      "topic": "청소년",
+      "context": "A parent tries to set rules and boundaries for their teenager, who pushes back and argues for more freedom.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "breaking-up": {
+      "title": "이별",
+      "description": "솔직하고 배려 있게 이별 대화를 시작하는 사람.",
+      "sophieRole": "헤어지기 싫어하는 파트너",
+      "userRole": "관계를 끝내는 사람",
+      "topic": "이별",
+      "context": "A person initiates a difficult breakup conversation, trying to be honest and kind while ending the relationship.. Be charming and genuine. Express emotions naturally."
+    },
+    "hiking-trip": {
+      "title": "등산 여행",
+      "description": "집순이 친구를 하이킹에 데려가려는 사람.",
+      "sophieRole": "집에 있고 싶은 친구",
+      "userRole": "모험적인 친구",
+      "topic": "등산 여행",
+      "context": "A friend tries to convince their couch-potato friend to join an exciting hiking adventure this weekend.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "lowering-the-drinking-age": {
+      "title": "음주 연령 인하",
+      "description": "음주 가능 연령 하향에 대해 토론하는 두 사람.",
+      "sophieRole": "인하 반대자",
+      "userRole": "인하 찬성자",
+      "topic": "음주 연령 인하",
+      "context": "Two people debate whether the legal drinking age should be lowered, presenting social and health arguments.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "performance-review": {
+      "title": "성과 평가",
+      "description": "성과 리뷰를 받고 상사와 목표를 논의하는 직원.",
+      "sophieRole": "공정한 상사",
+      "userRole": "평가를 받는 직원",
+      "topic": "성과 평가",
+      "context": "An employee receives their performance review from their manager, discussing achievements, areas to improve, and goals.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "pulled-over": {
+      "title": "경찰에게 정차",
+      "description": "과속 딱지를 피하려고 창의적으로 시도하는 운전자.",
+      "sophieRole": "엄격한 경찰관",
+      "userRole": "변명을 찾는 운전자",
+      "topic": "경찰에게 정차",
+      "context": "A driver pulled over by a police officer tries to talk their way out of a speeding ticket with creative excuses.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "wedding-proposal": {
+      "title": "청혼",
+      "description": "연인에게 프러포즈하는 사람.",
+      "sophieRole": "놀란 파트너",
+      "userRole": "프러포즈하는 사람",
+      "topic": "청혼",
+      "context": "A person nervously plans and delivers a heartfelt wedding proposal to their partner.. Be charming and genuine. Express emotions naturally."
+    },
+    "dropping-out": {
+      "title": "자퇴",
+      "description": "꿈을 위해 자퇴를 부모에게 설득하는 학생.",
+      "sophieRole": "걱정하는 부모",
+      "userRole": "자퇴하고 싶은 학생",
+      "topic": "자퇴",
+      "context": "A student tries to convince their parents that dropping out of school to pursue their passion is the right decision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "requesting-a-promotion": {
+      "title": "승진 요청",
+      "description": "승진을 요청하며 성과를 보여주는 직원.",
+      "sophieRole": "주의 깊은 상사",
+      "userRole": "야심 찬 직원",
+      "topic": "승진 요청",
+      "context": "An employee meets with their boss to request a promotion, highlighting their contributions and readiness for growth.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "nuclear-threat": {
+      "title": "핵 위협",
+      "description": "핵 위협에 대해 내각과 협의하는 세계 지도자.",
+      "sophieRole": "외교를 권하는 신중한 조언자",
+      "userRole": "행동을 결정하는 지도자",
+      "topic": "핵 위협",
+      "context": "A world leader addresses their cabinet about a nuclear threat, debating how to respond diplomatically or militarily.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "presidential-speech": {
+      "title": "대통령 연설",
+      "description": "대통령 후보가 선거 연설을 합니다.",
+      "sophieRole": "날카로운 질문의 기자",
+      "userRole": "연설하는 후보자",
+      "topic": "대통령 연설",
+      "context": "A presidential candidate delivers a passionate campaign speech, addressing the nation's key issues and their vision.. Be passionate about your position. Use convincing arguments and compelling reasoning."
+    },
+    "pitching-an-idea": {
+      "title": "아이디어 발표",
+      "description": "상사에게 혁신적인 사업 아이디어를 제안하는 직원.",
+      "sophieRole": "회의적이지만 열린 마음의 상사",
+      "userRole": "아이디어를 가진 창의적인 직원",
+      "topic": "아이디어 발표",
+      "context": "An employee pitches an innovative business idea to their boss, trying to convince them of its potential.. Be professional but friendly. Use appropriate workplace language."
+    },
+    "climate-change-debate": {
+      "title": "기후변화 토론",
+      "description": "현재 기후 정책의 효과에 대해 토론하는 두 사람.",
+      "sophieRole": "기후 회의론자",
+      "userRole": "기후 활동가",
+      "topic": "기후변화 토론",
+      "context": "Two people debate the effectiveness of current climate change policies and what more should be done.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "ai-dilemma": {
+      "title": "AI 딜레마",
+      "description": "AI의 윤리적 영향에 대해 토론하는 두 사람.",
+      "sophieRole": "기술 낙관주의자",
+      "userRole": "AI 위험을 걱정하는 사람",
+      "topic": "AI 딜레마",
+      "context": "Two people debate the ethical implications of AI, discussing its impact on jobs, privacy, and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "educational-policy": {
+      "title": "교육 정책",
+      "description": "교육 정책과 학생 복지에 대해 토론하는 두 사람.",
+      "sophieRole": "전통 교육 지지자",
+      "userRole": "교육 개혁을 주장하는 사람",
+      "topic": "교육 정책",
+      "context": "Two people debate modern education policies, including standardized testing, curriculum changes, and student well-being.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "universal-basic-income": {
+      "title": "기본소득",
+      "description": "보편적 기본소득의 실현 가능성에 대해 토론하는 두 사람.",
+      "sophieRole": "기본소득 회의론자",
+      "userRole": "기본소득 지지자",
+      "topic": "기본소득",
+      "context": "Two people debate whether universal basic income would help or hurt the economy and society.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "space-exploration": {
+      "title": "우주 탐사",
+      "description": "우주 탐사 투자 가치에 대해 토론하는 두 사람.",
+      "sophieRole": "지구 우선주의자",
+      "userRole": "우주 탐사 열광자",
+      "topic": "우주 탐사",
+      "context": "Two people debate whether space exploration funding is justified or if the money should be spent on Earth's problems.. Present well-reasoned arguments. Be respectful of different viewpoints while defending your position."
+    },
+    "weather": {
+      "title": "날씨",
+      "description": "두 친구가 오늘 좋은 날씨에 대해 이야기하고 함께 어떤 활동을 할지 의논합니다.",
+      "sophieRole": "날씨를 즐기는 친근한 대화 상대",
+      "userRole": "날씨에 대해 이야기하는 친구",
+      "topic": "날씨",
+      "context": "Two friends chat about the nice weather today and discuss what activities they might do together.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "likes-dislikes": {
+      "title": "좋아하는 것/싫어하는 것",
+      "description": "사용자와 소피가 좋아하는 것과 싫어하는 것에 대해 이야기하며, 다양한 활동과 관심사에 대한 기본적인 의견을 나눕니다.",
+      "sophieRole": "호기심 많은 대화 상대",
+      "userRole": "선호하는 것을 공유하는 사람",
+      "topic": "좋아하는 것/싫어하는 것",
+      "context": "User and Sophie talk about their likes and dislikes, sharing basic opinions about different activities and interests.. Keep the vocabulary simple and use short sentences. Speak slowly and clearly."
+    },
+    "favorite-movies-and-tv-shows": {
+      "title": "가장 좋아하는 영화 및 TV 프로그램",
+      "description": "두 사람이 가장 좋아하는 영화나 TV 프로그램에 대해 이야기하며, \"그 (프로그램) 보셨어요?\" 또는 \"인생 영화는 뭐예요?\"와 같은 질문을 합니다.",
+      "sophieRole": "열정적인 영화 및 TV 팬",
+      "userRole": "시청 선호도를 공유하는 친구",
+      "topic": "가장 좋아하는 영화 및 TV 프로그램",
+      "context": "Two people talk about their favorite movies or tv shows, asking question like, \"How you watched (show)?\" or \"What's your favorite movie of all time?\".. Be enthusiastic and engaging. Share opinions naturally."
+    },
+    "basic-check-up": {
+      "title": "기본 건강 검진",
+      "description": "환자가 정기 검진을 위해 의사를 방문합니다. 의사는 환자의 생활 방식에 대해 더 알아보기 위해 일상 습관에 대한 간단한 질문을 합니다.",
+      "sophieRole": "배려심 깊고 전문적인 의사",
+      "userRole": "건강 질문에 답하는 환자",
+      "topic": "기본 건강 검진",
+      "context": "A patient visits the doctor for a routine check-up. the doctor asks simple questions about their daily habits to learn more about their lifestyle.. Ask clear, practical questions. Show empathy and professionalism."
     }
   },
   "common": {

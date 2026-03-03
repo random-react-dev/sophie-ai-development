@@ -13,21 +13,144 @@ import { useScenarioStore } from "@/stores/scenarioStore";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
+  Activity,
+  AlarmClock,
+  Apple,
+  Armchair,
+  ArrowUpDown,
+  Baby,
+  Badge,
+  BadgeAlert,
+  BadgePercent,
+  Banknote,
   Bed,
+  Beer,
+  BookHeart,
+  BookOpen,
+  BookOpenText,
+  Brain,
   Briefcase,
+  Building2,
+  Bus,
+  Cake,
+  Calendar,
+  CalendarCheck,
+  CalendarMinus,
+  CalendarPlus,
+  Car,
+  Carrot,
+  ChefHat,
   ChevronDown,
   ChevronRight,
+  CircleAlert,
+  Clapperboard,
+  ClipboardCheck,
+  Clock,
+  CloudSun,
   Coffee,
+  Coins,
   Compass,
+  Cookie,
+  Cpu,
+  CreditCard,
+  Dog,
+  DoorOpen,
+  Dumbbell,
+  Ear,
+  Eye,
+  FerrisWheel,
+  FileX,
+  Film,
+  Flame,
+  Flower2,
+  Footprints,
+  Gem,
+  Ghost,
+  Gift,
+  Glasses,
+  Globe,
+  Goal,
   GraduationCap,
+  Guitar,
+  HandMetal,
+  Handshake,
   Headphones,
+  Heart,
+  HeartCrack,
+  HeartHandshake,
+  HeartPulse,
+  House,
+  IceCreamCone,
+  Landmark,
+  Languages,
+  Laptop,
+  Leaf,
+  Lightbulb,
+  LogOut,
+  MailX,
+  Map as MapIcon,
+  MapPin,
+  MapPinned,
+  Megaphone,
+  Menu as MenuIcon,
+  MessageCircle,
+  MessageSquare,
   Mic,
+  MicVocal,
+  Monitor,
+  Mountain,
+  MountainSnow,
+  Music,
+  NotebookPen,
+  Paintbrush,
+  Palette,
+  Pencil,
+  Phone,
+  Pizza,
   Plane,
   Plus,
+  Presentation,
+  Radiation,
+  Rocket,
+  Scale,
+  School,
+  Scroll,
+  Shield,
+  ShieldAlert,
+  Shirt,
+  ShoppingBag,
+  ShoppingCart,
+  Siren,
+  Smile,
+  SmilePlus,
+  Soup,
   Sparkles,
+  SprayCan,
   Star,
+  Stethoscope,
+  Sun,
+  Sunrise,
+  Target,
+  Telescope,
+  Thermometer,
+  ThumbsUp,
+  Ticket,
+  Timer,
+  TimerOff,
+  TrainFront,
+  Trees,
+  TrendingUp,
+  Trophy,
+  Truck,
+  Tv,
+  Unplug,
+  UserPlus,
   Users,
+  UsersRound,
   Utensils,
+  UtensilsCrossed,
+  Wallet,
+  Wine,
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -47,11 +170,168 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 
 const IconMap: Record<string, any> = {
+  // Beginner
+  "hand-metal": HandMetal,
+  "smile-plus": SmilePlus,
+  baby: Baby,
+  sun: Sun,
+  palette: Palette,
+  apple: Apple,
+  "cloud-sun": CloudSun,
+  "thumbs-up": ThumbsUp,
+
+  // Food & Drink
   coffee: Coffee,
-  briefcase: Briefcase,
+  utensils: Utensils,
+  "ice-cream-cone": IceCreamCone,
+  "chef-hat": ChefHat,
+  menu: MenuIcon,
+  soup: Soup,
+  truck: Truck,
+  cookie: Cookie,
+  pizza: Pizza,
+  "circle-alert": CircleAlert,
+
+  // Shopping
+  "shopping-cart": ShoppingCart,
+  "credit-card": CreditCard,
+  carrot: Carrot,
+  shirt: Shirt,
+  gift: Gift,
+  "book-open": BookOpen,
+  laptop: Laptop,
+  "badge-percent": BadgePercent,
+  "shopping-bag": ShoppingBag,
+
+  // Travel
   compass: Compass,
   bed: Bed,
+  map: MapIcon,
+  globe: Globe,
+  "calendar-check": CalendarCheck,
+  bus: Bus,
+  car: Car,
+  "train-front": TrainFront,
+  plane: Plane,
+  "map-pin": MapPin,
+  landmark: Landmark,
+  wallet: Wallet,
+  clock: Clock,
+
+  // Life
+  sunrise: Sunrise,
+  "alarm-clock": AlarmClock,
+  calendar: Calendar,
+  "message-square": MessageSquare,
+  house: House,
+  armchair: Armchair,
+  glasses: Glasses,
+  dog: Dog,
+  phone: Phone,
+  "door-open": DoorOpen,
+  flame: Flame,
+  "heart-handshake": HeartHandshake,
+  ear: Ear,
+  dumbbell: Dumbbell,
+  "book-open-text": BookOpenText,
+  rocket: Rocket,
+  ghost: Ghost,
+  brain: Brain,
+
+  // Social
   mic: Mic,
+  trees: Trees,
+  "user-plus": UserPlus,
+  "calendar-plus": CalendarPlus,
+  wine: Wine,
+  cake: Cake,
+  "flower-2": Flower2,
+  lightbulb: Lightbulb,
+
+  // Work
+  briefcase: Briefcase,
+  "building-2": Building2,
+  badge: Badge,
+  "utensils-crossed": UtensilsCrossed,
+  target: Target,
+  "mail-x": MailX,
+  presentation: Presentation,
+  goal: Goal,
+  banknote: Banknote,
+  "clipboard-check": ClipboardCheck,
+  "trending-up": TrendingUp,
+  "timer-off": TimerOff,
+
+  // Romance
+  sparkles: Sparkles,
+  heart: Heart,
+  eye: Eye,
+  "book-heart": BookHeart,
+  "arrow-up-down": ArrowUpDown,
+  "heart-pulse": HeartPulse,
+  mountain: Mountain,
+  "heart-crack": HeartCrack,
+  unplug: Unplug,
+  gem: Gem,
+  shield: Shield,
+  "users-round": UsersRound,
+
+  // Entertainment
+  headphones: Headphones,
+  ticket: Ticket,
+  star: Star,
+  music: Music,
+  guitar: Guitar,
+  "ferris-wheel": FerrisWheel,
+  clapperboard: Clapperboard,
+  trophy: Trophy,
+  paintbrush: Paintbrush,
+  tv: Tv,
+  film: Film,
+
+  // Education
+  school: School,
+  "notebook-pen": NotebookPen,
+  languages: Languages,
+  pencil: Pencil,
+  timer: Timer,
+  "file-x": FileX,
+  handshake: Handshake,
+  "graduation-cap": GraduationCap,
+
+  // Health
+  stethoscope: Stethoscope,
+  "shield-alert": ShieldAlert,
+  siren: Siren,
+  thermometer: Thermometer,
+  activity: Activity,
+
+  // Persuade
+  footprints: Footprints,
+  "spray-can": SprayCan,
+  "map-pinned": MapPinned,
+  megaphone: Megaphone,
+  "mountain-snow": MountainSnow,
+  "badge-alert": BadgeAlert,
+  "log-out": LogOut,
+  radiation: Radiation,
+  "mic-vocal": MicVocal,
+  "message-circle": MessageCircle,
+
+  // Debates
+  monitor: Monitor,
+  "calendar-minus": CalendarMinus,
+  beer: Beer,
+  leaf: Leaf,
+  cpu: Cpu,
+  scroll: Scroll,
+  coins: Coins,
+  telescope: Telescope,
+  scale: Scale,
+
+  // Misc
+  smile: Smile,
+  users: Users,
 };
 
 // Enable LayoutAnimation for Android
@@ -171,22 +451,27 @@ export default function RoleplayScreen() {
         >
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
-            const catLabel =
-              cat === "All"
-                ? t("scenarios_screen.categories.all")
-                : cat === "Food & Drink"
-                  ? t("scenarios_screen.categories.food_drink")
-                  : cat === "Business"
-                    ? t("scenarios_screen.categories.business")
-                    : cat === "Social"
-                      ? t("scenarios_screen.categories.social")
-                      : cat === "Travel"
-                        ? t("scenarios_screen.categories.travel")
-                        : cat === "Customer Service"
-                          ? t("scenarios_screen.categories.customer_service")
-                          : cat === "Education"
-                            ? t("scenarios_screen.categories.education")
-                            : cat;
+            const catKeyMap: Record<string, string> = {
+              All: "all",
+              Beginner: "beginner",
+              "Food & Drink": "food_drink",
+              Shopping: "shopping",
+              Entertainment: "entertainment",
+              Life: "life",
+              Travel: "travel",
+              Social: "social",
+              Work: "work",
+              Romance: "romance",
+              Health: "health",
+              Persuade: "persuade",
+              Debates: "debates",
+              Education: "education",
+              Business: "business",
+              "Customer Service": "customer_service",
+            };
+            const catLabel = catKeyMap[cat]
+              ? t(`scenarios_screen.categories.${catKeyMap[cat]}`)
+              : cat;
 
             if (isSelected) {
               return (
@@ -283,34 +568,32 @@ export default function RoleplayScreen() {
                     {item.title}
                   </Text>
                   <Text className="text-gray-400 text-sm font-medium">
-                    {item.category === "Custom"
-                      ? item.category
-                      : item.category === "Food & Drink"
-                        ? t("scenarios_screen.categories.food_drink", {
-                            defaultValue: "Food & Drink",
+                    {(() => {
+                      const cardCatKeyMap: Record<string, string> = {
+                        All: "all",
+                        Beginner: "beginner",
+                        "Food & Drink": "food_drink",
+                        Shopping: "shopping",
+                        Entertainment: "entertainment",
+                        Life: "life",
+                        Travel: "travel",
+                        Social: "social",
+                        Work: "work",
+                        Romance: "romance",
+                        Health: "health",
+                        Persuade: "persuade",
+                        Debates: "debates",
+                        Education: "education",
+                        Business: "business",
+                        "Customer Service": "customer_service",
+                      };
+                      const key = cardCatKeyMap[item.category];
+                      return key
+                        ? t(`scenarios_screen.categories.${key}`, {
+                            defaultValue: item.category,
                           })
-                        : item.category === "Business"
-                          ? t("scenarios_screen.categories.business", {
-                              defaultValue: "Business",
-                            })
-                          : item.category === "Social"
-                            ? t("scenarios_screen.categories.social", {
-                                defaultValue: "Social",
-                              })
-                            : item.category === "Travel"
-                              ? t("scenarios_screen.categories.travel", {
-                                  defaultValue: "Travel",
-                                })
-                              : item.category === "Customer Service"
-                                ? t(
-                                    "scenarios_screen.categories.customer_service",
-                                    { defaultValue: "Customer Service" },
-                                  )
-                                : item.category === "Education"
-                                  ? t("scenarios_screen.categories.education", {
-                                      defaultValue: "Education",
-                                    })
-                                  : item.category}
+                        : item.category;
+                    })()}
                   </Text>
                   <Text
                     className="text-gray-400 text-sm font-medium"
