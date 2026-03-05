@@ -1,0 +1,70 @@
+# E2E: Login with 2FA — OTP screen interactions (keyboard, cancel, retry)
+# Prerequisites: User must be logged out. Account has 2FA enabled.
+appId: ai.speakwithsophie.app
+env:
+  EMAIL: "armanmishra1000@gmail.com"
+  PASSWORD: "Arman@99139"
+---
+- launchApp
+
+# Wait for login screen
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 15000
+
+# Enter credentials
+- tapOn:
+    id: "auth-email-input"
+- inputText: ${EMAIL}
+- tapOn:
+    id: "auth-password-input"
+- inputText: ${PASSWORD}
+
+# Hide keyboard before tapping Login
+- hideKeyboard
+
+# Tap Login
+- tapOn:
+    id: "auth-login-button"
+
+# Wait for OTP modal
+- extendedWaitUntil:
+    visible: "Verify Your Identity"
+    timeout: 20000
+
+# === KEYBOARD DISMISS TEST ===
+# Dismiss keyboard by tapping the mail icon area (hideKeyboard unreliable with custom OTP input)
+# Avoid top-right area where the close (X) button is
+- tapOn:
+    point: "30%,25%"
+# Tap OTP box container to refocus keyboard
+- tapOn:
+    id: "otp-box-container"
+# OTP boxes should still be visible (keyboard refocused)
+- assertVisible:
+    id: "otp-box-container"
+
+# === CANCEL TEST ===
+# Tap Cancel & Sign Out
+- tapOn:
+    id: "otp-cancel-button"
+
+# Verify login screen comes back (not frozen)
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 15000
+
+# === RETRY TEST (login screen responsive after cancel) ===
+# Verify all login form elements are visible and interactive
+- assertVisible:
+    id: "auth-email-input"
+- assertVisible:
+    id: "auth-password-input"
+- assertVisible:
+    id: "auth-login-button"
+# Tap into password field to verify it's interactive (not frozen)
+- tapOn:
+    id: "auth-password-input"
+# Dismiss keyboard by tapping non-input area (hideKeyboard unreliable with secureTextEntry)
+- tapOn:
+    point: "50%,20%"

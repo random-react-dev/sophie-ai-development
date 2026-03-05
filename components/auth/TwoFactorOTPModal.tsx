@@ -36,6 +36,11 @@ export default function TwoFactorOTPModal() {
   const [resendTimer, setResendTimer] = useState(RESEND_COOLDOWN);
   const inputRef = useRef<TextInput>(null);
 
+  const handleFocusInput = () => {
+    inputRef.current?.blur();
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
   // Countdown timer for resend
   useEffect(() => {
     if (!pending2FA) return;
@@ -118,6 +123,7 @@ export default function TwoFactorOTPModal() {
       visible={pending2FA}
       animationType="slide"
       presentationStyle="fullScreen"
+      onRequestClose={handleCancel}
     >
       <View className="flex-1 bg-white">
         <SafeAreaView className="flex-1">
@@ -148,7 +154,7 @@ export default function TwoFactorOTPModal() {
                 paddingTop: 32,
                 paddingBottom: 40,
               }}
-              keyboardShouldPersistTaps="handled"
+              keyboardShouldPersistTaps="always"
               showsVerticalScrollIndicator={false}
             >
               {/* Icon */}
@@ -166,7 +172,7 @@ export default function TwoFactorOTPModal() {
               </Text>
 
               {/* OTP Input Container */}
-              <View className="relative flex-row justify-center gap-2 mb-6">
+              <Pressable onPress={handleFocusInput} testID="otp-box-container" className="relative flex-row justify-center gap-2 mb-6">
                 {Array.from({ length: OTP_LENGTH }).map((_, index) => {
                   const isActive = index === otp.length;
                   const isFilled = index < otp.length;
@@ -200,6 +206,7 @@ export default function TwoFactorOTPModal() {
                 {/* Overlay TextInput */}
                 <TextInput
                   ref={inputRef}
+                  testID="otp-hidden-input"
                   className="absolute inset-0 w-full h-full opacity-0"
                   value={otp}
                   onChangeText={handleOtpChange}
@@ -210,7 +217,7 @@ export default function TwoFactorOTPModal() {
                   caretHidden={true}
                   autoFocus={true}
                 />
-              </View>
+              </Pressable>
 
               {/* Error Message */}
               {error ? (
@@ -276,6 +283,7 @@ export default function TwoFactorOTPModal() {
                   onPress={handleCancel}
                   activeOpacity={0.7}
                   className="w-full"
+                  testID="otp-cancel-button"
                 >
                   <Text className="text-gray-400 text-sm underline text-center pb-1">
                     {t("profile.security_screen.two_factor.cancel_and_logout")}

@@ -14,7 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     usesAppleSignIn: true,
     supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "32",
+    buildNumber: "35",
     infoPlist: {
       NSMicrophoneUsageDescription:
         "Sophie AI needs microphone access to hear your voice during conversations. Audio is processed in real-time and is not recorded or stored.",
@@ -92,13 +92,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           "Sophie AI uses speech recognition to convert your voice into text during conversations. Your speech is processed to generate AI responses. No audio recordings are stored.",
       },
     ],
-    // Google Sign-In - Uncomment when EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME is configured
-    // [
-    //   "@react-native-google-signin/google-signin",
-    //   {
-    //     iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
-    //   },
-    // ],
+    [
+      "@react-native-google-signin/google-signin",
+      {
+        iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
+      },
+    ],
   ],
 
   experiments: {

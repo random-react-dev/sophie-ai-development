@@ -255,19 +255,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   signOut: async () => {
     set({ isLoading: true });
-
-    // Clear all user-specific data before signing out
-    await clearUserData();
-
-    await supabase.auth.signOut();
-    set({
-      user: null,
-      session: null,
-      isLoading: false,
-      pending2FA: false,
-      pending2FAEmail: null,
-      showTrialPopup: false,
-    });
+    try {
+      await clearUserData();
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn("Sign out error:", err);
+    } finally {
+      set({
+        user: null,
+        session: null,
+        isLoading: false,
+        pending2FA: false,
+        pending2FAEmail: null,
+        showTrialPopup: false,
+      });
+    }
   },
   deleteAccount: async () => {
     set({ isLoading: true });
@@ -279,6 +281,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Clear all user-specific data before signing out
       await clearUserData();
       await supabase.auth.signOut();
+    } finally {
       set({
         user: null,
         session: null,
@@ -287,8 +290,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         pending2FAEmail: null,
         showTrialPopup: false,
       });
-    } finally {
-      set({ isLoading: false });
     }
   },
   initialize: async () => {
@@ -342,7 +343,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         // When session becomes invalid or user is signed out (including token refresh failures),
         // clear all user data to ensure a clean state for the next login.
-        if (event === "SIGNED_OUT") {
+        if (event === "SIGNED_OUT" && !get().pending2FA) {
           await clearUserData();
         }
 
