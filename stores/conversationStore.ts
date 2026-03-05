@@ -11,6 +11,13 @@ const VOLUME_THROTTLE_MS = 100;
 const MIN_PTT_DURATION_MS = 1000;
 
 let lastVolumeUpdate = 0;
+let pttTurnCounter = 0;
+let activePTTTurnId: number | null = null;
+let isPTTStartInFlight = false;
+let isPTTStopInFlight = false;
+let activityStartSentTurnId: number | null = null;
+let activityEndSentTurnId: number | null = null;
+let pttFramesSentInTurn = 0;
 
 /**
  * Create throttled volume handler to reduce re-renders.
@@ -262,15 +269,25 @@ export const useConversationStore = create<ConversationState>()(
    */
   startPTTRecording: async () => {
     const state = get();
-    if (state.isPTTActive || !geminiWebSocket.isReady()) {
+    if (state.isPTTActive || isPTTStartInFlight || isPTTStopInFlight || !geminiWebSocket.isReady()) {
       if (!geminiWebSocket.isReady()) {
         Logger.warn(
           "ConversationStore",
           "Cannot start PTT: WebSocket not ready",
         );
+      } else {
+        Logger.debug(
+          "ConversationStore",
+          "Ignoring duplicate startPTTRecording call",
+        );
       }
       return;
     }
+
+    isPTTStartInFlight = true;
+    const turnId = ++pttTurnCounter;
+    activePTTTurnId = turnId;
+    pttFramesSentInTurn = 0;
 
     // Set state IMMEDIATELY (synchronous) so UI responds.
     // pttStartTime is set later, right before audioRecorder.start(),
@@ -295,15 +312,29 @@ export const useConversationStore = create<ConversationState>()(
         return;
       }
 
-      Logger.info("ConversationStore", "Starting PTT recording...");
-      geminiWebSocket.sendActivityStart();
+      Logger.info("ConversationStore", `Starting PTT recording... Turn: ${turnId}`);
+      if (activityStartSentTurnId !== turnId) {
+        geminiWebSocket.sendActivityStart();
+        activityStartSentTurnId = turnId;
+        activityEndSentTurnId = null;
+      }
 
       // Set pttStartTime NOW — right before recording starts — so the
       // minimum duration check in stop reflects actual recording time.
       set({ pttStartTime: Date.now() });
 
       await audioRecorder.start({
-        onAudioData: (base64) => geminiWebSocket.sendAudioChunk(base64),
+        onAudioData: (base64) => {
+          if (
+            activePTTTurnId !== turnId ||
+            isPTTStopInFlight ||
+            !get().isPTTActive
+          ) {
+            return;
+          }
+          pttFramesSentInTurn++;
+          geminiWebSocket.sendAudioChunk(base64);
+        },
         onVolumeChange: createVolumeHandler(set),
       });
 
@@ -320,6 +351,11 @@ export const useConversationStore = create<ConversationState>()(
         pttStartTime: null,
         isListening: false,
       });
+      if (activePTTTurnId === turnId) {
+        activePTTTurnId = null;
+      }
+    } finally {
+      isPTTStartInFlight = false;
     }
   },
 
@@ -328,43 +364,80 @@ export const useConversationStore = create<ConversationState>()(
    */
   stopPTTRecording: async () => {
     const state = get();
-    if (!state.isPTTActive) return;
+    if (!state.isPTTActive || isPTTStopInFlight) {
+      if (isPTTStopInFlight) {
+        Logger.debug(
+          "ConversationStore",
+          "Ignoring duplicate stopPTTRecording call",
+        );
+      }
+      return;
+    }
+
+    isPTTStopInFlight = true;
+    const turnId = activePTTTurnId;
 
     const { notificationAsync, NotificationFeedbackType } =
       await import("expo-haptics");
     const duration = state.pttStartTime ? Date.now() - state.pttStartTime : 0;
-    const isValidRecording = duration >= MIN_PTT_DURATION_MS;
+    let hasFrames = false;
+    let isValidRecording = false;
 
-    Logger.info(
-      "ConversationStore",
-      `Stopping PTT recording... Duration: ${duration}ms`,
-    );
-    try {
-      await audioRecorder.stop();
-    } catch (err) {
-      Logger.error("ConversationStore", "Failed to stop audio recorder", err);
-    }
-    geminiWebSocket.sendActivityEnd();
-
+    // Close PTT state first so any extra stop calls no-op immediately.
     set({
       isPTTActive: false,
       pttStartTime: null,
       isListening: false,
-      isProcessing: isValidRecording,
       volumeLevel: 0,
     });
 
-    await notificationAsync(
-      isValidRecording
-        ? NotificationFeedbackType.Success
-        : NotificationFeedbackType.Warning,
+    Logger.info(
+      "ConversationStore",
+      `Stopping PTT recording... Turn: ${turnId ?? "none"}, Duration: ${duration}ms`,
     );
+    try {
+      if (
+        turnId !== null &&
+        activityStartSentTurnId === turnId &&
+        activityEndSentTurnId !== turnId
+      ) {
+        geminiWebSocket.sendActivityEnd();
+        activityEndSentTurnId = turnId;
+      }
 
-    if (!isValidRecording) {
-      Logger.info(
-        "ConversationStore",
-        `Recording too short: ${duration}ms - discarded`,
+      try {
+        await audioRecorder.stop();
+      } catch (err) {
+        Logger.error("ConversationStore", "Failed to stop audio recorder", err);
+      }
+
+      hasFrames = pttFramesSentInTurn > 0;
+      isValidRecording = duration >= MIN_PTT_DURATION_MS && hasFrames;
+
+      set({
+        isProcessing: isValidRecording,
+      });
+
+      await notificationAsync(
+        isValidRecording
+          ? NotificationFeedbackType.Success
+          : NotificationFeedbackType.Warning,
       );
+
+      if (!isValidRecording) {
+        Logger.info(
+          "ConversationStore",
+          hasFrames
+            ? `Recording too short: ${duration}ms - discarded`
+            : `No audio frames captured: ${duration}ms - discarded`,
+        );
+      }
+    } finally {
+      if (activePTTTurnId === turnId) {
+        activePTTTurnId = null;
+      }
+      pttFramesSentInTurn = 0;
+      isPTTStopInFlight = false;
     }
   },
 

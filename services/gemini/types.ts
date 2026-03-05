@@ -84,12 +84,25 @@ export interface GeminiServerContent {
   outputTranscription?: { text: string };
 }
 
+export interface GeminiUsageMetadata {
+  promptTokenCount?: number;
+  prompt_token_count?: number;
+  candidatesTokenCount?: number;
+  candidates_token_count?: number;
+  totalTokenCount?: number;
+  total_token_count?: number;
+  cachedContentTokenCount?: number;
+  cached_content_token_count?: number;
+}
+
 // Complete server response (supports both formats the API might return)
 export interface GeminiServerResponse {
   setup_complete?: Record<string, never>;
   setupComplete?: Record<string, never>;
   server_content?: GeminiServerContent;
   serverContent?: GeminiServerContent;
+  usageMetadata?: GeminiUsageMetadata;
+  usage_metadata?: GeminiUsageMetadata;
   tool_call?: {
     function_calls: Array<{
       id: string;

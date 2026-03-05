@@ -15,16 +15,41 @@ const getConversationStore = () =>
   require("../../stores/conversationStore").useConversationStore;
 
 const TAG = "GeminiWS";
-const MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025";
+const DEFAULT_MODEL_PRIMARY =
+  "models/gemini-2.5-flash-native-audio-preview-12-2025";
+const DEFAULT_MODEL_FALLBACK = DEFAULT_MODEL_PRIMARY;
+const MODEL_PRIMARY =
+  process.env.EXPO_PUBLIC_GEMINI_LIVE_MODEL_PRIMARY || DEFAULT_MODEL_PRIMARY;
+const MODEL_FALLBACK =
+  process.env.EXPO_PUBLIC_GEMINI_LIVE_MODEL_FALLBACK || DEFAULT_MODEL_FALLBACK;
+const STARTUP_SLA_MS = Number(
+  process.env.EXPO_PUBLIC_STARTUP_SLA_MS ?? "10000",
+);
+const STARTUP_RISK_MS = Math.max(1000, Math.min(7000, STARTUP_SLA_MS - 2000));
+const envMaxTokens = process.env.EXPO_PUBLIC_GEMINI_MAX_OUTPUT_TOKENS;
+const MAX_OUTPUT_TOKENS = envMaxTokens ? Number(envMaxTokens) : 2048;
+
+const MAX_OUTPUT_TOKENS_SAFE =
+  Number.isFinite(MAX_OUTPUT_TOKENS) && MAX_OUTPUT_TOKENS > 0
+    ? Math.floor(MAX_OUTPUT_TOKENS)
+    : 2048;
 const MAX_RECONNECT_ATTEMPTS = 3;
 const INITIAL_RECONNECT_DELAY_MS = 1000;
-const ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION = true;
-const ENABLE_LIVE_MODEL_TEXT_UPDATES = true;
-const TYPING_INITIAL_BUFFER_MS = 300;
-const TYPING_BASE_DELAY_MS = 150;
-const TYPING_MIN_DELAY_MS = 60;
-const TYPING_DRAIN_DELAY_MS = 40;
-const TYPING_QUEUE_TARGET = 3;
+const AUDIO_DIAG_VERBOSE = process.env.EXPO_PUBLIC_AUDIO_DIAG === "1";
+const MODEL_AUDIO_SAMPLE_RATE = 24000;
+const PCM_BYTES_PER_SAMPLE = 2;
+const WS_BUFFERED_LOG_CHUNK_INTERVAL = 50;
+
+type TurnIssueClassification =
+  | "healthy_stream"
+  | "api_or_network_slow_stream"
+  | "client_processing_backpressure";
+type TurnIssueReason =
+  | "healthy"
+  | "model_rate_low"
+  | "model_rate_severe_low"
+  | "model_gap_high"
+  | "ws_send_backpressure";
 
 class GeminiWebSocket {
   private ws: WebSocket | null = null;
@@ -41,15 +66,40 @@ class GeminiWebSocket {
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
   private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
-
-  // Transcript-first playback state
-  private pendingAudioChunks: string[] = [];
-  private transcriptWordQueue: string[] = [];
-  private typingTimeout: ReturnType<typeof setTimeout> | null = null;
-  private initialBufferTimeout: ReturnType<typeof setTimeout> | null = null;
-  private typingStarted = false;
-  private generationDone = false;
-  private awaitingTranscriptFlush = false;
+  private pendingModelTranscript = "";
+  private hasAudioInCurrentTurn = false;
+  private awaitingSpeechEndToFlushText = false;
+  private activityStartAtMs: number | null = null;
+  private activityEndAtMs: number | null = null;
+  private firstModelAudioChunkAtMs: number | null = null;
+  private lastModelAudioChunkAtMs: number | null = null;
+  private modelAudioGapTotalMs = 0;
+  private modelAudioGapMaxMs = 0;
+  private modelAudioGapCount = 0;
+  private modelAudioBytesReceived = 0;
+  private wsBufferedAmountMax = 0;
+  private wsBufferedAmountTotal = 0;
+  private wsBufferedAmountSamples = 0;
+  private turnTraceId = "turn-unknown";
+  private turnSequence = 0;
+  private currentModel = MODEL_PRIMARY;
+  private startupRiskTimerId: ReturnType<typeof setTimeout> | null = null;
+  private startupDeadlineTimerId: ReturnType<typeof setTimeout> | null = null;
+  private startupSlaAnchorMs: number | null = null;
+  private hasPlaybackStartedInTurn = false;
+  private turnInputTranscript = "";
+  private fastRetryTriggeredForTurn = false;
+  private pendingClientMessageAfterSetup: GeminiClientContent | null = null;
+  private pendingTraceIdAfterSetup: string | null = null;
+  private lastBaseInstruction: string = "";
+  private slowTurnStreak = 0;
+  private rotationCooldownUntilMs = 0;
+  private discardModelOutputWhilePTT = false;
+  private suppressedModelAudioChunks = 0;
+  private pendingHealthRotationIssue: {
+    issue: TurnIssueClassification;
+    reason: TurnIssueReason;
+  } | null = null;
 
   // Singleton
   private static instance: GeminiWebSocket;
@@ -69,6 +119,347 @@ class GeminiWebSocket {
     return this.connectionState === "connected" && this.isSetupComplete;
   }
 
+  private handleSpeakingStateChange(isSpeaking: boolean): void {
+    const store = getConversationStore().getState();
+    store.setSpeaking(isSpeaking);
+
+    if (isSpeaking) {
+      this.hasPlaybackStartedInTurn = true;
+      this.clearStartupTimers();
+      if (this.startupSlaAnchorMs !== null) {
+        const startupDelayMs = Date.now() - this.startupSlaAnchorMs;
+        Logger.info(
+          TAG,
+          `[DIAG] stage=playback_startup_sla trace=${this.turnTraceId} activityEndToSpeakMs=${startupDelayMs} slaMs=${STARTUP_SLA_MS} breach=${startupDelayMs > STARTUP_SLA_MS}`,
+        );
+      }
+    }
+
+    // Keep transcript hidden while Sophie is speaking, then flush once finished.
+    if (!isSpeaking && this.awaitingSpeechEndToFlushText) {
+      const deferredRotationIssue = this.pendingHealthRotationIssue;
+      this.flushPendingModelTranscript();
+      this.pendingHealthRotationIssue = null;
+      if (deferredRotationIssue) {
+        this.maybeRotateSessionForHealth(deferredRotationIssue);
+      }
+    }
+  }
+
+  private queueModelTranscript(rawText: string): void {
+    const text = filterTranscriptText(rawText.trim());
+    if (!text) return;
+
+    if (!this.pendingModelTranscript) {
+      this.pendingModelTranscript = text;
+      return;
+    }
+
+    if (text === this.pendingModelTranscript) {
+      return;
+    }
+
+    // Gemini usually sends cumulative transcription updates.
+    if (text.startsWith(this.pendingModelTranscript)) {
+      this.pendingModelTranscript = text;
+      return;
+    }
+
+    // Fallback for fragmented non-cumulative chunks.
+    this.pendingModelTranscript =
+      `${this.pendingModelTranscript} ${text}`.trim();
+  }
+
+  private flushPendingModelTranscript(): void {
+    if (this.pendingModelTranscript && !this.isAudioOnlyMode) {
+      Logger.info(
+        TAG,
+        `Model transcript finalized (${this.pendingModelTranscript.length} chars)`,
+      );
+      getConversationStore()
+        .getState()
+        .addMessage("model", this.pendingModelTranscript);
+    }
+    this.resetModelTurnBuffer();
+  }
+
+  private resetModelTurnBuffer(): void {
+    this.pendingModelTranscript = "";
+    this.hasAudioInCurrentTurn = false;
+    this.awaitingSpeechEndToFlushText = false;
+    this.pendingHealthRotationIssue = null;
+    this.discardModelOutputWhilePTT = false;
+    this.suppressedModelAudioChunks = 0;
+    this.isAudioOnlyMode = false;
+    this.turnTraceId = "turn-unknown";
+    this.turnInputTranscript = "";
+    this.hasPlaybackStartedInTurn = false;
+    this.startupSlaAnchorMs = null;
+    this.fastRetryTriggeredForTurn = false;
+    this.clearStartupTimers();
+    this.resetTurnStreamMetrics();
+  }
+
+  private resetTurnStreamMetrics(): void {
+    this.firstModelAudioChunkAtMs = null;
+    this.lastModelAudioChunkAtMs = null;
+    this.modelAudioGapTotalMs = 0;
+    this.modelAudioGapMaxMs = 0;
+    this.modelAudioGapCount = 0;
+    this.modelAudioBytesReceived = 0;
+    this.wsBufferedAmountMax = 0;
+    this.wsBufferedAmountTotal = 0;
+    this.wsBufferedAmountSamples = 0;
+  }
+
+  private buildTurnTraceId(prefix: string): string {
+    this.turnSequence += 1;
+    return `${prefix}-${this.turnSequence}-${Date.now()}`;
+  }
+
+  private clearStartupTimers(): void {
+    if (this.startupRiskTimerId !== null) {
+      clearTimeout(this.startupRiskTimerId);
+      this.startupRiskTimerId = null;
+    }
+    if (this.startupDeadlineTimerId !== null) {
+      clearTimeout(this.startupDeadlineTimerId);
+      this.startupDeadlineTimerId = null;
+    }
+  }
+
+  private armStartupTimers(): void {
+    this.clearStartupTimers();
+    if (this.startupSlaAnchorMs === null) return;
+
+    this.startupRiskTimerId = setTimeout(() => {
+      if (this.hasPlaybackStartedInTurn) return;
+      Logger.warn(
+        TAG,
+        `[DIAG] stage=startup_deadline_risk trace=${this.turnTraceId} elapsed=${Date.now() - this.startupSlaAnchorMs!}ms`,
+      );
+      this.triggerFastRetry("startup_deadline_risk");
+    }, STARTUP_RISK_MS);
+
+    this.startupDeadlineTimerId = setTimeout(() => {
+      if (this.hasPlaybackStartedInTurn) return;
+      Logger.warn(
+        TAG,
+        `[DIAG] stage=startup_deadline_timeout trace=${this.turnTraceId} elapsed=${Date.now() - this.startupSlaAnchorMs!}ms`,
+      );
+      this.triggerFastRetry("startup_deadline_timeout");
+    }, STARTUP_SLA_MS);
+  }
+
+  private buildCompactMemorySnippet(): string {
+    const messages = getConversationStore().getState().messages;
+    if (messages.length === 0) return "";
+
+    const lastMessages = messages.slice(-4);
+    const olderMessages = messages.slice(0, -4);
+    const olderDigest = olderMessages
+      .map(
+        (msg: { role: "user" | "model"; text: string }) =>
+          `${msg.role}: ${msg.text}`,
+      )
+      .join(" ")
+      .slice(-500);
+    const recentTurns = lastMessages
+      .map(
+        (msg: { role: "user" | "model"; text: string }) =>
+          `${msg.role.toUpperCase()}: ${msg.text}`,
+      )
+      .join("\n");
+
+    return [
+      "CONTEXT CONTINUITY CAPSULE:",
+      olderDigest ? `Earlier summary: ${olderDigest}` : "Earlier summary: n/a",
+      "Most recent turns:",
+      recentTurns || "n/a",
+    ].join("\n");
+  }
+
+  private buildFastRetryPrompt(userText: string): GeminiClientContent {
+    return {
+      clientContent: {
+        turns: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `User said: "${userText}". Reply immediately with at most 2 short sentences in voice. Keep it natural and direct.`,
+              },
+            ],
+          },
+        ],
+        turnComplete: true,
+      },
+    };
+  }
+
+  private reconnectWithInstruction(
+    instruction: string,
+    pendingMessage: GeminiClientContent | null,
+    pendingTraceId: string | null,
+  ): void {
+    if (!this.lastApiKey) return;
+
+    const previousSlaAnchor = this.startupSlaAnchorMs;
+    this.pendingClientMessageAfterSetup = pendingMessage;
+    this.pendingTraceIdAfterSetup = pendingTraceId;
+    this.disconnect();
+    this.startupSlaAnchorMs = previousSlaAnchor;
+    this.connectInternal(this.lastApiKey, instruction, undefined, false);
+  }
+
+  private maybeRotateSessionForHealth(turnIssue: {
+    issue: TurnIssueClassification;
+    reason: TurnIssueReason;
+  }): void {
+    if (turnIssue.issue === "api_or_network_slow_stream") {
+      this.slowTurnStreak += 1;
+    } else {
+      this.slowTurnStreak = 0;
+    }
+
+    const requiredStreak = turnIssue.reason === "model_rate_severe_low" ? 1 : 2;
+    if (this.slowTurnStreak < requiredStreak) return;
+    if (Date.now() < this.rotationCooldownUntilMs) return;
+    if (!this.lastApiKey || !this.lastBaseInstruction) return;
+
+    const nextModel =
+      this.currentModel === MODEL_PRIMARY ? MODEL_FALLBACK : MODEL_PRIMARY;
+
+    const memorySnippet = this.buildCompactMemorySnippet();
+    const rotatedInstruction = [
+      this.lastBaseInstruction,
+      "",
+      "SYSTEM UPDATE: Keep responses short (max 2 short sentences).",
+      memorySnippet,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    this.rotationCooldownUntilMs = Date.now() + 60_000;
+    this.slowTurnStreak = 0;
+    this.currentModel = nextModel;
+    Logger.warn(
+      TAG,
+      `[DIAG] stage=session_rotate_start trace=${this.turnTraceId} reason=persistent_slow_stream model=${this.currentModel}`,
+    );
+    this.reconnectWithInstruction(rotatedInstruction, null, null);
+  }
+
+  private triggerFastRetry(reason: string): void {
+    if (this.fastRetryTriggeredForTurn || this.hasPlaybackStartedInTurn) {
+      return;
+    }
+    if (!this.lastApiKey || !this.lastBaseInstruction) {
+      Logger.warn(
+        TAG,
+        `[DIAG] stage=startup_fast_retry_skipped trace=${this.turnTraceId} reason=${reason} missing_session_state=true`,
+      );
+      return;
+    }
+
+    const fallbackUserText = this.turnInputTranscript.trim();
+    if (!fallbackUserText) {
+      Logger.warn(
+        TAG,
+        `[DIAG] stage=startup_fast_retry_skipped trace=${this.turnTraceId} reason=${reason} missing_transcript=true`,
+      );
+      return;
+    }
+
+    this.fastRetryTriggeredForTurn = true;
+    const retryTraceId = this.buildTurnTraceId("retry");
+    this.currentModel = MODEL_PRIMARY;
+    Logger.warn(
+      TAG,
+      `[DIAG] stage=startup_fast_retry trace=${this.turnTraceId} retryTrace=${retryTraceId} reason=${reason}`,
+    );
+
+    audioStreamer.handleInterruption();
+    this.resetTurnStreamMetrics();
+    this.hasAudioInCurrentTurn = false;
+    this.isFirstAudioChunk = true;
+    this.hasPlaybackStartedInTurn = false;
+    this.turnTraceId = retryTraceId;
+
+    const memorySnippet = this.buildCompactMemorySnippet();
+    const retryInstruction = [
+      this.lastBaseInstruction,
+      "",
+      "SYSTEM UPDATE: PRIORITIZE LATENCY. Reply in at most 2 short sentences.",
+      memorySnippet,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const retryMessage = this.buildFastRetryPrompt(fallbackUserText);
+    this.reconnectWithInstruction(retryInstruction, retryMessage, retryTraceId);
+    this.armStartupTimers();
+  }
+
+  private classifyTurnIssue(
+    avgGapMs: number,
+    modelRealtimeRatio: number,
+    wsBufferedAvgBytes: number,
+    wsBufferedMaxBytes: number,
+  ): { issue: TurnIssueClassification; reason: TurnIssueReason } {
+    if (modelRealtimeRatio < 0.65) {
+      return {
+        issue: "api_or_network_slow_stream",
+        reason: "model_rate_severe_low",
+      };
+    }
+    if (modelRealtimeRatio < 0.9) {
+      return { issue: "api_or_network_slow_stream", reason: "model_rate_low" };
+    }
+    if (avgGapMs > 140) {
+      return { issue: "api_or_network_slow_stream", reason: "model_gap_high" };
+    }
+    if (wsBufferedAvgBytes > 32768 || wsBufferedMaxBytes > 131072) {
+      return {
+        issue: "client_processing_backpressure",
+        reason: "ws_send_backpressure",
+      };
+    }
+    return { issue: "healthy_stream", reason: "healthy" };
+  }
+
+  private static estimateBase64DecodedBytes(base64Data: string): number {
+    if (!base64Data) return 0;
+    let padding = 0;
+    if (base64Data.endsWith("==")) {
+      padding = 2;
+    } else if (base64Data.endsWith("=")) {
+      padding = 1;
+    }
+    return Math.max(0, Math.floor((base64Data.length * 3) / 4) - padding);
+  }
+
+  private sampleWsBufferedAmount(stage: string): void {
+    const bufferedAmount =
+      typeof this.ws?.bufferedAmount === "number" ? this.ws.bufferedAmount : 0;
+    this.wsBufferedAmountMax = Math.max(
+      this.wsBufferedAmountMax,
+      bufferedAmount,
+    );
+    this.wsBufferedAmountTotal += bufferedAmount;
+    this.wsBufferedAmountSamples++;
+
+    if (
+      AUDIO_DIAG_VERBOSE &&
+      (this.audioChunksSent <= 2 ||
+        this.audioChunksSent % WS_BUFFERED_LOG_CHUNK_INTERVAL === 0 ||
+        bufferedAmount > 0)
+    ) {
+      Logger.debug(
+        TAG,
+        `[DIAG] stage=${stage} trace=${this.turnTraceId} chunkSent=${this.audioChunksSent} wsBuffered=${bufferedAmount}`,
+      );
+    }
+  }
+
   private setConnectionState(state: ConnectionState, error?: GeminiError) {
     this.connectionState = state;
     const store = getConversationStore().getState();
@@ -81,22 +472,33 @@ class GeminiWebSocket {
   }
 
   private categorizeError(code?: number, message?: string): GeminiError {
+    const parsedCode =
+      typeof code === "number"
+        ? code
+        : typeof code === "string"
+          ? Number(code)
+          : Number.NaN;
+    const normalizedCode = Number.isFinite(parsedCode) ? parsedCode : undefined;
     let type: GeminiErrorType = "unknown";
     let retryable = false;
 
-    if (code === 1000) {
+    if (normalizedCode === 1000) {
       type = "connection";
       retryable = false;
-    } else if (code === 1006 || code === 1011) {
+    } else if (normalizedCode === 1006 || normalizedCode === 1011) {
       type = "connection";
       retryable = true;
-    } else if (code === 401 || code === 403) {
+    } else if (normalizedCode === 401 || normalizedCode === 403) {
       type = "auth";
       retryable = false;
-    } else if (code === 429) {
+    } else if (normalizedCode === 429) {
       type = "rate_limit";
       retryable = true;
-    } else if (code && code >= 500) {
+    } else if (
+      normalizedCode !== undefined &&
+      normalizedCode >= 500 &&
+      normalizedCode < 600
+    ) {
       type = "server";
       retryable = true;
     }
@@ -104,12 +506,43 @@ class GeminiWebSocket {
     return {
       type,
       message: message || "Connection error",
-      code,
+      code: normalizedCode,
       retryable,
     };
   }
 
+  private isUnsupportedModelClose(code?: number, reason?: string): boolean {
+    const normalizedCode = Number.isFinite(code) ? code : undefined;
+    if (normalizedCode !== 1008) return false;
+    if (!reason) return false;
+    return (
+      reason.includes("is not found for API version") ||
+      reason.includes("not supported for bidiGenerateContent")
+    );
+  }
+
+  private maybeFallbackModelOnUnsupportedClose(reason?: string): boolean {
+    if (!this.isUnsupportedModelClose(1008, reason)) return false;
+    if (!MODEL_FALLBACK || MODEL_FALLBACK === this.currentModel) return false;
+    this.currentModel = MODEL_FALLBACK;
+    this.reconnectAttempts = 0;
+    Logger.warn(
+      TAG,
+      `[DIAG] stage=model_fallback_on_close nextModel=${this.currentModel}`,
+    );
+    return true;
+  }
+
   connect(apiKey: string, systemInstruction: string, initialPrompt?: string) {
+    this.connectInternal(apiKey, systemInstruction, initialPrompt, true);
+  }
+
+  private connectInternal(
+    apiKey: string,
+    systemInstruction: string,
+    initialPrompt?: string,
+    updateBaseInstruction: boolean = true,
+  ): void {
     // Clear any pending reconnect
     if (this.reconnectTimeoutId) {
       clearTimeout(this.reconnectTimeoutId);
@@ -129,10 +562,19 @@ class GeminiWebSocket {
     // Store for reconnection
     this.lastApiKey = apiKey;
     this.lastInstruction = systemInstruction;
+    if (updateBaseInstruction) {
+      this.lastBaseInstruction = systemInstruction;
+      this.currentModel = MODEL_PRIMARY;
+      this.slowTurnStreak = 0;
+      this.rotationCooldownUntilMs = 0;
+    }
     this.lastInitialPrompt = initialPrompt; // Store initial prompt
 
     this.setConnectionState("connecting");
-    Logger.info(TAG, `Connecting to Gemini Live API with model ${MODEL}...`);
+    Logger.info(
+      TAG,
+      `Connecting to Gemini Live API with model ${this.currentModel}...`,
+    );
 
     try {
       const wsUrl = `${this.url}?key=${apiKey}`;
@@ -142,7 +584,6 @@ class GeminiWebSocket {
       ws.onopen = () => {
         if (this.ws !== ws) return;
         Logger.info(TAG, "WebSocket Connected successfully");
-        this.reconnectAttempts = 0;
         this.audioChunksSent = 0;
         this.audioChunksReceived = 0;
         this.isSetupComplete = false;
@@ -176,18 +617,43 @@ class GeminiWebSocket {
 
       ws.onclose = (event: CloseEvent) => {
         if (this.ws === ws) {
+          const closeCode =
+            typeof event.code === "number" ? event.code : Number(event.code);
+          const normalizedCloseCode = Number.isFinite(closeCode)
+            ? closeCode
+            : undefined;
+          const closeReason = event.reason || "Connection closed";
+
+          if (
+            this.isUnsupportedModelClose(normalizedCloseCode, closeReason) &&
+            this.maybeFallbackModelOnUnsupportedClose(closeReason)
+          ) {
+            Logger.warn(
+              TAG,
+              `WebSocket closed due to unsupported model. Retrying with fallback model ${this.currentModel}.`,
+            );
+            this.ws = null;
+            this.isSetupComplete = false;
+            this.clearStartupTimers();
+            this.hasPlaybackStartedInTurn = false;
+            this.startupSlaAnchorMs = null;
+            this.fastRetryTriggeredForTurn = false;
+            this.scheduleReconnect();
+            return;
+          }
+
           const geminiError = this.categorizeError(
-            event.code,
-            event.reason || "Connection closed",
+            normalizedCloseCode,
+            closeReason,
           );
 
-          if (event.code === 1000) {
+          if (normalizedCloseCode === 1000) {
             Logger.info(TAG, "WebSocket Closed Gracefully (1000)");
             this.setConnectionState("idle");
           } else {
             Logger.warn(
               TAG,
-              `WebSocket Closed. Code: ${event.code}, Reason: ${event.reason || "No reason provided"}`,
+              `WebSocket Closed. Code: ${normalizedCloseCode ?? -1}, Reason: ${closeReason || "No reason provided"}`,
             );
 
             // Attempt reconnection if retryable
@@ -203,6 +669,10 @@ class GeminiWebSocket {
 
           this.isSetupComplete = false;
           this.ws = null;
+          this.clearStartupTimers();
+          this.hasPlaybackStartedInTurn = false;
+          this.startupSlaAnchorMs = null;
+          this.fastRetryTriggeredForTurn = false;
         } else {
           Logger.debug(TAG, "Ignored onclose for old WebSocket instance");
         }
@@ -238,10 +708,11 @@ class GeminiWebSocket {
     this.reconnectTimeoutId = setTimeout(() => {
       this.reconnectTimeoutId = null;
       if (this.lastApiKey && this.lastInstruction) {
-        this.connect(
+        this.connectInternal(
           this.lastApiKey,
           this.lastInstruction,
           this.lastInitialPrompt,
+          false,
         );
       }
     }, delay);
@@ -272,43 +743,37 @@ class GeminiWebSocket {
     }
 
     // IMPORTANT: Gemini API expects camelCase in setup message (not snake_case)
-    const setupPayload: Record<string, unknown> = {
-      model: MODEL,
-      generationConfig: {
-        responseModalities: ["AUDIO"],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: {
-              voiceName: "Aoede",
+    const setupMsg = {
+      setup: {
+        model: this.currentModel,
+        generationConfig: {
+          responseModalities: ["AUDIO"],
+          maxOutputTokens: MAX_OUTPUT_TOKENS_SAFE,
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: {
+                voiceName: "Aoede",
+              },
             },
           },
+          thinkingConfig: {
+            thinkingBudget: 0,
+          },
         },
-        thinkingConfig: {
-          thinkingBudget: 0,
+        systemInstruction: {
+          parts: [{ text: finalInstruction }],
+        },
+        inputAudioTranscription: {},
+        outputAudioTranscription: {},
+        // PTT Mode: Disable automatic VAD, use manual activity control
+        // Client sends activityStart/activityEnd to control turn-taking
+        realtimeInputConfig: {
+          automaticActivityDetection: {
+            disabled: true,
+          },
+          activityHandling: "NO_INTERRUPTION",
         },
       },
-      systemInstruction: {
-        parts: [{ text: finalInstruction }],
-      },
-      inputAudioTranscription: {},
-      // PTT Mode: Disable automatic VAD, use manual activity control
-      // Client sends activityStart/activityEnd to control turn-taking
-      realtimeInputConfig: {
-        automaticActivityDetection: {
-          disabled: true,
-        },
-      },
-    };
-    if (ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION) {
-      setupPayload.outputAudioTranscription = {};
-    } else {
-      Logger.info(
-        TAG,
-        "Live model output transcription disabled (audio-first mode)",
-      );
-    }
-    const setupMsg = {
-      setup: setupPayload,
     };
     Logger.debug(TAG, `Setup message: ${JSON.stringify(setupMsg)}`);
     this.send(JSON.stringify(setupMsg));
@@ -322,7 +787,19 @@ class GeminiWebSocket {
       Logger.warn(TAG, "Cannot send activityStart: not ready");
       return;
     }
+    this.activityStartAtMs = Date.now();
+    this.turnTraceId = this.buildTurnTraceId("ptt");
+    this.resetTurnStreamMetrics();
+    this.turnInputTranscript = "";
+    this.hasPlaybackStartedInTurn = false;
+    this.fastRetryTriggeredForTurn = false;
+    this.startupSlaAnchorMs = null;
+    this.clearStartupTimers();
     Logger.info(TAG, "Sending activityStart signal");
+    Logger.info(
+      TAG,
+      `[DIAG] stage=activity_start trace=${this.turnTraceId} wsState=${this.ws?.readyState ?? -1}`,
+    );
     this.send(JSON.stringify({ realtimeInput: { activityStart: {} } }));
   }
 
@@ -334,8 +811,17 @@ class GeminiWebSocket {
       Logger.warn(TAG, "Cannot send activityEnd: not ready");
       return;
     }
+    this.activityEndAtMs = Date.now();
+    this.startupSlaAnchorMs = this.activityEndAtMs;
+    this.hasPlaybackStartedInTurn = false;
+    this.fastRetryTriggeredForTurn = false;
     Logger.info(TAG, "Sending activityEnd signal");
+    Logger.info(
+      TAG,
+      `[DIAG] stage=activity_end trace=${this.turnTraceId} wsState=${this.ws?.readyState ?? -1}`,
+    );
     this.send(JSON.stringify({ realtimeInput: { activityEnd: {} } }));
+    this.armStartupTimers();
   }
 
   sendAudioChunk(base64Data: string) {
@@ -352,9 +838,9 @@ class GeminiWebSocket {
       return;
     }
 
-    // Log first few chunks and then every 50th to verify audio is flowing
+    // Keep chunk logs sparse to reduce JS log pressure on Android.
     this.audioChunksSent++;
-    if (this.audioChunksSent <= 5 || this.audioChunksSent % 50 === 0) {
+    if (this.audioChunksSent <= 2 || this.audioChunksSent % 200 === 0) {
       Logger.debug(
         TAG,
         `Sending audio chunk #${this.audioChunksSent} (${base64Data.length} chars)`,
@@ -370,6 +856,7 @@ class GeminiWebSocket {
       },
     };
     this.send(JSON.stringify(msg));
+    this.sampleWsBufferedAmount("audio_send");
   }
 
   /**
@@ -431,7 +918,9 @@ class GeminiWebSocket {
     this.isAudioOnlyMode = audioOnly;
 
     // Prepare audio streamer for new audio response
-    audioStreamer.prepareForNewResponse({ startPolicy: "streaming" });
+    this.turnTraceId = this.buildTurnTraceId("tts");
+    Logger.info(TAG, `[DIAG] stage=tts_start trace=${this.turnTraceId}`);
+    audioStreamer.prepareForNewResponse(this.turnTraceId);
     this.isFirstAudioChunk = true; // Reset for incoming audio
 
     const speakMsg: GeminiClientContent = {
@@ -457,7 +946,6 @@ class GeminiWebSocket {
    * Initialize audio streamer and send greeting on first connection.
    * Audio streamer must be initialized before greeting to avoid dropped audio chunks.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async initializeAndGreet(store: {
     hasGreeted: boolean;
     setHasGreeted: (v: boolean) => void;
@@ -467,7 +955,7 @@ class GeminiWebSocket {
       Logger.info(TAG, "AudioStreamer initialized");
       // Wire up callbacks to break circular dependency
       audioStreamer.setSpeakingStateCallback((isSpeaking) => {
-        getConversationStore().getState().setSpeaking(isSpeaking);
+        this.handleSpeakingStateChange(isSpeaking);
       });
       audioStreamer.setBufferProgressCallback((progress) => {
         getConversationStore().getState().setBufferProgress(progress);
@@ -476,7 +964,8 @@ class GeminiWebSocket {
       store.setHasGreeted(true);
 
       // Mark intro as seen so returning users skip the auto-greeting
-      const introStore = require("../../stores/conversationStore").useIntroStore;
+      const introStore =
+        require("../../stores/conversationStore").useIntroStore;
       if (!introStore.getState().hasSeenIntro) {
         introStore.getState().setHasSeenIntro(true);
       }
@@ -489,7 +978,6 @@ class GeminiWebSocket {
    * Initialize audio streamer without sending a greeting.
    * Used for returning users in default session — they speak first.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async initializeAudioOnly(store: {
     hasGreeted: boolean;
     setHasGreeted: (v: boolean) => void;
@@ -498,7 +986,7 @@ class GeminiWebSocket {
       await audioStreamer.initialize();
       Logger.info(TAG, "AudioStreamer initialized (no greeting)");
       audioStreamer.setSpeakingStateCallback((isSpeaking) => {
-        getConversationStore().getState().setSpeaking(isSpeaking);
+        this.handleSpeakingStateChange(isSpeaking);
       });
       audioStreamer.setBufferProgressCallback((progress) => {
         getConversationStore().getState().setBufferProgress(progress);
@@ -531,7 +1019,12 @@ class GeminiWebSocket {
     if (isSetupCompleteReceived) {
       Logger.info(TAG, "Setup complete - ready for conversation");
       this.isSetupComplete = true;
+      this.reconnectAttempts = 0;
       this.setConnectionState("connected");
+      if (this.pendingTraceIdAfterSetup) {
+        this.turnTraceId = this.pendingTraceIdAfterSetup;
+        this.pendingTraceIdAfterSetup = null;
+      }
 
       // Always greet ONLY if we haven't greeted yet in this session.
       // We ignore this.lastInitialPrompt here because if we are reconnecting (hasGreeted=true),
@@ -546,9 +1039,22 @@ class GeminiWebSocket {
           this.initializeAndGreet(store);
         } else {
           // Returning user, default session — just initialize audio, no auto-greet
-          Logger.info(TAG, "No initial prompt — skipping auto-greet, initializing audio only");
+          Logger.info(
+            TAG,
+            "No initial prompt — skipping auto-greet, initializing audio only",
+          );
           this.initializeAudioOnly(store);
         }
+      }
+
+      if (this.pendingClientMessageAfterSetup) {
+        const pendingMessage = this.pendingClientMessageAfterSetup;
+        this.pendingClientMessageAfterSetup = null;
+        Logger.info(
+          TAG,
+          `[DIAG] stage=startup_fast_retry_send trace=${this.turnTraceId}`,
+        );
+        this.send(JSON.stringify(pendingMessage));
       }
     }
 
@@ -567,58 +1073,104 @@ class GeminiWebSocket {
 
       // Handle audio from model
       if (modelTurn?.parts) {
-        // Model started responding - clear processing state
-        store.setProcessing(false);
+        // Model started responding - clear processing state only when user is not actively holding PTT.
+        if (!store.isPTTActive) {
+          store.setProcessing(false);
+        }
 
         for (const part of modelTurn.parts) {
           // Skip thinking parts — Gemini may mark internal reasoning with thought: true
           if (part.thought) continue;
 
+          const suppressModelOutput =
+            this.discardModelOutputWhilePTT || store.isPTTActive;
+
           const inlineData = part.inline_data || part.inlineData;
           if (inlineData) {
             const mimeType = inlineData.mime_type || inlineData.mimeType;
             if (mimeType?.startsWith("audio/pcm")) {
-              if (ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION && !this.isAudioOnlyMode) {
-                // Transcript-first: buffer audio, will flush after typing completes
-                if (this.isFirstAudioChunk) {
-                  this.audioChunksReceived = 0;
-                  this.isFirstAudioChunk = false;
+              if (suppressModelOutput) {
+                if (!this.discardModelOutputWhilePTT) {
+                  Logger.warn(
+                    TAG,
+                    `[DIAG] stage=model_output_discard_start trace=${this.turnTraceId} reason=ptt_active`,
+                  );
                 }
-                this.pendingAudioChunks.push(inlineData.data);
-                this.audioChunksReceived++;
-              } else {
-                // Normal flow: send directly to streamer
-                if (this.isFirstAudioChunk) {
-                  this.audioChunksReceived = 0;
-                  Logger.info(TAG, `First audio chunk — preparing response (dataLen=${inlineData.data.length})`);
-                  audioStreamer.prepareForNewResponse({
-                    startPolicy: this.isAudioOnlyMode
-                      ? "streaming"
-                      : undefined,
-                  });
-                  this.isFirstAudioChunk = false;
-                }
-                this.audioChunksReceived++;
-                audioStreamer.queueAudio(inlineData.data);
+                this.discardModelOutputWhilePTT = true;
+                this.suppressedModelAudioChunks++;
+                continue;
               }
+
+              // Prepare streamer for new response on first audio chunk
+              if (this.isFirstAudioChunk) {
+                this.audioChunksReceived = 0;
+                this.resetTurnStreamMetrics();
+                const firstChunkAt = Date.now();
+                this.firstModelAudioChunkAtMs = firstChunkAt;
+                this.lastModelAudioChunkAtMs = firstChunkAt;
+                const ttfbMs =
+                  this.activityEndAtMs !== null
+                    ? firstChunkAt - this.activityEndAtMs
+                    : -1;
+                Logger.info(
+                  TAG,
+                  `First audio chunk — preparing response (dataLen=${inlineData.data.length})`,
+                );
+                if (ttfbMs >= 0) {
+                  Logger.info(
+                    TAG,
+                    `[DIAG] Model first-audio latency=${ttfbMs}ms`,
+                  );
+                }
+                Logger.info(
+                  TAG,
+                  `[DIAG] stage=first_audio_chunk trace=${this.turnTraceId} wsState=${this.ws?.readyState ?? -1}`,
+                );
+                audioStreamer.prepareForNewResponse(
+                  this.turnTraceId,
+                  this.startupSlaAnchorMs ?? undefined,
+                );
+                this.isFirstAudioChunk = false;
+              } else {
+                const now = Date.now();
+                if (this.lastModelAudioChunkAtMs !== null) {
+                  const gapMs = now - this.lastModelAudioChunkAtMs;
+                  this.modelAudioGapTotalMs += gapMs;
+                  this.modelAudioGapCount++;
+                  if (gapMs > this.modelAudioGapMaxMs) {
+                    this.modelAudioGapMaxMs = gapMs;
+                  }
+                }
+                this.lastModelAudioChunkAtMs = now;
+              }
+              this.hasAudioInCurrentTurn = true;
+              this.audioChunksReceived++;
+              this.modelAudioBytesReceived +=
+                GeminiWebSocket.estimateBase64DecodedBytes(inlineData.data);
+              if (this.audioChunksReceived % 50 === 0) {
+                const avgGapMs =
+                  this.modelAudioGapCount > 0
+                    ? this.modelAudioGapTotalMs / this.modelAudioGapCount
+                    : 0;
+                if (AUDIO_DIAG_VERBOSE) {
+                  Logger.debug(
+                    TAG,
+                    `[DIAG] trace=${this.turnTraceId} recv chunk=${this.audioChunksReceived} avgGap=${avgGapMs.toFixed(1)}ms maxGap=${this.modelAudioGapMaxMs}ms`,
+                  );
+                }
+              }
+              audioStreamer.queueAudio(inlineData.data);
             }
           }
           // Only add text if transcription is not enabled or not received
           // Skip in audio-only mode (Vocab TTS)l
           if (
-            ENABLE_LIVE_MODEL_TEXT_UPDATES &&
             part.text &&
             !outputTranscription &&
-            !this.isAudioOnlyMode
+            !this.isAudioOnlyMode &&
+            !this.discardModelOutputWhilePTT
           ) {
-            const filteredText = filterTranscriptText(part.text);
-            if (filteredText) {
-              Logger.info(
-                TAG,
-                `Received text from model: ${filteredText.substring(0, 50)}...`,
-              );
-              store.addMessage("model", filteredText);
-            }
+            this.queueModelTranscript(part.text);
           }
         }
       }
@@ -628,29 +1180,20 @@ class GeminiWebSocket {
         const text = inputTranscription.text.trim();
         if (text) {
           Logger.info(TAG, `User transcribed: ${text}`);
+          this.turnInputTranscript = this.turnInputTranscript
+            ? `${this.turnInputTranscript} ${text}`.trim()
+            : text;
           store.addMessage("user", text);
         }
       }
 
-      // Handle model's speech transcription — queue words for typing animation
+      // Handle model's speech transcription (skip in audio-only mode)
       if (
-        ENABLE_LIVE_MODEL_TEXT_UPDATES &&
         outputTranscription?.text &&
-        !this.isAudioOnlyMode
+        !this.isAudioOnlyMode &&
+        !this.discardModelOutputWhilePTT
       ) {
-        const text = filterTranscriptText(outputTranscription.text.trim());
-        if (text) {
-          Logger.info(TAG, `Model transcribed: ${text}`);
-          const words = text.split(/\s+/).filter(Boolean);
-          this.transcriptWordQueue.push(...words);
-          if (!this.typingTimeout && !this.initialBufferTimeout) {
-            if (!this.typingStarted) {
-              this.startTypingAnimation();  // First words → initial buffer
-            } else {
-              this.scheduleNextWord();      // Queue refilled → resume immediately
-            }
-          }
-        }
+        this.queueModelTranscript(outputTranscription.text);
       }
 
       if (isTurnComplete) {
@@ -661,137 +1204,122 @@ class GeminiWebSocket {
       const isGenerationComplete =
         serverContent.generation_complete || serverContent.generationComplete;
       if (isGenerationComplete) {
-        Logger.info(TAG, `Generation complete — ${this.audioChunksReceived} audio chunks received`);
-
-        if (ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION && !this.isAudioOnlyMode) {
-          // Transcript-first: mark generation done, flush when typing finishes
-          this.generationDone = true;
-          this.awaitingTranscriptFlush = true;
-          if (this.transcriptWordQueue.length === 0 && !this.typingTimeout && !this.initialBufferTimeout) {
-            this.flushBufferedAudio();
-          }
-          // else: running animation will drain at 40ms/word and flush when empty
-        } else {
-          audioStreamer.onGenerationComplete();
+        if (this.discardModelOutputWhilePTT) {
+          Logger.warn(
+            TAG,
+            `[DIAG] stage=model_output_discard_complete trace=${this.turnTraceId} reason=ptt_overlap suppressedAudioChunks=${this.suppressedModelAudioChunks}`,
+          );
+          this.pendingModelTranscript = "";
+          this.hasAudioInCurrentTurn = false;
+          this.awaitingSpeechEndToFlushText = false;
+          this.pendingHealthRotationIssue = null;
+          this.discardModelOutputWhilePTT = false;
+          this.suppressedModelAudioChunks = 0;
           this.isFirstAudioChunk = true;
-          this.isAudioOnlyMode = false;
+          this.resetTurnStreamMetrics();
+          this.audioChunksReceived = 0;
+          return;
+        }
+
+        const generationDoneAt = Date.now();
+        const wallFromFirstMs =
+          this.firstModelAudioChunkAtMs !== null
+            ? generationDoneAt - this.firstModelAudioChunkAtMs
+            : -1;
+        const avgGapMs =
+          this.modelAudioGapCount > 0
+            ? this.modelAudioGapTotalMs / this.modelAudioGapCount
+            : 0;
+        Logger.info(
+          TAG,
+          `Generation complete - trace=${this.turnTraceId} ${this.audioChunksReceived} audio chunks received, wall=${wallFromFirstMs}ms, avgGap=${avgGapMs.toFixed(1)}ms, maxGap=${this.modelAudioGapMaxMs}ms`,
+        );
+        const wallSeconds = wallFromFirstMs > 0 ? wallFromFirstMs / 1000 : 0;
+        const receivedAudioSeconds =
+          this.modelAudioBytesReceived /
+          PCM_BYTES_PER_SAMPLE /
+          MODEL_AUDIO_SAMPLE_RATE;
+        const modelRealtimeRatio =
+          wallSeconds > 0 ? receivedAudioSeconds / wallSeconds : 0;
+        const wsBufferedAvgBytes =
+          this.wsBufferedAmountSamples > 0
+            ? this.wsBufferedAmountTotal / this.wsBufferedAmountSamples
+            : 0;
+        const turnIssue = this.classifyTurnIssue(
+          avgGapMs,
+          modelRealtimeRatio,
+          wsBufferedAvgBytes,
+          this.wsBufferedAmountMax,
+        );
+        Logger.info(
+          TAG,
+          `[DIAG] stage=generation_complete trace=${this.turnTraceId} wsState=${this.ws?.readyState ?? -1} modelRatio=${modelRealtimeRatio.toFixed(2)} audioSec=${receivedAudioSeconds.toFixed(2)} bytes=${this.modelAudioBytesReceived} wsBufferedAvg=${wsBufferedAvgBytes.toFixed(0)} wsBufferedMax=${this.wsBufferedAmountMax} issue=${turnIssue.issue} reason=${turnIssue.reason}`,
+        );
+        const usageMetadata = response.usageMetadata || response.usage_metadata;
+        if (usageMetadata) {
+          Logger.info(
+            TAG,
+            `[DIAG] stage=usage_metadata trace=${this.turnTraceId} promptTokens=${usageMetadata.promptTokenCount ?? usageMetadata.prompt_token_count ?? -1} outputTokens=${usageMetadata.candidatesTokenCount ?? usageMetadata.candidates_token_count ?? -1} totalTokens=${usageMetadata.totalTokenCount ?? usageMetadata.total_token_count ?? -1}`,
+          );
+        }
+        if (!this.hasAudioInCurrentTurn && this.audioChunksReceived === 0) {
+          Logger.warn(
+            TAG,
+            "Generation complete received with no audio chunks; skipping playback completion",
+          );
+          this.clearStartupTimers();
+          this.flushPendingModelTranscript();
+          this.isFirstAudioChunk = true; // Reset for next response
+          return;
+        }
+        this.clearStartupTimers();
+        audioStreamer.onGenerationComplete();
+        this.isFirstAudioChunk = true; // Reset for next response
+
+        if (!this.hasAudioInCurrentTurn) {
+          this.flushPendingModelTranscript();
+          this.maybeRotateSessionForHealth(turnIssue);
+        } else {
+          this.awaitingSpeechEndToFlushText = true;
+          this.pendingHealthRotationIssue = turnIssue;
+          Logger.info(
+            TAG,
+            `[DIAG] stage=session_rotate_deferred trace=${this.turnTraceId} reason=await_speech_end`,
+          );
         }
       }
 
       // Handle interruption (user spoke while model was speaking)
       if (interrupted) {
-        Logger.info(TAG, "Model interrupted by user");
-        this.clearTranscriptState();
+        const interruptionAt = Date.now();
+        const sinceActivityStartMs =
+          this.activityStartAtMs !== null
+            ? interruptionAt - this.activityStartAtMs
+            : -1;
+        Logger.info(
+          TAG,
+          `Model interrupted by user (trace=${this.turnTraceId}, sinceActivityStart=${sinceActivityStartMs}ms)`,
+        );
         audioStreamer.handleInterruption();
         store.handleInterruption();
+        this.clearStartupTimers();
+        this.hasPlaybackStartedInTurn = false;
+        this.flushPendingModelTranscript();
         this.isFirstAudioChunk = true; // Reset for next response
       }
     }
   }
 
-  private startTypingAnimation(): void {
-    if (this.typingTimeout || this.initialBufferTimeout) return;
-    this.initialBufferTimeout = setTimeout(() => {
-      this.initialBufferTimeout = null;
-      this.scheduleNextWord();
-    }, TYPING_INITIAL_BUFFER_MS);
-  }
-
-  private scheduleNextWord(): void {
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-      this.typingTimeout = null;
-    }
-
-    if (this.transcriptWordQueue.length > 0) {
-      const word = this.transcriptWordQueue.shift()!;
-      const store = getConversationStore().getState();
-      store.addMessage("model", word);
-      this.typingStarted = true;
-
-      const delay = this.computeTypingDelay();
-      this.typingTimeout = setTimeout(() => {
-        this.typingTimeout = null;
-        this.scheduleNextWord();
-      }, delay);
-    } else if (this.generationDone && this.awaitingTranscriptFlush) {
-      this.flushBufferedAudio();
-    }
-    // else: queue empty, generation active — paused until more words arrive
-  }
-
-  private computeTypingDelay(): number {
-    if (this.generationDone) return TYPING_DRAIN_DELAY_MS;
-
-    const queueLen = this.transcriptWordQueue.length;
-    if (queueLen <= 1) return Math.round(TYPING_BASE_DELAY_MS * 1.5);
-    if (queueLen <= TYPING_QUEUE_TARGET) return TYPING_BASE_DELAY_MS;
-
-    const excess = queueLen - TYPING_QUEUE_TARGET;
-    const scaleFactor = Math.max(0, 1 - excess * 0.25);
-    return Math.max(TYPING_MIN_DELAY_MS, Math.round(TYPING_BASE_DELAY_MS * scaleFactor));
-  }
-
-  private stopTypingAndFlushAudio(): void {
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-      this.typingTimeout = null;
-    }
-    if (this.initialBufferTimeout) {
-      clearTimeout(this.initialBufferTimeout);
-      this.initialBufferTimeout = null;
-    }
-    this.flushBufferedAudio();
-  }
-
-  private flushBufferedAudio(): void {
-    const chunks = this.pendingAudioChunks;
-    this.pendingAudioChunks = [];
-    this.awaitingTranscriptFlush = false;
-    this.generationDone = false;
-    this.typingStarted = false;
-
-    if (chunks.length === 0) {
-      Logger.info(TAG, "No audio to flush after transcript");
-      return;
-    }
-
-    Logger.info(TAG, `Flushing ${chunks.length} buffered audio chunks after transcript`);
-    audioStreamer.prepareForNewResponse({
-      startPolicy: this.isAudioOnlyMode ? "streaming" : undefined,
-    });
-    for (const chunk of chunks) {
-      audioStreamer.queueAudio(chunk);
-    }
-    audioStreamer.onGenerationComplete();
-    this.isFirstAudioChunk = true;
-    this.isAudioOnlyMode = false;
-  }
-
-  private clearTranscriptState(): void {
-    if (this.typingTimeout) {
-      clearTimeout(this.typingTimeout);
-      this.typingTimeout = null;
-    }
-    if (this.initialBufferTimeout) {
-      clearTimeout(this.initialBufferTimeout);
-      this.initialBufferTimeout = null;
-    }
-    this.pendingAudioChunks = [];
-    this.transcriptWordQueue = [];
-    this.awaitingTranscriptFlush = false;
-    this.generationDone = false;
-    this.typingStarted = false;
-  }
-
   disconnect() {
-    this.clearTranscriptState();
-
     // Clear any pending reconnect
     if (this.reconnectTimeoutId) {
       clearTimeout(this.reconnectTimeoutId);
       this.reconnectTimeoutId = null;
     }
+    this.clearStartupTimers();
+    this.startupSlaAnchorMs = null;
+    this.hasPlaybackStartedInTurn = false;
+    this.fastRetryTriggeredForTurn = false;
 
     if (this.ws) {
       Logger.info(TAG, "Disconnecting WebSocket...");
@@ -802,6 +1330,7 @@ class GeminiWebSocket {
       }
       this.ws = null;
       this.isSetupComplete = false;
+      this.resetModelTurnBuffer();
       this.setConnectionState("idle");
     }
   }

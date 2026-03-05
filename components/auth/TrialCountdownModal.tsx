@@ -124,7 +124,6 @@ export const TrialCountdownModal = () => {
                 isListening={false}
                 isSpeaking={false}
                 isProcessing={false}
-                volumeLevel={0}
                 width={120}
                 height={40}
                 amplitudeScale={3.5}

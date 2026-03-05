@@ -17,8 +17,9 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Remote logging for physical device debugging
-// Set to true and rebuild to enable (works in TestFlight/production too)
-const ENABLE_REMOTE_LOGGING = true;
+// Enable only when explicitly requested to avoid audio-path overhead.
+const ENABLE_REMOTE_LOGGING =
+  process.env.EXPO_PUBLIC_ENABLE_REMOTE_LOGGING === "1";
 if (ENABLE_REMOTE_LOGGING) {
   Logger.enableRemoteLogging("http://192.168.1.3:8899/log");
 }
@@ -51,6 +52,8 @@ function MicTabButton() {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const pttStartPromiseRef = useRef<Promise<void> | null>(null);
+  const pressSessionIdRef = useRef(0);
+  const activePressSessionRef = useRef<number | null>(null);
   const isTalkTab = pathname === "/talk";
 
   // Pulsing animation when recording
@@ -77,12 +80,14 @@ function MicTabButton() {
     return () => animation.stop();
   }, [isPTTActive, pulseAnim]);
 
-  const handlePressIn = () => {
+  const handlePressIn = (sessionId: number) => {
+    if (activePressSessionRef.current === sessionId) return;
     if (!isTalkTab) {
       router.push("/(tabs)/talk");
       return;
     }
     if (connectionState !== "connected") return;
+    activePressSessionRef.current = sessionId;
     Animated.spring(scaleAnim, {
       toValue: 0.92,
       useNativeDriver: true,
@@ -93,7 +98,9 @@ function MicTabButton() {
     });
   };
 
-  const handlePressOut = () => {
+  const handlePressOut = (sessionId: number) => {
+    if (activePressSessionRef.current !== sessionId) return;
+    activePressSessionRef.current = null;
     if (!isTalkTab) return;
     Animated.spring(scaleAnim, {
       toValue: 1,
@@ -112,11 +119,27 @@ function MicTabButton() {
     .minDuration(1)
     .maxDistance(200)
     .runOnJS(true)
-    .onBegin(() => {
-      handlePressIn();
+    .onStart(() => {
+      const sessionId = ++pressSessionIdRef.current;
+      handlePressIn(sessionId);
+    })
+    .onEnd((_event, success) => {
+      if (!success) return;
+      const activeSession = activePressSessionRef.current;
+      if (activeSession !== null) {
+        handlePressOut(activeSession);
+      }
     })
     .onFinalize(() => {
-      handlePressOut();
+      const activeSession = activePressSessionRef.current;
+      if (activeSession !== null) {
+        handlePressOut(activeSession);
+      } else {
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+        }).start();
+      }
     });
 
   const getButtonColor = (): string => {
