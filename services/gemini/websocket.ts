@@ -18,8 +18,13 @@ const TAG = "GeminiWS";
 const MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025";
 const MAX_RECONNECT_ATTEMPTS = 3;
 const INITIAL_RECONNECT_DELAY_MS = 1000;
-const ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION = false;
-const ENABLE_LIVE_MODEL_TEXT_UPDATES = false;
+const ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION = true;
+const ENABLE_LIVE_MODEL_TEXT_UPDATES = true;
+const TYPING_INITIAL_BUFFER_MS = 300;
+const TYPING_BASE_DELAY_MS = 150;
+const TYPING_MIN_DELAY_MS = 60;
+const TYPING_DRAIN_DELAY_MS = 40;
+const TYPING_QUEUE_TARGET = 3;
 
 class GeminiWebSocket {
   private ws: WebSocket | null = null;
@@ -36,6 +41,15 @@ class GeminiWebSocket {
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
   private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
+
+  // Transcript-first playback state
+  private pendingAudioChunks: string[] = [];
+  private transcriptWordQueue: string[] = [];
+  private typingTimeout: ReturnType<typeof setTimeout> | null = null;
+  private initialBufferTimeout: ReturnType<typeof setTimeout> | null = null;
+  private typingStarted = false;
+  private generationDone = false;
+  private awaitingTranscriptFlush = false;
 
   // Singleton
   private static instance: GeminiWebSocket;
@@ -564,19 +578,29 @@ class GeminiWebSocket {
           if (inlineData) {
             const mimeType = inlineData.mime_type || inlineData.mimeType;
             if (mimeType?.startsWith("audio/pcm")) {
-              // Prepare streamer for new response on first audio chunk
-              if (this.isFirstAudioChunk) {
-                this.audioChunksReceived = 0;
-                Logger.info(TAG, `First audio chunk — preparing response (dataLen=${inlineData.data.length})`);
-                audioStreamer.prepareForNewResponse({
-                  startPolicy: this.isAudioOnlyMode
-                    ? "streaming"
-                    : undefined,
-                });
-                this.isFirstAudioChunk = false;
+              if (ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION && !this.isAudioOnlyMode) {
+                // Transcript-first: buffer audio, will flush after typing completes
+                if (this.isFirstAudioChunk) {
+                  this.audioChunksReceived = 0;
+                  this.isFirstAudioChunk = false;
+                }
+                this.pendingAudioChunks.push(inlineData.data);
+                this.audioChunksReceived++;
+              } else {
+                // Normal flow: send directly to streamer
+                if (this.isFirstAudioChunk) {
+                  this.audioChunksReceived = 0;
+                  Logger.info(TAG, `First audio chunk — preparing response (dataLen=${inlineData.data.length})`);
+                  audioStreamer.prepareForNewResponse({
+                    startPolicy: this.isAudioOnlyMode
+                      ? "streaming"
+                      : undefined,
+                  });
+                  this.isFirstAudioChunk = false;
+                }
+                this.audioChunksReceived++;
+                audioStreamer.queueAudio(inlineData.data);
               }
-              this.audioChunksReceived++;
-              audioStreamer.queueAudio(inlineData.data);
             }
           }
           // Only add text if transcription is not enabled or not received
@@ -608,7 +632,7 @@ class GeminiWebSocket {
         }
       }
 
-      // Handle model's speech transcription (skip in audio-only mode)
+      // Handle model's speech transcription — queue words for typing animation
       if (
         ENABLE_LIVE_MODEL_TEXT_UPDATES &&
         outputTranscription?.text &&
@@ -617,7 +641,15 @@ class GeminiWebSocket {
         const text = filterTranscriptText(outputTranscription.text.trim());
         if (text) {
           Logger.info(TAG, `Model transcribed: ${text}`);
-          store.addMessage("model", text);
+          const words = text.split(/\s+/).filter(Boolean);
+          this.transcriptWordQueue.push(...words);
+          if (!this.typingTimeout && !this.initialBufferTimeout) {
+            if (!this.typingStarted) {
+              this.startTypingAnimation();  // First words → initial buffer
+            } else {
+              this.scheduleNextWord();      // Queue refilled → resume immediately
+            }
+          }
         }
       }
 
@@ -630,14 +662,26 @@ class GeminiWebSocket {
         serverContent.generation_complete || serverContent.generationComplete;
       if (isGenerationComplete) {
         Logger.info(TAG, `Generation complete — ${this.audioChunksReceived} audio chunks received`);
-        audioStreamer.onGenerationComplete();
-        this.isFirstAudioChunk = true; // Reset for next response
-        this.isAudioOnlyMode = false; // Reset audio-only mode
+
+        if (ENABLE_LIVE_MODEL_OUTPUT_TRANSCRIPTION && !this.isAudioOnlyMode) {
+          // Transcript-first: mark generation done, flush when typing finishes
+          this.generationDone = true;
+          this.awaitingTranscriptFlush = true;
+          if (this.transcriptWordQueue.length === 0 && !this.typingTimeout && !this.initialBufferTimeout) {
+            this.flushBufferedAudio();
+          }
+          // else: running animation will drain at 40ms/word and flush when empty
+        } else {
+          audioStreamer.onGenerationComplete();
+          this.isFirstAudioChunk = true;
+          this.isAudioOnlyMode = false;
+        }
       }
 
       // Handle interruption (user spoke while model was speaking)
       if (interrupted) {
         Logger.info(TAG, "Model interrupted by user");
+        this.clearTranscriptState();
         audioStreamer.handleInterruption();
         store.handleInterruption();
         this.isFirstAudioChunk = true; // Reset for next response
@@ -645,7 +689,104 @@ class GeminiWebSocket {
     }
   }
 
+  private startTypingAnimation(): void {
+    if (this.typingTimeout || this.initialBufferTimeout) return;
+    this.initialBufferTimeout = setTimeout(() => {
+      this.initialBufferTimeout = null;
+      this.scheduleNextWord();
+    }, TYPING_INITIAL_BUFFER_MS);
+  }
+
+  private scheduleNextWord(): void {
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+      this.typingTimeout = null;
+    }
+
+    if (this.transcriptWordQueue.length > 0) {
+      const word = this.transcriptWordQueue.shift()!;
+      const store = getConversationStore().getState();
+      store.addMessage("model", word);
+      this.typingStarted = true;
+
+      const delay = this.computeTypingDelay();
+      this.typingTimeout = setTimeout(() => {
+        this.typingTimeout = null;
+        this.scheduleNextWord();
+      }, delay);
+    } else if (this.generationDone && this.awaitingTranscriptFlush) {
+      this.flushBufferedAudio();
+    }
+    // else: queue empty, generation active — paused until more words arrive
+  }
+
+  private computeTypingDelay(): number {
+    if (this.generationDone) return TYPING_DRAIN_DELAY_MS;
+
+    const queueLen = this.transcriptWordQueue.length;
+    if (queueLen <= 1) return Math.round(TYPING_BASE_DELAY_MS * 1.5);
+    if (queueLen <= TYPING_QUEUE_TARGET) return TYPING_BASE_DELAY_MS;
+
+    const excess = queueLen - TYPING_QUEUE_TARGET;
+    const scaleFactor = Math.max(0, 1 - excess * 0.25);
+    return Math.max(TYPING_MIN_DELAY_MS, Math.round(TYPING_BASE_DELAY_MS * scaleFactor));
+  }
+
+  private stopTypingAndFlushAudio(): void {
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+      this.typingTimeout = null;
+    }
+    if (this.initialBufferTimeout) {
+      clearTimeout(this.initialBufferTimeout);
+      this.initialBufferTimeout = null;
+    }
+    this.flushBufferedAudio();
+  }
+
+  private flushBufferedAudio(): void {
+    const chunks = this.pendingAudioChunks;
+    this.pendingAudioChunks = [];
+    this.awaitingTranscriptFlush = false;
+    this.generationDone = false;
+    this.typingStarted = false;
+
+    if (chunks.length === 0) {
+      Logger.info(TAG, "No audio to flush after transcript");
+      return;
+    }
+
+    Logger.info(TAG, `Flushing ${chunks.length} buffered audio chunks after transcript`);
+    audioStreamer.prepareForNewResponse({
+      startPolicy: this.isAudioOnlyMode ? "streaming" : undefined,
+    });
+    for (const chunk of chunks) {
+      audioStreamer.queueAudio(chunk);
+    }
+    audioStreamer.onGenerationComplete();
+    this.isFirstAudioChunk = true;
+    this.isAudioOnlyMode = false;
+  }
+
+  private clearTranscriptState(): void {
+    if (this.typingTimeout) {
+      clearTimeout(this.typingTimeout);
+      this.typingTimeout = null;
+    }
+    if (this.initialBufferTimeout) {
+      clearTimeout(this.initialBufferTimeout);
+      this.initialBufferTimeout = null;
+    }
+    this.pendingAudioChunks = [];
+    this.transcriptWordQueue = [];
+    this.awaitingTranscriptFlush = false;
+    this.generationDone = false;
+    this.typingStarted = false;
+  }
+
   disconnect() {
+    this.clearTranscriptState();
+
     // Clear any pending reconnect
     if (this.reconnectTimeoutId) {
       clearTimeout(this.reconnectTimeoutId);

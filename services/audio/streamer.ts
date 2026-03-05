@@ -324,6 +324,9 @@ class AudioStreamer {
 
     // Reinitialize
     this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 1.0;
     this.gainNode.connect(this.audioContext.destination);

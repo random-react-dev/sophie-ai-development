@@ -3,7 +3,7 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Check, Crown } from "lucide-react-native";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Feature check item with rainbow border
@@ -135,22 +135,17 @@ export default function SubscriptionScreen() {
 
         {/* CTA Button */}
         {plan.isFeatured ? (
-          <RainbowBorder
-            borderRadius={9999}
-            borderWidth={2}
-            className="h-14"
-            containerClassName="items-center justify-center"
-          >
-            <Text className="text-black font-bold text-base">
-              {t("profile.subscription_screen.common.subscribe")}
+          <View className="h-14 rounded-full items-center justify-center bg-gray-200 opacity-50">
+            <Text className="text-gray-500 font-bold text-base">
+              Coming Soon
             </Text>
-          </RainbowBorder>
+          </View>
         ) : (
-          <View className="h-14 rounded-full items-center justify-center bg-gray-100">
-            <Text className="text-gray-700 font-bold text-base">
+          <View className="h-14 rounded-full items-center justify-center bg-gray-100 opacity-50">
+            <Text className="text-gray-500 font-bold text-base">
               {plan.id === "free"
                 ? t("profile.subscription_screen.common.getStarted")
-                : t("profile.subscription_screen.common.subscribe")}
+                : "Coming Soon"}
             </Text>
           </View>
         )}
@@ -160,9 +155,8 @@ export default function SubscriptionScreen() {
     // Wrap featured plan with RainbowBorder
     if (plan.isFeatured) {
       return (
-        <TouchableOpacity
+        <View
           key={plan.id}
-          activeOpacity={1}
           className="mb-4 rounded-3xl overflow-hidden shadow-lg"
         >
           <RainbowBorder
@@ -173,19 +167,18 @@ export default function SubscriptionScreen() {
           >
             {cardContent}
           </RainbowBorder>
-        </TouchableOpacity>
+        </View>
       );
     }
 
     // Regular plan card
     return (
-      <TouchableOpacity
+      <View
         key={plan.id}
-        activeOpacity={1}
         className="mb-4 rounded-3xl bg-gray-50 border border-gray-100 shadow-sm overflow-hidden"
       >
         {cardContent}
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -220,6 +213,9 @@ export default function SubscriptionScreen() {
         <View className="px-6 mt-4 items-center">
           <Text className="text-gray-400 text-xs text-center italic">
             {t("profile.subscription_screen.footer")}
+          </Text>
+          <Text className="text-gray-400 text-xs text-center mt-2 font-medium">
+            In-app purchases coming soon
           </Text>
         </View>
       </ScrollView>

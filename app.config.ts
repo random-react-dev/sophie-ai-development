@@ -11,12 +11,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
+    usesAppleSignIn: true,
     supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "30",
+    buildNumber: "32",
     infoPlist: {
       NSMicrophoneUsageDescription:
-        "Allow Fluent-AI to use the microphone for voice conversations.",
+        "Sophie AI needs microphone access to hear your voice during conversations. Audio is processed in real-time and is not recorded or stored.",
       ITSAppUsesNonExemptEncryption: false,
     },
   },
@@ -71,7 +72,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-stream-audio",
-    "react-native-audio-api",
+    ["react-native-audio-api", { iosBackgroundMode: false }],
     [
       "expo-font",
       {
@@ -88,7 +89,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         microphonePermission:
           "Allow Sophie AI to use the microphone for voice input.",
         speechRecognitionPermission:
-          "Allow Sophie AI to use speech recognition.",
+          "Sophie AI uses speech recognition to convert your voice into text during conversations. Your speech is processed to generate AI responses. No audio recordings are stored.",
       },
     ],
     // Google Sign-In - Uncomment when EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME is configured

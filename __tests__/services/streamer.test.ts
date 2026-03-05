@@ -115,6 +115,56 @@ describe('AudioStreamer', () => {
       expect(ctx.resume).not.toHaveBeenCalled();
     });
 
+    it('resumes AudioContext if suspended after full reset on iOS', () => {
+      setPlatform('ios');
+
+      // Make the next AudioContext constructor return a suspended context
+      const suspendedResume = jest.fn(() => Promise.resolve(true));
+      (AudioContext as jest.Mock).mockImplementationOnce(() => {
+        // Get default mock shape by calling the original implementation
+        const results = (AudioContext as jest.Mock).mock.results;
+        // Build a suspended context with a trackable resume mock
+        const defaultCtx = results[results.length - 1]?.value ?? {};
+        return {
+          ...defaultCtx,
+          state: 'suspended',
+          resume: suspendedResume,
+          // Re-create factory mocks so they return fresh objects
+          createGain: jest.fn(() => ({
+            gain: {
+              value: 1.0,
+              cancelScheduledValues: jest.fn(),
+              setValueAtTime: jest.fn(),
+              linearRampToValueAtTime: jest.fn(),
+            },
+            connect: jest.fn(),
+            disconnect: jest.fn(),
+          })),
+          createBuffer: jest.fn((_ch: number, length: number, sr: number) => ({
+            duration: length / sr,
+            length,
+            sampleRate: sr,
+            getChannelData: jest.fn(() => ({ set: jest.fn() })),
+          })),
+          createBufferSource: jest.fn(() => ({
+            buffer: null,
+            connect: jest.fn(),
+            start: jest.fn(),
+            onEnded: null,
+          })),
+          close: jest.fn(),
+          currentTime: 0,
+          sampleRate: 24000,
+          destination: {},
+        };
+      });
+
+      // First prepareForNewResponse triggers full reset on iOS (RESET_AFTER_RESPONSES_IOS = 1)
+      audioStreamer.prepareForNewResponse();
+
+      expect(suspendedResume).toHaveBeenCalledTimes(1);
+    });
+
     it('cancels pending gain automations', async () => {
       audioStreamer.prepareForNewResponse();
 

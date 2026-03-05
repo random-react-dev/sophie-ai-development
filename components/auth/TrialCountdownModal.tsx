@@ -1,11 +1,11 @@
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
 import { RainbowWave } from "@/components/lesson/RainbowWave";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Check } from "lucide-react-native";
 import React, { useEffect } from "react";
-import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, Text, View, TouchableOpacity } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -81,16 +81,11 @@ export const TrialCountdownModal = () => {
     };
   };
 
-  const { remainingDays, discount, isLastDay } = calculateTrialStatus(
+  const { remainingDays, isLastDay } = calculateTrialStatus(
     user.created_at,
   );
 
   const handleClose = () => {
-    setShowTrialPopup(false);
-  };
-
-  const handleUpgrade = () => {
-    // Placeholder for upgrade logic (e.g., navigate to subscription screen)
     setShowTrialPopup(false);
   };
 
@@ -154,47 +149,13 @@ export const TrialCountdownModal = () => {
             <BenefitItem text={t("trial_countdown_modal.benefit_4")} />
           </View>
 
-          {/* Discount Section */}
-          {!isLastDay && (
-            <View className="rounded-2xl p-5 mb-5 items-center shadow-lg shadow-gray-200 overflow-hidden relative border border-gray-100">
-              {/* Subtle rainbow gradient background like category selection */}
-              <View className="absolute inset-0">
-                <RainbowGradient className="flex-1 opacity-20" />
-              </View>
-              <View className="bg-black/10 px-3 py-1 rounded-full mb-2">
-                <Text className="text-gray-800 font-bold uppercase tracking-wider text-xs">
-                  {t("trial_countdown_modal.limited_time_offer")}
-                </Text>
-              </View>
-              <Text className="text-5xl font-black text-gray-900">
-                {t("trial_countdown_modal.off_text", { percent: discount })}
-              </Text>
-              <Text className="text-gray-600 text-sm mt-1 font-medium">
-                {t("trial_countdown_modal.claim_discount_msg")}
-              </Text>
-            </View>
-          )}
-
           {/* CTA Buttons */}
           <View>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleUpgrade}
-              className="h-16 shadow-lg shadow-gray-200"
-            >
-              <RainbowBorder
-                borderWidth={2}
-                borderRadius={9999}
-                className="flex-1"
-                containerClassName="items-center justify-center"
-              >
-                <Text className="text-black font-bold text-base">
-                  {isLastDay
-                    ? t("trial_countdown_modal.upgrade_now_btn")
-                    : t("trial_countdown_modal.claim_discount_btn")}
-                </Text>
-              </RainbowBorder>
-            </TouchableOpacity>
+            <View className="h-16 rounded-full items-center justify-center bg-gray-200 opacity-50">
+              <Text className="text-gray-500 font-bold text-base">
+                Coming Soon
+              </Text>
+            </View>
 
             <TouchableOpacity
               activeOpacity={0.7}

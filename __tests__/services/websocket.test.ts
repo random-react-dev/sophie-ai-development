@@ -6,6 +6,20 @@
  * globally and test the message handling logic directly.
  */
 
+const mockAudioStreamer = {
+  initialize: jest.fn(() => Promise.resolve()),
+  prepareForNewResponse: jest.fn(),
+  queueAudio: jest.fn(),
+  onGenerationComplete: jest.fn(),
+  handleInterruption: jest.fn(),
+  setSpeakingStateCallback: jest.fn(),
+  setBufferProgressCallback: jest.fn(),
+};
+
+jest.mock('@/services/audio/streamer', () => ({
+  audioStreamer: mockAudioStreamer,
+}));
+
 describe('GeminiWebSocket', () => {
   let geminiWebSocket: typeof import('@/services/gemini/websocket').geminiWebSocket;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -88,7 +102,7 @@ describe('GeminiWebSocket', () => {
       expect(global.WebSocket).toHaveBeenCalledTimes(1);
     });
 
-    it('sends setup with input transcription only (audio-first mode)', () => {
+    it('sends setup with both input and output transcription enabled', () => {
       geminiWebSocket.connect('test-api-key', 'System instruction');
       const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
 
@@ -99,7 +113,7 @@ describe('GeminiWebSocket', () => {
       const setupMsg = JSON.parse(setupRaw);
 
       expect(setupMsg.setup.inputAudioTranscription).toEqual({});
-      expect(setupMsg.setup.outputAudioTranscription).toBeUndefined();
+      expect(setupMsg.setup.outputAudioTranscription).toEqual({});
     });
   });
 
@@ -258,10 +272,11 @@ describe('GeminiWebSocket', () => {
   });
 
   describe('transcription handling', () => {
-    it('skips model output transcription updates but keeps user transcription', () => {
+    it('queues model output transcription words and keeps user transcription', () => {
       geminiWebSocket.connect('test-api-key', 'System instruction');
       const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
 
+      // Send model output transcription — words should be queued, not added immediately as full text
       mockWs.onmessage?.({
         data: JSON.stringify({
           serverContent: {
@@ -270,11 +285,20 @@ describe('GeminiWebSocket', () => {
         }),
       } as MessageEvent);
 
+      // Words are queued but typing hasn't started yet (300ms initial buffer)
       expect(mockConversationStore.addMessage).not.toHaveBeenCalledWith(
         'model',
-        expect.any(String),
+        'Model says hello',
       );
 
+      // Advance 300ms — initial buffer fires, first word typed immediately
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'Model');
+
+      // Clear for next check
+      mockConversationStore.addMessage.mockClear();
+
+      // User transcription still works immediately
       mockWs.onmessage?.({
         data: JSON.stringify({
           serverContent: {
@@ -284,6 +308,251 @@ describe('GeminiWebSocket', () => {
       } as MessageEvent);
 
       expect(mockConversationStore.addMessage).toHaveBeenCalledWith('user', 'Hello');
+    });
+  });
+
+  describe('transcript-first playback', () => {
+    it('buffers audio chunks instead of sending to streamer', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      // Send audio chunk via model turn
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            modelTurn: {
+              parts: [{
+                inlineData: {
+                  mimeType: 'audio/pcm;rate=24000',
+                  data: 'AQID',
+                },
+              }],
+            },
+          },
+        }),
+      } as MessageEvent);
+
+      // Audio should NOT be sent to streamer (buffered instead)
+      expect(mockAudioStreamer.queueAudio).not.toHaveBeenCalled();
+      expect(mockAudioStreamer.prepareForNewResponse).not.toHaveBeenCalled();
+    });
+
+    it('types transcript words one at a time', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      // Send transcription with 3 words
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'hello world today' },
+          },
+        }),
+      } as MessageEvent);
+
+      // No words typed yet (300ms initial buffer)
+      expect(mockConversationStore.addMessage).not.toHaveBeenCalled();
+
+      // 300ms — initial buffer fires, "hello" typed (2 words remain in queue)
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'hello');
+
+      // After "hello", queue has 2 words (≤ TYPING_QUEUE_TARGET=3) → delay = 150ms
+      jest.advanceTimersByTime(150);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'world');
+
+      // After "world", queue has 1 word (≤1) → delay = 225ms
+      jest.advanceTimersByTime(225);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'today');
+
+      expect(mockConversationStore.addMessage).toHaveBeenCalledTimes(3);
+    });
+
+    it('flushes audio after transcript and generation complete', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      // Send audio chunks
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            modelTurn: {
+              parts: [
+                { inlineData: { mimeType: 'audio/pcm;rate=24000', data: 'chunk1' } },
+                { inlineData: { mimeType: 'audio/pcm;rate=24000', data: 'chunk2' } },
+              ],
+            },
+          },
+        }),
+      } as MessageEvent);
+
+      // Send transcript (2 words)
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'hi there' },
+          },
+        }),
+      } as MessageEvent);
+
+      // Send generation complete
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            generationComplete: true,
+          },
+        }),
+      } as MessageEvent);
+
+      // Audio should NOT be flushed yet (typing in progress)
+      expect(mockAudioStreamer.prepareForNewResponse).not.toHaveBeenCalled();
+
+      // 300ms initial buffer → type first word "hi" (generationDone=true → drain at 40ms)
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'hi');
+
+      // 40ms drain delay → type second word "there"
+      jest.advanceTimersByTime(40);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'there');
+
+      // 40ms drain delay → scheduleNextWord finds queue empty + generationDone → flush
+      jest.advanceTimersByTime(40);
+
+      expect(mockAudioStreamer.prepareForNewResponse).toHaveBeenCalledTimes(1);
+      expect(mockAudioStreamer.queueAudio).toHaveBeenCalledWith('chunk1');
+      expect(mockAudioStreamer.queueAudio).toHaveBeenCalledWith('chunk2');
+      expect(mockAudioStreamer.onGenerationComplete).toHaveBeenCalledTimes(1);
+    });
+
+    it('clears transcript state on interruption', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      // Send audio chunk
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            modelTurn: {
+              parts: [{
+                inlineData: { mimeType: 'audio/pcm;rate=24000', data: 'audio1' },
+              }],
+            },
+          },
+        }),
+      } as MessageEvent);
+
+      // Send transcript to start typing
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'hello world goodbye' },
+          },
+        }),
+      } as MessageEvent);
+
+      // 300ms initial buffer → type first word
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'hello');
+
+      // Interrupt mid-typing
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            interrupted: true,
+          },
+        }),
+      } as MessageEvent);
+
+      expect(mockAudioStreamer.handleInterruption).toHaveBeenCalled();
+      expect(mockConversationStore.handleInterruption).toHaveBeenCalled();
+
+      // Advance timers — no more words should be typed (interval cleared)
+      mockConversationStore.addMessage.mockClear();
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).not.toHaveBeenCalled();
+
+      // Audio should NOT have been flushed
+      expect(mockAudioStreamer.prepareForNewResponse).not.toHaveBeenCalled();
+    });
+
+    it('resumes typing immediately when queue refills mid-response', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      // First chunk of words
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'hello' },
+          },
+        }),
+      } as MessageEvent);
+
+      // 300ms initial buffer → type "hello", queue empty → pauses
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'hello');
+      expect(mockConversationStore.addMessage).toHaveBeenCalledTimes(1);
+
+      // Wait for the next timeout to fire (225ms for queue depth ≤1)
+      jest.advanceTimersByTime(225);
+
+      // Queue was empty, no more words typed
+      expect(mockConversationStore.addMessage).toHaveBeenCalledTimes(1);
+
+      // New words arrive — should resume immediately (no second 300ms buffer)
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'world' },
+          },
+        }),
+      } as MessageEvent);
+
+      // scheduleNextWord fires synchronously on queue refill → "world" typed immediately
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'world');
+      expect(mockConversationStore.addMessage).toHaveBeenCalledTimes(2);
+    });
+
+    it('drains remaining words quickly after generation completes', () => {
+      geminiWebSocket.connect('test-api-key', 'System instruction');
+      const mockWs = (global.WebSocket as unknown as jest.Mock).mock.results[0].value;
+
+      // Send 4 words
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            outputTranscription: { text: 'one two three four' },
+          },
+        }),
+      } as MessageEvent);
+
+      // 300ms buffer → type "one"
+      jest.advanceTimersByTime(300);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'one');
+      expect(mockConversationStore.addMessage).toHaveBeenCalledTimes(1);
+
+      // Mark generation complete while 3 words remain
+      mockWs.onmessage?.({
+        data: JSON.stringify({
+          serverContent: {
+            generationComplete: true,
+          },
+        }),
+      } as MessageEvent);
+
+      // Next word at 150ms delay (computed before generationDone was set for "one"'s timeout)
+      // But generationDone is now true, so subsequent words will use 40ms drain delay
+      jest.advanceTimersByTime(150);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'two');
+
+      // Remaining words drain at 40ms each
+      jest.advanceTimersByTime(40);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'three');
+
+      jest.advanceTimersByTime(40);
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith('model', 'four');
+
+      expect(mockConversationStore.addMessage).toHaveBeenCalledTimes(4);
     });
   });
 });
