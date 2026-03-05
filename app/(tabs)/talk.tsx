@@ -11,20 +11,18 @@ import { geminiWebSocket } from "@/services/gemini/websocket";
 import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
-import { useConversationStore, useIntroStore } from "@/stores/conversationStore";
+import {
+  useConversationStore,
+  useIntroStore,
+} from "@/stores/conversationStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 import { RotateCcw } from "lucide-react-native";
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -35,9 +33,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useTranslation } from "@/hooks/useTranslation";
 import { MessageBubble } from "@/components/common/MessageBubble";
 import { PageHeader } from "@/components/common/PageHeader";
+import { useTranslation } from "@/hooks/useTranslation";
 import { Logger } from "@/services/common/Logger";
 import { Feather } from "@expo/vector-icons";
 
@@ -186,26 +184,29 @@ ${accentBlock}
 };
 
 export default function TalkScreen() {
-  const {
-    connectionState,
-    error,
-    isListening,
-    isSpeaking,
-    isProcessing,
-    isPTTActive,
-    volumeLevel,
-    bufferProgress,
-    messages,
-    showTranscript,
-    setShowTranscript,
-    clearMessages,
-    setHasGreeted,
-    stopConversation,
-    sessionProfileId,
-    setSessionProfileId,
-    activeScenarioTimestamp,
-    setActiveScenarioTimestamp,
-  } = useConversationStore();
+  const connectionState = useConversationStore((s) => s.connectionState);
+  const error = useConversationStore((s) => s.error);
+  const isListening = useConversationStore((s) => s.isListening);
+  const isSpeaking = useConversationStore((s) => s.isSpeaking);
+  const isProcessing = useConversationStore((s) => s.isProcessing);
+  const isPTTActive = useConversationStore((s) => s.isPTTActive);
+  const bufferProgress = useConversationStore((s) => s.bufferProgress);
+  const messages = useConversationStore((s) => s.messages);
+  const showTranscript = useConversationStore((s) => s.showTranscript);
+  const setShowTranscript = useConversationStore((s) => s.setShowTranscript);
+  const clearMessages = useConversationStore((s) => s.clearMessages);
+  const setHasGreeted = useConversationStore((s) => s.setHasGreeted);
+  const stopConversation = useConversationStore((s) => s.stopConversation);
+  const sessionProfileId = useConversationStore((s) => s.sessionProfileId);
+  const setSessionProfileId = useConversationStore(
+    (s) => s.setSessionProfileId,
+  );
+  const activeScenarioTimestamp = useConversationStore(
+    (s) => s.activeScenarioTimestamp,
+  );
+  const setActiveScenarioTimestamp = useConversationStore(
+    (s) => s.setActiveScenarioTimestamp,
+  );
   const {
     selectedScenario,
     selectScenario,
@@ -350,7 +351,8 @@ Help them use this phrase naturally in conversation.`;
             TAG,
             `Initializing for Scenario: ${selectedScenario.title}`,
           );
-          const levelGuide = LEVEL_GUIDANCE[selectedScenario.level] || LEVEL_GUIDANCE["S2"];
+          const levelGuide =
+            LEVEL_GUIDANCE[selectedScenario.level] || LEVEL_GUIDANCE["S2"];
           instruction = `${buildRoleplayPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
 ## Your Character
@@ -377,7 +379,8 @@ ${levelGuide}
         } else {
           Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
           const currentCefrLevel = useLearningStore.getState().cefrLevel;
-          const levelGuide = LEVEL_GUIDANCE[currentCefrLevel] || LEVEL_GUIDANCE["S1"];
+          const levelGuide =
+            LEVEL_GUIDANCE[currentCefrLevel] || LEVEL_GUIDANCE["S1"];
           instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
 ## Language Difficulty — ${currentCefrLevel}
@@ -744,12 +747,14 @@ ${levelGuide}`;
               isListening={isListening}
               isSpeaking={isSpeaking}
               isProcessing={isProcessing}
-              volumeLevel={volumeLevel}
             />
             {/* Status Text - shows buffering progress, thinking state, etc */}
             {(!!isProcessing || isSpeaking || isListening) && (
               <View className="absolute bottom-4">
-                <Text testID="talk-status-text" className="text-gray-600 text-sm font-medium">
+                <Text
+                  testID="talk-status-text"
+                  className="text-gray-600 text-sm font-medium"
+                >
                   {getStatusText()}
                 </Text>
               </View>

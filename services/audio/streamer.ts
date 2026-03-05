@@ -1,28 +1,64 @@
 import { decode } from "base64-arraybuffer";
+import { Platform } from "react-native";
 import {
   AudioBufferQueueSourceNode,
   AudioContext,
   GainNode,
 } from "react-native-audio-api";
-import { configureAudioSession } from "./audioManager";
 import { Logger } from "../common/Logger";
+import { configureAudioSession } from "./audioManager";
 
 const TAG = "AudioStreamer";
 const SAMPLE_RATE = 24000; // Gemini output rate
+const IS_ANDROID = Platform.OS === "android";
+const AUDIO_DIAG_VERBOSE = process.env.EXPO_PUBLIC_AUDIO_DIAG === "1";
+const STARTUP_SLA_MS = Number(
+  process.env.EXPO_PUBLIC_STARTUP_SLA_MS ?? "10000",
+);
 
-// Accumulate chunks into 0.2s buffers before sending to native
-const ACCUMULATION_TARGET = 4800; // 0.2s of audio at 24kHz (5 Gemini chunks)
-const MIN_INITIAL_BUFFER = 7200; // 0.3s of audio before starting playback
+// Use larger prebuffer on Android for smoother continuous playback under JS load.
+const ACCUMULATION_TARGET = IS_ANDROID ? 19200 : 4800; // Android: 0.8s, iOS: 0.2s
+const MIN_INITIAL_BUFFER = IS_ANDROID ? 52800 : 7200; // Android: 2.2s, iOS: 0.3s
+const MIN_START_DELAY_MS = IS_ANDROID ? 2200 : 0;
+const EARLY_START_BUFFER_SECONDS_ANDROID = 3.0;
+const SAFE_START_BUFFER_SECONDS_ANDROID = 4.5;
+const MAX_DEFER_MS_ANDROID = Math.min(9000, STARTUP_SLA_MS);
+const RATE_WINDOW_MS = 1000;
+const RATE_WINDOW_MIN_FOR_NORMAL_START = 0.95;
+const RATE_WINDOW_MIN_FOR_SAFE_START = 0.55;
+const MIN_RATE_FOR_EARLY_START_AT_1X = 0.92;
+const MIN_BUFFER_FOR_EARLY_START_AT_1X = 6.5;
+const RATE_WINDOW_SLOW_THRESHOLD = 0.9;
+const RATE_WINDOW_SEVERE_SLOW = 0.45;
+const RATE_WINDOWS_REQUIRED = 2;
+const QUEUE_HEARTBEAT_MS = 500;
 const FADE_IN_DURATION = 0.01; // 10ms fade-in to prevent pops
+const NORMAL_PLAYBACK_RATE = 1.0;
+const SAFE_PLAYBACK_RATE = 0.8;
+const ALLOW_ANDROID_QUEUE_RATE_EXPERIMENT =
+  process.env.EXPO_PUBLIC_ANDROID_QUEUE_RATE_EXPERIMENT === "1";
 
 // Reset AudioContext every response to prevent silence on reused contexts.
 // Reusing an AudioContext across turns causes silent audio on iOS (the
 // AVAudioEngine session gets disrupted by speech recognition ending between
 // turns). A fresh context per response is fast and guarantees clean state.
-const RESET_AFTER_RESPONSES = 1;
+const RESET_AFTER_RESPONSES = IS_ANDROID ? 4 : 1;
 
 type SpeakingStateCallback = (isSpeaking: boolean) => void;
 type BufferProgressCallback = (progress: number) => void; // 0-100
+type StreamIssueClassification =
+  | "healthy_stream"
+  | "api_or_network_slow_stream"
+  | "client_processing_backpressure";
+type StartupProfile = "normal_1x" | "safe_0_8x" | "deferred_until_complete";
+type StartupReason =
+  | "normal_buffer_ready"
+  | "sustained_healthy_early_start"
+  | "safe_buffer_early_start"
+  | "max_defer_timeout_start"
+  | "sla_force_start"
+  | "generation_complete_late_start";
+type PlaybackRateGuardReason = "android_queue_rate_guard" | "none";
 
 class AudioStreamer {
   private audioContext: AudioContext | null = null;
@@ -44,11 +80,37 @@ class AudioStreamer {
   private accumulatedSamples: Float32Array[] = [];
   private accumulatedLength = 0;
   private totalQueuedSamples = 0;
+  private totalReceivedSamples = 0;
 
   private watchdogTimerId: ReturnType<typeof setTimeout> | null = null;
+  private delayedStartTimerId: ReturnType<typeof setTimeout> | null = null;
+  private queueHeartbeatTimerId: ReturnType<typeof setInterval> | null = null;
   private isPaused = false;
   private hasResponseCompleted = false; // True once finishSpeaking() has run
   private initPromise: Promise<void> | null = null;
+  private firstChunkWallTimeMs: number | null = null;
+  private speakingStartWallTimeMs: number | null = null;
+  private speakingStartContextTime: number | null = null;
+  private startupReason: StartupReason | null = null;
+  private startupProfile: StartupProfile = "deferred_until_complete";
+  private targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+  private activePlaybackRate = NORMAL_PLAYBACK_RATE;
+  private turnTraceId = "turn-unknown";
+  private deferStartUntilGenerationComplete = false;
+  private underrunRiskCount = 0;
+  private starvationEventCount = 0;
+  private queueLowWatermarkSeconds = Number.POSITIVE_INFINITY;
+  private lastRateEvalAtMs: number | null = null;
+  private lastRateEvalReceivedSeconds = 0;
+  private sustainedHealthyWindows = 0;
+  private sawSlowRateWindow = false;
+  private rateWindowMin = Number.POSITIVE_INFINITY;
+  private rateWindowMax = 0;
+  private rateWindowSum = 0;
+  private rateWindowCount = 0;
+  private maxDeferTimeoutLogged = false;
+  private turnActivityEndAtMs: number | null = null;
+  private startupSlaLogged = false;
 
   private static instance: AudioStreamer;
   private constructor() {}
@@ -74,13 +136,13 @@ class AudioStreamer {
 
   async initialize(): Promise<void> {
     if (this.audioContext) {
-      Logger.debug(TAG, 'initialize() skipped — already exists');
+      Logger.debug(TAG, "initialize() skipped - already exists");
       return;
     }
 
-    // Deduplicate concurrent calls — second caller awaits the same promise
+    // Deduplicate concurrent calls - second caller awaits the same promise
     if (this.initPromise) {
-      Logger.debug(TAG, 'initialize() — awaiting existing init');
+      Logger.debug(TAG, "initialize() - awaiting existing init");
       return this.initPromise;
     }
 
@@ -96,7 +158,10 @@ class AudioStreamer {
     await configureAudioSession();
 
     this.audioContext = new AudioContext({ sampleRate: SAMPLE_RATE });
-    Logger.info(TAG, `Initialized AudioContext state=${this.audioContext.state}`);
+    Logger.info(
+      TAG,
+      `Initialized AudioContext state=${this.audioContext.state}`,
+    );
 
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 1.0;
@@ -127,10 +192,13 @@ class AudioStreamer {
     }
   }
 
-  prepareForNewResponse(): void {
-    const entryState = this.audioContext?.state ?? 'null';
+  prepareForNewResponse(traceId?: string, activityEndAtMs?: number): void {
+    const entryState = this.audioContext?.state ?? "null";
     const entryTime = this.audioContext?.currentTime ?? 0;
-    Logger.debug(TAG, `[DIAG] prepareForNewResponse entry ctx.state=${entryState} ctx.time=${entryTime.toFixed(3)}`);
+    Logger.debug(
+      TAG,
+      `[DIAG] prepareForNewResponse entry ctx.state=${entryState} ctx.time=${entryTime.toFixed(3)}`,
+    );
 
     this.clearWatchdog();
 
@@ -151,12 +219,15 @@ class AudioStreamer {
     // Periodic full reset to prevent memory buildup (every N responses)
     this.responsesSinceReset++;
     if (this.responsesSinceReset >= RESET_AFTER_RESPONSES) {
-      Logger.info(TAG, `Periodic full reset after ${RESET_AFTER_RESPONSES} responses`);
+      Logger.info(
+        TAG,
+        `Periodic full reset after ${RESET_AFTER_RESPONSES} responses`,
+      );
       this.performFullReset();
       this.responsesSinceReset = 0;
     }
 
-    // NOTE: suspend()→resume() was intentionally REMOVED here.
+    // NOTE: suspend()->resume() was intentionally REMOVED here.
     // Those calls return Promises but were never awaited, causing a race
     // condition where createFreshQueueSource() would connect to a context
     // still in "suspended" state. This broke audio on the 2nd+ response.
@@ -173,19 +244,48 @@ class AudioStreamer {
     this.accumulatedSamples = [];
     this.accumulatedLength = 0;
     this.totalQueuedSamples = 0;
+    this.totalReceivedSamples = 0;
     this.isPaused = false;
     this.hasResponseCompleted = false;
+    this.firstChunkWallTimeMs = null;
+    this.speakingStartWallTimeMs = null;
+    this.speakingStartContextTime = null;
+    this.startupReason = null;
+    this.startupProfile = "deferred_until_complete";
+    this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+    this.activePlaybackRate = NORMAL_PLAYBACK_RATE;
+    this.turnTraceId = traceId ?? `resp-${this.responseId}`;
+    this.deferStartUntilGenerationComplete = IS_ANDROID;
+    this.underrunRiskCount = 0;
+    this.starvationEventCount = 0;
+    this.queueLowWatermarkSeconds = Number.POSITIVE_INFINITY;
+    this.lastRateEvalAtMs = null;
+    this.lastRateEvalReceivedSeconds = 0;
+    this.sustainedHealthyWindows = 0;
+    this.sawSlowRateWindow = false;
+    this.rateWindowMin = Number.POSITIVE_INFINITY;
+    this.rateWindowMax = 0;
+    this.rateWindowSum = 0;
+    this.rateWindowCount = 0;
+    this.maxDeferTimeoutLogged = false;
+    this.turnActivityEndAtMs = activityEndAtMs ?? null;
+    this.startupSlaLogged = false;
+    this.clearDelayedStartTimer();
+    this.clearQueueHeartbeat();
 
-    const exitState = this.audioContext?.state ?? 'null';
+    const exitState = this.audioContext?.state ?? "null";
     const exitTime = this.audioContext?.currentTime ?? 0;
-    Logger.info(TAG, `[DIAG] Prepared response #${this.responseId} ctx.state=${exitState} ctx.time=${exitTime.toFixed(3)}`);
+    Logger.info(
+      TAG,
+      `[DIAG] Prepared response #${this.responseId} trace=${this.turnTraceId} ctx.state=${exitState} ctx.time=${exitTime.toFixed(3)}`,
+    );
   }
 
   private performFullReset(): void {
-    Logger.info(TAG, "Full reset — recreating AudioContext");
+    Logger.info(TAG, "Full reset - recreating AudioContext");
 
     // Close and recreate AudioContext to release all native resources.
-    // NOTE: stop() is intentionally omitted — it writes directly to native
+    // NOTE: stop() is intentionally omitted - it writes directly to native
     // stopTime_ (audio thread sees immediately), while disconnect() goes
     // through the SPSC channel (processed next render quantum). This timing
     // mismatch can corrupt the GainNode's numberOfEnabledInputNodes_ counter.
@@ -221,11 +321,12 @@ class AudioStreamer {
     this.isAudioPrimed = false;
     this.primeAudioEngine();
 
-    Logger.info(TAG, `Full reset done — ctx=${this.audioContext.state}`);
+    Logger.info(TAG, `Full reset done - ctx=${this.audioContext.state}`);
   }
 
   private stopCurrentPlayback(): void {
     this.clearWatchdog();
+    this.clearQueueHeartbeat();
 
     // Cancel gain automations to prevent stale ramps affecting next response
     if (this.gainNode) {
@@ -233,7 +334,7 @@ class AudioStreamer {
       this.gainNode.gain.value = 1.0;
     }
 
-    // NOTE: stop() is intentionally omitted — see performFullReset() comment.
+    // NOTE: stop() is intentionally omitted - see performFullReset() comment.
     if (this.queueSource) {
       try {
         this.queueSource.clearBuffers();
@@ -260,12 +361,15 @@ class AudioStreamer {
 
   private createFreshQueueSource(): void {
     if (!this.audioContext || !this.gainNode) {
-      Logger.warn(TAG, `Cannot create queueSource — ctx=${!!this.audioContext} gain=${!!this.gainNode}`);
+      Logger.warn(
+        TAG,
+        `Cannot create queueSource - ctx=${!!this.audioContext} gain=${!!this.gainNode}`,
+      );
       return;
     }
 
     // CRITICAL: Fully cleanup old queue source to prevent degradation.
-    // NOTE: stop() is intentionally omitted — see performFullReset() comment.
+    // NOTE: stop() is intentionally omitted - see performFullReset() comment.
     if (this.queueSource) {
       try {
         this.queueSource.clearBuffers();
@@ -280,15 +384,30 @@ class AudioStreamer {
     this.queueSource = this.audioContext.createBufferQueueSource();
     this.queueSource.connect(this.gainNode);
 
-    // Use native callback for reliable completion detection
+    // Use native callback for reliable completion/starvation detection
     const currentResponseId = this.responseId;
-    this.queueSource.onEnded = (event: { bufferId: string | undefined; isLast: boolean | undefined }) => {
-      // Only act on isLast from the current response while generation is complete
+    this.queueSource.onEnded = (event: {
+      bufferId: string | undefined;
+      isLast: boolean | undefined;
+    }) => {
+      // Only act on isLast from the current response
       if (!event.isLast || this.responseId !== currentResponseId) return;
-      if (this.isGenerationComplete) {
-        Logger.info(TAG, `onEnded — last buffer done, finishing`);
-        this.finishSpeaking();
+      if (!this.isGenerationComplete) {
+        this.starvationEventCount++;
+        this.underrunRiskCount++;
+        const remainingSeconds = this.estimateQueueRemainingSeconds();
+        const rateWindowAvg =
+          this.rateWindowCount > 0
+            ? this.rateWindowSum / this.rateWindowCount
+            : 0;
+        Logger.warn(
+          TAG,
+          `[DIAG] stage=playback_starvation trace=${this.turnTraceId} resp=${this.responseId} remaining=${remainingSeconds.toFixed(2)}s rateAvg=${rateWindowAvg.toFixed(2)} profile=${this.startupProfile} appliedRate=${this.activePlaybackRate.toFixed(2)}`,
+        );
+        return;
       }
+      Logger.info(TAG, `onEnded — last buffer done, finishing`);
+      this.finishSpeaking();
     };
   }
 
@@ -299,7 +418,10 @@ class AudioStreamer {
   queueAudio(base64Pcm: string): void {
     if (this.isInterrupted || !this.audioContext || !this.queueSource) {
       if (!this.audioContext || !this.queueSource) {
-        Logger.warn(TAG, `queueAudio dropped — ctx=${!!this.audioContext} src=${!!this.queueSource}`);
+        Logger.warn(
+          TAG,
+          `queueAudio dropped - ctx=${!!this.audioContext} src=${!!this.queueSource}`,
+        );
       }
       return;
     }
@@ -315,9 +437,22 @@ class AudioStreamer {
       }
 
       this.chunkCount++;
+      this.totalReceivedSamples += int16Array.length;
 
       if (this.chunkCount === 1) {
-        Logger.debug(TAG, `[DIAG] First chunk arrived ctx.state=${this.audioContext?.state} ctx.time=${(this.audioContext?.currentTime ?? 0).toFixed(3)}`);
+        this.firstChunkWallTimeMs = Date.now();
+        this.lastRateEvalAtMs = this.firstChunkWallTimeMs;
+        this.lastRateEvalReceivedSeconds = 0;
+        Logger.debug(
+          TAG,
+          `[DIAG] First chunk arrived ctx.state=${this.audioContext?.state} ctx.time=${(this.audioContext?.currentTime ?? 0).toFixed(3)}`,
+        );
+      } else if (AUDIO_DIAG_VERBOSE && this.chunkCount % 50 === 0) {
+        const receivedSeconds = this.totalReceivedSamples / SAMPLE_RATE;
+        Logger.debug(
+          TAG,
+          `[DIAG] chunk=${this.chunkCount} recv=${receivedSeconds.toFixed(2)}s queued=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s pending=${(this.accumulatedLength / SAMPLE_RATE).toFixed(2)}s`,
+        );
       }
 
       // Accumulate samples
@@ -337,17 +472,227 @@ class AudioStreamer {
         );
         this.bufferProgressCallback?.(progress);
       }
-
-      // Start playback once we have enough initial buffer (0.3s)
-      if (
-        !this.hasStartedPlayback &&
-        this.totalQueuedSamples >= MIN_INITIAL_BUFFER
-      ) {
-        Logger.info(TAG, `Buffer ready — ${this.chunkCount} chunks, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s buffered, starting playback`);
-        this.startSpeaking();
-      }
+      this.maybeStartPlayback();
     } catch (error) {
       Logger.error(TAG, "Error queueing audio", error);
+    }
+  }
+
+  private getElapsedFromFirstChunkMs(): number {
+    if (this.firstChunkWallTimeMs === null) return 0;
+    return Date.now() - this.firstChunkWallTimeMs;
+  }
+
+  private getElapsedFromTurnEndMs(): number {
+    if (this.turnActivityEndAtMs !== null) {
+      return Math.max(0, Date.now() - this.turnActivityEndAtMs);
+    }
+    return this.getElapsedFromFirstChunkMs();
+  }
+
+  private evaluateReceiveRate(elapsedMs: number): void {
+    if (
+      !IS_ANDROID ||
+      this.isGenerationComplete ||
+      this.lastRateEvalAtMs === null ||
+      this.firstChunkWallTimeMs === null
+    ) {
+      return;
+    }
+
+    const now = Date.now();
+    const sinceLastEvalMs = now - this.lastRateEvalAtMs;
+    if (sinceLastEvalMs < RATE_WINDOW_MS || elapsedMs < MIN_START_DELAY_MS) {
+      return;
+    }
+
+    const receivedSeconds = this.totalReceivedSamples / SAMPLE_RATE;
+    const deltaReceivedSeconds = Math.max(
+      0,
+      receivedSeconds - this.lastRateEvalReceivedSeconds,
+    );
+    const windowSeconds = sinceLastEvalMs / 1000;
+    const windowRate =
+      windowSeconds > 0 ? deltaReceivedSeconds / windowSeconds : 0;
+
+    this.lastRateEvalAtMs = now;
+    this.lastRateEvalReceivedSeconds = receivedSeconds;
+    this.rateWindowCount++;
+    this.rateWindowSum += windowRate;
+    this.rateWindowMin = Math.min(this.rateWindowMin, windowRate);
+    this.rateWindowMax = Math.max(this.rateWindowMax, windowRate);
+
+    if (windowRate < RATE_WINDOW_SLOW_THRESHOLD) {
+      this.sawSlowRateWindow = true;
+    }
+    if (windowRate >= RATE_WINDOW_MIN_FOR_NORMAL_START) {
+      this.sustainedHealthyWindows++;
+    } else {
+      this.sustainedHealthyWindows = 0;
+    }
+
+    if (AUDIO_DIAG_VERBOSE) {
+      Logger.debug(
+        TAG,
+        `[DIAG] trace=${this.turnTraceId} rateWindow=${windowRate.toFixed(2)} healthyWindows=${this.sustainedHealthyWindows} sawSlow=${this.sawSlowRateWindow}`,
+      );
+    }
+  }
+
+  private maybeStartPlayback(): void {
+    if (this.hasStartedPlayback || this.totalQueuedSamples <= 0) {
+      return;
+    }
+
+    const bufferedSeconds = (this.totalQueuedSamples / SAMPLE_RATE).toFixed(2);
+    const bufferedSecondsNum = this.totalQueuedSamples / SAMPLE_RATE;
+    const elapsedMs = this.getElapsedFromTurnEndMs();
+    const hasMinBuffer = this.totalQueuedSamples >= MIN_INITIAL_BUFFER;
+    const delaySatisfied =
+      MIN_START_DELAY_MS === 0 || elapsedMs >= MIN_START_DELAY_MS;
+
+    this.evaluateReceiveRate(elapsedMs);
+    const rateWindowAvg =
+      this.rateWindowCount > 0 ? this.rateWindowSum / this.rateWindowCount : 0;
+    const rateWindowMin =
+      this.rateWindowCount > 0 ? this.rateWindowMin : Number.POSITIVE_INFINITY;
+
+    if (
+      IS_ANDROID &&
+      !this.isGenerationComplete &&
+      elapsedMs >= STARTUP_SLA_MS &&
+      hasMinBuffer
+    ) {
+      this.startupReason ??= "sla_force_start";
+      if (rateWindowAvg >= NORMAL_PLAYBACK_RATE) {
+        this.startupProfile = "normal_1x";
+        this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+        this.deferStartUntilGenerationComplete = false;
+      } else if (
+        rateWindowAvg >= SAFE_PLAYBACK_RATE &&
+        ALLOW_ANDROID_QUEUE_RATE_EXPERIMENT
+      ) {
+        this.startupProfile = "safe_0_8x";
+        this.targetPlaybackRate = SAFE_PLAYBACK_RATE;
+        this.deferStartUntilGenerationComplete = false;
+      } else {
+        this.startupProfile = "deferred_until_complete";
+        this.deferStartUntilGenerationComplete = true;
+      }
+
+      if (!this.startupSlaLogged) {
+        Logger.warn(
+          TAG,
+          `[DIAG] stage=playback_gate_eval trace=${this.turnTraceId} decision=${this.deferStartUntilGenerationComplete ? "defer" : "sla_force_start"} elapsed=${elapsedMs}ms buffered=${bufferedSeconds}s rateAvg=${rateWindowAvg.toFixed(2)}`,
+        );
+        this.startupSlaLogged = true;
+      }
+      if (!this.deferStartUntilGenerationComplete) {
+        this.startSpeaking();
+      }
+      return;
+    }
+
+    if (IS_ANDROID && !this.isGenerationComplete) {
+      const safeAppliedRate =
+        this.resolvePlaybackRate(SAFE_PLAYBACK_RATE).appliedRate;
+      const safePathUsesNormalRate = safeAppliedRate >= NORMAL_PLAYBACK_RATE;
+      const safeMinBufferSeconds = safePathUsesNormalRate
+        ? MIN_BUFFER_FOR_EARLY_START_AT_1X
+        : SAFE_START_BUFFER_SECONDS_ANDROID;
+      const safeMinRate = safePathUsesNormalRate
+        ? MIN_RATE_FOR_EARLY_START_AT_1X
+        : RATE_WINDOW_MIN_FOR_SAFE_START;
+      const safeWindowsRequired = safePathUsesNormalRate
+        ? RATE_WINDOWS_REQUIRED
+        : 1;
+      const hasNormalEarlyBuffer =
+        bufferedSecondsNum >= EARLY_START_BUFFER_SECONDS_ANDROID &&
+        hasMinBuffer;
+      const hasSafeEarlyBuffer =
+        bufferedSecondsNum >= safeMinBufferSeconds && hasMinBuffer;
+      const canStartNormal =
+        hasNormalEarlyBuffer &&
+        delaySatisfied &&
+        this.sustainedHealthyWindows >= RATE_WINDOWS_REQUIRED &&
+        rateWindowAvg >= RATE_WINDOW_MIN_FOR_NORMAL_START;
+      const canStartSafe =
+        hasSafeEarlyBuffer &&
+        delaySatisfied &&
+        this.rateWindowCount >= safeWindowsRequired &&
+        rateWindowAvg >= safeMinRate &&
+        rateWindowMin >= RATE_WINDOW_SEVERE_SLOW;
+      const timeoutReached =
+        elapsedMs >= MAX_DEFER_MS_ANDROID && hasSafeEarlyBuffer;
+      const deferTimeoutExceeded = timeoutReached;
+
+      if (canStartNormal) {
+        this.startupReason ??= "sustained_healthy_early_start";
+        this.startupProfile = "normal_1x";
+        this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+        this.deferStartUntilGenerationComplete = false;
+      } else if (canStartSafe) {
+        this.startupReason ??= "safe_buffer_early_start";
+        this.startupProfile = "safe_0_8x";
+        this.targetPlaybackRate = SAFE_PLAYBACK_RATE;
+        this.deferStartUntilGenerationComplete = false;
+      } else if (deferTimeoutExceeded) {
+        this.startupReason ??= "max_defer_timeout_start";
+        this.startupProfile = "safe_0_8x";
+        this.targetPlaybackRate = SAFE_PLAYBACK_RATE;
+        this.deferStartUntilGenerationComplete = false;
+        if (!this.maxDeferTimeoutLogged) {
+          Logger.warn(
+            TAG,
+            `[DIAG] stage=playback_gate_eval trace=${this.turnTraceId} decision=max_defer_timeout_start elapsed=${elapsedMs}ms buffered=${bufferedSeconds}s`,
+          );
+          this.maxDeferTimeoutLogged = true;
+        }
+      } else {
+        this.deferStartUntilGenerationComplete = true;
+        this.startupProfile = "deferred_until_complete";
+      }
+
+      if (this.deferStartUntilGenerationComplete) {
+        if (AUDIO_DIAG_VERBOSE) {
+          Logger.debug(
+            TAG,
+            `[DIAG] stage=playback_gate_eval trace=${this.turnTraceId} decision=defer buffered=${bufferedSeconds}s elapsed=${elapsedMs}ms healthyWindows=${this.sustainedHealthyWindows} rateAvg=${rateWindowAvg.toFixed(2)} rateMin=${(Number.isFinite(rateWindowMin) ? rateWindowMin : 0).toFixed(2)} sawSlow=${this.sawSlowRateWindow}`,
+          );
+        }
+        return;
+      }
+    }
+
+    if (hasMinBuffer && delaySatisfied) {
+      if (this.startupReason === null) {
+        this.startupReason = "normal_buffer_ready";
+      }
+      if (this.startupProfile === "deferred_until_complete") {
+        this.startupProfile = "normal_1x";
+      }
+      if (this.targetPlaybackRate <= 0) {
+        this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+      }
+      Logger.info(
+        TAG,
+        `Buffer ready - trace=${this.turnTraceId} ${this.chunkCount} chunks, ${bufferedSeconds}s buffered, delay=${elapsedMs}ms, deferred=${this.deferStartUntilGenerationComplete}, profile=${this.startupProfile}, rate=${this.targetPlaybackRate.toFixed(2)}`,
+      );
+      this.startSpeaking();
+      return;
+    }
+
+    if (
+      hasMinBuffer &&
+      MIN_START_DELAY_MS > 0 &&
+      elapsedMs < MIN_START_DELAY_MS &&
+      this.delayedStartTimerId === null
+    ) {
+      const remainingMs = MIN_START_DELAY_MS - elapsedMs;
+      this.delayedStartTimerId = setTimeout(() => {
+        this.delayedStartTimerId = null;
+        this.maybeStartPlayback();
+      }, remainingMs);
     }
   }
 
@@ -385,16 +730,84 @@ class AudioStreamer {
     this.accumulatedLength = 0;
   }
 
+  private estimateQueueRemainingSeconds(): number {
+    if (!this.audioContext || this.speakingStartContextTime === null) {
+      return this.totalQueuedSamples / SAMPLE_RATE;
+    }
+    const playbackRate =
+      this.activePlaybackRate > 0
+        ? this.activePlaybackRate
+        : NORMAL_PLAYBACK_RATE;
+    const consumedSeconds = Math.max(
+      0,
+      (this.audioContext.currentTime - this.speakingStartContextTime) *
+        playbackRate,
+    );
+    return Math.max(0, this.totalQueuedSamples / SAMPLE_RATE - consumedSeconds);
+  }
+
+  private startQueueHeartbeat(): void {
+    this.clearQueueHeartbeat();
+    this.queueHeartbeatTimerId = setInterval(() => {
+      if (!this.isPlaying) return;
+      const remainingSeconds = this.estimateQueueRemainingSeconds();
+      const pendingSeconds = this.accumulatedLength / SAMPLE_RATE;
+      if (AUDIO_DIAG_VERBOSE) {
+        Logger.debug(
+          TAG,
+          `[DIAG] trace=${this.turnTraceId} stream remaining=${remainingSeconds.toFixed(2)}s pending=${pendingSeconds.toFixed(2)}s queued=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s recv=${(this.totalReceivedSamples / SAMPLE_RATE).toFixed(2)}s genDone=${this.isGenerationComplete}`,
+        );
+      }
+      this.queueLowWatermarkSeconds = Math.min(
+        this.queueLowWatermarkSeconds,
+        remainingSeconds,
+      );
+      if (!this.isGenerationComplete && remainingSeconds < 0.25) {
+        this.underrunRiskCount++;
+        this.starvationEventCount++;
+        Logger.warn(
+          TAG,
+          `[DIAG] trace=${this.turnTraceId} Underrun risk #${this.underrunRiskCount} remaining=${remainingSeconds.toFixed(2)}s`,
+        );
+      }
+    }, QUEUE_HEARTBEAT_MS);
+  }
+
+  private clearQueueHeartbeat(): void {
+    if (this.queueHeartbeatTimerId !== null) {
+      clearInterval(this.queueHeartbeatTimerId);
+      this.queueHeartbeatTimerId = null;
+    }
+  }
+
+  private resolvePlaybackRate(requestedRate: number): {
+    appliedRate: number;
+    guardReason: PlaybackRateGuardReason;
+  } {
+    if (
+      IS_ANDROID &&
+      !ALLOW_ANDROID_QUEUE_RATE_EXPERIMENT &&
+      requestedRate !== NORMAL_PLAYBACK_RATE
+    ) {
+      return {
+        appliedRate: NORMAL_PLAYBACK_RATE,
+        guardReason: "android_queue_rate_guard",
+      };
+    }
+
+    return { appliedRate: requestedRate, guardReason: "none" };
+  }
+
   private startSpeaking(): void {
+    this.clearDelayedStartTimer();
     if (this.isPlaying || !this.queueSource || !this.gainNode) {
-      Logger.warn(TAG, `startSpeaking skipped — playing=${this.isPlaying} src=${!!this.queueSource} gain=${!!this.gainNode}`);
+      Logger.warn(
+        TAG,
+        `startSpeaking skipped - playing=${this.isPlaying} src=${!!this.queueSource} gain=${!!this.gainNode}`,
+      );
       return;
     }
 
-    // Cancel any leftover gain ramps from previous response, then apply fresh fade-in.
-    // Per Web Audio spec, linearRampToValueAtTime ramps from the previous
-    // automation event's value — NOT from gain.value. Without setValueAtTime
-    // first, the ramp goes 1.0→1.0 (no-op), providing no fade-in protection.
     this.gainNode.gain.cancelScheduledValues(0);
     const currentTime = this.audioContext?.currentTime ?? 0;
     this.gainNode.gain.setValueAtTime(0, currentTime);
@@ -403,21 +816,60 @@ class AudioStreamer {
       currentTime + FADE_IN_DURATION,
     );
 
-    Logger.debug(TAG, `[DIAG] startSpeaking ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`);
+    Logger.debug(
+      TAG,
+      `[DIAG] startSpeaking ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`,
+    );
 
-    // Start the queue source playback
+    const requestedPlaybackRate =
+      this.targetPlaybackRate > 0
+        ? this.targetPlaybackRate
+        : NORMAL_PLAYBACK_RATE;
+    const { appliedRate: playbackRate, guardReason } = this.resolvePlaybackRate(
+      requestedPlaybackRate,
+    );
+    if (guardReason !== "none") {
+      Logger.warn(
+        TAG,
+        `[DIAG] stage=playback_rate_guard trace=${this.turnTraceId} requestedRate=${requestedPlaybackRate.toFixed(2)} appliedRate=${playbackRate.toFixed(2)} reason=${guardReason}`,
+      );
+    }
+    try {
+      this.queueSource.playbackRate.setValueAtTime(playbackRate, currentTime);
+    } catch (error) {
+      Logger.warn(
+        TAG,
+        `Failed to apply playbackRate=${playbackRate.toFixed(2)}`,
+      );
+      Logger.debug(TAG, "[DIAG] playbackRate apply error", error);
+    }
     this.queueSource.start();
 
     this.isPlaying = true;
     this.hasStartedPlayback = true;
-    this.bufferProgressCallback?.(100); // Clear progress
-    Logger.info(TAG, `>>> SPEAKING started — resp=#${this.responseId} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`);
+    this.activePlaybackRate = playbackRate;
+    this.speakingStartWallTimeMs = Date.now();
+    this.speakingStartContextTime = currentTime;
+    this.startQueueHeartbeat();
+    this.bufferProgressCallback?.(100);
+    if (this.turnActivityEndAtMs !== null && !this.startupSlaLogged) {
+      const startupDelayMs = Math.max(0, Date.now() - this.turnActivityEndAtMs);
+      Logger.info(
+        TAG,
+        `[DIAG] stage=playback_startup_sla trace=${this.turnTraceId} activityEndToSpeakMs=${startupDelayMs} slaMs=${STARTUP_SLA_MS} breach=${startupDelayMs > STARTUP_SLA_MS}`,
+      );
+      this.startupSlaLogged = true;
+    }
+    Logger.info(
+      TAG,
+      `>>> SPEAKING started - trace=${this.turnTraceId} resp=#${this.responseId} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s startupReason=${this.startupReason ?? "unknown"} startupProfile=${this.startupProfile} requestedPlaybackRate=${requestedPlaybackRate.toFixed(2)} playbackRate=${playbackRate.toFixed(2)} ctx.state=${this.audioContext?.state} ctx.time=${currentTime.toFixed(3)}`,
+    );
+    Logger.info(
+      TAG,
+      `[DIAG] stage=playback_start trace=${this.turnTraceId} resp=${this.responseId} profile=${this.startupProfile} rate=${playbackRate.toFixed(2)} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`,
+    );
     this.speakingStateCallback?.(true);
 
-    // Watchdog: verify AudioContext.currentTime is advancing (engine truly running)
-    // Unified logic for all platforms — if stalled, go directly to full reset.
-    // The previous iOS two-tier recovery (suspend→resume then escalate) had the
-    // same unawaited-Promise race condition. Direct full reset is faster and safer.
     const watchdogResponseId = this.responseId;
     const startCurrentTime = this.audioContext?.currentTime ?? 0;
 
@@ -426,9 +878,15 @@ class AudioStreamer {
       if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
       const nowCurrentTime = this.audioContext?.currentTime ?? 0;
       const delta = nowCurrentTime - startCurrentTime;
-      Logger.debug(TAG, `[DIAG] WATCHDOG check start=${startCurrentTime.toFixed(3)} now=${nowCurrentTime.toFixed(3)} delta=${delta.toFixed(3)}`);
+      Logger.debug(
+        TAG,
+        `[DIAG] WATCHDOG check start=${startCurrentTime.toFixed(3)} now=${nowCurrentTime.toFixed(3)} delta=${delta.toFixed(3)}`,
+      );
       if (delta < 0.1) {
-        Logger.warn(TAG, `WATCHDOG: Stalled delta=${delta.toFixed(3)} — full reset`);
+        Logger.warn(
+          TAG,
+          `WATCHDOG: Stalled delta=${delta.toFixed(3)} - full reset`,
+        );
         this.performFullReset();
         this.createFreshQueueSource();
         this.isPlaying = false;
@@ -442,53 +900,140 @@ class AudioStreamer {
 
   onGenerationComplete(): void {
     if (this.isInterrupted) {
-      Logger.debug(TAG, "onGenerationComplete — ignored (interrupted)");
+      Logger.debug(TAG, "onGenerationComplete - ignored (interrupted)");
       return;
     }
 
     this.isGenerationComplete = true;
 
-    // Flush any remaining samples
     if (this.accumulatedLength > 0) {
       this.flushAccumulatedBuffer();
     }
 
+    const totalSeconds = (this.totalQueuedSamples / SAMPLE_RATE).toFixed(2);
     Logger.info(
       TAG,
-      `Generation complete — ${this.chunkCount} chunks, ${this.flushCount} flushes, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s total, playing=${this.isPlaying}`,
+      `Generation complete - trace=${this.turnTraceId} ${this.chunkCount} chunks, ${this.flushCount} flushes, ${totalSeconds}s total, playing=${this.isPlaying}, deferred=${this.deferStartUntilGenerationComplete}`,
     );
 
-    // Start playback if we haven't yet (short responses)
     if (!this.hasStartedPlayback && this.totalQueuedSamples > 0) {
-      Logger.info(TAG, "Short response — starting late playback");
+      const elapsedMs = this.getElapsedFromTurnEndMs();
+      const remainingMs = Math.max(0, MIN_START_DELAY_MS - elapsedMs);
+      if (IS_ANDROID) {
+        const rateWindowAvg =
+          this.rateWindowCount > 0
+            ? this.rateWindowSum / this.rateWindowCount
+            : 0;
+        if (
+          rateWindowAvg > 0 &&
+          rateWindowAvg < RATE_WINDOW_MIN_FOR_NORMAL_START
+        ) {
+          this.startupProfile = "safe_0_8x";
+          this.targetPlaybackRate = SAFE_PLAYBACK_RATE;
+        } else {
+          this.startupProfile = "normal_1x";
+          this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+        }
+      }
+      if (remainingMs > 0) {
+        this.startupReason = "generation_complete_late_start";
+        Logger.info(
+          TAG,
+          `Short response - waiting ${remainingMs}ms before late playback`,
+        );
+        this.clearDelayedStartTimer();
+        this.delayedStartTimerId = setTimeout(() => {
+          this.delayedStartTimerId = null;
+          if (!this.hasStartedPlayback && this.totalQueuedSamples > 0) {
+            this.startSpeaking();
+          }
+        }, remainingMs);
+        return;
+      }
+      this.startupReason = "generation_complete_late_start";
+      Logger.info(TAG, "Short/deferred response - starting late playback");
       this.startSpeaking();
     }
-
-    // The onEnded callback (with isLast=true) will call finishSpeaking()
-    // No setTimeout needed — native callback is more reliable
   }
 
   private finishSpeaking(): void {
     if (!this.isPlaying) return;
     this.clearWatchdog();
+    this.clearQueueHeartbeat();
 
-    Logger.info(TAG, `<<< SPEAKING finished — resp=#${this.responseId} ${this.chunkCount} chunks, ${this.flushCount} flushes, ${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`);
+    const totalSeconds = (this.totalQueuedSamples / SAMPLE_RATE).toFixed(2);
+    const speakMs =
+      this.speakingStartWallTimeMs !== null
+        ? Date.now() - this.speakingStartWallTimeMs
+        : 0;
+    const startupWaitMs =
+      this.speakingStartWallTimeMs !== null &&
+      this.firstChunkWallTimeMs !== null
+        ? this.speakingStartWallTimeMs - this.firstChunkWallTimeMs
+        : -1;
+    const rateWindowAvg =
+      this.rateWindowCount > 0 ? this.rateWindowSum / this.rateWindowCount : 0;
+    const rateWindowMin = this.rateWindowCount > 0 ? this.rateWindowMin : 0;
+    const issue: StreamIssueClassification =
+      rateWindowAvg < RATE_WINDOW_MIN_FOR_SAFE_START ||
+      rateWindowMin < RATE_WINDOW_SEVERE_SLOW
+        ? "api_or_network_slow_stream"
+        : this.starvationEventCount > 0
+          ? "client_processing_backpressure"
+          : "healthy_stream";
+    Logger.info(
+      TAG,
+      `<<< SPEAKING finished - trace=${this.turnTraceId} resp=#${this.responseId} ${this.chunkCount} chunks, ${this.flushCount} flushes, ${totalSeconds}s, speakMs=${speakMs}, startupWaitMs=${startupWaitMs}, startupReason=${this.startupReason ?? "unknown"}, startupProfile=${this.startupProfile}, playbackRate=${this.activePlaybackRate.toFixed(2)}, underrunRisk=${this.underrunRiskCount}, starvation=${this.starvationEventCount}, lowWatermark=${(Number.isFinite(this.queueLowWatermarkSeconds) ? this.queueLowWatermarkSeconds : 0).toFixed(2)}s, rateAvg=${rateWindowAvg.toFixed(2)}, rateMin=${rateWindowMin.toFixed(2)}, rateMax=${this.rateWindowMax.toFixed(2)}, issue=${issue}`,
+    );
+    Logger.info(
+      TAG,
+      `[DIAG] stage=playback_finish trace=${this.turnTraceId} resp=${this.responseId} profile=${this.startupProfile} rate=${this.activePlaybackRate.toFixed(2)} startupWaitMs=${startupWaitMs} speakMs=${speakMs} issue=${issue}`,
+    );
 
-    // Mark response as completed (so pausePlayback knows not to preserve buffer)
     this.hasResponseCompleted = true;
+
+    if (this.queueSource) {
+      try {
+        this.queueSource.clearBuffers();
+      } catch {}
+    }
 
     this.resetState();
     this.speakingStateCallback?.(false);
   }
 
   private resetState(): void {
+    this.clearDelayedStartTimer();
+    this.clearQueueHeartbeat();
     this.isPlaying = false;
     this.isGenerationComplete = false;
     this.hasStartedPlayback = false;
     this.chunkCount = 0;
     this.flushCount = 0;
+    this.totalReceivedSamples = 0;
+    this.speakingStartWallTimeMs = null;
+    this.speakingStartContextTime = null;
+    this.startupReason = null;
+    this.startupProfile = "deferred_until_complete";
+    this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
+    this.activePlaybackRate = NORMAL_PLAYBACK_RATE;
+    this.turnTraceId = "turn-unknown";
+    this.deferStartUntilGenerationComplete = IS_ANDROID;
+    this.underrunRiskCount = 0;
+    this.starvationEventCount = 0;
+    this.queueLowWatermarkSeconds = Number.POSITIVE_INFINITY;
+    this.lastRateEvalAtMs = null;
+    this.lastRateEvalReceivedSeconds = 0;
+    this.sustainedHealthyWindows = 0;
+    this.sawSlowRateWindow = false;
+    this.rateWindowMin = Number.POSITIVE_INFINITY;
+    this.rateWindowMax = 0;
+    this.rateWindowSum = 0;
+    this.rateWindowCount = 0;
+    this.maxDeferTimeoutLogged = false;
+    this.turnActivityEndAtMs = null;
+    this.startupSlaLogged = false;
 
-    // Explicit memory cleanup
     if (this.accumulatedSamples.length > 0) {
       this.accumulatedSamples.length = 0;
     }
@@ -504,9 +1049,18 @@ class AudioStreamer {
     }
   }
 
+  private clearDelayedStartTimer(): void {
+    if (this.delayedStartTimerId !== null) {
+      clearTimeout(this.delayedStartTimerId);
+      this.delayedStartTimerId = null;
+    }
+  }
+
   handleInterruption(): void {
     Logger.info(TAG, "Interrupted");
     this.clearWatchdog();
+    this.clearDelayedStartTimer();
+    this.clearQueueHeartbeat();
     this.isInterrupted = true;
     this.responseId++;
 
@@ -533,6 +1087,7 @@ class AudioStreamer {
 
     Logger.info(TAG, "Paused");
     this.queueSource.pause();
+    this.clearQueueHeartbeat();
     this.isPlaying = false;
     this.isPaused = true;
     this.speakingStateCallback?.(false);
@@ -553,6 +1108,8 @@ class AudioStreamer {
     }
 
     this.queueSource.start();
+    this.speakingStartContextTime = this.audioContext.currentTime;
+    this.startQueueHeartbeat();
     this.isPlaying = true;
     this.isPaused = false;
     this.speakingStateCallback?.(true);
@@ -561,6 +1118,7 @@ class AudioStreamer {
   dispose(): void {
     Logger.info(TAG, "Disposed");
     this.clearWatchdog();
+    this.clearDelayedStartTimer();
     this.stopCurrentPlayback();
 
     if (this.gainNode) {

@@ -21,6 +21,8 @@ describe('GeminiWebSocket', () => {
       setError: jest.fn(),
       setSpeaking: jest.fn(),
       setProcessing: jest.fn(),
+      isPTTActive: false,
+      isListening: false,
       setBufferProgress: jest.fn(),
       addMessage: jest.fn(),
       handleInterruption: jest.fn(),
@@ -137,6 +139,23 @@ describe('GeminiWebSocket', () => {
 
       expect(mockConversationStore.setConnectionState).toHaveBeenCalledWith('reconnecting');
     });
+
+    it('normalizes string close code 1008 as non-retryable', () => {
+      const wsInternals = geminiWebSocket as unknown as {
+        categorizeError: (
+          code: number | string | undefined,
+          message?: string
+        ) => { retryable: boolean; code?: number };
+      };
+
+      const error = wsInternals.categorizeError(
+        '1008',
+        'model not supported for bidiGenerateContent'
+      );
+
+      expect(error.code).toBe(1008);
+      expect(error.retryable).toBe(false);
+    });
   });
 
   describe('reconnection', () => {
@@ -240,6 +259,97 @@ describe('GeminiWebSocket', () => {
     it('does not send when not ready', () => {
       geminiWebSocket.sendAudioChunk('SGVsbG8=');
       // Should warn but not throw
+    });
+  });
+
+  describe('slow-turn rotation safety', () => {
+    it('defers session rotation until speaking ends and transcript flushes', () => {
+      const wsInternals = geminiWebSocket as unknown as {
+        handleMessage: (response: Record<string, unknown>) => void;
+        handleSpeakingStateChange: (isSpeaking: boolean) => void;
+        maybeRotateSessionForHealth: (issue: {
+          issue: string;
+          reason: string;
+        }) => void;
+      };
+
+      const rotateSpy = jest
+        .spyOn(wsInternals, 'maybeRotateSessionForHealth')
+        .mockImplementation(() => {});
+
+      wsInternals.handleMessage({
+        serverContent: {
+          modelTurn: {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: 'audio/pcm',
+                  data: 'AQID',
+                },
+              },
+            ],
+          },
+          outputTranscription: {
+            text: 'Hola amigo',
+          },
+          generationComplete: true,
+        },
+      });
+
+      expect(rotateSpy).not.toHaveBeenCalled();
+      expect(mockConversationStore.addMessage).not.toHaveBeenCalledWith(
+        'model',
+        'Hola amigo',
+      );
+
+      wsInternals.handleSpeakingStateChange(false);
+
+      expect(mockConversationStore.addMessage).toHaveBeenCalledWith(
+        'model',
+        'Hola amigo',
+      );
+      expect(rotateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('discards model output while PTT is active to prevent overlap cuts', () => {
+      const wsInternals = geminiWebSocket as unknown as {
+        handleMessage: (response: Record<string, unknown>) => void;
+      };
+      const { audioStreamer } = require('@/services/audio/streamer') as {
+        audioStreamer: {
+          prepareForNewResponse: (traceId?: string, activityEndAtMs?: number) => void;
+          queueAudio: (base64Data: string) => void;
+        };
+      };
+      const prepareSpy = jest.spyOn(audioStreamer, 'prepareForNewResponse');
+      const queueSpy = jest.spyOn(audioStreamer, 'queueAudio');
+
+      mockConversationStore.isPTTActive = true;
+      wsInternals.handleMessage({
+        serverContent: {
+          modelTurn: {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: 'audio/pcm',
+                  data: 'AQID',
+                },
+              },
+            ],
+          },
+          outputTranscription: {
+            text: 'stale model output',
+          },
+          generationComplete: true,
+        },
+      });
+
+      expect(prepareSpy).not.toHaveBeenCalled();
+      expect(queueSpy).not.toHaveBeenCalled();
+      expect(mockConversationStore.addMessage).not.toHaveBeenCalledWith(
+        'model',
+        'stale model output',
+      );
     });
   });
 });

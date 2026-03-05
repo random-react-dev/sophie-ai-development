@@ -1,4 +1,4 @@
-import { requestRecordingPermissionsAsync } from 'expo-audio';
+﻿import { requestRecordingPermissionsAsync } from 'expo-audio';
 import {
     addErrorListener,
     addFrameListener,
@@ -16,6 +16,7 @@ const TAG = 'AudioRecorder';
 const TARGET_SAMPLE_RATE = 16000;
 const MAX_CONSECUTIVE_ERRORS = 5;
 const RESTART_DELAY_MS = 200;
+const STOP_TIMEOUT_MS = 2000;
 
 export interface RecorderOptions {
     onAudioData: (base64Data: string) => void;
@@ -92,7 +93,7 @@ class AudioRecorder {
                     Logger.info(TAG, `First frame: sampleRate=${frame.sampleRate}, size=${frame.pcmBase64?.length || 0}`);
                     if (frame.sampleRate !== TARGET_SAMPLE_RATE) {
                         this.downsampleRatio = Math.round(frame.sampleRate / TARGET_SAMPLE_RATE);
-                        Logger.info(TAG, `Downsampling ${frame.sampleRate}Hz → ${TARGET_SAMPLE_RATE}Hz (ratio: ${this.downsampleRatio}:1)`);
+                        Logger.info(TAG, `Downsampling ${frame.sampleRate}Hz -> ${TARGET_SAMPLE_RATE}Hz (ratio: ${this.downsampleRatio}:1)`);
                     }
                 } else if (this.chunkCount % 250 === 0) {
                     Logger.debug(TAG, `Recording frame #${this.chunkCount}`);
@@ -104,7 +105,7 @@ class AudioRecorder {
                     return;
                 }
 
-                // Downsample if needed (e.g. 48kHz → 16kHz = take every 3rd sample)
+                // Downsample if needed (e.g. 48kHz -> 16kHz = take every 3rd sample)
                 const audioData = this.downsampleRatio > 1
                     ? this.downsample(frame.pcmBase64)
                     : frame.pcmBase64;
@@ -147,16 +148,33 @@ class AudioRecorder {
             return;
         }
 
+        const stopStartedAt = Date.now();
+        let didTimeout = false;
         try {
             Logger.info(TAG, `Stopping recording (${this.chunkCount} frames captured)...`);
             this.isStopping = true;
-            await stop();
-            this.cleanup();
-            Logger.info(TAG, 'Recording stopped');
+            await Promise.race([
+                stop(),
+                new Promise<never>((_, reject) => {
+                    setTimeout(() => {
+                        didTimeout = true;
+                        reject(new Error(`Recorder stop timeout after ${STOP_TIMEOUT_MS}ms`));
+                    }, STOP_TIMEOUT_MS);
+                }),
+            ]);
         } catch (error) {
-            Logger.error(TAG, 'Failed to stop recording', error);
+            if (didTimeout) {
+                Logger.warn(TAG, `Recorder stop timeout; forcing cleanup after ${Date.now() - stopStartedAt}ms`);
+            } else {
+                Logger.error(TAG, 'Failed to stop recording', error);
+            }
+        } finally {
             this.cleanup();
-            throw error;
+            Logger.info(
+                TAG,
+                `[DIAG] stage=recorder_stop latency=${Date.now() - stopStartedAt}ms timeout=${didTimeout}`,
+            );
+            Logger.info(TAG, 'Recording stopped');
         }
     }
 
@@ -182,7 +200,7 @@ class AudioRecorder {
 
     private handleRecordingError(message: string): void {
         if (this.isStopping && message.includes('0 bytes')) {
-            Logger.debug(TAG, 'Expected 0-byte read during stop — ignored');
+            Logger.debug(TAG, 'Expected 0-byte read during stop - ignored');
             return;
         }
 
@@ -203,7 +221,7 @@ class AudioRecorder {
 
     /**
      * Downsample Int16 PCM by taking every Nth sample (simple decimation).
-     * Works well for integer ratios like 48kHz→16kHz (3:1).
+     * Works well for integer ratios like 48kHz->16kHz (3:1).
      */
     private downsample(base64Data: string): string {
         const binaryStr = atob(base64Data);

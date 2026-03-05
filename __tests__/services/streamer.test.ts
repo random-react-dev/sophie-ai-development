@@ -1,6 +1,29 @@
 import { AudioContext } from 'react-native-audio-api';
 import { setPlatform } from '../helpers/platform';
 import { encode } from 'base64-arraybuffer';
+import { Logger } from '@/services/common/Logger';
+
+type MockQueueSource = {
+  connect: jest.Mock;
+  disconnect: jest.Mock;
+  start: jest.Mock;
+  stop: jest.Mock;
+  pause: jest.Mock;
+  clearBuffers: jest.Mock;
+  enqueueBuffer: jest.Mock;
+  playbackRate: {
+    setValueAtTime: jest.Mock;
+  };
+  onEnded: ((event: { bufferId: string | undefined; isLast: boolean | undefined }) => void) | null;
+};
+
+type MockAudioContextInstance = {
+  createGain: jest.Mock;
+  createBufferQueueSource: jest.Mock;
+  suspend: jest.Mock;
+  resume: jest.Mock;
+  close: jest.Mock;
+};
 
 // Helper to create base64 PCM chunks
 function createPcmChunk(sampleCount: number): string {
@@ -15,9 +38,14 @@ function createPcmChunk(sampleCount: number): string {
  * Get the most recently created AudioContext mock instance.
  * After performFullReset(), the original ctx is closed and a new one is created.
  */
-function getLatestCtx(): any {
-  const results = (AudioContext as jest.Mock).mock.results;
-  return results[results.length - 1].value;
+function getLatestCtx(): MockAudioContextInstance {
+  const results = (AudioContext as unknown as jest.Mock).mock.results;
+  return results[results.length - 1].value as MockAudioContextInstance;
+}
+
+function getLatestQueueSource(ctx: MockAudioContextInstance): MockQueueSource {
+  const results = ctx.createBufferQueueSource.mock.results;
+  return results[results.length - 1].value as MockQueueSource;
 }
 
 describe('AudioStreamer', () => {
@@ -129,9 +157,7 @@ describe('AudioStreamer', () => {
       audioStreamer.handleInterruption();
 
       const ctx = getLatestCtx();
-      const lastQueueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const lastQueueSource = getLatestQueueSource(ctx);
 
       audioStreamer.queueAudio(createPcmChunk(960));
 
@@ -140,9 +166,7 @@ describe('AudioStreamer', () => {
 
     it('accumulates chunks and flushes when reaching 4800 samples', () => {
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const queueSource = getLatestQueueSource(ctx);
 
       // Each chunk: 960 samples. Need 5 to reach 4800
       const chunk = createPcmChunk(960);
@@ -179,9 +203,7 @@ describe('AudioStreamer', () => {
 
       // After interruption, queuing should be blocked
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const queueSource = getLatestQueueSource(ctx);
 
       audioStreamer.queueAudio(createPcmChunk(960));
       expect(queueSource.enqueueBuffer).not.toHaveBeenCalled();
@@ -223,9 +245,7 @@ describe('AudioStreamer', () => {
       audioStreamer.prepareForNewResponse();
 
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const queueSource = getLatestQueueSource(ctx);
 
       // Queue less than ACCUMULATION_TARGET (4800)
       audioStreamer.queueAudio(createPcmChunk(960));
@@ -246,6 +266,32 @@ describe('AudioStreamer', () => {
 
       // Should not throw or do anything
       audioStreamer.onGenerationComplete();
+    });
+
+    it('records starvation when queue drains before generationComplete', async () => {
+      setPlatform('ios');
+      await audioStreamer.initialize();
+      audioStreamer.prepareForNewResponse('starvation-check');
+
+      const ctx = getLatestCtx();
+      const queueSource = getLatestQueueSource(ctx);
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
+
+      const chunk = createPcmChunk(960);
+      for (let i = 0; i < 8; i++) {
+        audioStreamer.queueAudio(chunk);
+      }
+
+      if (queueSource.onEnded) {
+        queueSource.onEnded({ bufferId: undefined, isLast: true });
+      }
+
+      expect(Logger.warn).toHaveBeenCalledWith(
+        'AudioStreamer',
+        expect.stringContaining('stage=playback_starvation'),
+      );
+      expect(speakingStates).not.toContain(false);
     });
   });
 
@@ -303,19 +349,18 @@ describe('AudioStreamer', () => {
     }
 
     it('creates fresh queueSource for each turn', () => {
-      const queueSources: any[] = [];
-
       for (let turn = 0; turn < 3; turn++) {
-        const { queueSource } = simulateTurn();
-        queueSources.push(queueSource);
+        simulateTurn();
       }
 
       // Each turn should have gotten its own queueSource
       // (they may share the same mock shape, but createBufferQueueSource
       // should have been called once per turn + once from full resets)
-      const totalCalls = (AudioContext as jest.Mock).mock.results.reduce(
-        (sum: number, result: any) =>
-          sum + result.value.createBufferQueueSource.mock.calls.length,
+      const mockResults = (AudioContext as unknown as jest.Mock).mock
+        .results as Array<{ value?: MockAudioContextInstance }>;
+      const totalCalls = mockResults.reduce(
+        (sum: number, result: { value?: MockAudioContextInstance }) =>
+          sum + (result.value?.createBufferQueueSource.mock.calls.length ?? 0),
         0,
       );
       expect(totalCalls).toBeGreaterThanOrEqual(3);
@@ -339,9 +384,7 @@ describe('AudioStreamer', () => {
       audioStreamer.prepareForNewResponse();
 
       const ctx = getLatestCtx();
-      const turn1QueueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const turn1QueueSource = getLatestQueueSource(ctx);
       const turn1OnEnded = turn1QueueSource.onEnded;
 
       // Move to turn 2 (responseId increments)
@@ -370,9 +413,7 @@ describe('AudioStreamer', () => {
       audioStreamer.prepareForNewResponse();
 
       const ctx = getLatestCtx();
-      const queueSource = ctx.createBufferQueueSource.mock.results[
-        ctx.createBufferQueueSource.mock.results.length - 1
-      ].value;
+      const queueSource = getLatestQueueSource(ctx);
 
       // Queue enough to start playback (triggers watchdog)
       const chunk = createPcmChunk(960);
@@ -412,6 +453,124 @@ describe('AudioStreamer', () => {
 
       // Watchdog should go directly to full reset, NOT try suspend→resume
       expect(ctx.suspend).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('android smoothness-first startup', () => {
+    function loadAndroidStreamer(): {
+      streamer: typeof import('@/services/audio/streamer').audioStreamer;
+      audioContextMock: jest.Mock;
+    } {
+      jest.resetModules();
+      delete process.env.EXPO_PUBLIC_ANDROID_QUEUE_RATE_EXPERIMENT;
+      let streamer!: typeof import('@/services/audio/streamer').audioStreamer;
+      let audioContextMock!: jest.Mock;
+      jest.isolateModules(() => {
+        const { Platform } = require('react-native');
+        Object.defineProperty(Platform, 'OS', {
+          get: () => 'android',
+          configurable: true,
+        });
+        streamer = require('@/services/audio/streamer').audioStreamer;
+        audioContextMock = require('react-native-audio-api').AudioContext;
+      });
+      return { streamer, audioContextMock };
+    }
+
+    it('waits for generationComplete when stream receive windows are slow', async () => {
+      const { streamer, audioContextMock } = loadAndroidStreamer();
+      await streamer.initialize();
+      streamer.prepareForNewResponse('android-slow');
+
+      const ctx = audioContextMock.mock.results[audioContextMock.mock.results.length - 1]
+        .value;
+      const queueSource = getLatestQueueSource(ctx as MockAudioContextInstance);
+      const chunk = createPcmChunk(19200); // 0.8s @ 24kHz
+
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(1200);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(1200);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(1200);
+      streamer.queueAudio(chunk);
+
+      expect(queueSource.start).not.toHaveBeenCalled();
+
+      streamer.onGenerationComplete();
+      expect(queueSource.start).toHaveBeenCalledTimes(1);
+      expect(queueSource.playbackRate.setValueAtTime).toHaveBeenCalledWith(1, expect.any(Number));
+    });
+
+    it('starts early at 1.0x when sustained receive-rate windows are healthy', async () => {
+      const { streamer, audioContextMock } = loadAndroidStreamer();
+      await streamer.initialize();
+      streamer.prepareForNewResponse('android-healthy');
+
+      const ctx = audioContextMock.mock.results[audioContextMock.mock.results.length - 1]
+        .value;
+      const queueSource = getLatestQueueSource(ctx as MockAudioContextInstance);
+      const chunk = createPcmChunk(19200); // 0.8s @ 24kHz
+
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(600);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(600);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(600);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(1200);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(600);
+      streamer.queueAudio(chunk);
+      jest.advanceTimersByTime(600);
+      streamer.queueAudio(chunk);
+
+      expect(queueSource.start.mock.calls.length).toBeGreaterThanOrEqual(1);
+      expect(queueSource.playbackRate.setValueAtTime).toHaveBeenCalledWith(1, expect.any(Number));
+    });
+
+    it('starts at timeout once enough buffer exists even when stream is slow at 1.0x', async () => {
+      const { streamer, audioContextMock } = loadAndroidStreamer();
+      await streamer.initialize();
+      streamer.prepareForNewResponse('android-safe-early');
+
+      const ctx = audioContextMock.mock.results[audioContextMock.mock.results.length - 1]
+        .value;
+      const queueSource = getLatestQueueSource(ctx as MockAudioContextInstance);
+      const chunk = createPcmChunk(19200); // 0.8s @ 24kHz
+
+      for (let i = 0; i < 9; i++) {
+        streamer.queueAudio(chunk);
+        jest.advanceTimersByTime(1200);
+      }
+
+      expect(queueSource.start.mock.calls.length).toBeGreaterThanOrEqual(1);
+
+      streamer.onGenerationComplete();
+      expect(queueSource.start.mock.calls.length).toBeGreaterThanOrEqual(1);
+      expect(queueSource.playbackRate.setValueAtTime).toHaveBeenCalledWith(1, expect.any(Number));
+    });
+
+    it('keeps deferring for severe slow windows until generationComplete', async () => {
+      const { streamer, audioContextMock } = loadAndroidStreamer();
+      await streamer.initialize();
+      streamer.prepareForNewResponse('android-severe-slow');
+
+      const ctx = audioContextMock.mock.results[audioContextMock.mock.results.length - 1]
+        .value;
+      const queueSource = getLatestQueueSource(ctx as MockAudioContextInstance);
+      const chunk = createPcmChunk(19200); // 0.8s @ 24kHz
+
+      for (let i = 0; i < 4; i++) {
+        streamer.queueAudio(chunk);
+        jest.advanceTimersByTime(2000);
+      }
+
+      expect(queueSource.start).not.toHaveBeenCalled();
+
+      streamer.onGenerationComplete();
+      expect(queueSource.start).toHaveBeenCalledTimes(1);
     });
   });
 });
