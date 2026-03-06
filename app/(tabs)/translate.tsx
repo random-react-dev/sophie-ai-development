@@ -41,7 +41,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -55,8 +55,10 @@ import {
 } from "react-native";
 import Animated, {
   Easing,
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -94,6 +96,37 @@ export default function TranslateScreen() {
   // Animation for swap button - horizontal flip
   const flipX = useSharedValue(1);
 
+  // Pulsing animation for mic button
+  const pulseScale = useSharedValue(1);
+  const pulseOpacity = useSharedValue(0.6);
+
+  useEffect(() => {
+    if (isListening) {
+      pulseScale.value = 1;
+      pulseOpacity.value = 0.6;
+      pulseScale.value = withRepeat(
+        withTiming(1.8, { duration: 1000, easing: Easing.out(Easing.ease) }),
+        -1,
+        false,
+      );
+      pulseOpacity.value = withRepeat(
+        withTiming(0, { duration: 1000, easing: Easing.out(Easing.ease) }),
+        -1,
+        false,
+      );
+    } else {
+      cancelAnimation(pulseScale);
+      cancelAnimation(pulseOpacity);
+      pulseScale.value = withTiming(1, { duration: 200 });
+      pulseOpacity.value = withTiming(0, { duration: 200 });
+    }
+  }, [isListening]);
+
+  const pulseAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseScale.value }],
+    opacity: pulseOpacity.value,
+  }));
+
   // Speech Recognition Events
   useSpeechRecognitionEvent("start", () => setIsListening(true));
   useSpeechRecognitionEvent("end", () => setIsListening(false));
@@ -109,6 +142,7 @@ export default function TranslateScreen() {
   });
   useSpeechRecognitionEvent("error", (event) => {
     setIsListening(false);
+    console.warn("Speech recognition error:", event.error);
     if (
       event.error === "not-allowed" ||
       event.error === "service-not-allowed"
@@ -119,10 +153,24 @@ export default function TranslateScreen() {
         undefined,
         "error",
       );
+    } else if (event.error === "language-not-supported") {
+      showAlert(
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.language_not_supported"),
+        undefined,
+        "error",
+      );
+    } else if (event.error === "network") {
+      showAlert(
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.network_error"),
+        undefined,
+        "error",
+      );
     } else {
       showAlert(
         t("translate_screen.alerts.error"),
-        t("translate_screen.alerts.translate_failed"),
+        t("translate_screen.alerts.speech_recognition_failed"),
         undefined,
         "error",
       );
@@ -151,8 +199,8 @@ export default function TranslateScreen() {
       ExpoSpeechRecognitionModule.start({
         lang: locale,
         interimResults: true,
-        continuous: true,
-        requiresOnDeviceRecognition: true,
+        continuous: false,
+        requiresOnDeviceRecognition: false,
         iosCategory: {
           category: "playAndRecord",
           categoryOptions: ["defaultToSpeaker", "allowBluetooth"],
@@ -314,14 +362,20 @@ export default function TranslateScreen() {
     setIsSpeaking(true);
 
     // Use built-in TTS instead of Gemini WebSocket
-    await speakWord(translatedText, targetLang.name, {
-      onStart: () => setIsSpeaking(true),
-      onDone: () => setIsSpeaking(false),
-      onError: (err) => {
-        setIsSpeaking(false);
-        console.error("TTS Error:", err);
+    await speakWord(
+      translatedText,
+      targetLang.name,
+      {
+        onStart: () => setIsSpeaking(true),
+        onDone: () => setIsSpeaking(false),
+        onError: (err) => {
+          setIsSpeaking(false);
+          console.error("TTS Error:", err);
+        },
       },
-    }, 1.0, activeProfile?.preferred_accent);
+      1.0,
+      activeProfile?.preferred_accent,
+    );
   };
 
   return (
@@ -440,19 +494,45 @@ export default function TranslateScreen() {
 
             {/* Input Actions row */}
             <View className="flex-row items-center justify-between mt-6">
-              <View className="flex-row gap-2">
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={handleMicPress}
-                  className={`w-10 h-10 items-center justify-center rounded-full ${isListening ? "bg-red-100" : "bg-gray-100"
-                    }`}
+              <View className="flex-row items-center gap-2">
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "visible",
+                  }}
                 >
-                  <FontAwesome
-                    name="microphone"
-                    size={18}
-                    color={isListening ? "#ef4444" : "black"}
-                  />
-                </TouchableOpacity>
+                  {isListening && (
+                    <Animated.View
+                      style={[
+                        {
+                          position: "absolute",
+                          width: 40,
+                          height: 40,
+                          borderRadius: 20,
+                          borderWidth: 2,
+                          borderColor: "#6366f1",
+                        },
+                        pulseAnimatedStyle,
+                      ]}
+                    />
+                  )}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={handleMicPress}
+                    className={`w-10 h-10 items-center justify-center rounded-full ${
+                      isListening ? "bg-indigo-100" : "bg-gray-100"
+                    }`}
+                  >
+                    <FontAwesome
+                      name="microphone"
+                      size={18}
+                      color={isListening ? "#6366f1" : "black"}
+                    />
+                  </TouchableOpacity>
+                </View>
                 {inputText.length > 0 && (
                   <TouchableOpacity
                     activeOpacity={0.7}
@@ -544,8 +624,9 @@ export default function TranslateScreen() {
                       <TouchableOpacity
                         activeOpacity={0.7}
                         onPress={handleSpeak}
-                        className={`w-10 h-10 rounded-full items-center justify-center ${isSpeaking ? "bg-blue-100" : "bg-gray-100"
-                          }`}
+                        className={`w-10 h-10 rounded-full items-center justify-center ${
+                          isSpeaking ? "bg-blue-100" : "bg-gray-100"
+                        }`}
                       >
                         <Volume2
                           size={18}
