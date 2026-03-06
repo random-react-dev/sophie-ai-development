@@ -65,6 +65,7 @@ class GeminiWebSocket {
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
+  private isTTSRequest = false; // Track if current turn is a TTS request to skip Android buffering
   private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
   private pendingModelTranscript = "";
   private hasAudioInCurrentTurn = false;
@@ -920,7 +921,17 @@ class GeminiWebSocket {
     // Prepare audio streamer for new audio response
     this.turnTraceId = this.buildTurnTraceId("tts");
     Logger.info(TAG, `[DIAG] stage=tts_start trace=${this.turnTraceId}`);
-    audioStreamer.prepareForNewResponse(this.turnTraceId);
+
+    // Anchor the SLA tracking so streamer computes initial latency accurately
+    this.startupSlaAnchorMs = Date.now();
+    this.isTTSRequest = true;
+
+    // Pass isTTS = true to skip Android network buffering
+    audioStreamer.prepareForNewResponse(
+      this.turnTraceId,
+      this.startupSlaAnchorMs,
+      true,
+    );
     this.isFirstAudioChunk = true; // Reset for incoming audio
 
     const speakMsg: GeminiClientContent = {
@@ -930,7 +941,7 @@ class GeminiWebSocket {
             role: "user",
             parts: [
               {
-                text: `Speak this ${language} phrase naturally and clearly, exactly as written. Do not add anything else, just speak the phrase: "${phrase}"`,
+                text: `Speak the following phrase in ${language} at a slow, measured, and easy-to-understand pace for a language learner. \nNo intro, no conversation, just pronounce exactly this phrase slowly:\n"${phrase}"`,
               },
             ],
           },
@@ -1129,6 +1140,7 @@ class GeminiWebSocket {
                 audioStreamer.prepareForNewResponse(
                   this.turnTraceId,
                   this.startupSlaAnchorMs ?? undefined,
+                  this.isTTSRequest,
                 );
                 this.isFirstAudioChunk = false;
               } else {
@@ -1204,6 +1216,7 @@ class GeminiWebSocket {
       const isGenerationComplete =
         serverContent.generation_complete || serverContent.generationComplete;
       if (isGenerationComplete) {
+        this.isTTSRequest = false;
         if (this.discardModelOutputWhilePTT) {
           Logger.warn(
             TAG,

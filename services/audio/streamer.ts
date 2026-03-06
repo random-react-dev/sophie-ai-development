@@ -111,6 +111,7 @@ class AudioStreamer {
   private maxDeferTimeoutLogged = false;
   private turnActivityEndAtMs: number | null = null;
   private startupSlaLogged = false;
+  private isTTSPlay = false;
 
   private static instance: AudioStreamer;
   private constructor() {}
@@ -192,7 +193,11 @@ class AudioStreamer {
     }
   }
 
-  prepareForNewResponse(traceId?: string, activityEndAtMs?: number): void {
+  prepareForNewResponse(
+    traceId?: string,
+    activityEndAtMs?: number,
+    isTTS?: boolean,
+  ): void {
     const entryState = this.audioContext?.state ?? "null";
     const entryTime = this.audioContext?.currentTime ?? 0;
     Logger.debug(
@@ -255,7 +260,7 @@ class AudioStreamer {
     this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
     this.activePlaybackRate = NORMAL_PLAYBACK_RATE;
     this.turnTraceId = traceId ?? `resp-${this.responseId}`;
-    this.deferStartUntilGenerationComplete = IS_ANDROID;
+    this.deferStartUntilGenerationComplete = IS_ANDROID && !(isTTS ?? false);
     this.underrunRiskCount = 0;
     this.starvationEventCount = 0;
     this.queueLowWatermarkSeconds = Number.POSITIVE_INFINITY;
@@ -270,6 +275,7 @@ class AudioStreamer {
     this.maxDeferTimeoutLogged = false;
     this.turnActivityEndAtMs = activityEndAtMs ?? null;
     this.startupSlaLogged = false;
+    this.isTTSPlay = isTTS ?? false;
     this.clearDelayedStartTimer();
     this.clearQueueHeartbeat();
 
@@ -547,9 +553,14 @@ class AudioStreamer {
     const bufferedSeconds = (this.totalQueuedSamples / SAMPLE_RATE).toFixed(2);
     const bufferedSecondsNum = this.totalQueuedSamples / SAMPLE_RATE;
     const elapsedMs = this.getElapsedFromTurnEndMs();
-    const hasMinBuffer = this.totalQueuedSamples >= MIN_INITIAL_BUFFER;
-    const delaySatisfied =
-      MIN_START_DELAY_MS === 0 || elapsedMs >= MIN_START_DELAY_MS;
+    // Fast-track TTS phrases: skip full Android network buffer
+    const hasMinBuffer = this.isTTSPlay
+      ? this.totalQueuedSamples >= 4800 // 0.2s minimal buffer for TTS
+      : this.totalQueuedSamples >= MIN_INITIAL_BUFFER;
+
+    const delaySatisfied = this.isTTSPlay
+      ? true
+      : MIN_START_DELAY_MS === 0 || elapsedMs >= MIN_START_DELAY_MS;
 
     this.evaluateReceiveRate(elapsedMs);
     const rateWindowAvg =
@@ -557,8 +568,16 @@ class AudioStreamer {
     const rateWindowMin =
       this.rateWindowCount > 0 ? this.rateWindowMin : Number.POSITIVE_INFINITY;
 
+    if (this.isTTSPlay) {
+      Logger.debug(
+        TAG,
+        `[DIAG] maybeStartPlayback TTS eval trace=${this.turnTraceId} totalQueuedSamples=${this.totalQueuedSamples} hasMinBuffer=${hasMinBuffer} delaySatisfied=${delaySatisfied} elapsed=${elapsedMs}ms deferred=${this.deferStartUntilGenerationComplete}`,
+      );
+    }
+
     if (
       IS_ANDROID &&
+      !this.isTTSPlay &&
       !this.isGenerationComplete &&
       elapsedMs >= STARTUP_SLA_MS &&
       hasMinBuffer
@@ -593,7 +612,7 @@ class AudioStreamer {
       return;
     }
 
-    if (IS_ANDROID && !this.isGenerationComplete) {
+    if (IS_ANDROID && !this.isTTSPlay && !this.isGenerationComplete) {
       const safeAppliedRate =
         this.resolvePlaybackRate(SAFE_PLAYBACK_RATE).appliedRate;
       const safePathUsesNormalRate = safeAppliedRate >= NORMAL_PLAYBACK_RATE;
@@ -918,7 +937,9 @@ class AudioStreamer {
 
     if (!this.hasStartedPlayback && this.totalQueuedSamples > 0) {
       const elapsedMs = this.getElapsedFromTurnEndMs();
-      const remainingMs = Math.max(0, MIN_START_DELAY_MS - elapsedMs);
+      const remainingMs = this.isTTSPlay
+        ? 0
+        : Math.max(0, MIN_START_DELAY_MS - elapsedMs);
       if (IS_ANDROID) {
         const rateWindowAvg =
           this.rateWindowCount > 0
@@ -1033,6 +1054,7 @@ class AudioStreamer {
     this.maxDeferTimeoutLogged = false;
     this.turnActivityEndAtMs = null;
     this.startupSlaLogged = false;
+    this.isTTSPlay = false;
 
     if (this.accumulatedSamples.length > 0) {
       this.accumulatedSamples.length = 0;

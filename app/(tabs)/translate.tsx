@@ -10,10 +10,11 @@ import {
   Language,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
-import { speakWord, stopSpeaking } from "@/services/audio/tts";
+import { initializeTTS, speakWord, stopSpeaking } from "@/services/audio/tts";
 import { translateText } from "@/services/gemini/translate";
-// import { geminiWebSocket } from "@/services/gemini/websocket"; // Removed
+import { geminiWebSocket } from "@/services/gemini/websocket";
 import { useAuthStore } from "@/stores/authStore";
+import { useConnectionState, useIsSpeaking } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import {
@@ -100,17 +101,22 @@ export default function TranslateScreen() {
   const pulseScale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0.6);
 
+  // Pre-initialize TTS engine on mount
+  useEffect(() => {
+    initializeTTS();
+  }, []);
+
   useEffect(() => {
     if (isListening) {
       pulseScale.value = 1;
       pulseOpacity.value = 0.6;
       pulseScale.value = withRepeat(
-        withTiming(1.8, { duration: 1000, easing: Easing.out(Easing.ease) }),
+        withTiming(1.4, { duration: 1200, easing: Easing.out(Easing.ease) }),
         -1,
         false,
       );
       pulseOpacity.value = withRepeat(
-        withTiming(0, { duration: 1000, easing: Easing.out(Easing.ease) }),
+        withTiming(0, { duration: 1200, easing: Easing.out(Easing.ease) }),
         -1,
         false,
       );
@@ -344,8 +350,13 @@ export default function TranslateScreen() {
     // because that might be confusing if user just wants to see the result
   };
 
+  const isGlobalSpeaking = useIsSpeaking();
+  const connectionState = useConnectionState();
+  const isCurrentlySpeaking = isSpeaking || isGlobalSpeaking;
+
   /**
-   * Speak the translated text using native device TTS (expo-speech).
+   * Speak the translated text using Gemini WebSocket (zero-delay, Sophie's voice)
+   * or fallback to native device TTS (expo-speech).
    */
   const handleSpeak = async () => {
     if (!translatedText) return;
@@ -353,15 +364,32 @@ export default function TranslateScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // If already speaking, stop playback
-    if (isSpeaking) {
+    if (isCurrentlySpeaking) {
+      if (connectionState === "connected") {
+        const { audioStreamer } = await import("@/services/audio/streamer");
+        audioStreamer.clearQueue();
+      }
       await stopSpeaking();
       setIsSpeaking(false);
       return;
     }
 
-    setIsSpeaking(true);
+    if (connectionState === "connected") {
+      // Use zero-delay, high-quality Sophie voice via WebSocket
+      // Passing audioOnly=true prevents it from appearing in conversation history
+      const success = geminiWebSocket.speakPhrase(
+        translatedText,
+        targetLang.name,
+        true,
+      );
+      if (success) {
+        // UI relies on isGlobalSpeaking state from audioStreamer
+        return;
+      }
+    }
 
-    // Use built-in TTS instead of Gemini WebSocket
+    // Fallback to built-in TTS if WS is not ready or fails
+    setIsSpeaking(true);
     await speakWord(
       translatedText,
       targetLang.name,
@@ -511,25 +539,37 @@ export default function TranslateScreen() {
                           position: "absolute",
                           width: 40,
                           height: 40,
-                          borderRadius: 20,
-                          borderWidth: 2,
-                          borderColor: "#6366f1",
                         },
                         pulseAnimatedStyle,
                       ]}
-                    />
+                    >
+                      <RainbowBorder
+                        borderWidth={2}
+                        borderRadius={20}
+                        innerBackgroundClassName="bg-white"
+                        style={{ flex: 1 }}
+                      />
+                    </Animated.View>
                   )}
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={handleMicPress}
-                    className={`w-10 h-10 items-center justify-center rounded-full ${
-                      isListening ? "bg-indigo-100" : "bg-gray-100"
+                    className={`w-10 h-10 items-center justify-center rounded-full overflow-hidden ${
+                      !isListening && "bg-gray-100"
                     }`}
                   >
+                    {isListening && (
+                      <View className="absolute inset-0 opacity-40">
+                        <RainbowBorder
+                          borderWidth={40} // Fill the entire background with gradient
+                          borderRadius={20}
+                        />
+                      </View>
+                    )}
                     <FontAwesome
                       name="microphone"
                       size={18}
-                      color={isListening ? "#6366f1" : "black"}
+                      color={isListening ? "#1A1A1D" : "#0F0E0E"}
                     />
                   </TouchableOpacity>
                 </View>
@@ -537,7 +577,7 @@ export default function TranslateScreen() {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={clearAll}
-                    className="w-10 h-10 items-center justify-center rounded-full bg-red-100 "
+                    className="w-10 h-10 items-center justify-center rounded-full bg-red-100"
                   >
                     <Trash2 size={18} color="#ef4444" />
                   </TouchableOpacity>
@@ -625,12 +665,12 @@ export default function TranslateScreen() {
                         activeOpacity={0.7}
                         onPress={handleSpeak}
                         className={`w-10 h-10 rounded-full items-center justify-center ${
-                          isSpeaking ? "bg-blue-100" : "bg-gray-100"
+                          isCurrentlySpeaking ? "bg-blue-100" : "bg-gray-100"
                         }`}
                       >
                         <Volume2
                           size={18}
-                          color={isSpeaking ? "#3b82f6" : "#374151"}
+                          color={isCurrentlySpeaking ? "#3b82f6" : "#374151"}
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
