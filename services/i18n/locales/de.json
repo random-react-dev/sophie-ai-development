@@ -192,41 +192,51 @@
       "subtitle": "Schöpfen Sie das volle Potenzial von Sophie AI aus und meistern Sie jede Sprache.",
       "plans": {
         "mg": {
-          "name": "M und G",
-          "description": "Perfekt für gelegentliches Üben.",
+          "name": "M&G",
+          "description": "Treffen und Begrüßen Sie Sophie",
           "features": {
-            "0": "Alle Sprachen inbegriffen",
-            "1": "5 Min./Tag Übung",
-            "2": "Grundlegendes KI-Tutor-Feedback"
+            "0": "App in 15 Sprachen",
+            "1": "Natürliche Gespräche mit Sophie in 50+ Sprachen",
+            "2": "Sophies Übersetzung in jede verfügbare Sprache",
+            "3": "Unbegrenzter Vokabelspeicher in allen verfügbaren Sprachen.",
+            "4": "Über 100 Konversationsszenarien"
           }
         },
-        "launch": {
-          "name": "Startpaket",
-          "description": "Für ernsthafte Lerner, die selbstbewusst sprechen wollen.",
-          "badge": "Beliebteste",
+        "scf": {
+          "name": "SCF",
+          "description": "Sophies Enger Freund",
+          "badge": "BELIEBT",
           "features": {
-            "0": "1 Sprache nach Wahl",
-            "1": "15 Min./Tag Übung",
-            "2": "Bevorzugtes KI-Feedback",
-            "3": "Keine Werbung"
+            "0": "Alles ist in der kostenlosen Testversion enthalten.",
+            "1": "Kundenbetreuung rund um die Uhr. Garantiert.",
+            "2": "Uneingeschränkte App-Nutzung",
+            "3": "Strategische Botschafteroption."
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Fortgeschrittenes Coaching für Business & Prüfungen.",
+          "description": "Sophies Bester Kumpel",
+          "badge": "BESTER WERT",
           "features": {
-            "0": "Unbegrenzte Sprachen",
-            "1": "Unbegrenzte Zeit",
-            "2": "Erweiterte KI-Analysen",
-            "3": "Personalisierte Pfade"
+            "0": "Alles in Sophies Enger Freund",
+            "1": "Prioritärer 24/7-Support",
+            "2": "Exklusive Inhalte & Vorabzugang",
+            "3": "Individueller Lernpfad",
+            "4": "Engagierter Account Manager"
           }
         }
       },
       "common": {
         "subscribe": "Jetzt abonnieren",
-        "getStarted": "Loslegen",
+        "getStarted": "Warteliste beitreten",
         "month": "Monat",
-        "day7": "7 Tage"
+        "day7": "7 Tage",
+        "startFreeTrial": "Kostenlosen Test starten",
+        "regularPrice": "regulärer Preis",
+        "launchPrice": "Einführungspreis",
+        "billedEvery": "{{total}} Abrechnung alle {{months}} Monate",
+        "saveVsMonthly": "$ Spare {{percent}}% im Vgl. zu monatlich",
+        "mo": "Mo."
       },
       "footer": "Alle Pläne beinhalten 24/7 KI-Tutor-Zugang und Fortschrittsverfolgung. Jederzeit in den Einstellungen kündbar."
     },
@@ -1698,6 +1708,8 @@
     "days_left_title": "Noch {{count}} Tage",
     "last_day_subtitle": "Ihr kostenloser Test endet heute!",
     "upgrade_subtitle": "Upgrade auf Sophie AI Pro für das volle Erlebnis.",
+    "expired_title": "Testphase abgelaufen!",
+    "expired_subtitle": "Ihre 7-tägige kostenlose Testphase ist beendet. Bitte wählen Sie einen Plan, um weiter zu lernen und auf alle Funktionen zuzugreifen.",
     "benefits_title": "Das bekommen Sie",
     "benefit_1": "Unbegrenzte KI-Gespräche",
     "benefit_2": "Alle 10+ Sprachen freigeschaltet",
@@ -1708,6 +1720,7 @@
     "claim_discount_msg": "Sichern Sie sich heute Ihren Rabatt",
     "upgrade_now_btn": "Jetzt upgraden",
     "claim_discount_btn": "Meinen Rabatt sichern",
-    "maybe_later_btn": "Vielleicht später"
+    "maybe_later_btn": "Vielleicht später",
+    "choose_plan_btn": "Plan auswählen"
   }
 }
