@@ -192,41 +192,51 @@
       "subtitle": "Buka potensi penuh Sophie AI dan kuasai bahasa apa pun.",
       "plans": {
         "mg": {
-          "name": "M dan G",
-          "description": "Sempurna untuk latihan santai.",
+          "name": "M&G",
+          "description": "Berkenalan dengan Sophie",
           "features": {
-            "0": "Semua bahasa termasuk",
-            "1": "Latihan 5 menit/hari",
-            "2": "Umpan balik tutor AI dasar"
+            "0": "Aplikasi dalam 15 bahasa",
+            "1": "Percakapan alami dengan Sophie dalam 50+ bahasa",
+            "2": "Terjemahan Sophie ke bahasa apapun yang tersedia",
+            "3": "Penyimpanan kosakata tak terbatas",
+            "4": "100+ skenario percakapan"
           }
         },
-        "launch": {
-          "name": "Paket Peluncuran",
-          "description": "Untuk pembelajar serius yang ingin berbicara dengan percaya diri.",
-          "badge": "Paling Populer",
+        "scf": {
+          "name": "SCF",
+          "description": "Teman Dekat Sophie",
+          "badge": "POPULER",
           "features": {
-            "0": "1 bahasa pilihan",
-            "1": "Latihan 15 menit/hari",
-            "2": "Umpan balik AI prioritas",
-            "3": "Tanpa iklan"
+            "0": "Semuanya termasuk dalam uji coba gratis",
+            "1": "Dukungan pelanggan 24/7. Dijamin.",
+            "2": "Penggunaan aplikasi tanpa batas",
+            "3": "Opsi duta strategis"
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Pelatihan tingkat lanjut untuk bisnis & ujian.",
+          "description": "Sahabat Terbaik Sophie",
+          "badge": "NILAI TERBAIK",
           "features": {
-            "0": "Bahasa tak terbatas",
-            "1": "Waktu tak terbatas",
-            "2": "Analitik AI tingkat lanjut",
-            "3": "Jalur yang dipersonalisasi"
+            "0": "Semua yang ada di Teman Dekat Sophie",
+            "1": "Dukungan prioritas 24/7",
+            "2": "Konten eksklusif & akses awal",
+            "3": "Jalur belajar kustom",
+            "4": "Manajer akun khusus"
           }
         }
       },
       "common": {
-        "subscribe": "Berlangganan Sekarang",
-        "getStarted": "Mulai",
+        "subscribe": "Berlangganan",
+        "getStarted": "Gabung Daftar Tunggu",
         "month": "bulan",
-        "day7": "7 hari"
+        "day7": "7 hari",
+        "startFreeTrial": "Mulai Uji Coba Gratis",
+        "regularPrice": "harga reguler",
+        "launchPrice": "harga peluncuran",
+        "billedEvery": "ditagih {{total}} setiap {{months}} bulan",
+        "saveVsMonthly": "$ Hemat {{percent}}% dibanding bulanan",
+        "mo": "bln"
       },
       "footer": "Semua paket mencakup akses tutor AI 24/7 dan Pelacakan Kemajuan. Batalkan kapan saja dari pengaturan Anda."
     },

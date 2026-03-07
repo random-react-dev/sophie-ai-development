@@ -192,41 +192,51 @@
       "subtitle": "Fungua uwezo kamili wa Sophie AI na ujifunze lugha yoyote.",
       "plans": {
         "mg": {
-          "name": "M na G",
-          "description": "Ni kamili kwa mazoezi ya kawaida.",
+          "name": "M&G",
+          "description": "Kutana na Sophie",
           "features": {
-            "0": "Lugha zote zimejumuishwa",
-            "1": "Mazoezi ya dakika 5 kwa siku",
-            "2": "Maoni ya kimsingi ya mwalimu wa AI"
+            "0": "Programu katika lugha 15",
+            "1": "Mazungumzo asilia na Sophie katika lugha 50+",
+            "2": "Tafsiri ya Sophie kwa lugha yoyote inayopatikana",
+            "3": "Hifadhi msamiati bila kikomo",
+            "4": "Matukio 100+ ya mazungumzo"
           }
         },
-        "launch": {
-          "name": "Kifurushi cha Uzinduzi",
-          "description": "Kwa wanafunzi makini wanaotaka kuzungumza kwa ujasiri.",
-          "badge": "Maarufu Zaidi",
+        "scf": {
+          "name": "SCF",
+          "description": "Rafiki wa Karibu wa Sophie",
+          "badge": "MAARUFU",
           "features": {
-            "0": "Lugha 1 ya chaguo",
-            "1": "Mazoezi ya dakika 15 kwa siku",
-            "2": "Maoni ya kipaumbele ya AI",
-            "3": "Hakuna matangazo"
+            "0": "Kila kitu kimejumuishwa kwenye jaribio la bure.",
+            "1": "Msaada kwa wateja 24/7.",
+            "2": "Matumizi ya programu bila kikomo",
+            "3": "Chaguo la balozi"
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Mafunzo ya hali ya juu kwa biashara na mitihani.",
+          "description": "Rafiki Bora wa Sophie",
+          "badge": "THAMANI BORA",
           "features": {
-            "0": "Lugha zisizo na kikomo",
-            "1": "Muda usio na kikomo",
-            "2": "Uchambuzi wa hali ya juu wa AI",
-            "3": "Njia zilizobinafsishwa"
+            "0": "Kila kitu katika Rafiki wa Karibu wa Sophie",
+            "1": "Msaada wa kipaumbele 24/7",
+            "2": "Maudhui ya kipekee na ufikiaji wa mapema",
+            "3": "Njia ya kujifunza maalum",
+            "4": "Meneja wa akaunti aliyejitolea"
           }
         }
       },
       "common": {
         "subscribe": "Jisajili Sasa",
-        "getStarted": "Anza",
+        "getStarted": "Jiunge Orodha",
         "month": "mwezi",
-        "day7": "Siku 7"
+        "day7": "siku 7",
+        "startFreeTrial": "Jaribio la Bure",
+        "regularPrice": "bei ya kawaida",
+        "launchPrice": "bei ya uzinduzi",
+        "billedEvery": "hutozwa {{total}} kila baada ya miezi {{months}}",
+        "saveVsMonthly": "$ Okoa asilimia {{percent}}% dhidi ya kila mwezi",
+        "mo": "mwezi"
       },
       "footer": "Mipango yote inajumuisha ufikiaji wa mwalimu wa AI wa 24/7 na Ufuatiliaji wa Maendeleo. Ghairi wakati wowote kutoka kwa mipangilio yako."
     },

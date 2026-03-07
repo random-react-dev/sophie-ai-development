@@ -192,41 +192,51 @@
       "subtitle": "Mở khóa toàn bộ tiềm năng của Sophie AI và làm chủ bất kỳ ngôn ngữ nào.",
       "plans": {
         "mg": {
-          "name": "M và G",
-          "description": "Hoàn hảo cho việc luyện tập thông thường.",
+          "name": "M&G",
+          "description": "Gặp gỡ Sophie",
           "features": {
-            "0": "Bao gồm tất cả ngôn ngữ",
-            "1": "Luyện tập 5 phút/ngày",
-            "2": "Phản hồi cơ bản từ gia sư AI"
+            "0": "Ứng dụng trong 15 ngôn ngữ",
+            "1": "Hội thoại tự nhiên với Sophie bằng hơn 50 ngôn ngữ",
+            "2": "Bản dịch của Sophie sang bất kỳ ngôn ngữ nào",
+            "3": "Lưu từ vựng không giới hạn trong tất cả ngôn ngữ",
+            "4": "Hơn 100 kịch bản hội thoại"
           }
         },
-        "launch": {
-          "name": "Gói Khởi động",
-          "description": "Dành cho người học nghiêm túc muốn nói chuyện tự tin.",
-          "badge": "Phổ biến nhất",
+        "scf": {
+          "name": "SCF",
+          "description": "Bạn Thân Của Sophie",
+          "badge": "PHỔ BIẾN",
           "features": {
-            "0": "1 ngôn ngữ tùy chọn",
-            "1": "Luyện tập 15 phút/ngày",
-            "2": "Phản hồi AI ưu tiên",
-            "3": "Không quảng cáo"
+            "0": "Mọi thứ được bao gồm trong bản dùng thử.",
+            "1": "Hỗ trợ khách hàng 24/7. Đảm bảo.",
+            "2": "Sử dụng ứng dụng không giới hạn",
+            "3": "Lựa chọn đại sứ chiến lược"
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Huấn luyện nâng cao cho công việc & thi cử.",
+          "description": "Bạn Tốt Nhất Của Sophie",
+          "badge": "GIÁ TRỊ TỐT NHẤT",
           "features": {
-            "0": "Ngôn ngữ không giới hạn",
-            "1": "Thời gian không giới hạn",
-            "2": "Phân tích AI nâng cao",
-            "3": "Lộ trình cá nhân hóa"
+            "0": "Tất cả tính năng trong Bạn Thân",
+            "1": "Hỗ trợ ưu tiên 24/7",
+            "2": "Nội dung độc quyền & quyền truy cập sớm",
+            "3": "Lộ trình học tập tùy chỉnh",
+            "4": "Người quản lý tài khoản riêng"
           }
         }
       },
       "common": {
-        "subscribe": "Đăng ký Ngay",
-        "getStarted": "Bắt đầu",
+        "subscribe": "Đăng ký ngay",
+        "getStarted": "Danh sách chờ",
         "month": "tháng",
-        "day7": "7 ngày"
+        "day7": "7 ngày",
+        "startFreeTrial": "Bắt đầu Dùng thử",
+        "regularPrice": "giá thông thường",
+        "launchPrice": "giá ra mắt",
+        "billedEvery": "thanh toán {{total}} mỗi {{months}} tháng",
+        "saveVsMonthly": "$ Tiết kiệm {{percent}}% so với hàng tháng",
+        "mo": "tháng"
       },
       "footer": "Tất cả các gói bao gồm quyền truy cập gia sư AI 24/7 và Theo dõi Tiến độ. Hủy bất kỳ lúc nào từ cài đặt của bạn."
     },

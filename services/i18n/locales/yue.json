@@ -192,41 +192,51 @@
       "subtitle": "釋放 Sophie AI 的全部潛力並掌握任何語言。",
       "plans": {
         "mg": {
-          "name": "M 和 G",
-          "description": "適合隨時練習。",
+          "name": "M&G",
+          "description": "同Sophie見面",
           "features": {
-            "0": "包含所有語言",
-            "1": "每日 5 分鐘練習",
-            "2": "基本 AI 導師反饋"
+            "0": "支援15種語言",
+            "1": "用超過50種語言同Sophie自然傾偈",
+            "2": "Sophie可以翻譯成任何語言",
+            "3": "無限生字本",
+            "4": "100+對話場景"
           }
         },
-        "launch": {
-          "name": "啟動包",
-          "description": "適合想自信開口說話的認真學習者。",
-          "badge": "最受歡迎",
+        "scf": {
+          "name": "SCF",
+          "description": "Sophie密友",
+          "badge": "熱門",
           "features": {
-            "0": "自選 1 種語言",
-            "1": "每日 15 分鐘練習",
-            "2": "優先 AI 反饋",
-            "3": "無廣告"
+            "0": "免費試用包晒所有嘢",
+            "1": "24/7客戶服務支援",
+            "2": "無限次使用App",
+            "3": "推廣大使選項"
           }
         },
         "sbb": {
-          "name": "專業商務版",
-          "description": "針對商業和考試的高級輔導。",
+          "name": "SBB",
+          "description": "Sophie死黨",
+          "badge": "最抵買",
           "features": {
-            "0": "無限語言",
-            "1": "無限時間",
-            "2": "高級 AI 分析",
-            "3": "個性化路徑"
+            "0": "密友計劃所有功能",
+            "1": "優先24/7支援",
+            "2": "獨家內容同優先試用",
+            "3": "度身訂造學習路線",
+            "4": "專屬客戶經理"
           }
         }
       },
       "common": {
         "subscribe": "立即訂閱",
-        "getStarted": "開始使用",
-        "month": "月",
-        "day7": "7 天"
+        "getStarted": "加入候補名單",
+        "month": "個月",
+        "day7": "7日",
+        "startFreeTrial": "開始免費試用",
+        "regularPrice": "正價",
+        "launchPrice": "首發價",
+        "billedEvery": "每{{months}}個月收費{{total}}",
+        "saveVsMonthly": "$ 比月費慳{{percent}}%",
+        "mo": "個月"
       },
       "footer": "所有計劃均包括 24/7 AI 導師服務及進度追蹤。隨時可在設定中取消。"
     },

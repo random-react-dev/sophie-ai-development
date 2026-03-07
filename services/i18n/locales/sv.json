@@ -192,41 +192,51 @@
       "subtitle": "Lås upp Sophie AI:s fulla potential och bemästra vilket språk som helst.",
       "plans": {
         "mg": {
-          "name": "M och G",
-          "description": "Perfekt för tillfällig övning.",
+          "name": "M&G",
+          "description": "Träffa Sophie",
           "features": {
-            "0": "Alla språk ingår",
-            "1": "5 min/dag övning",
-            "2": "Grundläggande AI-lärarfeedback"
+            "0": "Appen på 15 språk",
+            "1": "Naturliga samtal med Sophie på över 50 språk",
+            "2": "Sophies översättning till valfritt språk",
+            "3": "Obegränsad ordlista på alla tillgängliga språk.",
+            "4": "Mer än 100 konversationsscenarier"
           }
         },
-        "launch": {
-          "name": "Startpaket",
-          "description": "För seriösa inlärare som vill tala med självförtroende.",
-          "badge": "Mest populär",
+        "scf": {
+          "name": "SCF",
+          "description": "Sophies Nära Vän",
+          "badge": "POPULÄR",
           "features": {
-            "0": "1 valfritt språk",
-            "1": "15 min/dag övning",
-            "2": "Prioriterad AI-feedback",
-            "3": "Inga annonser"
+            "0": "Allt ingår i gratisprov.",
+            "1": "24/7 Kundsupport. Garanterat.",
+            "2": "Obegränsad användning av appen",
+            "3": "Strategisk ambassadöralternativ."
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Avancerad coachning för affärer och tentor.",
+          "description": "Sophies Bästa Vän",
+          "badge": "BÄSTA VÄRDE",
           "features": {
-            "0": "Obegränsade språk",
-            "1": "Obegränsad tid",
-            "2": "Avancerad AI-analys",
-            "3": "Personliga vägar"
+            "0": "Allt i Sophies Nära Vän",
+            "1": "Prioriterad 24/7 support",
+            "2": "Exklusivt innehåll & tidig åtkomst",
+            "3": "Anpassad inlärningsväg",
+            "4": "Dedikerad kontohanterare"
           }
         }
       },
       "common": {
-        "subscribe": "Prenumerera nu",
-        "getStarted": "Kom igång",
+        "subscribe": "Prenumerera Nu",
+        "getStarted": "Gå med i väntelistan",
         "month": "månad",
-        "day7": "7 dagar"
+        "day7": "7 dagar",
+        "startFreeTrial": "Börja Gratis",
+        "regularPrice": "ordinarie pris",
+        "launchPrice": "lanseringspris",
+        "billedEvery": "debiteras {{total}} var {{months}}:e månad",
+        "saveVsMonthly": "$ Spara {{percent}}% jmf. med månadsvis",
+        "mo": "mån"
       },
       "footer": "Alla planer inkluderar dygnet runt AI-läraråtkomst och framstegsspårning. Avbryt när som helst från dina inställningar."
     },

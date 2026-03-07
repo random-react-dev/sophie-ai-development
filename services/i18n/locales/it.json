@@ -192,41 +192,51 @@
       "subtitle": "Sblocca tutto il potenziale di Sophie AI e padroneggia qualsiasi lingua.",
       "plans": {
         "mg": {
-          "name": "M e G",
-          "description": "Perfetto per la pratica occasionale.",
+          "name": "M&G",
+          "description": "Incontra Sophie",
           "features": {
-            "0": "Tutte le lingue incluse",
-            "1": "5 min/giorno di pratica",
-            "2": "Feedback tutor IA di base"
+            "0": "App in 15 lingue",
+            "1": "Conversazioni naturali con Sophie in 50+ lingue",
+            "2": "Traduzione di Sophie in qualsiasi lingua disponibile",
+            "3": "Salvataggio vocabolario illimitato in tutte le lingue",
+            "4": "Oltre 100 scenari di conversazione"
           }
         },
-        "launch": {
-          "name": "Pacchetto Lancio",
-          "description": "Per studenti seri che vogliono parlare con sicurezza.",
-          "badge": "Più popolare",
+        "scf": {
+          "name": "SCF",
+          "description": "Amico Intimo di Sophie",
+          "badge": "POPOLARE",
           "features": {
-            "0": "1 lingua a scelta",
-            "1": "15 min/giorno di pratica",
-            "2": "Feedback IA prioritario",
-            "3": "Nessuna pubblicità"
+            "0": "Tutto è incluso nella prova gratuita",
+            "1": "Assistenza clienti 24/7. Garantita.",
+            "2": "Uso illimitato dell'app",
+            "3": "Opzione ambasciatore strategico"
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Coaching avanzato per affari ed esami.",
+          "description": "Migliore Amico di Sophie",
+          "badge": "MIGLIOR VALORE",
           "features": {
-            "0": "Lingue illimitate",
-            "1": "Tempo illimitato",
-            "2": "Analisi IA avanzate",
-            "3": "Percorsi personalizzati"
+            "0": "Tutto in Amico Intimo di Sophie",
+            "1": "Supporto prioritario 24/7",
+            "2": "Contenuti esclusivi e accesso anticipato",
+            "3": "Percorso di apprendimento personalizzato",
+            "4": "Account manager dedicato"
           }
         }
       },
       "common": {
         "subscribe": "Abbonati Ora",
-        "getStarted": "Inizia",
+        "getStarted": "Iscriviti alla lista d'attesa",
         "month": "mese",
-        "day7": "7 giorni"
+        "day7": "7 giorni",
+        "startFreeTrial": "Inizia la prova gratuita",
+        "regularPrice": "prezzo normale",
+        "launchPrice": "prezzo di lancio",
+        "billedEvery": "fatturato {{total}} ogni {{months}} mesi",
+        "saveVsMonthly": "$ Risparmia {{percent}}% rispetto al mensile",
+        "mo": "mesi"
       },
       "footer": "Tutti i piani includono accesso al tutor IA 24/7 e monitoraggio dei progressi. Annulla in qualsiasi momento dalle impostazioni."
     },
