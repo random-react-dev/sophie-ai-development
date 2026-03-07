@@ -177,9 +177,10 @@ class GeminiWebSocket {
         TAG,
         `Model transcript finalized (${this.pendingModelTranscript.length} chars)`,
       );
-      getConversationStore()
-        .getState()
-        .addMessage("model", this.pendingModelTranscript);
+      const store = getConversationStore().getState();
+      store.addMessage("model", this.pendingModelTranscript);
+      // After adding a new message, trigger summarizeOldTurns to keep the context window small
+      store.summarizeOldTurns();
     }
     this.resetModelTurnBuffer();
   }
@@ -727,21 +728,11 @@ class GeminiWebSocket {
     // Check if we have already greeted the user in this session
     // If so, we MUST tell Gemini NOT to restart the intro, or it will treat the next input as a fresh start.
     const store = getConversationStore().getState();
-    let finalInstruction = instruction || defaultInstruction;
+    const baseInstruction = instruction || defaultInstruction;
 
-    if (store.hasGreeted) {
-      Logger.info(
-        TAG,
-        "Appending RECONNECT instruction (User has already been greeted)",
-      );
-      finalInstruction += `
-      
-      IMPORTANT SYSTEM UPDATE:
-      The conversation is resuming after a connection break.
-      You have ALREADY greeted the user and introduced the lesson.
-      Do NOT repeat the introduction or the greeting.
-      Just reply naturally to the user's latest input as if the conversation never stopped.`;
-    }
+    // Build the dynamic prompt utilizing the static Prefix Cache
+    // The store automatically injects the system update blocks if continuing a session
+    const finalInstruction = store.buildGeminiPrompt(baseInstruction);
 
     // IMPORTANT: Gemini API expects camelCase in setup message (not snake_case)
     const setupMsg = {

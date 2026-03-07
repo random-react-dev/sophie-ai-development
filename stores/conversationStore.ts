@@ -67,11 +67,14 @@ interface ConversationState {
 
   // UI state
   showTranscript: boolean;
-  messages: Message[];
+  messages: Message[]; // Full chat history for UI display
+  contextWindowStart: number; // Index into messages where the context window begins
   hasGreeted: boolean;
   sessionProfileId: string | null;
   activeScenarioTimestamp: number;
-
+  conversationSummary: string; // The compressed text summary of older turns
+  cachedPrefix: string[]; // Caches the static prefix portion of the prompt
+  cachedSummaryHash: string; // Tracks the summary to know when to invalidate the cache
   // Actions
   setConnectionState: (state: ConnectionState) => void;
   setError: (error: string | null) => void;
@@ -88,6 +91,13 @@ interface ConversationState {
   clearMessages: () => void;
   handleInterruption: () => void;
   reset: () => void;
+
+  // Context Management
+  summarizeOldTurns: () => Promise<void>;
+  buildCachedPrefix: (systemPrompt: string) => void;
+  getPromptPrefix: () => string[];
+  invalidatePrefixCache: () => void;
+  buildGeminiPrompt: (baseSystemPrompt: string) => string;
 
   // Conversation mode actions
   startConversation: () => Promise<void>;
@@ -117,343 +127,492 @@ const initialState = {
   bufferProgress: 0,
   showTranscript: false,
   messages: [] as Message[],
+  contextWindowStart: 0,
   hasGreeted: false,
   sessionProfileId: null as string | null,
   activeScenarioTimestamp: 0,
+  conversationSummary: "", // Initial empty summary
+  cachedPrefix: [] as string[],
+  cachedSummaryHash: "",
 };
 
 export const useConversationStore = create<ConversationState>()(
   persist(
     (set, get) => ({
-  ...initialState,
+      ...initialState,
 
-  setConnectionState: (connectionState: ConnectionState) =>
-    set({ connectionState }),
+      setConnectionState: (connectionState: ConnectionState) =>
+        set({ connectionState }),
 
-  setError: (error: string | null) => set({ error }),
+      setError: (error: string | null) => set({ error }),
 
-  setListening: (isListening: boolean) => set({ isListening }),
+      setListening: (isListening: boolean) => set({ isListening }),
 
-  setSpeaking: (isSpeaking: boolean) => set({ isSpeaking }),
+      setSpeaking: (isSpeaking: boolean) => set({ isSpeaking }),
 
-  setProcessing: (isProcessing: boolean) => set({ isProcessing }),
+      setProcessing: (isProcessing: boolean) => set({ isProcessing }),
 
-  setVolumeLevel: (volumeLevel: number) => set({ volumeLevel }),
+      setVolumeLevel: (volumeLevel: number) => set({ volumeLevel }),
 
-  setBufferProgress: (bufferProgress: number) => set({ bufferProgress }),
+      setBufferProgress: (bufferProgress: number) => set({ bufferProgress }),
 
-  setShowTranscript: (showTranscript: boolean) => set({ showTranscript }),
+      setShowTranscript: (showTranscript: boolean) => set({ showTranscript }),
 
-  setHasGreeted: (hasGreeted: boolean) => set({ hasGreeted }),
+      setHasGreeted: (hasGreeted: boolean) => set({ hasGreeted }),
 
-  setSessionProfileId: (sessionProfileId: string | null) =>
-    set({ sessionProfileId }),
+      setSessionProfileId: (sessionProfileId: string | null) =>
+        set({ sessionProfileId }),
 
-  setActiveScenarioTimestamp: (activeScenarioTimestamp: number) =>
-    set({ activeScenarioTimestamp }),
+      setActiveScenarioTimestamp: (activeScenarioTimestamp: number) =>
+        set({ activeScenarioTimestamp }),
 
-  addMessage: (role: "user" | "model", text: string) =>
-    set((state) => {
-      const lastMsg = state.messages[state.messages.length - 1];
-      // If last message is from same role and within 5 seconds, append to it
-      if (
-        lastMsg &&
-        lastMsg.role === role &&
-        Date.now() - lastMsg.timestamp < 5000
-      ) {
-        const updatedMessages = [...state.messages];
-        updatedMessages[updatedMessages.length - 1] = {
-          ...lastMsg,
-          text: (lastMsg.text + " " + text).trim(),
-          timestamp: Date.now(), // Reset timer for next chunk
-        };
-        return { messages: updatedMessages };
-      }
-      return {
-        messages: [
-          ...state.messages,
-          {
-            id: Math.random().toString(36).substring(7),
-            role,
-            text,
-            timestamp: Date.now(),
-          },
-        ],
-      };
-    }),
-
-  clearMessages: () => set({ messages: [] }),
-
-  handleInterruption: () => set({ isSpeaking: false }),
-
-  reset: () => set(initialState),
-
-  /**
-   * Start continuous conversation mode.
-   * Sends greeting on first activation, then starts continuous audio recording.
-   */
-  startConversation: async () => {
-    const state = get();
-    if (state.isConversationActive) return;
-
-    if (!geminiWebSocket.isReady()) {
-      Logger.warn(
-        "ConversationStore",
-        "Cannot start conversation: WebSocket not ready",
-      );
-      return;
-    }
-
-    const { impactAsync, ImpactFeedbackStyle } = await import("expo-haptics");
-    await ensureAudioStreamerReady();
-    await impactAsync(ImpactFeedbackStyle.Medium);
-
-    // Send greeting on first activation
-    if (!state.hasGreeted) {
-      geminiWebSocket.sendGreeting();
-      set({ hasGreeted: true, isConversationActive: true });
-    } else {
-      set({ isConversationActive: true });
-    }
-
-    // Start recording
-    Logger.info("ConversationStore", "Starting audio recording...");
-    await audioRecorder.start({
-      onAudioData: (base64) => geminiWebSocket.sendAudioChunk(base64),
-      onVolumeChange: createVolumeHandler(set),
-    });
-    Logger.info("ConversationStore", "Audio recording started");
-    set({ isListening: true });
-  },
-
-  /**
-   * Stop continuous conversation mode.
-   */
-  stopConversation: async () => {
-    const state = get();
-    if (!state.isConversationActive) {
-      set({ volumeLevel: 0 });
-      return;
-    }
-
-    const { impactAsync, ImpactFeedbackStyle } = await import("expo-haptics");
-
-    Logger.info("ConversationStore", "Stopping conversation...");
-    await audioRecorder.stop();
-    audioStreamer.clearQueue();
-    await impactAsync(ImpactFeedbackStyle.Light);
-
-    set({
-      isConversationActive: false,
-      isListening: false,
-      isSpeaking: false,
-      volumeLevel: 0,
-    });
-    Logger.info("ConversationStore", "Conversation stopped");
-  },
-
-  /**
-   * Toggle conversation mode on/off.
-   */
-  toggleConversation: async () => {
-    const state = get();
-    if (state.isConversationActive) {
-      await state.stopConversation();
-    } else {
-      await state.startConversation();
-    }
-  },
-
-  /**
-   * Start push-to-talk recording (hold to speak).
-   */
-  startPTTRecording: async () => {
-    const state = get();
-    if (state.isPTTActive || isPTTStartInFlight || isPTTStopInFlight || !geminiWebSocket.isReady()) {
-      if (!geminiWebSocket.isReady()) {
-        Logger.warn(
-          "ConversationStore",
-          "Cannot start PTT: WebSocket not ready",
-        );
-      } else {
-        Logger.debug(
-          "ConversationStore",
-          "Ignoring duplicate startPTTRecording call",
-        );
-      }
-      return;
-    }
-
-    isPTTStartInFlight = true;
-    const turnId = ++pttTurnCounter;
-    activePTTTurnId = turnId;
-    pttFramesSentInTurn = 0;
-
-    // Set state IMMEDIATELY (synchronous) so UI responds.
-    // pttStartTime is set later, right before audioRecorder.start(),
-    // so MIN_PTT_DURATION_MS measures actual recording time (not setup time).
-    set({
-      isPTTActive: true,
-      pttStartTime: null,
-      isListening: true,
-      isConversationActive: true,
-      isProcessing: false,
-    });
-
-    try {
-      const { impactAsync, ImpactFeedbackStyle } =
-        await import("expo-haptics");
-      await ensureAudioStreamerReady();
-      await impactAsync(ImpactFeedbackStyle.Medium);
-
-      // Bail out if stop ran while we were setting up
-      if (!get().isPTTActive) {
-        Logger.info("ConversationStore", "PTT cancelled during startup");
-        return;
-      }
-
-      Logger.info("ConversationStore", `Starting PTT recording... Turn: ${turnId}`);
-      if (activityStartSentTurnId !== turnId) {
-        geminiWebSocket.sendActivityStart();
-        activityStartSentTurnId = turnId;
-        activityEndSentTurnId = null;
-      }
-
-      // Set pttStartTime NOW — right before recording starts — so the
-      // minimum duration check in stop reflects actual recording time.
-      set({ pttStartTime: Date.now() });
-
-      await audioRecorder.start({
-        onAudioData: (base64) => {
+      addMessage: (role: "user" | "model", text: string) =>
+        set((state) => {
+          const lastMsg = state.messages[state.messages.length - 1];
+          // If last message is from same role and within 5 seconds, append to it
           if (
-            activePTTTurnId !== turnId ||
-            isPTTStopInFlight ||
-            !get().isPTTActive
+            lastMsg &&
+            lastMsg.role === role &&
+            Date.now() - lastMsg.timestamp < 5000
           ) {
-            return;
+            const updatedMessages = [...state.messages];
+            updatedMessages[updatedMessages.length - 1] = {
+              ...lastMsg,
+              text: (lastMsg.text + " " + text).trim(),
+              timestamp: Date.now(), // Reset timer for next chunk
+            };
+            return { messages: updatedMessages };
           }
-          pttFramesSentInTurn++;
-          geminiWebSocket.sendAudioChunk(base64);
-        },
-        onVolumeChange: createVolumeHandler(set),
-      });
+          return {
+            messages: [
+              ...state.messages,
+              {
+                id: Math.random().toString(36).substring(7),
+                role,
+                text,
+                timestamp: Date.now(),
+              },
+            ],
+          };
+        }),
 
-      // If stop ran during audioRecorder.start(), clean up the orphan
-      if (!get().isPTTActive) {
-        Logger.info("ConversationStore", "PTT stopped during recorder start, cleaning up");
-        await audioRecorder.stop();
-      }
-    } catch (err) {
-      Logger.error("ConversationStore", "PTT recording failed to start", err);
-      // Reset state so UI returns to normal
-      set({
-        isPTTActive: false,
-        pttStartTime: null,
-        isListening: false,
-      });
-      if (activePTTTurnId === turnId) {
-        activePTTTurnId = null;
-      }
-    } finally {
-      isPTTStartInFlight = false;
-    }
-  },
+      clearMessages: () => set({ messages: [], contextWindowStart: 0 }),
 
-  /**
-   * Stop push-to-talk recording.
-   */
-  stopPTTRecording: async () => {
-    const state = get();
-    if (!state.isPTTActive || isPTTStopInFlight) {
-      if (isPTTStopInFlight) {
-        Logger.debug(
-          "ConversationStore",
-          "Ignoring duplicate stopPTTRecording call",
-        );
-      }
-      return;
-    }
+      handleInterruption: () => set({ isSpeaking: false }),
 
-    isPTTStopInFlight = true;
-    const turnId = activePTTTurnId;
+      reset: () => set(initialState),
 
-    const { notificationAsync, NotificationFeedbackType } =
-      await import("expo-haptics");
-    const duration = state.pttStartTime ? Date.now() - state.pttStartTime : 0;
-    let hasFrames = false;
-    let isValidRecording = false;
+      /**
+       * Summarize older turns into conversationSummary.
+       * Messages are kept in the array for UI display; only contextWindowStart advances.
+       */
+      summarizeOldTurns: async () => {
+        const state = get();
+        // A "turn" is defined as 2 messages (user -> model)
+        const MAX_RECENT_TURNS = 4;
+        const MAX_RECENT_MESSAGES = MAX_RECENT_TURNS * 2;
 
-    // Close PTT state first so any extra stop calls no-op immediately.
-    set({
-      isPTTActive: false,
-      pttStartTime: null,
-      isListening: false,
-      volumeLevel: 0,
-    });
+        // Count only the messages inside the current context window
+        const contextMessages = state.messages.slice(state.contextWindowStart);
 
-    Logger.info(
-      "ConversationStore",
-      `Stopping PTT recording... Turn: ${turnId ?? "none"}, Duration: ${duration}ms`,
-    );
-    try {
-      if (
-        turnId !== null &&
-        activityStartSentTurnId === turnId &&
-        activityEndSentTurnId !== turnId
-      ) {
-        geminiWebSocket.sendActivityEnd();
-        activityEndSentTurnId = turnId;
-      }
+        if (contextMessages.length <= MAX_RECENT_MESSAGES) {
+          return; // Not enough turns to summarize
+        }
 
-      try {
-        await audioRecorder.stop();
-      } catch (err) {
-        Logger.error("ConversationStore", "Failed to stop audio recorder", err);
-      }
+        // Extract the oldest turn from the context window (first two messages)
+        const messagesToSummarize = contextMessages.slice(0, 2);
 
-      hasFrames = pttFramesSentInTurn > 0;
-      isValidRecording = duration >= MIN_PTT_DURATION_MS && hasFrames;
+        const oldTurnText = messagesToSummarize
+          .map((m) => `${m.role === "user" ? "User" : "Sophie"}: ${m.text}`)
+          .join(" | ");
 
-      set({
-        isProcessing: isValidRecording,
-      });
+        let newSummary = state.conversationSummary;
+        if (newSummary.length > 500) {
+          // Emergency compression if string gets too long (naive token limit guard)
+          newSummary = newSummary.substring(newSummary.length - 500);
+        }
 
-      await notificationAsync(
-        isValidRecording
-          ? NotificationFeedbackType.Success
-          : NotificationFeedbackType.Warning,
-      );
+        newSummary = newSummary
+          ? `${newSummary}\n-> ${oldTurnText}`
+          : oldTurnText;
 
-      if (!isValidRecording) {
         Logger.info(
           "ConversationStore",
-          hasFrames
-            ? `Recording too short: ${duration}ms - discarded`
-            : `No audio frames captured: ${duration}ms - discarded`,
+          `Summarized oldest turn. contextWindowStart moved from ${state.contextWindowStart} to ${state.contextWindowStart + 2}. Total messages: ${state.messages.length}.`,
         );
-      }
-    } finally {
-      if (activePTTTurnId === turnId) {
-        activePTTTurnId = null;
-      }
-      pttFramesSentInTurn = 0;
-      isPTTStopInFlight = false;
-    }
-  },
 
-  // Legacy methods - redirect to conversation mode
-  startGlobalRecording: async () => {
-    await get().startConversation();
-  },
+        // Advance the window pointer — messages stay in the array for UI display
+        set({
+          contextWindowStart: state.contextWindowStart + 2,
+          conversationSummary: newSummary,
+        });
 
-  stopGlobalRecording: async () => {
-    // In conversation mode, we don't stop on release
-    // This is now a no-op to prevent stopping when releasing mic button
-  },
+        // Invalidate cache because the summary changed
+        get().invalidatePrefixCache();
+      },
 
-  toggleGlobalRecording: async () => {
-    await get().toggleConversation();
-  },
+      /**
+       * Build the cached prefix array
+       */
+      buildCachedPrefix: (systemPrompt: string) => {
+        const state = get();
+        const prefixParts: string[] = [systemPrompt];
+
+        if (state.hasGreeted) {
+          prefixParts.push(`
+          IMPORTANT SYSTEM UPDATE:
+          The conversation is continuing. You have ALREADY greeted the user and introduced the lesson.
+          Do NOT repeat the introduction or the greeting.
+          Just reply naturally to the user's latest input as if the conversation never stopped.`);
+        }
+
+        if (state.conversationSummary) {
+          prefixParts.push("Conversation Summary:");
+          prefixParts.push(state.conversationSummary);
+        }
+
+        Logger.info(
+          "ConversationStore",
+          `Built new cached prompt prefix. Parts count: ${prefixParts.length}`,
+        );
+
+        set({
+          cachedPrefix: prefixParts,
+          cachedSummaryHash: `${state.conversationSummary}|${state.hasGreeted}`,
+        });
+      },
+
+      getPromptPrefix: () => get().cachedPrefix,
+
+      invalidatePrefixCache: () => {
+        Logger.info("ConversationStore", "Invalidating prompt prefix cache.");
+        set({ cachedPrefix: [], cachedSummaryHash: "" });
+      },
+
+      /**
+       * Build the structured text prompt formatted per constraints for Gemini Context injection.
+       */
+      buildGeminiPrompt: (baseSystemPrompt: string) => {
+        const state = get();
+        const currentHash = `${state.conversationSummary}|${state.hasGreeted}`;
+
+        // Check cache validity and rebuild if needed
+        if (
+          state.cachedPrefix.length === 0 ||
+          state.cachedSummaryHash !== currentHash
+        ) {
+          state.buildCachedPrefix(baseSystemPrompt);
+        }
+
+        const prefixParts = state.getPromptPrefix();
+
+        // Only include messages inside the context window (not the full UI history)
+        const currentState = get();
+        const recent = currentState.messages
+          .slice(currentState.contextWindowStart)
+          .map((msg: Message) => `${msg.role.toUpperCase()}: ${msg.text}`)
+          .join("\n");
+
+        const fullPromptParts = [...prefixParts];
+
+        if (recent) {
+          fullPromptParts.push(""); // blank separator
+          fullPromptParts.push("Recent Conversation:");
+          fullPromptParts.push(recent);
+        }
+
+        return fullPromptParts.join("\n");
+      },
+
+      /**
+       * Start continuous conversation mode.
+       * Sends greeting on first activation, then starts continuous audio recording.
+       */
+      startConversation: async () => {
+        const state = get();
+        if (state.isConversationActive) return;
+
+        if (!geminiWebSocket.isReady()) {
+          Logger.warn(
+            "ConversationStore",
+            "Cannot start conversation: WebSocket not ready",
+          );
+          return;
+        }
+
+        const { impactAsync, ImpactFeedbackStyle } =
+          await import("expo-haptics");
+        await ensureAudioStreamerReady();
+        await impactAsync(ImpactFeedbackStyle.Medium);
+
+        // Send greeting on first activation
+        if (!state.hasGreeted) {
+          geminiWebSocket.sendGreeting();
+          set({ hasGreeted: true, isConversationActive: true });
+        } else {
+          set({ isConversationActive: true });
+        }
+
+        // Start recording
+        Logger.info("ConversationStore", "Starting audio recording...");
+        await audioRecorder.start({
+          onAudioData: (base64) => geminiWebSocket.sendAudioChunk(base64),
+          onVolumeChange: createVolumeHandler(set),
+        });
+        Logger.info("ConversationStore", "Audio recording started");
+        set({ isListening: true });
+      },
+
+      /**
+       * Stop continuous conversation mode.
+       */
+      stopConversation: async () => {
+        const state = get();
+        if (!state.isConversationActive) {
+          set({ volumeLevel: 0 });
+          return;
+        }
+
+        const { impactAsync, ImpactFeedbackStyle } =
+          await import("expo-haptics");
+
+        Logger.info("ConversationStore", "Stopping conversation...");
+        await audioRecorder.stop();
+        audioStreamer.clearQueue();
+        await impactAsync(ImpactFeedbackStyle.Light);
+
+        set({
+          isConversationActive: false,
+          isListening: false,
+          isSpeaking: false,
+          volumeLevel: 0,
+        });
+        Logger.info("ConversationStore", "Conversation stopped");
+      },
+
+      /**
+       * Toggle conversation mode on/off.
+       */
+      toggleConversation: async () => {
+        const state = get();
+        if (state.isConversationActive) {
+          await state.stopConversation();
+        } else {
+          await state.startConversation();
+        }
+      },
+
+      /**
+       * Start push-to-talk recording (hold to speak).
+       */
+      startPTTRecording: async () => {
+        const state = get();
+        if (
+          state.isPTTActive ||
+          isPTTStartInFlight ||
+          isPTTStopInFlight ||
+          !geminiWebSocket.isReady()
+        ) {
+          if (!geminiWebSocket.isReady()) {
+            Logger.warn(
+              "ConversationStore",
+              "Cannot start PTT: WebSocket not ready",
+            );
+          } else {
+            Logger.debug(
+              "ConversationStore",
+              "Ignoring duplicate startPTTRecording call",
+            );
+          }
+          return;
+        }
+
+        isPTTStartInFlight = true;
+        const turnId = ++pttTurnCounter;
+        activePTTTurnId = turnId;
+        pttFramesSentInTurn = 0;
+
+        // Set state IMMEDIATELY (synchronous) so UI responds.
+        // pttStartTime is set later, right before audioRecorder.start(),
+        // so MIN_PTT_DURATION_MS measures actual recording time (not setup time).
+        set({
+          isPTTActive: true,
+          pttStartTime: null,
+          isListening: true,
+          isConversationActive: true,
+          isProcessing: false,
+        });
+
+        try {
+          const { impactAsync, ImpactFeedbackStyle } =
+            await import("expo-haptics");
+          await ensureAudioStreamerReady();
+          await impactAsync(ImpactFeedbackStyle.Medium);
+
+          // Bail out if stop ran while we were setting up
+          if (!get().isPTTActive) {
+            Logger.info("ConversationStore", "PTT cancelled during startup");
+            return;
+          }
+
+          Logger.info(
+            "ConversationStore",
+            `Starting PTT recording... Turn: ${turnId}`,
+          );
+          if (activityStartSentTurnId !== turnId) {
+            geminiWebSocket.sendActivityStart();
+            activityStartSentTurnId = turnId;
+            activityEndSentTurnId = null;
+          }
+
+          // Set pttStartTime NOW — right before recording starts — so the
+          // minimum duration check in stop reflects actual recording time.
+          set({ pttStartTime: Date.now() });
+
+          await audioRecorder.start({
+            onAudioData: (base64) => {
+              if (
+                activePTTTurnId !== turnId ||
+                isPTTStopInFlight ||
+                !get().isPTTActive
+              ) {
+                return;
+              }
+              pttFramesSentInTurn++;
+              geminiWebSocket.sendAudioChunk(base64);
+            },
+            onVolumeChange: createVolumeHandler(set),
+          });
+
+          // If stop ran during audioRecorder.start(), clean up the orphan
+          if (!get().isPTTActive) {
+            Logger.info(
+              "ConversationStore",
+              "PTT stopped during recorder start, cleaning up",
+            );
+            await audioRecorder.stop();
+          }
+        } catch (err) {
+          Logger.error(
+            "ConversationStore",
+            "PTT recording failed to start",
+            err,
+          );
+          // Reset state so UI returns to normal
+          set({
+            isPTTActive: false,
+            pttStartTime: null,
+            isListening: false,
+          });
+          if (activePTTTurnId === turnId) {
+            activePTTTurnId = null;
+          }
+        } finally {
+          isPTTStartInFlight = false;
+        }
+      },
+
+      /**
+       * Stop push-to-talk recording.
+       */
+      stopPTTRecording: async () => {
+        const state = get();
+        if (!state.isPTTActive || isPTTStopInFlight) {
+          if (isPTTStopInFlight) {
+            Logger.debug(
+              "ConversationStore",
+              "Ignoring duplicate stopPTTRecording call",
+            );
+          }
+          return;
+        }
+
+        isPTTStopInFlight = true;
+        const turnId = activePTTTurnId;
+
+        const { notificationAsync, NotificationFeedbackType } =
+          await import("expo-haptics");
+        const duration = state.pttStartTime
+          ? Date.now() - state.pttStartTime
+          : 0;
+        let hasFrames = false;
+        let isValidRecording = false;
+
+        // Close PTT state first so any extra stop calls no-op immediately.
+        set({
+          isPTTActive: false,
+          pttStartTime: null,
+          isListening: false,
+          volumeLevel: 0,
+        });
+
+        Logger.info(
+          "ConversationStore",
+          `Stopping PTT recording... Turn: ${turnId ?? "none"}, Duration: ${duration}ms`,
+        );
+        try {
+          if (
+            turnId !== null &&
+            activityStartSentTurnId === turnId &&
+            activityEndSentTurnId !== turnId
+          ) {
+            geminiWebSocket.sendActivityEnd();
+            activityEndSentTurnId = turnId;
+          }
+
+          try {
+            await audioRecorder.stop();
+          } catch (err) {
+            Logger.error(
+              "ConversationStore",
+              "Failed to stop audio recorder",
+              err,
+            );
+          }
+
+          hasFrames = pttFramesSentInTurn > 0;
+          isValidRecording = duration >= MIN_PTT_DURATION_MS && hasFrames;
+
+          set({
+            isProcessing: isValidRecording,
+          });
+
+          await notificationAsync(
+            isValidRecording
+              ? NotificationFeedbackType.Success
+              : NotificationFeedbackType.Warning,
+          );
+
+          if (!isValidRecording) {
+            Logger.info(
+              "ConversationStore",
+              hasFrames
+                ? `Recording too short: ${duration}ms - discarded`
+                : `No audio frames captured: ${duration}ms - discarded`,
+            );
+          }
+        } finally {
+          if (activePTTTurnId === turnId) {
+            activePTTTurnId = null;
+          }
+          pttFramesSentInTurn = 0;
+          isPTTStopInFlight = false;
+        }
+      },
+
+      // Legacy methods - redirect to conversation mode
+      startGlobalRecording: async () => {
+        await get().startConversation();
+      },
+
+      stopGlobalRecording: async () => {
+        // In conversation mode, we don't stop on release
+        // This is now a no-op to prevent stopping when releasing mic button
+      },
+
+      toggleGlobalRecording: async () => {
+        await get().toggleConversation();
+      },
     }),
     {
       name: "sophie-conversation",
