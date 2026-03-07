@@ -1694,6 +1694,8 @@
     "days_left_title": "{{count}} jours restants",
     "last_day_subtitle": "Votre essai gratuit se termine aujourd'hui !",
     "upgrade_subtitle": "Passez à Sophie AI Pro pour l'expérience complète.",
+    "expired_title": "Essai expiré !",
+    "expired_subtitle": "Votre essai gratuit de 7 jours est terminé. Veuillez choisir un plan pour continuer à apprendre et accéder à toutes les fonctionnalités.",
     "benefits_title": "Ce que vous obtiendrez",
     "benefit_1": "Conversations IA illimitées",
     "benefit_2": "Tous les 10+ langues débloquées",
@@ -1704,6 +1706,7 @@
     "claim_discount_msg": "Réclamez votre réduction aujourd'hui",
     "upgrade_now_btn": "Mettre à niveau maintenant",
     "claim_discount_btn": "Réclamer ma réduction",
-    "maybe_later_btn": "Peut-être plus tard"
+    "maybe_later_btn": "Peut-être plus tard",
+    "choose_plan_btn": "Choisir un plan"
   }
 }

@@ -1708,6 +1708,9 @@
     "claim_discount_msg": "오늘 할인을 받으세요",
     "upgrade_now_btn": "지금 업그레이드",
     "claim_discount_btn": "할인 받기",
-    "maybe_later_btn": "나중에"
+    "maybe_later_btn": "나중에",
+    "expired_title": "체험 기간 만료!",
+    "expired_subtitle": "7일 무료 체험 기간이 종료되었습니다. 학습을 계속하고 모든 기능을 이용하려면 플랜을 선택해 주세요.",
+    "choose_plan_btn": "플랜 선택"
   }
 }

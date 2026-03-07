@@ -1713,6 +1713,9 @@
     "claim_discount_msg": "Richiedi il tuo sconto oggi",
     "upgrade_now_btn": "Aggiorna ora",
     "claim_discount_btn": "Richiedi il mio sconto",
-    "maybe_later_btn": "Forse più tardi"
+    "maybe_later_btn": "Forse più tardi",
+    "expired_title": "Prova scaduta!",
+    "expired_subtitle": "La tua prova gratuita di 7 giorni è terminata. Scegli un piano per continuare a imparare e accedere a tutte le funzionalità.",
+    "choose_plan_btn": "Scegli un piano"
   }
 }

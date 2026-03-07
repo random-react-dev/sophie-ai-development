@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "Klaim diskon Anda hari ini",
     "upgrade_now_btn": "Tingkatkan Sekarang",
     "claim_discount_btn": "Klaim Diskon Saya",
-    "maybe_later_btn": "Mungkin nanti"
+    "maybe_later_btn": "Mungkin nanti",
+    "expired_title": "Uji Coba Berakhir!",
+    "expired_subtitle": "Uji coba gratis 7 hari Anda telah berakhir. Silakan pilih paket untuk terus belajar dan mengakses semua fitur.",
+    "choose_plan_btn": "Pilih Paket"
   }
 }

@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "立即領取折扣",
     "upgrade_now_btn": "立即升級",
     "claim_discount_btn": "領取我嘅折扣",
-    "maybe_later_btn": "或者遲啲"
+    "maybe_later_btn": "或者遲啲",
+    "expired_title": "試用期已結束！",
+    "expired_subtitle": "你嘅7日免費試用已經結束。請揀選一個計劃嚟繼續學習同使用所有功能。",
+    "choose_plan_btn": "揀選計劃"
   }
 }

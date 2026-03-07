@@ -1708,6 +1708,8 @@
     "days_left_title": "Noch {{count}} Tage",
     "last_day_subtitle": "Ihr kostenloser Test endet heute!",
     "upgrade_subtitle": "Upgrade auf Sophie AI Pro für das volle Erlebnis.",
+    "expired_title": "Testphase abgelaufen!",
+    "expired_subtitle": "Ihre 7-tägige kostenlose Testphase ist beendet. Bitte wählen Sie einen Plan, um weiter zu lernen und auf alle Funktionen zuzugreifen.",
     "benefits_title": "Das bekommen Sie",
     "benefit_1": "Unbegrenzte KI-Gespräche",
     "benefit_2": "Alle 10+ Sprachen freigeschaltet",
@@ -1718,6 +1720,7 @@
     "claim_discount_msg": "Sichern Sie sich heute Ihren Rabatt",
     "upgrade_now_btn": "Jetzt upgraden",
     "claim_discount_btn": "Meinen Rabatt sichern",
-    "maybe_later_btn": "Vielleicht später"
+    "maybe_later_btn": "Vielleicht später",
+    "choose_plan_btn": "Plan auswählen"
   }
 }

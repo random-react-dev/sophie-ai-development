@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "Resgate seu desconto hoje",
     "upgrade_now_btn": "Atualizar agora",
     "claim_discount_btn": "Resgatar meu desconto",
-    "maybe_later_btn": "Talvez mais tarde"
+    "maybe_later_btn": "Talvez mais tarde",
+    "expired_title": "Teste expirado!",
+    "expired_subtitle": "Seu teste gratuito de 7 dias terminou. Escolha um plano para continuar aprendendo e acessar todos os recursos.",
+    "choose_plan_btn": "Escolher um plano"
   }
 }

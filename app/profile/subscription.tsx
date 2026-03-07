@@ -243,9 +243,10 @@ export default function SubscriptionScreen() {
 
           {/* SBB Duration Toggles */}
           {isSbb && (
-            <View className="flex-row flex-wrap items-center gap-4 mt-4">
+            <View className="flex-row flex-wrap items-center gap-3 mt-4">
               {(["6mo", "12mo", "18mo", "24mo"] as const).map((duration) => {
                 const isActive = sbbDuration === duration;
+                const label = `${duration.replace("mo", "")} ${t("profile.subscription_screen.common.mo")}`;
 
                 if (isActive) {
                   return (
@@ -257,12 +258,17 @@ export default function SubscriptionScreen() {
                       <RainbowBorder
                         borderRadius={9999}
                         borderWidth={1.5}
-                        containerClassName="bg-white px-4 py-1.5"
+                        containerClassName="bg-white"
+                        style={{ minWidth: 60 }}
                       >
-                        <Text className="text-[12px] font-normal text-gray-800">
-                          {duration.replace("mo", "")}{" "}
-                          {t("profile.subscription_screen.common.mo")}
-                        </Text>
+                        <View className="px-3 py-2 items-center justify-center">
+                          <Text
+                            className="text-xs font-medium text-gray-800"
+                            style={{ includeFontPadding: false }}
+                          >
+                            {label}
+                          </Text>
+                        </View>
                       </RainbowBorder>
                     </TouchableOpacity>
                   );
@@ -273,12 +279,17 @@ export default function SubscriptionScreen() {
                     key={duration}
                     activeOpacity={0.8}
                     onPress={() => setSbbDuration(duration)}
-                    className="px-4 py-1.5 rounded-full border border-gray-200 bg-white"
+                    className="rounded-full border border-gray-200 bg-white"
+                    style={{ minWidth: 60 }}
                   >
-                    <Text className="text-[12px] font-normal text-gray-700">
-                      {duration.replace("mo", "")}{" "}
-                      {t("profile.subscription_screen.common.mo")}
-                    </Text>
+                    <View className="px-3 py-2 items-center justify-center">
+                      <Text
+                        className="text-xs font-medium text-gray-700"
+                        style={{ includeFontPadding: false }}
+                      >
+                        {label}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 );
               })}
@@ -297,21 +308,12 @@ export default function SubscriptionScreen() {
           ))}
         </View>
 
-        {/* CTA Button */}
-        <TouchableOpacity activeOpacity={0.8} className="mt-auto">
-          <RainbowBorder
-            borderRadius={9999}
-            borderWidth={1.5}
-            className="w-full h-14"
-            containerClassName="items-center justify-center bg-white"
-          >
-            <Text className="text-gray-900 font-bold text-base">
-              {plan.id === "free" || plan.id === "pro"
-                ? t("profile.subscription_screen.common.getStarted")
-                : t("profile.subscription_screen.common.startFreeTrial")}
-            </Text>
-          </RainbowBorder>
-        </TouchableOpacity>
+        {/* CTA Button - Coming Soon */}
+        <View className="mt-auto">
+          <View className="w-full h-14 rounded-full bg-gray-100 items-center justify-center">
+            <Text className="text-black font-bold text-base">Coming Soon</Text>
+          </View>
+        </View>
       </View>
     );
 

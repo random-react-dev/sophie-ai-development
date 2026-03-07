@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "立即领取折扣",
     "upgrade_now_btn": "立即升级",
     "claim_discount_btn": "领取我的折扣",
-    "maybe_later_btn": "也许以后"
+    "maybe_later_btn": "也许以后",
+    "expired_title": "试用期已结束！",
+    "expired_subtitle": "您的7天免费试用已结束。请选择一个计划以继续学习并使用所有功能。",
+    "choose_plan_btn": "选择计划"
   }
 }

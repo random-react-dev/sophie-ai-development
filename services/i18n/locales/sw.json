@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "Dai punguzo lako leo",
     "upgrade_now_btn": "Boresha Sasa",
     "claim_discount_btn": "Dai Punguzo Langu",
-    "maybe_later_btn": "Labda baadaye"
+    "maybe_later_btn": "Labda baadaye",
+    "expired_title": "Jaribio Limeisha!",
+    "expired_subtitle": "Jaribio lako la bure la siku 7 limeisha. Tafadhali chagua mpango ili kuendelea kujifunza na kupata huduma zote.",
+    "choose_plan_btn": "Chagua Mpango"
   }
 }

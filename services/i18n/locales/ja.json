@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "今すぐ割引を受け取る",
     "upgrade_now_btn": "今すぐアップグレード",
     "claim_discount_btn": "割引を受け取る",
-    "maybe_later_btn": "後で"
+    "maybe_later_btn": "後で",
+    "expired_title": "トライアル終了！",
+    "expired_subtitle": "7日間の無料トライアルが終了しました。学習を続けてすべての機能にアクセスするには、プランを選択してください。",
+    "choose_plan_btn": "プランを選択"
   }
 }

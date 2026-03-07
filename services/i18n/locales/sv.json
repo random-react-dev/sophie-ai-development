@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "Hämta din rabatt idag",
     "upgrade_now_btn": "Uppgradera nu",
     "claim_discount_btn": "Hämta min rabatt",
-    "maybe_later_btn": "Kanske senare"
+    "maybe_later_btn": "Kanske senare",
+    "expired_title": "Provperioden har gått ut!",
+    "expired_subtitle": "Din 7-dagars gratis provperiod har avslutats. Välj en plan för att fortsätta lära dig och få tillgång till alla funktioner.",
+    "choose_plan_btn": "Välj en plan"
   }
 }

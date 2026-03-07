@@ -1707,6 +1707,10 @@
     "days_left_title": "{{count}} أيام متبقية",
     "last_day_subtitle": "تنتهي تجربتك المجانية اليوم!",
     "upgrade_subtitle": "قم بالترقية إلى Sophie AI برو للحصول على التجربة الكاملة.",
+    "expired_title": "انتهت الفترة التجريبية!",
+    "expired_subtitle": "انتهت فترة التجربة المجانية لمدة 7 أيام. يرجى اختيار خطة لمواصلة التعلم والوصول إلى جميع الميزات.",
+    "upgrade_now_btn": "ترقية الآن",
+    "choose_plan_btn": "اختر خطة",
     "benefits_title": "ما ستحصل عليه",
     "benefit_1": "محادثات ذكاء اصطناعي غير محدودة",
     "benefit_2": "فتح جميع اللغات الـ 10+",
@@ -1715,7 +1719,6 @@
     "limited_time_offer": "عرض لفترة محدودة",
     "off_text": "خصم {{percent}}%",
     "claim_discount_msg": "طالب بخصمك اليوم",
-    "upgrade_now_btn": "ترقية الآن",
     "claim_discount_btn": "المطالبة بخصمي",
     "maybe_later_btn": "ربما لاحقاً"
   }

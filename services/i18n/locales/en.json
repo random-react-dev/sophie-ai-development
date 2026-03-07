@@ -1708,18 +1708,21 @@
   "trial_countdown_modal": {
     "last_day_title": "Last Day!",
     "days_left_title": "{{count}} Days Left",
-    "last_day_subtitle": "Your free trial ends today!",
+    "last_day_subtitle": "This is the last day of your free trial! Upgrade now to keep accessing all features.",
     "upgrade_subtitle": "Upgrade to Sophie AI Pro for the full experience.",
-    "benefits_title": "What you'll get",
+    "expired_title": "Trial Expired!",
+    "expired_subtitle": "Your 7-day free trial has ended. Please choose a plan to continue learning and accessing all features.",
+    "benefits_title": "UNLOCK PRO FEATURES",
     "benefit_1": "Unlimited AI conversations",
     "benefit_2": "All 10+ languages unlocked",
     "benefit_3": "Advanced vocabulary tools",
     "benefit_4": "Priority support",
     "limited_time_offer": "Limited Time Offer",
     "off_text": "{{percent}}% OFF",
-    "claim_discount_msg": "Claim your discount today",
-    "upgrade_now_btn": "Upgrade Now",
+    "claim_discount_msg": "Don't miss out on this deal!",
     "claim_discount_btn": "Claim My Discount",
-    "maybe_later_btn": "Maybe later"
+    "upgrade_now_btn": "Upgrade Now",
+    "choose_plan_btn": "Choose a Plan",
+    "maybe_later_btn": "Maybe Later"
   }
 }

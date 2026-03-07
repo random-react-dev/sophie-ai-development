@@ -1718,6 +1718,9 @@
     "claim_discount_msg": "Nhận giảm giá của bạn ngay hôm nay",
     "upgrade_now_btn": "Nâng cấp ngay",
     "claim_discount_btn": "Nhận giảm giá của tôi",
-    "maybe_later_btn": "Có thể để sau"
+    "maybe_later_btn": "Có thể để sau",
+    "expired_title": "Hết hạn dùng thử!",
+    "expired_subtitle": "Bản dùng thử miễn phí 7 ngày của bạn đã kết thúc. Vui lòng chọn một gói để tiếp tục học và truy cập tất cả các tính năng.",
+    "choose_plan_btn": "Chọn gói"
   }
 }
