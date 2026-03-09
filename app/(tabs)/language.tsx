@@ -63,9 +63,7 @@ export default function LanguageScreen() {
   } = useProfileStore();
 
   const getLocalizedLanguageName = (englishName: string) => {
-    const matchedLang = SUPPORTED_LANGUAGES.find(
-      (l) => l.name === englishName,
-    );
+    const matchedLang = SUPPORTED_LANGUAGES.find((l) => l.name === englishName);
     if (!matchedLang) return englishName;
 
     // Try Intl.DisplayNames first
@@ -295,7 +293,11 @@ export default function LanguageScreen() {
         </Text>
       </View>
 
-      <ScrollView testID="profile-list" className="flex-1 " showsVerticalScrollIndicator={false}>
+      <ScrollView
+        testID="profile-list"
+        className="flex-1 "
+        showsVerticalScrollIndicator={false}
+      >
         <View className="px-4 pb-24">
           {/* Profiles List (Folders) */}
           {/* <Text className="text-2xl font-bold text-gray-900 tracking-tight mb-4">

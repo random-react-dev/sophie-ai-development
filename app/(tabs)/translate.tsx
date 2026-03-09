@@ -10,10 +10,11 @@ import {
   Language,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
-import { speakWord, stopSpeaking } from "@/services/audio/tts";
+import { initializeTTS, speakWord, stopSpeaking } from "@/services/audio/tts";
 import { translateText } from "@/services/gemini/translate";
-// import { geminiWebSocket } from "@/services/gemini/websocket"; // Removed
+import { geminiWebSocket } from "@/services/gemini/websocket";
 import { useAuthStore } from "@/stores/authStore";
+import { useConnectionState, useIsSpeaking } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import {
@@ -41,7 +42,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -55,8 +56,10 @@ import {
 } from "react-native";
 import Animated, {
   Easing,
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -94,6 +97,42 @@ export default function TranslateScreen() {
   // Animation for swap button - horizontal flip
   const flipX = useSharedValue(1);
 
+  // Pulsing animation for mic button
+  const pulseScale = useSharedValue(1);
+  const pulseOpacity = useSharedValue(0.6);
+
+  // Pre-initialize TTS engine on mount
+  useEffect(() => {
+    initializeTTS();
+  }, []);
+
+  useEffect(() => {
+    if (isListening) {
+      pulseScale.value = 1;
+      pulseOpacity.value = 0.6;
+      pulseScale.value = withRepeat(
+        withTiming(1.4, { duration: 1200, easing: Easing.out(Easing.ease) }),
+        -1,
+        false,
+      );
+      pulseOpacity.value = withRepeat(
+        withTiming(0, { duration: 1200, easing: Easing.out(Easing.ease) }),
+        -1,
+        false,
+      );
+    } else {
+      cancelAnimation(pulseScale);
+      cancelAnimation(pulseOpacity);
+      pulseScale.value = withTiming(1, { duration: 200 });
+      pulseOpacity.value = withTiming(0, { duration: 200 });
+    }
+  }, [isListening]);
+
+  const pulseAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseScale.value }],
+    opacity: pulseOpacity.value,
+  }));
+
   // Speech Recognition Events
   useSpeechRecognitionEvent("start", () => setIsListening(true));
   useSpeechRecognitionEvent("end", () => setIsListening(false));
@@ -109,6 +148,7 @@ export default function TranslateScreen() {
   });
   useSpeechRecognitionEvent("error", (event) => {
     setIsListening(false);
+    console.warn("Speech recognition error:", event.error);
     if (
       event.error === "not-allowed" ||
       event.error === "service-not-allowed"
@@ -119,10 +159,24 @@ export default function TranslateScreen() {
         undefined,
         "error",
       );
+    } else if (event.error === "language-not-supported") {
+      showAlert(
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.language_not_supported"),
+        undefined,
+        "error",
+      );
+    } else if (event.error === "network") {
+      showAlert(
+        t("translate_screen.alerts.error"),
+        t("translate_screen.alerts.network_error"),
+        undefined,
+        "error",
+      );
     } else {
       showAlert(
         t("translate_screen.alerts.error"),
-        t("translate_screen.alerts.translate_failed"),
+        t("translate_screen.alerts.speech_recognition_failed"),
         undefined,
         "error",
       );
@@ -151,8 +205,8 @@ export default function TranslateScreen() {
       ExpoSpeechRecognitionModule.start({
         lang: locale,
         interimResults: true,
-        continuous: true,
-        requiresOnDeviceRecognition: true,
+        continuous: false,
+        requiresOnDeviceRecognition: false,
         iosCategory: {
           category: "playAndRecord",
           categoryOptions: ["defaultToSpeaker", "allowBluetooth"],
@@ -296,8 +350,13 @@ export default function TranslateScreen() {
     // because that might be confusing if user just wants to see the result
   };
 
+  const isGlobalSpeaking = useIsSpeaking();
+  const connectionState = useConnectionState();
+  const isCurrentlySpeaking = isSpeaking || isGlobalSpeaking;
+
   /**
-   * Speak the translated text using native device TTS (expo-speech).
+   * Speak the translated text using Gemini WebSocket (zero-delay, Sophie's voice)
+   * or fallback to native device TTS (expo-speech).
    */
   const handleSpeak = async () => {
     if (!translatedText) return;
@@ -305,23 +364,46 @@ export default function TranslateScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // If already speaking, stop playback
-    if (isSpeaking) {
+    if (isCurrentlySpeaking) {
+      if (connectionState === "connected") {
+        const { audioStreamer } = await import("@/services/audio/streamer");
+        audioStreamer.clearQueue();
+      }
       await stopSpeaking();
       setIsSpeaking(false);
       return;
     }
 
-    setIsSpeaking(true);
+    if (connectionState === "connected") {
+      // Use zero-delay, high-quality Sophie voice via WebSocket
+      // Passing audioOnly=true prevents it from appearing in conversation history
+      const success = geminiWebSocket.speakPhrase(
+        translatedText,
+        targetLang.name,
+        true,
+      );
+      if (success) {
+        // UI relies on isGlobalSpeaking state from audioStreamer
+        return;
+      }
+    }
 
-    // Use built-in TTS instead of Gemini WebSocket
-    await speakWord(translatedText, targetLang.name, {
-      onStart: () => setIsSpeaking(true),
-      onDone: () => setIsSpeaking(false),
-      onError: (err) => {
-        setIsSpeaking(false);
-        console.error("TTS Error:", err);
+    // Fallback to built-in TTS if WS is not ready or fails
+    setIsSpeaking(true);
+    await speakWord(
+      translatedText,
+      targetLang.name,
+      {
+        onStart: () => setIsSpeaking(true),
+        onDone: () => setIsSpeaking(false),
+        onError: (err) => {
+          setIsSpeaking(false);
+          console.error("TTS Error:", err);
+        },
       },
-    }, 1.0, activeProfile?.preferred_accent);
+      1.0,
+      activeProfile?.preferred_accent,
+    );
   };
 
   return (
@@ -440,24 +522,62 @@ export default function TranslateScreen() {
 
             {/* Input Actions row */}
             <View className="flex-row items-center justify-between mt-6">
-              <View className="flex-row gap-2">
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={handleMicPress}
-                  className={`w-10 h-10 items-center justify-center rounded-full ${isListening ? "bg-red-100" : "bg-gray-100"
-                    }`}
+              <View className="flex-row items-center gap-2">
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "visible",
+                  }}
                 >
-                  <FontAwesome
-                    name="microphone"
-                    size={18}
-                    color={isListening ? "#ef4444" : "black"}
-                  />
-                </TouchableOpacity>
+                  {isListening && (
+                    <Animated.View
+                      style={[
+                        {
+                          position: "absolute",
+                          width: 40,
+                          height: 40,
+                        },
+                        pulseAnimatedStyle,
+                      ]}
+                    >
+                      <RainbowBorder
+                        borderWidth={2}
+                        borderRadius={20}
+                        innerBackgroundClassName="bg-white"
+                        style={{ flex: 1 }}
+                      />
+                    </Animated.View>
+                  )}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={handleMicPress}
+                    className={`w-10 h-10 items-center justify-center rounded-full overflow-hidden ${
+                      !isListening && "bg-gray-100"
+                    }`}
+                  >
+                    {isListening && (
+                      <View className="absolute inset-0 opacity-40">
+                        <RainbowBorder
+                          borderWidth={40} // Fill the entire background with gradient
+                          borderRadius={20}
+                        />
+                      </View>
+                    )}
+                    <FontAwesome
+                      name="microphone"
+                      size={18}
+                      color={isListening ? "#1A1A1D" : "#0F0E0E"}
+                    />
+                  </TouchableOpacity>
+                </View>
                 {inputText.length > 0 && (
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={clearAll}
-                    className="w-10 h-10 items-center justify-center rounded-full bg-red-100 "
+                    className="w-10 h-10 items-center justify-center rounded-full bg-red-100"
                   >
                     <Trash2 size={18} color="#ef4444" />
                   </TouchableOpacity>
@@ -544,12 +664,13 @@ export default function TranslateScreen() {
                       <TouchableOpacity
                         activeOpacity={0.7}
                         onPress={handleSpeak}
-                        className={`w-10 h-10 rounded-full items-center justify-center ${isSpeaking ? "bg-blue-100" : "bg-gray-100"
-                          }`}
+                        className={`w-10 h-10 rounded-full items-center justify-center ${
+                          isCurrentlySpeaking ? "bg-blue-100" : "bg-gray-100"
+                        }`}
                       >
                         <Volume2
                           size={18}
-                          color={isSpeaking ? "#3b82f6" : "#374151"}
+                          color={isCurrentlySpeaking ? "#3b82f6" : "#374151"}
                         />
                       </TouchableOpacity>
                       <TouchableOpacity

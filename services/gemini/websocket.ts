@@ -65,6 +65,7 @@ class GeminiWebSocket {
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
+  private isTTSRequest = false; // Track if current turn is a TTS request to skip Android buffering
   private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
   private pendingModelTranscript = "";
   private hasAudioInCurrentTurn = false;
@@ -176,9 +177,10 @@ class GeminiWebSocket {
         TAG,
         `Model transcript finalized (${this.pendingModelTranscript.length} chars)`,
       );
-      getConversationStore()
-        .getState()
-        .addMessage("model", this.pendingModelTranscript);
+      const store = getConversationStore().getState();
+      store.addMessage("model", this.pendingModelTranscript);
+      // After adding a new message, trigger summarizeOldTurns to keep the context window small
+      store.summarizeOldTurns();
     }
     this.resetModelTurnBuffer();
   }
@@ -726,21 +728,11 @@ class GeminiWebSocket {
     // Check if we have already greeted the user in this session
     // If so, we MUST tell Gemini NOT to restart the intro, or it will treat the next input as a fresh start.
     const store = getConversationStore().getState();
-    let finalInstruction = instruction || defaultInstruction;
+    const baseInstruction = instruction || defaultInstruction;
 
-    if (store.hasGreeted) {
-      Logger.info(
-        TAG,
-        "Appending RECONNECT instruction (User has already been greeted)",
-      );
-      finalInstruction += `
-      
-      IMPORTANT SYSTEM UPDATE:
-      The conversation is resuming after a connection break.
-      You have ALREADY greeted the user and introduced the lesson.
-      Do NOT repeat the introduction or the greeting.
-      Just reply naturally to the user's latest input as if the conversation never stopped.`;
-    }
+    // Build the dynamic prompt utilizing the static Prefix Cache
+    // The store automatically injects the system update blocks if continuing a session
+    const finalInstruction = store.buildGeminiPrompt(baseInstruction);
 
     // IMPORTANT: Gemini API expects camelCase in setup message (not snake_case)
     const setupMsg = {
@@ -920,7 +912,17 @@ class GeminiWebSocket {
     // Prepare audio streamer for new audio response
     this.turnTraceId = this.buildTurnTraceId("tts");
     Logger.info(TAG, `[DIAG] stage=tts_start trace=${this.turnTraceId}`);
-    audioStreamer.prepareForNewResponse(this.turnTraceId);
+
+    // Anchor the SLA tracking so streamer computes initial latency accurately
+    this.startupSlaAnchorMs = Date.now();
+    this.isTTSRequest = true;
+
+    // Pass isTTS = true to skip Android network buffering
+    audioStreamer.prepareForNewResponse(
+      this.turnTraceId,
+      this.startupSlaAnchorMs,
+      true,
+    );
     this.isFirstAudioChunk = true; // Reset for incoming audio
 
     const speakMsg: GeminiClientContent = {
@@ -930,7 +932,7 @@ class GeminiWebSocket {
             role: "user",
             parts: [
               {
-                text: `Speak this ${language} phrase naturally and clearly, exactly as written. Do not add anything else, just speak the phrase: "${phrase}"`,
+                text: `Speak the following phrase in ${language} at a slow, measured, and easy-to-understand pace for a language learner. \nNo intro, no conversation, just pronounce exactly this phrase slowly:\n"${phrase}"`,
               },
             ],
           },
@@ -1129,6 +1131,7 @@ class GeminiWebSocket {
                 audioStreamer.prepareForNewResponse(
                   this.turnTraceId,
                   this.startupSlaAnchorMs ?? undefined,
+                  this.isTTSRequest,
                 );
                 this.isFirstAudioChunk = false;
               } else {
@@ -1204,6 +1207,7 @@ class GeminiWebSocket {
       const isGenerationComplete =
         serverContent.generation_complete || serverContent.generationComplete;
       if (isGenerationComplete) {
+        this.isTTSRequest = false;
         if (this.discardModelOutputWhilePTT) {
           Logger.warn(
             TAG,

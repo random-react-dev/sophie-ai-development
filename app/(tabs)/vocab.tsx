@@ -9,18 +9,23 @@ import {
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
-import { stopSpeaking as stopTTSSpeaking, speakWord } from "@/services/audio/tts";
+import {
+  speakWord,
+  stopSpeaking as stopTTSSpeaking,
+} from "@/services/audio/tts";
 import { translateText } from "@/services/gemini/translate";
+import { geminiWebSocket } from "@/services/gemini/websocket";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import {
   VocabularyFolder,
   VocabularyItem,
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
+import { useConnectionState, useIsSpeaking } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
-import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -33,6 +38,7 @@ import {
   Pencil,
   Plus,
   Trash2,
+  Volume2,
 } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -141,6 +147,15 @@ export default function VocabScreen() {
 
   // Speaking state for mic visual feedback
   const [speakingItemId, setSpeakingItemId] = useState<string | null>(null);
+  const isGlobalSpeaking = useIsSpeaking();
+  const connectionState = useConnectionState();
+
+  // Reset speaking visual when global audio finishes
+  useEffect(() => {
+    if (!isGlobalSpeaking && speakingItemId) {
+      setSpeakingItemId(null);
+    }
+  }, [isGlobalSpeaking, speakingItemId]);
 
   // Use useFocusEffect to refresh data when screen comes into focus
   useFocusEffect(
@@ -150,12 +165,8 @@ export default function VocabScreen() {
     }, [fetchVocabulary]),
   );
 
-
-
   const getLocalizedLanguageName = (englishName: string) => {
-    const matchedLang = SUPPORTED_LANGUAGES.find(
-      (l) => l.name === englishName,
-    );
+    const matchedLang = SUPPORTED_LANGUAGES.find((l) => l.name === englishName);
     if (!matchedLang) return englishName;
 
     // Try Intl.DisplayNames first
@@ -194,8 +205,7 @@ export default function VocabScreen() {
     const matchesLang =
       selectedLanguage === ALL_LABEL || item.language === selectedLanguage;
     const matchesFolder =
-      selectedFolderFilter === "All" ||
-      item.folder_id === selectedFolderFilter;
+      selectedFolderFilter === "All" || item.folder_id === selectedFolderFilter;
 
     return matchesSearch && matchesLang && matchesFolder;
   });
@@ -209,7 +219,12 @@ export default function VocabScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     // If this item is already speaking, stop playback
-    if (speakingItemId === item.id) {
+    if (speakingItemId === item.id || isGlobalSpeaking) {
+      if (connectionState === "connected") {
+        import("@/services/audio/streamer").then(({ audioStreamer }) => {
+          audioStreamer.clearQueue();
+        });
+      }
       void stopTTSSpeaking();
       setSpeakingItemId(null);
       return;
@@ -220,20 +235,40 @@ export default function VocabScreen() {
       void stopTTSSpeaking();
     }
 
-    // Set speaking item for visual feedback and start playback
+    // Set speaking item for visual feedback
     setSpeakingItemId(item.id || null);
 
-    void speakWord(item.phrase, item.language, {
-      onStart: () => {
-        setSpeakingItemId(item.id || null);
+    // Prioritize Sophie.ai voice via WebSocket
+    if (connectionState === "connected") {
+      const success = geminiWebSocket.speakPhrase(
+        item.phrase,
+        item.language || "",
+        true, // audioOnly - skip conversation history
+      );
+      if (success) {
+        // UI state managed by isGlobalSpeaking; reset speakingItemId when done
+        return;
+      }
+    }
+
+    // Fallback to local device TTS
+    void speakWord(
+      item.phrase,
+      item.language,
+      {
+        onStart: () => {
+          setSpeakingItemId(item.id || null);
+        },
+        onDone: () => {
+          setSpeakingItemId(null);
+        },
+        onError: () => {
+          setSpeakingItemId(null);
+        },
       },
-      onDone: () => {
-        setSpeakingItemId(null);
-      },
-      onError: () => {
-        setSpeakingItemId(null);
-      },
-    }, 1.0, activeProfile?.preferred_accent);
+      1.0,
+      activeProfile?.preferred_accent,
+    );
   };
 
   const handleDelete = async (id: string) => {
@@ -669,22 +704,30 @@ export default function VocabScreen() {
                 </View>
 
                 <View className="flex-row items-center gap-3">
-                  {/* Mic Icon */}
+                  {/* Sound Icon — matches Translate page design */}
                   <TouchableOpacity
+                    activeOpacity={0.7}
                     onPress={() => handlePlay(item)}
-                    className={`w-8 h-8 rounded-full items-center justify-center ${
-                      speakingItemId === item.id ? "bg-blue-100" : "bg-gray-100"
+                    className={`w-10 h-10 rounded-full items-center justify-center ${
+                      speakingItemId === item.id ||
+                      (isGlobalSpeaking && speakingItemId === item.id)
+                        ? "bg-blue-100"
+                        : "bg-gray-100"
                     }`}
                   >
-                    <FontAwesome
-                      name={speakingItemId === item.id ? "stop" : "microphone"}
-                      size={14}
-                      color={speakingItemId === item.id ? "#3b82f6" : "black"}
+                    <Volume2
+                      size={18}
+                      color={
+                        speakingItemId === item.id ||
+                        (isGlobalSpeaking && speakingItemId === item.id)
+                          ? "#3b82f6"
+                          : "#374151"
+                      }
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => showActionMenu(item)}
-                    className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
+                    className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center"
                   >
                     <MoreVertical size={14} color="black" />
                   </TouchableOpacity>
