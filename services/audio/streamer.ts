@@ -44,7 +44,7 @@ const ALLOW_ANDROID_QUEUE_RATE_EXPERIMENT =
 // turns). A fresh context per response is fast and guarantees clean state.
 const RESET_AFTER_RESPONSES = IS_ANDROID ? 4 : 1;
 
-type SpeakingStateCallback = (isSpeaking: boolean) => void;
+type SpeakingStateCallback = (isSpeaking: boolean, traceId?: string) => void;
 type BufferProgressCallback = (progress: number) => void; // 0-100
 type StreamIssueClassification =
   | "healthy_stream"
@@ -70,6 +70,7 @@ class AudioStreamer {
   private hasStartedPlayback = false;
   private chunkCount = 0;
   private speakingStateCallback: SpeakingStateCallback | null = null;
+  private speakingStateListeners = new Set<SpeakingStateCallback>();
   private bufferProgressCallback: BufferProgressCallback | null = null;
   private responseId = 0;
   private responsesSinceReset = 0;
@@ -127,8 +128,25 @@ class AudioStreamer {
     this.speakingStateCallback = callback;
   }
 
+  addSpeakingStateListener(callback: SpeakingStateCallback): () => void {
+    this.speakingStateListeners.add(callback);
+    return () => {
+      this.speakingStateListeners.delete(callback);
+    };
+  }
+
   setBufferProgressCallback(callback: BufferProgressCallback): void {
     this.bufferProgressCallback = callback;
+  }
+
+  private emitSpeakingState(
+    isSpeaking: boolean,
+    traceId: string = this.turnTraceId,
+  ): void {
+    this.speakingStateCallback?.(isSpeaking, traceId);
+    for (const listener of this.speakingStateListeners) {
+      listener(isSpeaking, traceId);
+    }
   }
 
   isReady(): boolean {
@@ -361,7 +379,7 @@ class AudioStreamer {
 
     if (wasPlaying) {
       Logger.info(TAG, "Stopped current playback");
-      this.speakingStateCallback?.(false);
+      this.emitSpeakingState(false, this.turnTraceId);
     }
   }
 
@@ -887,7 +905,7 @@ class AudioStreamer {
       TAG,
       `[DIAG] stage=playback_start trace=${this.turnTraceId} resp=${this.responseId} profile=${this.startupProfile} rate=${playbackRate.toFixed(2)} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`,
     );
-    this.speakingStateCallback?.(true);
+    this.emitSpeakingState(true, this.turnTraceId);
 
     const watchdogResponseId = this.responseId;
     const startCurrentTime = this.audioContext?.currentTime ?? 0;
@@ -910,7 +928,7 @@ class AudioStreamer {
         this.createFreshQueueSource();
         this.isPlaying = false;
         this.hasStartedPlayback = false;
-        this.speakingStateCallback?.(false);
+        this.emitSpeakingState(false, this.turnTraceId);
       } else {
         Logger.debug(TAG, `WATCHDOG: OK delta=${delta.toFixed(3)}`);
       }
@@ -1011,6 +1029,8 @@ class AudioStreamer {
       `[DIAG] stage=playback_finish trace=${this.turnTraceId} resp=${this.responseId} profile=${this.startupProfile} rate=${this.activePlaybackRate.toFixed(2)} startupWaitMs=${startupWaitMs} speakMs=${speakMs} issue=${issue}`,
     );
 
+    const completedTraceId = this.turnTraceId;
+
     this.hasResponseCompleted = true;
 
     if (this.queueSource) {
@@ -1020,7 +1040,7 @@ class AudioStreamer {
     }
 
     this.resetState();
-    this.speakingStateCallback?.(false);
+    this.emitSpeakingState(false, completedTraceId);
   }
 
   private resetState(): void {
@@ -1112,7 +1132,7 @@ class AudioStreamer {
     this.clearQueueHeartbeat();
     this.isPlaying = false;
     this.isPaused = true;
-    this.speakingStateCallback?.(false);
+    this.emitSpeakingState(false, this.turnTraceId);
   }
 
   /**
@@ -1134,7 +1154,7 @@ class AudioStreamer {
     this.startQueueHeartbeat();
     this.isPlaying = true;
     this.isPaused = false;
-    this.speakingStateCallback?.(true);
+    this.emitSpeakingState(true, this.turnTraceId);
   }
 
   dispose(): void {

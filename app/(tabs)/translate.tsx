@@ -11,10 +11,9 @@ import {
 } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
 import { initializeTTS, speakWord, stopSpeaking } from "@/services/audio/tts";
+import { geminiPhrasePlayback } from "@/services/gemini/phrasePlayback";
 import { translateText } from "@/services/gemini/translate";
-import { geminiWebSocket } from "@/services/gemini/websocket";
 import { useAuthStore } from "@/stores/authStore";
-import { useConnectionState, useIsSpeaking } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import {
@@ -23,6 +22,7 @@ import {
 } from "@/stores/translationHistoryStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
@@ -42,7 +42,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -90,6 +90,7 @@ export default function TranslateScreen() {
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isPhrasePlaying, setIsPhrasePlaying] = useState(false);
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -105,6 +106,17 @@ export default function TranslateScreen() {
   useEffect(() => {
     initializeTTS();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        void geminiPhrasePlayback.stop();
+        void stopSpeaking();
+        setIsSpeaking(false);
+        setIsPhrasePlaying(false);
+      };
+    }, []),
+  );
 
   useEffect(() => {
     if (isListening) {
@@ -350,12 +362,10 @@ export default function TranslateScreen() {
     // because that might be confusing if user just wants to see the result
   };
 
-  const isGlobalSpeaking = useIsSpeaking();
-  const connectionState = useConnectionState();
-  const isCurrentlySpeaking = isSpeaking || isGlobalSpeaking;
+  const isCurrentlySpeaking = isSpeaking || isPhrasePlaying;
 
   /**
-   * Speak the translated text using Gemini WebSocket (zero-delay, Sophie's voice)
+   * Speak the translated text using an isolated Gemini playback session
    * or fallback to native device TTS (expo-speech).
    */
   const handleSpeak = async () => {
@@ -365,27 +375,28 @@ export default function TranslateScreen() {
 
     // If already speaking, stop playback
     if (isCurrentlySpeaking) {
-      if (connectionState === "connected") {
-        const { audioStreamer } = await import("@/services/audio/streamer");
-        audioStreamer.clearQueue();
-      }
+      await geminiPhrasePlayback.stop();
       await stopSpeaking();
       setIsSpeaking(false);
+      setIsPhrasePlaying(false);
       return;
     }
 
-    if (connectionState === "connected") {
-      // Use zero-delay, high-quality Sophie voice via WebSocket
-      // Passing audioOnly=true prevents it from appearing in conversation history
-      const success = geminiWebSocket.speakPhrase(
-        translatedText,
-        targetLang.name,
-        true,
-      );
-      if (success) {
-        // UI relies on isGlobalSpeaking state from audioStreamer
-        return;
-      }
+    const success = await geminiPhrasePlayback.playPhrase(
+      translatedText,
+      targetLang.name,
+      {
+        onStart: () => setIsPhrasePlaying(true),
+        onDone: () => setIsPhrasePlaying(false),
+        onStop: () => setIsPhrasePlaying(false),
+        onError: (err) => {
+          setIsPhrasePlaying(false);
+          console.error("Phrase playback error:", err);
+        },
+      },
+    );
+    if (success) {
+      return;
     }
 
     // Fallback to built-in TTS if WS is not ready or fails

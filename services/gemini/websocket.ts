@@ -2,6 +2,12 @@ import { filterTranscriptText } from "@/utils/filterTranscriptText";
 import { audioStreamer } from "../audio/streamer";
 import { Logger } from "../common/Logger";
 import {
+  GEMINI_LIVE_MAX_OUTPUT_TOKENS,
+  GEMINI_LIVE_MODEL_FALLBACK,
+  GEMINI_LIVE_MODEL_PRIMARY,
+  GEMINI_LIVE_VOICE_NAME,
+} from "./liveConfig";
+import {
   ConnectionState,
   GeminiClientContent,
   GeminiError,
@@ -15,24 +21,12 @@ const getConversationStore = () =>
   require("../../stores/conversationStore").useConversationStore;
 
 const TAG = "GeminiWS";
-const DEFAULT_MODEL_PRIMARY =
-  "models/gemini-2.5-flash-native-audio-preview-12-2025";
-const DEFAULT_MODEL_FALLBACK = DEFAULT_MODEL_PRIMARY;
-const MODEL_PRIMARY =
-  process.env.EXPO_PUBLIC_GEMINI_LIVE_MODEL_PRIMARY || DEFAULT_MODEL_PRIMARY;
-const MODEL_FALLBACK =
-  process.env.EXPO_PUBLIC_GEMINI_LIVE_MODEL_FALLBACK || DEFAULT_MODEL_FALLBACK;
+const MODEL_PRIMARY = GEMINI_LIVE_MODEL_PRIMARY;
+const MODEL_FALLBACK = GEMINI_LIVE_MODEL_FALLBACK;
 const STARTUP_SLA_MS = Number(
   process.env.EXPO_PUBLIC_STARTUP_SLA_MS ?? "10000",
 );
 const STARTUP_RISK_MS = Math.max(1000, Math.min(7000, STARTUP_SLA_MS - 2000));
-const envMaxTokens = process.env.EXPO_PUBLIC_GEMINI_MAX_OUTPUT_TOKENS;
-const MAX_OUTPUT_TOKENS = envMaxTokens ? Number(envMaxTokens) : 2048;
-
-const MAX_OUTPUT_TOKENS_SAFE =
-  Number.isFinite(MAX_OUTPUT_TOKENS) && MAX_OUTPUT_TOKENS > 0
-    ? Math.floor(MAX_OUTPUT_TOKENS)
-    : 2048;
 const MAX_RECONNECT_ATTEMPTS = 3;
 const INITIAL_RECONNECT_DELAY_MS = 1000;
 const AUDIO_DIAG_VERBOSE = process.env.EXPO_PUBLIC_AUDIO_DIAG === "1";
@@ -64,7 +58,6 @@ class GeminiWebSocket {
   private lastInitialPrompt?: string; // Store initial prompt for reconnection
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
-  private isAudioOnlyMode = false; // Skip conversation updates during audio-only playback (Vocab TTS)
   private isTTSRequest = false; // Track if current turn is a TTS request to skip Android buffering
   private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
   private pendingModelTranscript = "";
@@ -120,7 +113,14 @@ class GeminiWebSocket {
     return this.connectionState === "connected" && this.isSetupComplete;
   }
 
-  private handleSpeakingStateChange(isSpeaking: boolean): void {
+  private handleSpeakingStateChange(
+    isSpeaking: boolean,
+    traceId?: string,
+  ): void {
+    if (traceId && traceId !== this.turnTraceId) {
+      return;
+    }
+
     const store = getConversationStore().getState();
     store.setSpeaking(isSpeaking);
 
@@ -172,7 +172,7 @@ class GeminiWebSocket {
   }
 
   private flushPendingModelTranscript(): void {
-    if (this.pendingModelTranscript && !this.isAudioOnlyMode) {
+    if (this.pendingModelTranscript) {
       Logger.info(
         TAG,
         `Model transcript finalized (${this.pendingModelTranscript.length} chars)`,
@@ -192,7 +192,6 @@ class GeminiWebSocket {
     this.pendingHealthRotationIssue = null;
     this.discardModelOutputWhilePTT = false;
     this.suppressedModelAudioChunks = 0;
-    this.isAudioOnlyMode = false;
     this.turnTraceId = "turn-unknown";
     this.turnInputTranscript = "";
     this.hasPlaybackStartedInTurn = false;
@@ -740,11 +739,11 @@ class GeminiWebSocket {
         model: this.currentModel,
         generationConfig: {
           responseModalities: ["AUDIO"],
-          maxOutputTokens: MAX_OUTPUT_TOKENS_SAFE,
+          maxOutputTokens: GEMINI_LIVE_MAX_OUTPUT_TOKENS,
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: {
-                voiceName: "Aoede",
+                voiceName: GEMINI_LIVE_VOICE_NAME,
               },
             },
           },
@@ -884,67 +883,6 @@ class GeminiWebSocket {
   }
 
   /**
-   * Speak a phrase aloud using Gemini's TTS capability.
-   * Used by Vocab page to pronounce saved vocabulary items.
-   * @param phrase The text to speak
-   * @param language The language name (e.g., "Hindi", "Spanish")
-   * @param audioOnly If true, skip adding to conversation history (for Vocab page)
-   * @returns true if request was sent, false if WebSocket not ready
-   */
-  speakPhrase(
-    phrase: string,
-    language: string,
-    audioOnly: boolean = false,
-  ): boolean {
-    if (!this.isReady()) {
-      Logger.warn(TAG, "Cannot speak phrase: WebSocket not ready");
-      return false;
-    }
-
-    Logger.info(
-      TAG,
-      `Speaking phrase in ${language}: ${phrase.substring(0, 50)}...`,
-    );
-
-    // Set audio-only mode to skip conversation updates
-    this.isAudioOnlyMode = audioOnly;
-
-    // Prepare audio streamer for new audio response
-    this.turnTraceId = this.buildTurnTraceId("tts");
-    Logger.info(TAG, `[DIAG] stage=tts_start trace=${this.turnTraceId}`);
-
-    // Anchor the SLA tracking so streamer computes initial latency accurately
-    this.startupSlaAnchorMs = Date.now();
-    this.isTTSRequest = true;
-
-    // Pass isTTS = true to skip Android network buffering
-    audioStreamer.prepareForNewResponse(
-      this.turnTraceId,
-      this.startupSlaAnchorMs,
-      true,
-    );
-    this.isFirstAudioChunk = true; // Reset for incoming audio
-
-    const speakMsg: GeminiClientContent = {
-      clientContent: {
-        turns: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `Speak the following phrase in ${language} at a slow, measured, and easy-to-understand pace for a language learner. \nNo intro, no conversation, just pronounce exactly this phrase slowly:\n"${phrase}"`,
-              },
-            ],
-          },
-        ],
-        turnComplete: true,
-      },
-    };
-    this.send(JSON.stringify(speakMsg));
-    return true;
-  }
-
-  /**
    * Initialize audio streamer and send greeting on first connection.
    * Audio streamer must be initialized before greeting to avoid dropped audio chunks.
    */
@@ -956,8 +894,8 @@ class GeminiWebSocket {
       await audioStreamer.initialize();
       Logger.info(TAG, "AudioStreamer initialized");
       // Wire up callbacks to break circular dependency
-      audioStreamer.setSpeakingStateCallback((isSpeaking) => {
-        this.handleSpeakingStateChange(isSpeaking);
+      audioStreamer.setSpeakingStateCallback((isSpeaking, traceId) => {
+        this.handleSpeakingStateChange(isSpeaking, traceId);
       });
       audioStreamer.setBufferProgressCallback((progress) => {
         getConversationStore().getState().setBufferProgress(progress);
@@ -987,8 +925,8 @@ class GeminiWebSocket {
     try {
       await audioStreamer.initialize();
       Logger.info(TAG, "AudioStreamer initialized (no greeting)");
-      audioStreamer.setSpeakingStateCallback((isSpeaking) => {
-        this.handleSpeakingStateChange(isSpeaking);
+      audioStreamer.setSpeakingStateCallback((isSpeaking, traceId) => {
+        this.handleSpeakingStateChange(isSpeaking, traceId);
       });
       audioStreamer.setBufferProgressCallback((progress) => {
         getConversationStore().getState().setBufferProgress(progress);
@@ -1165,12 +1103,10 @@ class GeminiWebSocket {
               audioStreamer.queueAudio(inlineData.data);
             }
           }
-          // Only add text if transcription is not enabled or not received
-          // Skip in audio-only mode (Vocab TTS)l
+          // Only add text if transcription is not enabled or not received.
           if (
             part.text &&
             !outputTranscription &&
-            !this.isAudioOnlyMode &&
             !this.discardModelOutputWhilePTT
           ) {
             this.queueModelTranscript(part.text);
@@ -1190,12 +1126,8 @@ class GeminiWebSocket {
         }
       }
 
-      // Handle model's speech transcription (skip in audio-only mode)
-      if (
-        outputTranscription?.text &&
-        !this.isAudioOnlyMode &&
-        !this.discardModelOutputWhilePTT
-      ) {
+      // Handle model's speech transcription.
+      if (outputTranscription?.text && !this.discardModelOutputWhilePTT) {
         this.queueModelTranscript(outputTranscription.text);
       }
 
