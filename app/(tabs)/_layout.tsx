@@ -258,6 +258,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="talk"
       screenOptions={{
         tabBarInactiveTintColor: "#94a3b8",
         headerShown: false,
@@ -296,6 +297,12 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="index"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="scenarios"
         options={{
           title: t("tabs.scenarios"),
           tabBarActiveTintColor: "#9333EA",
