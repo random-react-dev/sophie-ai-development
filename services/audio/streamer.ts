@@ -60,7 +60,7 @@ type StartupReason =
   | "generation_complete_late_start";
 type PlaybackRateGuardReason = "android_queue_rate_guard" | "none";
 
-class AudioStreamer {
+export class AudioStreamer {
   private audioContext: AudioContext | null = null;
   private gainNode: GainNode | null = null;
   private queueSource: AudioBufferQueueSourceNode | null = null;
@@ -115,7 +115,7 @@ class AudioStreamer {
   private isTTSPlay = false;
 
   private static instance: AudioStreamer;
-  private constructor() {}
+  constructor() {}
 
   public static getInstance(): AudioStreamer {
     if (!AudioStreamer.instance) {
@@ -1180,5 +1180,7 @@ class AudioStreamer {
     this.isAudioPrimed = false;
   }
 }
+
+export const createAudioStreamer = (): AudioStreamer => new AudioStreamer();
 
 export const audioStreamer = AudioStreamer.getInstance();

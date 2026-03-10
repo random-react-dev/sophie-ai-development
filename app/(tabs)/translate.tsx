@@ -42,7 +42,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -91,6 +91,8 @@ export default function TranslateScreen() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPhrasePlaying, setIsPhrasePlaying] = useState(false);
+  const [isPhrasePending, setIsPhrasePending] = useState(false);
+  const speakRequestIdRef = useRef(0);
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -110,10 +112,12 @@ export default function TranslateScreen() {
   useFocusEffect(
     useCallback(() => {
       return () => {
+        speakRequestIdRef.current += 1;
         void geminiPhrasePlayback.stop();
         void stopSpeaking();
         setIsSpeaking(false);
         setIsPhrasePlaying(false);
+        setIsPhrasePending(false);
       };
     }, []),
   );
@@ -138,7 +142,7 @@ export default function TranslateScreen() {
       pulseScale.value = withTiming(1, { duration: 200 });
       pulseOpacity.value = withTiming(0, { duration: 200 });
     }
-  }, [isListening]);
+  }, [isListening, pulseOpacity, pulseScale]);
 
   const pulseAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulseScale.value }],
@@ -362,7 +366,7 @@ export default function TranslateScreen() {
     // because that might be confusing if user just wants to see the result
   };
 
-  const isCurrentlySpeaking = isSpeaking || isPhrasePlaying;
+  const isCurrentlySpeaking = isSpeaking || isPhrasePlaying || isPhrasePending;
 
   /**
    * Speak the translated text using an isolated Gemini playback session
@@ -375,39 +379,78 @@ export default function TranslateScreen() {
 
     // If already speaking, stop playback
     if (isCurrentlySpeaking) {
+      speakRequestIdRef.current += 1;
       await geminiPhrasePlayback.stop();
       await stopSpeaking();
       setIsSpeaking(false);
       setIsPhrasePlaying(false);
+      setIsPhrasePending(false);
       return;
     }
 
-    const success = await geminiPhrasePlayback.playPhrase(
+    const requestId = ++speakRequestIdRef.current;
+    setIsPhrasePending(true);
+
+    const result = await geminiPhrasePlayback.playPhrase(
       translatedText,
       targetLang.name,
       {
-        onStart: () => setIsPhrasePlaying(true),
-        onDone: () => setIsPhrasePlaying(false),
-        onStop: () => setIsPhrasePlaying(false),
+        onStart: () => {
+          if (speakRequestIdRef.current !== requestId) return;
+          setIsPhrasePending(false);
+          setIsPhrasePlaying(true);
+        },
+        onDone: () => {
+          if (speakRequestIdRef.current !== requestId) return;
+          setIsPhrasePending(false);
+          setIsPhrasePlaying(false);
+        },
+        onStop: () => {
+          if (speakRequestIdRef.current !== requestId) return;
+          setIsPhrasePending(false);
+          setIsPhrasePlaying(false);
+        },
         onError: (err) => {
+          if (speakRequestIdRef.current !== requestId) return;
+          setIsPhrasePending(false);
           setIsPhrasePlaying(false);
           console.error("Phrase playback error:", err);
         },
       },
     );
-    if (success) {
+    if (speakRequestIdRef.current !== requestId) {
+      return;
+    }
+
+    setIsPhrasePending(false);
+
+    if (result === "started") {
+      return;
+    }
+
+    if (result === "cancelled") {
       return;
     }
 
     // Fallback to built-in TTS if WS is not ready or fails
+    if (speakRequestIdRef.current !== requestId) {
+      return;
+    }
     setIsSpeaking(true);
     await speakWord(
       translatedText,
       targetLang.name,
       {
-        onStart: () => setIsSpeaking(true),
-        onDone: () => setIsSpeaking(false),
+        onStart: () => {
+          if (speakRequestIdRef.current !== requestId) return;
+          setIsSpeaking(true);
+        },
+        onDone: () => {
+          if (speakRequestIdRef.current !== requestId) return;
+          setIsSpeaking(false);
+        },
         onError: (err) => {
+          if (speakRequestIdRef.current !== requestId) return;
           setIsSpeaking(false);
           console.error("TTS Error:", err);
         },

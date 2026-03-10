@@ -36,8 +36,15 @@ describe("GeminiPhrasePlaybackService", () => {
       getGeminiSessionToken: jest.fn(() => Promise.resolve("test-token")),
     }));
 
+    jest.mock("@/services/gemini/liveConfig", () => ({
+      GEMINI_LIVE_MAX_OUTPUT_TOKENS: 2048,
+      GEMINI_LIVE_MODEL_PRIMARY: "models/primary",
+      GEMINI_LIVE_MODEL_FALLBACK: "models/fallback",
+      GEMINI_LIVE_VOICE_NAME: "Aoede",
+    }));
+
     jest.mock("@/services/audio/streamer", () => ({
-      audioStreamer: mockAudioStreamer,
+      createAudioStreamer: jest.fn(() => mockAudioStreamer),
     }));
 
     const mockWs = {
@@ -134,7 +141,7 @@ describe("GeminiPhrasePlaybackService", () => {
     const traceId = mockAudioStreamer.prepareForNewResponse.mock.calls[0][0] as string;
     mockSpeakingListener?.(true, traceId);
 
-    await expect(playPromise).resolves.toBe(true);
+    await expect(playPromise).resolves.toBe("started");
     expect(onStart).toHaveBeenCalledTimes(1);
 
     await ws.onmessage?.({
@@ -153,7 +160,7 @@ describe("GeminiPhrasePlaybackService", () => {
     expect(ws.close).toHaveBeenCalledWith(1000, "Phrase playback complete");
   });
 
-  it("returns false when the isolated playback session closes before audio starts", async () => {
+  it("returns failed when the isolated playback session closes before audio starts", async () => {
     const onError = jest.fn();
 
     const playPromise = geminiPhrasePlayback.playPhrase("Bonjour", "French", {
@@ -170,11 +177,88 @@ describe("GeminiPhrasePlaybackService", () => {
       reason: "upstream failed",
     } as CloseEvent);
 
-    await expect(playPromise).resolves.toBe(false);
+    await expect(playPromise).resolves.toBe("failed");
     expect(onError).toHaveBeenCalledWith(
       expect.objectContaining({
         message: "upstream failed",
       }),
     );
+  });
+
+  it("returns cancelled without invoking fallback-style errors when stopped before audio starts", async () => {
+    const onStop = jest.fn();
+    const onError = jest.fn();
+
+    const playPromise = geminiPhrasePlayback.playPhrase("Ciao", "Italian", {
+      onStop,
+      onError,
+    });
+
+    await flushMicrotasks();
+    await geminiPhrasePlayback.stop();
+
+    await expect(playPromise).resolves.toBe("cancelled");
+    expect(onStop).toHaveBeenCalledTimes(1);
+    expect(onError).not.toHaveBeenCalled();
+    expect(mockAudioStreamer.clearQueue).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries with the fallback live model when the primary model is unsupported", async () => {
+    const primaryWs = {
+      send: jest.fn(),
+      close: jest.fn(),
+      readyState: 1,
+      onopen: null as ((event: Event) => void) | null,
+      onmessage: null as ((event: MessageEvent) => void) | null,
+      onclose: null as ((event: CloseEvent) => void) | null,
+      onerror: null as ((event: Event) => void) | null,
+    };
+    const fallbackWs = {
+      send: jest.fn(),
+      close: jest.fn(),
+      readyState: 1,
+      onopen: null as ((event: Event) => void) | null,
+      onmessage: null as ((event: MessageEvent) => void) | null,
+      onclose: null as ((event: CloseEvent) => void) | null,
+      onerror: null as ((event: Event) => void) | null,
+    };
+
+    (global.WebSocket as unknown as jest.Mock)
+      .mockReset()
+      .mockImplementationOnce(() => primaryWs)
+      .mockImplementationOnce(() => fallbackWs);
+    // @ts-expect-error - static constant for ready state checks
+    global.WebSocket.OPEN = 1;
+
+    const playPromise = geminiPhrasePlayback.playPhrase("Hola", "Spanish");
+
+    await flushMicrotasks();
+    primaryWs.onopen?.({} as Event);
+
+    const primarySetup = JSON.parse(primaryWs.send.mock.calls[0][0]) as {
+      setup: { model: string };
+    };
+    expect(primarySetup.setup.model).toBe("models/primary");
+
+    primaryWs.onclose?.({
+      code: 1008,
+      reason: "models/primary is not found for API version",
+    } as CloseEvent);
+
+    fallbackWs.onopen?.({} as Event);
+
+    const fallbackSetup = JSON.parse(fallbackWs.send.mock.calls[0][0]) as {
+      setup: { model: string };
+    };
+    expect(fallbackSetup.setup.model).toBe("models/fallback");
+
+    await fallbackWs.onmessage?.({
+      data: JSON.stringify({ setupComplete: {} }),
+    } as MessageEvent);
+
+    const traceId = mockAudioStreamer.prepareForNewResponse.mock.calls[0][0] as string;
+    mockSpeakingListener?.(true, traceId);
+
+    await expect(playPromise).resolves.toBe("started");
   });
 });

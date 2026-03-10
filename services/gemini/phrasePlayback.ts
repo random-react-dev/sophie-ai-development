@@ -1,7 +1,8 @@
-import { audioStreamer } from "../audio/streamer";
+import { createAudioStreamer } from "../audio/streamer";
 import { Logger } from "../common/Logger";
 import {
   GEMINI_LIVE_MAX_OUTPUT_TOKENS,
+  GEMINI_LIVE_MODEL_FALLBACK,
   GEMINI_LIVE_MODEL_PRIMARY,
   GEMINI_LIVE_VOICE_NAME,
 } from "./liveConfig";
@@ -11,6 +12,7 @@ import { GeminiClientContent, GeminiServerResponse } from "./types";
 const TAG = "PhrasePlayback";
 const WS_CONNECTING = 0;
 const WS_OPEN = 1;
+const UNSUPPORTED_MODEL_CLOSE_CODE = 1008;
 const START_TIMEOUT_MS =
   Number(process.env.EXPO_PUBLIC_STARTUP_SLA_MS ?? "10000") + 2000;
 
@@ -21,13 +23,18 @@ export interface PhrasePlaybackCallbacks {
   onError?: (error: Error) => void;
 }
 
+export type PhrasePlaybackResult = "started" | "cancelled" | "failed";
+
 class GeminiPhrasePlaybackService {
+  private readonly streamer = createAudioStreamer();
   private ws: WebSocket | null = null;
   private url =
     "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
   private requestId = 0;
   private activeTraceId: string | null = null;
-  private pendingStartResolver: ((started: boolean) => void) | null = null;
+  private pendingStartResolver:
+    | ((result: PhrasePlaybackResult) => void)
+    | null = null;
   private startTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private unsubscribeSpeaking: (() => void) | null = null;
   private callbacks: PhrasePlaybackCallbacks = {};
@@ -35,15 +42,17 @@ class GeminiPhrasePlaybackService {
   private generationComplete = false;
   private hasAudio = false;
   private stopRequested = false;
+  private activeModel = GEMINI_LIVE_MODEL_PRIMARY;
+  private hasRetriedWithFallback = false;
 
   async playPhrase(
     phrase: string,
     language: string,
     callbacks: PhrasePlaybackCallbacks = {},
-  ): Promise<boolean> {
+  ): Promise<PhrasePlaybackResult> {
     const normalizedPhrase = phrase.trim();
     if (!normalizedPhrase) {
-      return false;
+      return "failed";
     }
 
     const normalizedLanguage = language.trim() || "the target language";
@@ -57,10 +66,10 @@ class GeminiPhrasePlaybackService {
       callbacks.onError?.(
         this.toError(error, "Failed to get Gemini playback token"),
       );
-      return false;
+      return "failed";
     }
 
-    await audioStreamer.initialize();
+    await this.streamer.initialize();
 
     const requestId = ++this.requestId;
     const traceId = this.buildTraceId(requestId);
@@ -71,8 +80,10 @@ class GeminiPhrasePlaybackService {
     this.generationComplete = false;
     this.hasAudio = false;
     this.stopRequested = false;
+    this.activeModel = GEMINI_LIVE_MODEL_PRIMARY;
+    this.hasRetriedWithFallback = false;
 
-    this.unsubscribeSpeaking = audioStreamer.addSpeakingStateListener(
+    this.unsubscribeSpeaking = this.streamer.addSpeakingStateListener(
       (isSpeaking, eventTraceId) => {
         if (requestId !== this.requestId || eventTraceId !== traceId) {
           return;
@@ -81,7 +92,7 @@ class GeminiPhrasePlaybackService {
         if (isSpeaking) {
           if (!this.playbackStarted) {
             this.playbackStarted = true;
-            this.resolveStart(true);
+            this.resolveStart("started");
             this.callbacks.onStart?.();
           }
           return;
@@ -93,7 +104,7 @@ class GeminiPhrasePlaybackService {
       },
     );
 
-    return await new Promise<boolean>((resolve) => {
+    return await new Promise<PhrasePlaybackResult>((resolve) => {
       this.pendingStartResolver = resolve;
       this.startTimeoutId = setTimeout(() => {
         if (
@@ -109,51 +120,13 @@ class GeminiPhrasePlaybackService {
         this.failPlayback(requestId, error);
       }, START_TIMEOUT_MS);
 
-      const ws = new WebSocket(`${this.url}?key=${token}`);
-      this.ws = ws;
-
-      ws.onopen = () => {
-        if (!this.isActiveRequest(requestId, ws)) return;
-
-        Logger.info(TAG, `Connected trace=${traceId}`);
-        this.sendSetupMessage(ws, normalizedLanguage);
-      };
-
-      ws.onmessage = async (event: MessageEvent) => {
-        if (!this.isActiveRequest(requestId, ws)) return;
-
-        const response = await this.parseResponse(event.data);
-        if (!response) return;
-
-        this.handleMessage(
-          requestId,
-          ws,
-          response,
-          normalizedPhrase,
-          normalizedLanguage,
-          traceId,
-        );
-      };
-
-      ws.onclose = (event: CloseEvent) => {
-        if (!this.isActiveRequest(requestId, ws)) return;
-
-        const message =
-          event.reason ||
-          `Phrase playback socket closed with code ${event.code ?? -1}`;
-
-        if (this.stopRequested || event.code === 1000) {
-          this.finishPlayback(requestId, "stopped");
-          return;
-        }
-
-        this.failPlayback(requestId, new Error(message));
-      };
-
-      ws.onerror = (error: Event) => {
-        if (!this.isActiveRequest(requestId, ws)) return;
-        Logger.error(TAG, "Phrase playback socket error", error);
-      };
+      this.openSocket(
+        requestId,
+        token,
+        normalizedPhrase,
+        normalizedLanguage,
+        traceId,
+      );
     });
   }
 
@@ -164,8 +137,95 @@ class GeminiPhrasePlaybackService {
 
     this.stopRequested = true;
     const activeRequestId = this.requestId;
-    this.finishPlayback(activeRequestId, "stopped");
-    audioStreamer.clearQueue();
+    this.finishPlayback(activeRequestId, "cancelled");
+    this.streamer.clearQueue();
+  }
+
+  private openSocket(
+    requestId: number,
+    token: string,
+    phrase: string,
+    language: string,
+    traceId: string,
+  ): void {
+    const ws = new WebSocket(`${this.url}?key=${token}`);
+    this.ws = ws;
+
+    ws.onopen = () => {
+      if (!this.isActiveRequest(requestId, ws)) return;
+
+      Logger.info(
+        TAG,
+        `Connected trace=${traceId} model=${this.activeModel}`,
+      );
+      this.sendSetupMessage(ws, language);
+    };
+
+    ws.onmessage = async (event: MessageEvent) => {
+      if (!this.isActiveRequest(requestId, ws)) return;
+
+      const response = await this.parseResponse(event.data);
+      if (!response) return;
+
+      this.handleMessage(requestId, ws, response, phrase, language, traceId);
+    };
+
+    ws.onclose = (event: CloseEvent) => {
+      if (!this.isActiveRequest(requestId, ws)) return;
+
+      if (this.stopRequested) {
+        this.finishPlayback(requestId, "cancelled");
+        return;
+      }
+
+      if (this.shouldRetryWithFallback(event.code, event.reason)) {
+        Logger.warn(
+          TAG,
+          `Retrying phrase playback with fallback model after unsupported close: ${event.reason || "no reason"}`,
+        );
+        this.hasRetriedWithFallback = true;
+        this.activeModel = GEMINI_LIVE_MODEL_FALLBACK;
+        this.cleanupSocket("Retrying fallback model");
+        this.streamer.clearQueue();
+        this.playbackStarted = false;
+        this.generationComplete = false;
+        this.hasAudio = false;
+        this.openSocket(requestId, token, phrase, language, traceId);
+        return;
+      }
+
+      if (event.code === 1000 && this.playbackStarted && this.generationComplete) {
+        return;
+      }
+
+      const message =
+        event.reason ||
+        `Phrase playback socket closed with code ${event.code ?? -1}`;
+      this.failPlayback(requestId, new Error(message));
+    };
+
+    ws.onerror = (error: Event) => {
+      if (!this.isActiveRequest(requestId, ws)) return;
+      Logger.error(TAG, "Phrase playback socket error", error);
+    };
+  }
+
+  private shouldRetryWithFallback(code?: number, reason?: string): boolean {
+    if (this.hasRetriedWithFallback) return false;
+    if (this.playbackStarted) return false;
+    if (
+      !GEMINI_LIVE_MODEL_FALLBACK ||
+      GEMINI_LIVE_MODEL_FALLBACK === GEMINI_LIVE_MODEL_PRIMARY
+    ) {
+      return false;
+    }
+    if (code !== UNSUPPORTED_MODEL_CLOSE_CODE) return false;
+    if (!reason) return false;
+
+    return (
+      reason.includes("is not found for API version") ||
+      reason.includes("not supported for bidiGenerateContent")
+    );
   }
 
   private isActiveRequest(requestId: number, ws: WebSocket): boolean {
@@ -183,12 +243,12 @@ class GeminiPhrasePlaybackService {
     }
   }
 
-  private resolveStart(started: boolean): void {
+  private resolveStart(result: PhrasePlaybackResult): void {
     if (!this.pendingStartResolver) {
       return;
     }
 
-    this.pendingStartResolver(started);
+    this.pendingStartResolver(result);
     this.pendingStartResolver = null;
     this.clearStartTimeout();
   }
@@ -215,16 +275,15 @@ class GeminiPhrasePlaybackService {
 
   private finishPlayback(
     requestId: number,
-    outcome: "done" | "stopped",
+    outcome: "done" | "cancelled",
   ): void {
     if (requestId !== this.requestId) {
       return;
     }
 
     const callbacks = this.callbacks;
-    const shouldNotifyStop = outcome === "stopped" && !this.playbackStarted;
 
-    this.resolveStart(false);
+    this.resolveStart("cancelled");
     this.unsubscribeSpeaking?.();
     this.unsubscribeSpeaking = null;
     this.cleanupSocket(
@@ -237,10 +296,12 @@ class GeminiPhrasePlaybackService {
     this.generationComplete = false;
     this.hasAudio = false;
     this.stopRequested = false;
+    this.activeModel = GEMINI_LIVE_MODEL_PRIMARY;
+    this.hasRetriedWithFallback = false;
 
     if (outcome === "done") {
       callbacks.onDone?.();
-    } else if (shouldNotifyStop) {
+    } else {
       callbacks.onStop?.();
     }
   }
@@ -252,7 +313,7 @@ class GeminiPhrasePlaybackService {
 
     const callbacks = this.callbacks;
 
-    this.resolveStart(false);
+    this.resolveStart("failed");
     this.unsubscribeSpeaking?.();
     this.unsubscribeSpeaking = null;
     this.cleanupSocket("Phrase playback failed");
@@ -263,6 +324,8 @@ class GeminiPhrasePlaybackService {
     this.generationComplete = false;
     this.hasAudio = false;
     this.stopRequested = false;
+    this.activeModel = GEMINI_LIVE_MODEL_PRIMARY;
+    this.hasRetriedWithFallback = false;
 
     callbacks.onError?.(error);
   }
@@ -270,7 +333,7 @@ class GeminiPhrasePlaybackService {
   private sendSetupMessage(ws: WebSocket, language: string): void {
     const setupMsg = {
       setup: {
-        model: GEMINI_LIVE_MODEL_PRIMARY,
+        model: this.activeModel,
         generationConfig: {
           responseModalities: ["AUDIO"],
           maxOutputTokens: GEMINI_LIVE_MAX_OUTPUT_TOKENS,
@@ -311,7 +374,7 @@ class GeminiPhrasePlaybackService {
   ): void {
     Logger.info(TAG, `Requesting isolated playback trace=${traceId}`);
 
-    audioStreamer.prepareForNewResponse(traceId, Date.now(), true);
+    this.streamer.prepareForNewResponse(traceId, Date.now(), true);
 
     const request: GeminiClientContent = {
       clientContent: {
@@ -362,7 +425,7 @@ class GeminiPhrasePlaybackService {
         const mimeType = inlineData?.mime_type || inlineData?.mimeType;
         if (inlineData && mimeType?.startsWith("audio/pcm")) {
           this.hasAudio = true;
-          audioStreamer.queueAudio(inlineData.data);
+          this.streamer.queueAudio(inlineData.data);
         }
       }
     }
@@ -383,7 +446,7 @@ class GeminiPhrasePlaybackService {
       return;
     }
 
-    audioStreamer.onGenerationComplete();
+    this.streamer.onGenerationComplete();
   }
 
   private async parseResponse(

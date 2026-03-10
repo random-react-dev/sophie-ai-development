@@ -39,7 +39,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -146,6 +146,7 @@ export default function VocabScreen() {
 
   // Speaking state for mic visual feedback
   const [speakingItemId, setSpeakingItemId] = useState<string | null>(null);
+  const playRequestIdRef = useRef(0);
 
   // Use useFocusEffect to refresh data when screen comes into focus
   useFocusEffect(
@@ -153,6 +154,7 @@ export default function VocabScreen() {
       fetchVocabulary();
       // fetchFolders is called within fetchVocabulary now, but keeping distinct functions in store is good
       return () => {
+        playRequestIdRef.current += 1;
         void geminiPhrasePlayback.stop();
         void stopTTSSpeaking();
         setSpeakingItemId(null);
@@ -212,6 +214,7 @@ export default function VocabScreen() {
    */
   const handlePlay = (item: VocabularyItem) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const requestId = ++playRequestIdRef.current;
 
     // If this item is already speaking, stop playback
     if (speakingItemId === item.id) {
@@ -233,26 +236,34 @@ export default function VocabScreen() {
     void geminiPhrasePlayback
       .playPhrase(item.phrase, item.language || "", {
         onStart: () => {
+          if (playRequestIdRef.current !== requestId) return;
           setSpeakingItemId(item.id || null);
         },
         onDone: () => {
+          if (playRequestIdRef.current !== requestId) return;
           setSpeakingItemId((current) =>
             current === item.id ? null : current,
           );
         },
         onStop: () => {
+          if (playRequestIdRef.current !== requestId) return;
           setSpeakingItemId((current) =>
             current === item.id ? null : current,
           );
         },
         onError: () => {
+          if (playRequestIdRef.current !== requestId) return;
           setSpeakingItemId((current) =>
             current === item.id ? null : current,
           );
         },
       })
-      .then((success) => {
-        if (success) {
+      .then((result) => {
+        if (playRequestIdRef.current !== requestId) {
+          return;
+        }
+
+        if (result === "started" || result === "cancelled") {
           return;
         }
 
@@ -262,12 +273,15 @@ export default function VocabScreen() {
           item.language,
           {
             onStart: () => {
+              if (playRequestIdRef.current !== requestId) return;
               setSpeakingItemId(item.id || null);
             },
             onDone: () => {
+              if (playRequestIdRef.current !== requestId) return;
               setSpeakingItemId(null);
             },
             onError: () => {
+              if (playRequestIdRef.current !== requestId) return;
               setSpeakingItemId(null);
             },
           },
