@@ -17,7 +17,7 @@ export const AuthHeader = ({ className }: { className?: string }) => {
         />
       </View>
       <Text className="text-3xl font-bold text-gray-900">Sophie AI</Text>
-      <Text className="text-gray-500 text-base w-full text-center mt-2">
+      <Text className="text-gray-500 w-full text-center mt-1">
         Your language personal assistant.
       </Text>
     </View>
