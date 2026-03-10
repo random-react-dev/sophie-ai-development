@@ -192,41 +192,51 @@
       "subtitle": "释放 Sophie AI 的全部潜力并精通任何语言。",
       "plans": {
         "mg": {
-          "name": "M 和 G",
-          "description": "适合随时练习。",
+          "name": "M&G",
+          "description": "认识Sophie",
           "features": {
-            "0": "包含所有语言",
-            "1": "每天练习 5 分钟",
-            "2": "基础 AI 导师反馈"
+            "0": "支持15种语言的应用程序",
+            "1": "用50多种语言与Sophie自然对话",
+            "2": "Sophie可翻译成任意语言",
+            "3": "跨所有语言无限制保存单词",
+            "4": "100多种对话场景"
           }
         },
-        "launch": {
-          "name": "启动包",
-          "description": "适合想要自信开口说的认真学习者。",
-          "badge": "最受欢迎",
+        "scf": {
+          "name": "SCF",
+          "description": "Sophie密友",
+          "badge": "热门",
           "features": {
-            "0": "自选 1 种语言",
-            "1": "每天练习 15 分钟",
-            "2": "优先 AI 反馈",
-            "3": "无广告"
+            "0": "所有功能包含在免费试用中",
+            "1": "24/7 客户支持保障",
+            "2": "无限制使用应用程序",
+            "3": "战略大使选项"
           }
         },
         "sbb": {
-          "name": "专业商务版",
-          "description": "针对商务和考试的高级辅导。",
+          "name": "SBB",
+          "description": "Sophie死党",
+          "badge": "超值",
           "features": {
-            "0": "无限语言",
-            "1": "无限时间",
-            "2": "高级 AI 分析",
-            "3": "个性化路径"
+            "0": "包含密友计划所有功能",
+            "1": "优先 24/7 支持",
+            "2": "独家内容和抢先体验",
+            "3": "定制学习路径",
+            "4": "专属客户经理"
           }
         }
       },
       "common": {
         "subscribe": "立即订阅",
-        "getStarted": "开始使用",
+        "getStarted": "加入候补名单",
         "month": "月",
-        "day7": "7 天"
+        "day7": "7天",
+        "startFreeTrial": "开始免费试用",
+        "regularPrice": "正常价格",
+        "launchPrice": "首发价格",
+        "billedEvery": "每{{months}}个月结算{{total}}",
+        "saveVsMonthly": "$ 相比月付节省{{percent}}%",
+        "mo": "个月"
       },
       "footer": "所有计划均包含 24/7 AI 导师服务及进度追踪。随时可在设置中取消。"
     },
@@ -1708,6 +1718,9 @@
     "claim_discount_msg": "立即领取折扣",
     "upgrade_now_btn": "立即升级",
     "claim_discount_btn": "领取我的折扣",
-    "maybe_later_btn": "也许以后"
+    "maybe_later_btn": "也许以后",
+    "expired_title": "试用期已结束！",
+    "expired_subtitle": "您的7天免费试用已结束。请选择一个计划以继续学习并使用所有功能。",
+    "choose_plan_btn": "选择计划"
   }
 }

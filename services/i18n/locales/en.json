@@ -195,40 +195,50 @@
       "plans": {
         "mg": {
           "name": "M&G",
-          "description": "Perfect for casual practice.",
+          "description": "Meet and Greet Sophie",
           "features": {
-            "0": "All languages included",
-            "1": "5 min/day practice",
-            "2": "Basic AI tutor feedback"
+            "0": "App in 15 languages",
+            "1": "Natural conversations with Sophie in 50+ languages",
+            "2": "Sophie's translation from any to any available language",
+            "3": "Unlimited vocabulary saver in all available languages.",
+            "4": "100+ conversational scenarios"
           }
         },
-        "launch": {
-          "name": "Launch Pack",
-          "description": "For serious learners who want to speak confidently.",
-          "badge": "Most Popular",
+        "scf": {
+          "name": "SCF",
+          "description": "Sophie Close Friend",
+          "badge": "POPULAR",
           "features": {
-            "0": "1 language of choice",
-            "1": "15 min/day practice",
-            "2": "Priority AI feedback",
-            "3": "No ads"
+            "0": "Everything is included in the free trial.",
+            "1": "24/7 Customer support. Guaranteed.",
+            "2": "Unrestricted app usage",
+            "3": "Strategic ambassador option."
           }
         },
         "sbb": {
           "name": "SBB",
-          "description": "Advanced coaching for business & exams.",
+          "description": "Sophie Best Buddy",
+          "badge": "BEST VALUE",
           "features": {
-            "0": "Unlimited languages",
-            "1": "Unlimited time",
-            "2": "Advanced AI analytics",
-            "3": "Personalized paths"
+            "0": "Everything in Sophie Close Friend",
+            "1": "Priority 24/7 support",
+            "2": "Exclusive content & early access",
+            "3": "Custom learning path",
+            "4": "Dedicated account manager"
           }
         }
       },
       "common": {
         "subscribe": "Subscribe Now",
-        "getStarted": "Get Started",
+        "getStarted": "Join Waitlist",
+        "startFreeTrial": "Start Free Trial",
         "month": "month",
-        "day7": "7 days"
+        "day7": "7 days",
+        "regularPrice": "regular price",
+        "launchPrice": "launch price",
+        "billedEvery": "billed {{total}} every {{months}} months",
+        "saveVsMonthly": "$ Save {{percent}}% vs monthly",
+        "mo": "mo"
       },
       "footer": "All plans include 24/7 AI tutor access and Progress Tracking. Cancel anytime from your settings."
     },
@@ -1698,18 +1708,21 @@
   "trial_countdown_modal": {
     "last_day_title": "Last Day!",
     "days_left_title": "{{count}} Days Left",
-    "last_day_subtitle": "Your free trial ends today!",
+    "last_day_subtitle": "This is the last day of your free trial! Upgrade now to keep accessing all features.",
     "upgrade_subtitle": "Upgrade to Sophie AI Pro for the full experience.",
-    "benefits_title": "What you'll get",
+    "expired_title": "Trial Expired!",
+    "expired_subtitle": "Your 7-day free trial has ended. Please choose a plan to continue learning and accessing all features.",
+    "benefits_title": "UNLOCK PRO FEATURES",
     "benefit_1": "Unlimited AI conversations",
     "benefit_2": "All 10+ languages unlocked",
     "benefit_3": "Advanced vocabulary tools",
     "benefit_4": "Priority support",
     "limited_time_offer": "Limited Time Offer",
     "off_text": "{{percent}}% OFF",
-    "claim_discount_msg": "Claim your discount today",
-    "upgrade_now_btn": "Upgrade Now",
+    "claim_discount_msg": "Don't miss out on this deal!",
     "claim_discount_btn": "Claim My Discount",
-    "maybe_later_btn": "Maybe later"
+    "upgrade_now_btn": "Upgrade Now",
+    "choose_plan_btn": "Choose a Plan",
+    "maybe_later_btn": "Maybe Later"
   }
 }
