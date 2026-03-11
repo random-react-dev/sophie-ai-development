@@ -79,6 +79,7 @@ export default function LoginScreen() {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                testID="auth-email-input"
               />
 
               {/* Password Input */}
@@ -88,6 +89,7 @@ export default function LoginScreen() {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
+                  testID="auth-password-input"
                 />
                 {/* Forgot Password - below and right-aligned */}
                 <View className="items-end mt-2">
@@ -108,6 +110,7 @@ export default function LoginScreen() {
                 disabled={isLoading}
                 variant="rainbow"
                 className="mt-6 h-14"
+                testID="auth-login-button"
               />
 
               {/* Social Login */}

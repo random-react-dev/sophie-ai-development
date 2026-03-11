@@ -4,6 +4,7 @@ import { RainbowBorder } from "@/components/common/Rainbow";
 import { APP_LANGUAGES, Language } from "@/constants/languages";
 import { CEFR_LEVELS } from "@/constants/scenarios";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuthStore } from "@/stores/authStore";
 import { useLanguageStore } from "@/stores/languageStore";
 import { useLearningStore } from "@/stores/learningStore";
 import { useOnboardingStore } from "@/stores/onboardingStore";
@@ -158,7 +159,16 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
     const { t } = useTranslation();
     const { currentLanguage, setLanguage } = useLanguageStore();
     const { cefrLevel, setCefrLevel } = useLearningStore();
+    const user = useAuthStore((s) => s.user);
     const [subStep, setSubStep] = useState(1);
+
+    // Pre-fill name from Apple Sign In (or other providers) if available
+    React.useEffect(() => {
+      const appleName = user?.user_metadata?.full_name;
+      if (typeof appleName === "string" && appleName && !data.name) {
+        updateData({ name: appleName });
+      }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps -- Run once on mount
 
     // Notify parent of sub-step changes
     React.useEffect(() => {

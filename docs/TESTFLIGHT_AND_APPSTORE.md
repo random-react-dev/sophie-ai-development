@@ -13,9 +13,23 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest Build Number**: 1
+- **Latest Build Number**: 20
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: Not yet submitted for review
+- **App Store Status**: Rejected March 10, 2026 — fixes applied (see below)
+
+## App Store Rejection Fix (v1.0, March 2026)
+
+Four issues were raised by Apple review and fixed:
+
+1. **Sign in with Apple name pre-fill (Guideline 4)** — `ProfileStep.tsx` now pre-fills the name field from `user_metadata.full_name` provided by Apple Sign In.
+2. **Third-party AI disclosure (Guideline 2.1 + 5.1.2(i))** — New `AIConsentModal` component (`components/common/AIConsentModal.tsx`) shows a one-time consent prompt naming Google Gemini before Talk or Translate features activate. Consent saved to AsyncStorage.
+3. **Session persistence bug (Guideline 2.1(a))** — `startAutoRefresh()` called on startup in `client.ts`; proactive token refresh in `authStore.ts` `initialize()`; spurious SIGNED_OUT guard added to `onAuthStateChange`. Trial countdown modal disabled (no paywall exists yet).
+4. **Demo account (Guideline 2.1(a))** — Manual: create `appreview@speakwithsophie.ai` in Supabase, complete onboarding, backdate `created_at`, provide credentials in App Store Connect review info.
+
+**App Store Connect reply for AI questions:**
+1. Yes, the app uses third-party AI for analysis of data.
+2. Provider: Google Gemini (via Google AI Studio API).
+3. Data transmitted: Voice audio (PCM format), text transcripts, conversation history, and language learning context. No PII beyond what the user speaks in conversation.
 
 ## Key Files
 
@@ -134,7 +148,8 @@ Then in Xcode: **Product > Archive > Distribute App > App Store Connect > Distri
 
 1. **Bundle ID is permanent** — `ai.speakwithsophie.app` cannot be changed after the first upload. A new bundle ID = a new app.
 2. **"Sign in with Apple"** — If the app has login/signup, Apple REQUIRES "Sign in with Apple" as an option. Common rejection reason.
-3. **Privacy Policy** — Required for App Store submission. Host somewhere publicly accessible.
+3. **Third-party AI disclosure** — Apple requires explicit user consent before sending data to third-party AI providers (Google Gemini). The `AIConsentModal` component handles this.
+4. **Privacy Policy** — Required for App Store submission. Host somewhere publicly accessible.
 4. **Screenshots** — Required for App Store. Take on simulator for each required device size.
 5. **Never manually edit `ios/` folder** — Always use `npx expo prebuild --platform ios --clean` to regenerate.
 6. **Xcode Cloud popup** — If it appears, click "Don't Ask Again". We do local builds only.

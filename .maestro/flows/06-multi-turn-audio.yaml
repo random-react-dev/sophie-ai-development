@@ -29,6 +29,11 @@ appId: ai.speakwithsophie.app
 # === TURN 1: Navigate to Talk — Sophie auto-greets ===
 - tapOn: "Talk"
 
+# Dismiss AI consent modal if shown (one-time consent for Google Gemini)
+- tapOn:
+    text: "I Understand & Agree"
+    optional: true
+
 # Wait for Talk screen to fully load
 - extendedWaitUntil:
     visible:

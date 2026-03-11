@@ -7,16 +7,13 @@ export function filterTranscriptText(text: string): string {
   // Remove <thinking>...</thinking> XML blocks (common Gemini leak format)
   let filtered = text.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
 
-  // Remove asterisk-wrapped action text (*thinks*, *pauses*, *laughs*, etc.)
-  filtered = filtered.replace(/\*[^*\n]+\*/g, "");
+  // Unwrap markdown bold/italic (keep content, strip asterisks)
+  // **Namaste** → Namaste, *laughs* → laughs, ***bold italic*** → bold italic
+  filtered = filtered.replace(/\*{1,3}(.+?)\*{1,3}/g, "$1");
 
   // Remove bracket/paren markers ([thinking], (internal monologue), etc.)
   filtered = filtered.replace(/\[(?:thinking|internal)[^\]]*\]/gi, "");
   filtered = filtered.replace(/\((?:thinking|internal)[^)]*\)/gi, "");
-
-  // Remove bold markdown sections (internal thinking headers)
-  // Pattern: **text** at start of content or after newlines
-  filtered = filtered.replace(/^\*\*[^*]+\*\*\s*/gm, "");
 
   // Split by double newlines (paragraphs)
   const paragraphs = filtered.split(/\n\s*\n/).filter((p) => p.trim());

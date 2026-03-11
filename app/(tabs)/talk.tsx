@@ -1,3 +1,7 @@
+import {
+  AIConsentModal,
+  useAIConsent,
+} from "@/components/common/AIConsentModal";
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { CustomToggle } from "@/components/common/CustomToggle";
 import { RainbowBorder } from "@/components/common/Rainbow";
@@ -249,6 +253,15 @@ export default function TalkScreen() {
   // Alert modal state for reset confirmation
   const { alertState, showAlert, hideAlert } = useAlertModal();
 
+  // AI consent state
+  const {
+    hasConsented,
+    showConsent,
+    requestConsent,
+    acceptConsent,
+    declineConsent,
+  } = useAIConsent();
+
   // Check if both languages are selected (profile exists)
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
@@ -337,6 +350,12 @@ export default function TalkScreen() {
       // Audio playback while unfocused is harmless (useFocusEffect handles pause/resume).
 
       if (!session) return;
+
+      // Gate behind AI consent — show modal if not yet accepted
+      if (!hasConsented) {
+        requestConsent();
+        return;
+      }
 
       const { isTrialExpired } = useAuthStore.getState().checkTrialStatus();
       if (isTrialExpired) {
@@ -529,6 +548,7 @@ ${levelGuide}`;
   }, [
     session?.user?.id,
     activeProfile?.id,
+    hasConsented, // Re-run when consent is granted
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes
     selectedScenario, // Re-run when scenario changes
@@ -860,6 +880,13 @@ ${levelGuide}`;
       {/* <View className="h-20" /> */}
 
       {/* Language selection is now managed from the Profile page (/(tabs)/language) */}
+
+      {/* AI Consent Modal */}
+      <AIConsentModal
+        visible={showConsent}
+        onAccept={acceptConsent}
+        onDecline={declineConsent}
+      />
 
       {/* Reset Confirmation Modal */}
       <AlertModal

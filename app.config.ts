@@ -11,18 +11,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
+    usesAppleSignIn: true,
     supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "29",
+    buildNumber: "37",
     infoPlist: {
       NSMicrophoneUsageDescription:
-        "Allow Fluent-AI to use the microphone for voice conversations.",
+        "Sophie AI needs microphone access to hear your voice during conversations. Audio is processed in real-time and is not recorded or stored.",
       ITSAppUsesNonExemptEncryption: false,
     },
   },
   android: {
     adaptiveIcon: {
-      backgroundColor: "#E6F4FE",
+      backgroundColor: "#FFFFFF",
       foregroundImage: "./assets/images/android-icon-foreground.png",
       backgroundImage: "./assets/images/android-icon-background.png",
       monochromeImage: "./assets/images/android-icon-monochrome.png",
@@ -46,6 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         resizeMode: "contain",
         backgroundColor: "#ffffff",
         dark: {
+          image: "./assets/images/splash-icon.png",
           backgroundColor: "#000000",
         },
       },
@@ -70,7 +72,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-stream-audio",
-    "react-native-audio-api",
+    ["react-native-audio-api", { iosBackgroundMode: false }],
     [
       "expo-font",
       {
@@ -87,16 +89,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         microphonePermission:
           "Allow Sophie AI to use the microphone for voice input.",
         speechRecognitionPermission:
-          "Allow Sophie AI to use speech recognition.",
+          "Sophie AI uses speech recognition to convert your voice into text during conversations. Your speech is processed to generate AI responses. No audio recordings are stored.",
       },
     ],
-    // Google Sign-In - Uncomment when EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME is configured
-    // [
-    //   "@react-native-google-signin/google-signin",
-    //   {
-    //     iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
-    //   },
-    // ],
+    [
+      "@react-native-google-signin/google-signin",
+      {
+        iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
+      },
+    ],
   ],
 
   experiments: {

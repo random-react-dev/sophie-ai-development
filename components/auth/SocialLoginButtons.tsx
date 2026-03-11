@@ -1,8 +1,7 @@
 import { supabase } from "@/services/supabase/client";
 import { useAuthStore } from "@/stores/authStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import * as Linking from "expo-linking";
-import * as WebBrowser from "expo-web-browser";
+import * as AppleAuthentication from "expo-apple-authentication";
 import React from "react";
 import { Alert, Platform, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
@@ -42,14 +41,6 @@ function GoogleLogo() {
   );
 }
 
-function AppleLogo() {
-  return (
-    <Svg width={26} height={26} viewBox="0 0 16 16" fill="#000000">
-      <Path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516s1.52.087 2.475-1.258.762-2.391.728-2.43m3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422s1.675-2.789 1.698-2.854-.597-.79-1.254-1.157a3.7 3.7 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56s.625 1.924 1.273 2.796c.576.984 1.34 1.667 1.659 1.899s1.219.386 1.843.067c.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758q.52-1.185.473-1.282" />
-    </Svg>
-  );
-}
-
 export function SocialLoginButtons() {
   const { signInWithGoogle, isLoading } = useAuthStore();
 
@@ -64,42 +55,51 @@ export function SocialLoginButtons() {
 
   const handleAppleSignIn = async () => {
     try {
-      // Get the redirect URL for deep linking back to the app
-      const redirectUrl = Linking.createURL("auth/callback");
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      if (!credential.identityToken) {
+        throw new Error("No identity token returned from Apple");
+      }
+
+      const {
+        error,
+        data: { user },
+      } = await supabase.auth.signInWithIdToken({
         provider: "apple",
-        options: {
-          redirectTo: redirectUrl,
-          skipBrowserRedirect: true,
-        },
+        token: credential.identityToken,
       });
 
       if (error) throw error;
-      if (!data.url) throw new Error("No OAuth URL returned");
 
-      // Open the OAuth URL in a web browser
-      const result = await WebBrowser.openAuthSessionAsync(
-        data.url,
-        redirectUrl,
-      );
-
-      if (result.type === "success" && result.url) {
-        // Extract the tokens from the URL and set the session
-        const url = new URL(result.url);
-        const params = new URLSearchParams(url.hash.substring(1));
-        const accessToken = params.get("access_token");
-        const refreshToken = params.get("refresh_token");
-
-        if (accessToken && refreshToken) {
-          await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
+      // Apple only provides full name on first sign-in, save it
+      if (user && credential.fullName) {
+        const nameParts: string[] = [];
+        if (credential.fullName.givenName)
+          nameParts.push(credential.fullName.givenName);
+        if (credential.fullName.familyName)
+          nameParts.push(credential.fullName.familyName);
+        const fullName = nameParts.join(" ");
+        if (fullName) {
+          await supabase.auth.updateUser({
+            data: { full_name: fullName },
           });
         }
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Sign in failed";
+    } catch (e: unknown) {
+      if (
+        e &&
+        typeof e === "object" &&
+        "code" in e &&
+        e.code === "ERR_REQUEST_CANCELED"
+      ) {
+        return; // User cancelled, do nothing
+      }
+      const message = e instanceof Error ? e.message : "Sign in failed";
       Alert.alert("Sign In Failed", message);
     }
   };
@@ -127,18 +127,17 @@ export function SocialLoginButtons() {
       </TouchableOpacity>
 
       {Platform.OS === "ios" && (
-        <TouchableOpacity
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={
+            AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+          }
+          buttonStyle={
+            AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
+          }
+          cornerRadius={12}
+          style={{ width: "100%", height: 52 }}
           onPress={handleAppleSignIn}
-          disabled={isLoading}
-          className="w-full flex-row items-center justify-center bg-white border border-gray-200 rounded-xl py-3.5 shadow-sm active:bg-gray-50 disabled:opacity-50"
-        >
-          <View className="mr-3">
-            <AppleLogo />
-          </View>
-          <Text className="text-gray-700 font-semibold text-base">
-            {isLoading ? "Signing in..." : "Continue with Apple"}
-          </Text>
-        </TouchableOpacity>
+        />
       )}
     </View>
   );

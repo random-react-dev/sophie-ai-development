@@ -93,10 +93,10 @@ export const supabase = createClient(
     }
 );
 
-// Tells Supabase Auth to continuously refresh the session automatically if
-// the app is in the foreground. When the app goes to background, the refresh
-// stops to save resources. (Official Supabase React Native recommendation)
+// Start auto-refresh immediately on app startup (handles first launch
+// where no AppState change event fires). Also refresh on foreground resume.
 if (Platform.OS !== 'web') {
+    supabase.auth.startAutoRefresh();
     AppState.addEventListener('change', (state) => {
         if (state === 'active') {
             supabase.auth.startAutoRefresh();
