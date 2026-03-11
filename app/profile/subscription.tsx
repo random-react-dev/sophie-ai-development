@@ -1,7 +1,8 @@
-import { RainbowBorder, RainbowGradient } from "@/components/common/Rainbow";
+import { RainbowBorder } from "@/components/common/Rainbow";
+import { RainbowWave } from "@/components/lesson/RainbowWave";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Check, Crown } from "lucide-react-native";
+import { Check } from "lucide-react-native";
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -352,14 +353,22 @@ export default function SubscriptionScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         {/* Header Section */}
-        <View className="px-6 py-10 items-center">
-          <RainbowGradient className="w-20 h-20 rounded-3xl items-center justify-center mb-4">
-            <Crown size={36} color="white" />
-          </RainbowGradient>
+        <View className="px-4 py-10 items-center">
+          <View className="items-center justify-center h-16">
+            <RainbowWave
+              isListening={false}
+              isSpeaking={false}
+              isProcessing={false}
+              width={120}
+              height={40}
+              amplitudeScale={3.5}
+              static={true}
+            />
+          </View>
           <Text className="text-2xl font-bold text-gray-900 text-center">
             {t("profile.subscription_screen.choosePlan")}
           </Text>
-          <Text className="text-base text-gray-500 text-center mt-2 px-6">
+          <Text className="text-base text-gray-500 text-center mt-2">
             {t("profile.subscription_screen.subtitle")}
           </Text>
         </View>

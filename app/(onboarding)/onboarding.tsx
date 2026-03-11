@@ -112,7 +112,9 @@ export default function OnboardingScreen() {
     updateBorderVisibility();
   };
 
-  const handleLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
+  const handleLayout = (event: {
+    nativeEvent: { layout: { height: number } };
+  }) => {
     containerHeight.current = event.nativeEvent.layout.height;
     updateBorderVisibility();
   };
@@ -332,14 +334,15 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 py-2 pt-4 gap-3">
+      <View className="flex-row items-center justify-between p-4 gap-3">
         {/* Back Button */}
         <TouchableOpacity
+          activeOpacity={0.8}
           onPress={handleBack}
-          className="p-2 -ml-2 rounded-full active:bg-gray-100"
+          className="p-1 -ml-1 rounded-full active:bg-gray-100"
           disabled={isSaving}
         >
-          <ChevronLeft size={28} color="#1f2937" />
+          <ChevronLeft size={26} color="#1f2937" />
         </TouchableOpacity>
 
         {/* Inline Rainbow Progress Bar */}
