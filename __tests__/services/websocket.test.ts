@@ -25,6 +25,7 @@ describe('GeminiWebSocket', () => {
       isListening: false,
       setBufferProgress: jest.fn(),
       addMessage: jest.fn(),
+      summarizeOldTurns: jest.fn(),
       handleInterruption: jest.fn(),
       setHasGreeted: jest.fn(),
       hasGreeted: false,
@@ -259,6 +260,18 @@ describe('GeminiWebSocket', () => {
     it('does not send when not ready', () => {
       geminiWebSocket.sendAudioChunk('SGVsbG8=');
       // Should warn but not throw
+    });
+
+    it('ignores speaking events for unrelated playback traces', () => {
+      const wsInternals = geminiWebSocket as unknown as {
+        handleSpeakingStateChange: (isSpeaking: boolean, traceId?: string) => void;
+        turnTraceId: string;
+      };
+
+      wsInternals.turnTraceId = 'talk-123';
+      wsInternals.handleSpeakingStateChange(true, 'phrase-999');
+
+      expect(mockConversationStore.setSpeaking).not.toHaveBeenCalled();
     });
   });
 

@@ -13,15 +13,14 @@ import {
   speakWord,
   stopSpeaking as stopTTSSpeaking,
 } from "@/services/audio/tts";
+import { geminiPhrasePlayback } from "@/services/gemini/phrasePlayback";
 import { translateText } from "@/services/gemini/translate";
-import { geminiWebSocket } from "@/services/gemini/websocket";
 import { LANGUAGE_NAMES } from "@/services/i18n/languageNames";
 import {
   VocabularyFolder,
   VocabularyItem,
 } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
-import { useConnectionState, useIsSpeaking } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
@@ -40,7 +39,7 @@ import {
   Trash2,
   Volume2,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -147,21 +146,19 @@ export default function VocabScreen() {
 
   // Speaking state for mic visual feedback
   const [speakingItemId, setSpeakingItemId] = useState<string | null>(null);
-  const isGlobalSpeaking = useIsSpeaking();
-  const connectionState = useConnectionState();
-
-  // Reset speaking visual when global audio finishes
-  useEffect(() => {
-    if (!isGlobalSpeaking && speakingItemId) {
-      setSpeakingItemId(null);
-    }
-  }, [isGlobalSpeaking, speakingItemId]);
+  const playRequestIdRef = useRef(0);
 
   // Use useFocusEffect to refresh data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
       fetchVocabulary();
       // fetchFolders is called within fetchVocabulary now, but keeping distinct functions in store is good
+      return () => {
+        playRequestIdRef.current += 1;
+        void geminiPhrasePlayback.stop();
+        void stopTTSSpeaking();
+        setSpeakingItemId(null);
+      };
     }, [fetchVocabulary]),
   );
 
@@ -211,20 +208,17 @@ export default function VocabScreen() {
   });
 
   /**
-   * Speak the phrase aloud using native device Text-to-Speech (expo-speech).
+   * Speak the phrase aloud using an isolated Gemini playback session.
    * Toggle behavior: tap to play, tap again to stop.
-   * Works offline - no WebSocket connection required.
+   * Falls back to native device Text-to-Speech (expo-speech) if needed.
    */
   const handlePlay = (item: VocabularyItem) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const requestId = ++playRequestIdRef.current;
 
     // If this item is already speaking, stop playback
-    if (speakingItemId === item.id || isGlobalSpeaking) {
-      if (connectionState === "connected") {
-        import("@/services/audio/streamer").then(({ audioStreamer }) => {
-          audioStreamer.clearQueue();
-        });
-      }
+    if (speakingItemId === item.id) {
+      void geminiPhrasePlayback.stop();
       void stopTTSSpeaking();
       setSpeakingItemId(null);
       return;
@@ -232,43 +226,69 @@ export default function VocabScreen() {
 
     // Stop any currently playing audio before starting new one
     if (speakingItemId) {
+      void geminiPhrasePlayback.stop();
       void stopTTSSpeaking();
     }
 
     // Set speaking item for visual feedback
     setSpeakingItemId(item.id || null);
 
-    // Prioritize Sophie.ai voice via WebSocket
-    if (connectionState === "connected") {
-      const success = geminiWebSocket.speakPhrase(
-        item.phrase,
-        item.language || "",
-        true, // audioOnly - skip conversation history
-      );
-      if (success) {
-        // UI state managed by isGlobalSpeaking; reset speakingItemId when done
-        return;
-      }
-    }
-
-    // Fallback to local device TTS
-    void speakWord(
-      item.phrase,
-      item.language,
-      {
+    void geminiPhrasePlayback
+      .playPhrase(item.phrase, item.language || "", {
         onStart: () => {
+          if (playRequestIdRef.current !== requestId) return;
           setSpeakingItemId(item.id || null);
         },
         onDone: () => {
-          setSpeakingItemId(null);
+          if (playRequestIdRef.current !== requestId) return;
+          setSpeakingItemId((current) =>
+            current === item.id ? null : current,
+          );
+        },
+        onStop: () => {
+          if (playRequestIdRef.current !== requestId) return;
+          setSpeakingItemId((current) =>
+            current === item.id ? null : current,
+          );
         },
         onError: () => {
-          setSpeakingItemId(null);
+          if (playRequestIdRef.current !== requestId) return;
+          setSpeakingItemId((current) =>
+            current === item.id ? null : current,
+          );
         },
-      },
-      1.0,
-      activeProfile?.preferred_accent,
-    );
+      })
+      .then((result) => {
+        if (playRequestIdRef.current !== requestId) {
+          return;
+        }
+
+        if (result === "started" || result === "cancelled") {
+          return;
+        }
+
+        // Fallback to local device TTS
+        void speakWord(
+          item.phrase,
+          item.language,
+          {
+            onStart: () => {
+              if (playRequestIdRef.current !== requestId) return;
+              setSpeakingItemId(item.id || null);
+            },
+            onDone: () => {
+              if (playRequestIdRef.current !== requestId) return;
+              setSpeakingItemId(null);
+            },
+            onError: () => {
+              if (playRequestIdRef.current !== requestId) return;
+              setSpeakingItemId(null);
+            },
+          },
+          1.0,
+          activeProfile?.preferred_accent,
+        );
+      });
   };
 
   const handleDelete = async (id: string) => {
@@ -709,8 +729,7 @@ export default function VocabScreen() {
                     activeOpacity={0.7}
                     onPress={() => handlePlay(item)}
                     className={`w-10 h-10 rounded-full items-center justify-center ${
-                      speakingItemId === item.id ||
-                      (isGlobalSpeaking && speakingItemId === item.id)
+                      speakingItemId === item.id
                         ? "bg-blue-100"
                         : "bg-gray-100"
                     }`}
@@ -718,8 +737,7 @@ export default function VocabScreen() {
                     <Volume2
                       size={18}
                       color={
-                        speakingItemId === item.id ||
-                        (isGlobalSpeaking && speakingItemId === item.id)
+                        speakingItemId === item.id
                           ? "#3b82f6"
                           : "#374151"
                       }

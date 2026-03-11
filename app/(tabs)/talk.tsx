@@ -6,9 +6,9 @@ import { getAccentDescription } from "@/constants/accents";
 import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { audioRecorder } from "@/services/audio/recorder";
 import { audioStreamer } from "@/services/audio/streamer";
+import { getGeminiSessionToken } from "@/services/gemini/token";
 import { translateText } from "@/services/gemini/translate";
 import { geminiWebSocket } from "@/services/gemini/websocket";
-import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -324,15 +324,7 @@ export default function TalkScreen() {
 
       try {
         Logger.info(TAG, "Initializing Gemini session...");
-        let token = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-
-        if (!token) {
-          const { data, error } =
-            await supabase.functions.invoke("get-gemini-session");
-          if (error || !data?.token)
-            throw new Error(error?.message || "No token returned");
-          token = data.token;
-        }
+        const token = await getGeminiSessionToken();
 
         if (!isMounted) {
           isInitialized.current = false;
