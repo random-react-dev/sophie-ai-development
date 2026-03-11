@@ -75,6 +75,7 @@ interface ConversationState {
   conversationSummary: string; // The compressed text summary of older turns
   cachedPrefix: string[]; // Caches the static prefix portion of the prompt
   cachedSummaryHash: string; // Tracks the summary to know when to invalidate the cache
+  cachedBaseSystemPrompt: string; // Tracks the base prompt used to build the cached prefix
   // Actions
   setConnectionState: (state: ConnectionState) => void;
   setError: (error: string | null) => void;
@@ -89,6 +90,7 @@ interface ConversationState {
   setActiveScenarioTimestamp: (timestamp: number) => void;
   addMessage: (role: "user" | "model", text: string) => void;
   clearMessages: () => void;
+  resetSessionState: () => void;
   handleInterruption: () => void;
   reset: () => void;
 
@@ -134,6 +136,7 @@ const initialState = {
   conversationSummary: "", // Initial empty summary
   cachedPrefix: [] as string[],
   cachedSummaryHash: "",
+  cachedBaseSystemPrompt: "",
 };
 
 export const useConversationStore = create<ConversationState>()(
@@ -197,6 +200,17 @@ export const useConversationStore = create<ConversationState>()(
         }),
 
       clearMessages: () => set({ messages: [], contextWindowStart: 0 }),
+
+      resetSessionState: () =>
+        set({
+          messages: [],
+          contextWindowStart: 0,
+          hasGreeted: false,
+          conversationSummary: "",
+          cachedPrefix: [],
+          cachedSummaryHash: "",
+          cachedBaseSystemPrompt: "",
+        }),
 
       handleInterruption: () => set({ isSpeaking: false }),
 
@@ -279,6 +293,7 @@ export const useConversationStore = create<ConversationState>()(
         set({
           cachedPrefix: prefixParts,
           cachedSummaryHash: `${state.conversationSummary}|${state.hasGreeted}`,
+          cachedBaseSystemPrompt: systemPrompt,
         });
       },
 
@@ -286,7 +301,11 @@ export const useConversationStore = create<ConversationState>()(
 
       invalidatePrefixCache: () => {
         Logger.info("ConversationStore", "Invalidating prompt prefix cache.");
-        set({ cachedPrefix: [], cachedSummaryHash: "" });
+        set({
+          cachedPrefix: [],
+          cachedSummaryHash: "",
+          cachedBaseSystemPrompt: "",
+        });
       },
 
       /**
@@ -299,7 +318,8 @@ export const useConversationStore = create<ConversationState>()(
         // Check cache validity and rebuild if needed
         if (
           state.cachedPrefix.length === 0 ||
-          state.cachedSummaryHash !== currentHash
+          state.cachedSummaryHash !== currentHash ||
+          state.cachedBaseSystemPrompt !== baseSystemPrompt
         ) {
           state.buildCachedPrefix(baseSystemPrompt);
         }
@@ -662,6 +682,7 @@ export const useIsConversationActive = (): boolean =>
 export const useConversationActions = (): {
   setShowTranscript: (show: boolean) => void;
   clearMessages: () => void;
+  resetSessionState: () => void;
   setHasGreeted: (hasGreeted: boolean) => void;
   stopConversation: () => Promise<void>;
   startConversation: () => Promise<void>;
@@ -673,6 +694,7 @@ export const useConversationActions = (): {
   useConversationStore((s) => ({
     setShowTranscript: s.setShowTranscript,
     clearMessages: s.clearMessages,
+    resetSessionState: s.resetSessionState,
     setHasGreeted: s.setHasGreeted,
     stopConversation: s.stopConversation,
     startConversation: s.startConversation,
