@@ -19,7 +19,7 @@ export const PageHeader = ({ title = "Sophie AI" }: PageHeaderProps) => {
     const message = encodeURIComponent(
       t("profile.support_screen.whatsapp_message"),
     );
-    const url = "https://wa.me/9898456150?text=" + message;
+    const url = "https://wa.me/971505814567?text=" + message;
     Linking.openURL(url);
   };
 

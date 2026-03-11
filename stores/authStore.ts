@@ -67,6 +67,12 @@ interface AuthState {
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   initialize: () => Promise<void>;
+  checkTrialStatus: () => {
+    isTrialExpired: boolean;
+    isSubscribed: boolean;
+    daysPassed: number;
+    remainingDays: number;
+  };
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -80,6 +86,39 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setSession: (session: Session | null) => set({ session }),
   setUser: (user: User | null) => set({ user }),
   setShowTrialPopup: (show: boolean) => set({ showTrialPopup: show }),
+  checkTrialStatus: () => {
+    const user = get().user;
+    if (!user) {
+      return {
+        isTrialExpired: false, // Default to false if not logged in to prevent premature blocks
+        isSubscribed: false,
+        daysPassed: 0,
+        remainingDays: 0,
+      };
+    }
+
+    // Check if user has an active subscription (assuming we store this in metadata, e.g., plan: 'pro')
+    const isSubscribed = user.user_metadata?.subscription_plan === "pro";
+
+    // Calculate trial days
+    const createdDate = new Date(user.created_at);
+    const now = new Date();
+    const diffInMs = now.getTime() - createdDate.getTime();
+    const daysPassed = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    const dayNumber = Math.min(Math.max(daysPassed + 1, 1), 7);
+    const remainingDays = 8 - dayNumber;
+
+    // Trial is exactly 7 days. If daysPassed is 7 or more, the 7 full days of trial are over
+    // (e.g. daysPassed 0-6 = trial active. daysPassed 7+ = trial expired)
+    const isTrialExpired = daysPassed >= 7 && !isSubscribed;
+
+    return {
+      isTrialExpired,
+      isSubscribed,
+      daysPassed,
+      remainingDays: Math.max(0, remainingDays),
+    };
+  },
   setPending2FA: (pending: boolean, email?: string | null) =>
     set({ pending2FA: pending, pending2FAEmail: email ?? null }),
   signIn: async (email, password) => {
@@ -369,8 +408,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           // Clear showTrialPopup on SIGNED_OUT; preserve on other events.
           // showTrialPopup is set explicitly by signIn, verify2FA, and initialize —
           // NOT here, to avoid showing it during the 2FA signIn flow.
-          showTrialPopup:
-            event === "SIGNED_OUT" ? false : state.showTrialPopup,
+          showTrialPopup: event === "SIGNED_OUT" ? false : state.showTrialPopup,
         }));
       },
     );

@@ -289,9 +289,9 @@ const SophieIntroVideo: React.FC = () => {
     const video = videoRef.current;
     return () => {
       if (video) {
-        // Stop playback and unload video resource
-        video.setStatusAsync({ shouldPlay: false });
-        video.unloadAsync();
+        // Stop playback and unload video resource safely
+        video.setStatusAsync({ shouldPlay: false }).catch(() => {});
+        video.unloadAsync().catch(() => {});
       }
     };
   }, []);
@@ -332,9 +332,9 @@ const SophieIntroVideo: React.FC = () => {
           setIsVideoComplete(false);
         }
         setIsPlaying(true);
+        // Instantly hide controls for better perceived performance
+        setShowControls(false);
         await videoRef.current.playAsync();
-        // Controls will auto-hide via useEffect
-        setShowControls(true);
       }
     }
   };

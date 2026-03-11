@@ -171,7 +171,7 @@ export default function SupportScreen() {
               borderColor: "border-green-200",
             }}
             onPress={() => {
-              const phoneNumber = "919898456150";
+              const phoneNumber = "971505814567";
               const message = encodeURIComponent(
                 t("profile.support_screen.whatsapp_message"),
               );

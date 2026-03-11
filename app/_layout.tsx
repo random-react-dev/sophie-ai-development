@@ -97,7 +97,7 @@ export default function RootLayout() {
         // Also redirect to Talk when app reloads on default index page (only once)
         else if (
           inTabsGroup &&
-          segments[1] === undefined &&
+          (segments[1] === undefined || (segments[1] as string) === "index") &&
           !hasInitialRedirect.current
         ) {
           // User landed on tabs without specific route (default index)
