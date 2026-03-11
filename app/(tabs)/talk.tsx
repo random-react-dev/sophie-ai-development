@@ -321,14 +321,6 @@ export default function TalkScreen() {
         return;
       }
 
-      const { isTrialExpired } = useAuthStore.getState().checkTrialStatus();
-      if (isTrialExpired) {
-        Logger.info(
-          TAG,
-          "Trial expired, skipping AI initialization to prevent background audio",
-        );
-        return;
-      }
 
       // Don't initialize until both languages are selected
       if (!targetLanguage || !nativeLanguage) {

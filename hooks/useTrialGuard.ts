@@ -17,16 +17,9 @@ export const useTrialGuard = () => {
    * @returns {boolean} true if the user is allowed to proceed, false if they were blocked and redirected.
    */
   const requireActiveSubscription = (): boolean => {
-    const status = checkTrialStatus();
-
-    if (status.isTrialExpired) {
-      // Show the trial popup which is now hard-locked (no close button) in expired state
-      setShowTrialPopup(true);
-
-      return false; // Blocked
-    }
-
-    return true; // Allowed
+    // Trial enforcement disabled — no subscription/paywall system exists yet.
+    // Re-enable when in-app purchases are implemented.
+    return true;
   };
 
   return { requireActiveSubscription };

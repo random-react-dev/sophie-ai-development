@@ -1,8 +1,8 @@
-import { RainbowBorder } from "@/components/common/Rainbow";
+import { RainbowGradient } from "@/components/common/Rainbow";
 import { useTranslation } from "@/hooks/useTranslation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
-import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -70,18 +70,17 @@ export function AIConsentModal({
           </View>
 
           {/* Accept Button */}
-          <TouchableOpacity activeOpacity={0.7} onPress={onAccept}>
-            <RainbowBorder
-              borderRadius={9999}
-              borderWidth={2}
-              className="bg-white"
-              containerClassName="h-14 items-center justify-center"
-            >
-              <Text className="text-black font-bold text-base">
-                {t("aiConsent.accept")}
-              </Text>
-            </RainbowBorder>
-          </TouchableOpacity>
+          <Pressable
+            onPress={onAccept}
+            className="h-14 items-center justify-center rounded-full overflow-hidden"
+          >
+            <View className="absolute inset-0">
+              <RainbowGradient className="flex-1" />
+            </View>
+            <Text className="text-white font-bold text-base">
+              {t("aiConsent.accept")}
+            </Text>
+          </Pressable>
 
           {/* Decline Button */}
           <Pressable
