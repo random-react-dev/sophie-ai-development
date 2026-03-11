@@ -31,6 +31,12 @@ const MIN_BUFFER_FOR_EARLY_START_AT_1X = 6.5;
 const RATE_WINDOW_SLOW_THRESHOLD = 0.9;
 const RATE_WINDOW_SEVERE_SLOW = 0.45;
 const RATE_WINDOWS_REQUIRED = 2;
+
+// Greeting-specific startup: lower thresholds since there's no user audio contention
+const GREETING_MIN_INITIAL_BUFFER = IS_ANDROID ? 24000 : 7200; // Android: 1.0s, iOS: 0.3s
+const GREETING_MIN_START_DELAY_MS = IS_ANDROID ? 800 : 0;
+const GREETING_EARLY_START_BUFFER_SECONDS = IS_ANDROID ? 1.5 : 0.3;
+const GREETING_RATE_WINDOWS_REQUIRED = 1;
 const QUEUE_HEARTBEAT_MS = 500;
 const FADE_IN_DURATION = 0.01; // 10ms fade-in to prevent pops
 const NORMAL_PLAYBACK_RATE = 1.0;
@@ -113,6 +119,7 @@ export class AudioStreamer {
   private turnActivityEndAtMs: number | null = null;
   private startupSlaLogged = false;
   private isTTSPlay = false;
+  private isGreetingResponse = false;
 
   private static instance: AudioStreamer;
   constructor() {}
@@ -215,6 +222,7 @@ export class AudioStreamer {
     traceId?: string,
     activityEndAtMs?: number,
     isTTS?: boolean,
+    isGreeting?: boolean,
   ): void {
     const entryState = this.audioContext?.state ?? "null";
     const entryTime = this.audioContext?.currentTime ?? 0;
@@ -278,7 +286,7 @@ export class AudioStreamer {
     this.targetPlaybackRate = NORMAL_PLAYBACK_RATE;
     this.activePlaybackRate = NORMAL_PLAYBACK_RATE;
     this.turnTraceId = traceId ?? `resp-${this.responseId}`;
-    this.deferStartUntilGenerationComplete = IS_ANDROID && !(isTTS ?? false);
+    this.deferStartUntilGenerationComplete = IS_ANDROID && !(isTTS ?? false) && !(isGreeting ?? false);
     this.underrunRiskCount = 0;
     this.starvationEventCount = 0;
     this.queueLowWatermarkSeconds = Number.POSITIVE_INFINITY;
@@ -294,6 +302,7 @@ export class AudioStreamer {
     this.turnActivityEndAtMs = activityEndAtMs ?? null;
     this.startupSlaLogged = false;
     this.isTTSPlay = isTTS ?? false;
+    this.isGreetingResponse = isGreeting ?? false;
     this.clearDelayedStartTimer();
     this.clearQueueHeartbeat();
 
@@ -526,7 +535,10 @@ export class AudioStreamer {
 
     const now = Date.now();
     const sinceLastEvalMs = now - this.lastRateEvalAtMs;
-    if (sinceLastEvalMs < RATE_WINDOW_MS || elapsedMs < MIN_START_DELAY_MS) {
+    const effectiveRateEvalDelay = this.isGreetingResponse
+      ? GREETING_MIN_START_DELAY_MS
+      : MIN_START_DELAY_MS;
+    if (sinceLastEvalMs < RATE_WINDOW_MS || elapsedMs < effectiveRateEvalDelay) {
       return;
     }
 
@@ -571,14 +583,21 @@ export class AudioStreamer {
     const bufferedSeconds = (this.totalQueuedSamples / SAMPLE_RATE).toFixed(2);
     const bufferedSecondsNum = this.totalQueuedSamples / SAMPLE_RATE;
     const elapsedMs = this.getElapsedFromTurnEndMs();
-    // Fast-track TTS phrases: skip full Android network buffer
-    const hasMinBuffer = this.isTTSPlay
-      ? this.totalQueuedSamples >= 4800 // 0.2s minimal buffer for TTS
-      : this.totalQueuedSamples >= MIN_INITIAL_BUFFER;
 
-    const delaySatisfied = this.isTTSPlay
-      ? true
-      : MIN_START_DELAY_MS === 0 || elapsedMs >= MIN_START_DELAY_MS;
+    // Select buffer thresholds based on response type
+    const effectiveMinBuffer = this.isTTSPlay
+      ? 4800 // 0.2s minimal buffer for TTS
+      : this.isGreetingResponse
+        ? GREETING_MIN_INITIAL_BUFFER
+        : MIN_INITIAL_BUFFER;
+    const effectiveMinDelay = this.isTTSPlay
+      ? 0
+      : this.isGreetingResponse
+        ? GREETING_MIN_START_DELAY_MS
+        : MIN_START_DELAY_MS;
+
+    const hasMinBuffer = this.totalQueuedSamples >= effectiveMinBuffer;
+    const delaySatisfied = effectiveMinDelay === 0 || elapsedMs >= effectiveMinDelay;
 
     this.evaluateReceiveRate(elapsedMs);
     const rateWindowAvg =
@@ -631,6 +650,14 @@ export class AudioStreamer {
     }
 
     if (IS_ANDROID && !this.isTTSPlay && !this.isGenerationComplete) {
+      // Use reduced thresholds for greeting responses (no user audio contention)
+      const effectiveEarlyStartBuffer = this.isGreetingResponse
+        ? GREETING_EARLY_START_BUFFER_SECONDS
+        : EARLY_START_BUFFER_SECONDS_ANDROID;
+      const effectiveRateWindowsRequired = this.isGreetingResponse
+        ? GREETING_RATE_WINDOWS_REQUIRED
+        : RATE_WINDOWS_REQUIRED;
+
       const safeAppliedRate =
         this.resolvePlaybackRate(SAFE_PLAYBACK_RATE).appliedRate;
       const safePathUsesNormalRate = safeAppliedRate >= NORMAL_PLAYBACK_RATE;
@@ -641,17 +668,17 @@ export class AudioStreamer {
         ? MIN_RATE_FOR_EARLY_START_AT_1X
         : RATE_WINDOW_MIN_FOR_SAFE_START;
       const safeWindowsRequired = safePathUsesNormalRate
-        ? RATE_WINDOWS_REQUIRED
+        ? effectiveRateWindowsRequired
         : 1;
       const hasNormalEarlyBuffer =
-        bufferedSecondsNum >= EARLY_START_BUFFER_SECONDS_ANDROID &&
+        bufferedSecondsNum >= effectiveEarlyStartBuffer &&
         hasMinBuffer;
       const hasSafeEarlyBuffer =
         bufferedSecondsNum >= safeMinBufferSeconds && hasMinBuffer;
       const canStartNormal =
         hasNormalEarlyBuffer &&
         delaySatisfied &&
-        this.sustainedHealthyWindows >= RATE_WINDOWS_REQUIRED &&
+        this.sustainedHealthyWindows >= effectiveRateWindowsRequired &&
         rateWindowAvg >= RATE_WINDOW_MIN_FOR_NORMAL_START;
       const canStartSafe =
         hasSafeEarlyBuffer &&
@@ -721,11 +748,11 @@ export class AudioStreamer {
 
     if (
       hasMinBuffer &&
-      MIN_START_DELAY_MS > 0 &&
-      elapsedMs < MIN_START_DELAY_MS &&
+      effectiveMinDelay > 0 &&
+      elapsedMs < effectiveMinDelay &&
       this.delayedStartTimerId === null
     ) {
-      const remainingMs = MIN_START_DELAY_MS - elapsedMs;
+      const remainingMs = effectiveMinDelay - elapsedMs;
       this.delayedStartTimerId = setTimeout(() => {
         this.delayedStartTimerId = null;
         this.maybeStartPlayback();
@@ -955,9 +982,12 @@ export class AudioStreamer {
 
     if (!this.hasStartedPlayback && this.totalQueuedSamples > 0) {
       const elapsedMs = this.getElapsedFromTurnEndMs();
-      const remainingMs = this.isTTSPlay
+      const effectiveLateStartDelay = this.isTTSPlay
         ? 0
-        : Math.max(0, MIN_START_DELAY_MS - elapsedMs);
+        : this.isGreetingResponse
+          ? GREETING_MIN_START_DELAY_MS
+          : MIN_START_DELAY_MS;
+      const remainingMs = Math.max(0, effectiveLateStartDelay - elapsedMs);
       if (IS_ANDROID) {
         const rateWindowAvg =
           this.rateWindowCount > 0
@@ -1060,6 +1090,7 @@ export class AudioStreamer {
     this.activePlaybackRate = NORMAL_PLAYBACK_RATE;
     this.turnTraceId = "turn-unknown";
     this.deferStartUntilGenerationComplete = IS_ANDROID;
+    this.isGreetingResponse = false;
     this.underrunRiskCount = 0;
     this.starvationEventCount = 0;
     this.queueLowWatermarkSeconds = Number.POSITIVE_INFINITY;

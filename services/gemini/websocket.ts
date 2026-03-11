@@ -59,6 +59,7 @@ class GeminiWebSocket {
   private audioChunksSent = 0;
   private isFirstAudioChunk = true; // Track first audio chunk for prepareForNewResponse
   private isTTSRequest = false; // Track if current turn is a TTS request to skip Android buffering
+  private isGreetingTurn = false; // Track if current turn is the initial greeting (reduced buffering)
   private audioChunksReceived = 0; // [DIAG] Count audio chunks received from model
   private pendingModelTranscript = "";
   private hasAudioInCurrentTurn = false;
@@ -900,6 +901,7 @@ class GeminiWebSocket {
       audioStreamer.setBufferProgressCallback((progress) => {
         getConversationStore().getState().setBufferProgress(progress);
       });
+      this.isGreetingTurn = true;
       this.sendGreeting();
       store.setHasGreeted(true);
 
@@ -1070,8 +1072,10 @@ class GeminiWebSocket {
                   this.turnTraceId,
                   this.startupSlaAnchorMs ?? undefined,
                   this.isTTSRequest,
+                  this.isGreetingTurn,
                 );
                 this.isFirstAudioChunk = false;
+                this.isGreetingTurn = false;
               } else {
                 const now = Date.now();
                 if (this.lastModelAudioChunkAtMs !== null) {
