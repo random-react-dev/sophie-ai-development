@@ -1,3 +1,7 @@
+import {
+  AIConsentModal,
+  useAIConsent,
+} from "@/components/common/AIConsentModal";
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import CircleFlag from "@/components/common/CircleFlag";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -93,6 +97,15 @@ export default function TranslateScreen() {
 
   // Custom AlertModal hook
   const { alertState, showAlert, hideAlert } = useAlertModal();
+
+  // AI consent state
+  const {
+    hasConsented,
+    showConsent,
+    requestConsent,
+    acceptConsent,
+    declineConsent,
+  } = useAIConsent();
 
   // Animation for swap button - horizontal flip
   const flipX = useSharedValue(1);
@@ -243,6 +256,12 @@ export default function TranslateScreen() {
 
   const handleTranslate = async () => {
     if (!inputText.trim()) return;
+
+    // Gate behind AI consent
+    if (!hasConsented) {
+      requestConsent();
+      return;
+    }
 
     setIsTranslating(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -902,6 +921,13 @@ export default function TranslateScreen() {
           </View>
         </SafeAreaView>
       </Modal>
+
+      {/* AI Consent Modal */}
+      <AIConsentModal
+        visible={showConsent}
+        onAccept={acceptConsent}
+        onDecline={declineConsent}
+      />
 
       {/* Custom AlertModal for Copy/Save feedback */}
       <AlertModal

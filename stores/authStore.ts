@@ -106,7 +106,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           throw otpError;
         }
       } else {
-        set({ showTrialPopup: true });
+        set({ showTrialPopup: false });
       }
     } catch (err) {
       set({ pending2FA: false, pending2FAEmail: null });
@@ -158,7 +158,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { error: otpError } = await send2FACode(data.user.email);
         if (otpError) throw otpError;
       } else {
-        set({ showTrialPopup: true });
+        set({ showTrialPopup: false });
       }
     } catch (err) {
       set({ pending2FA: false, pending2FAEmail: null });
@@ -191,7 +191,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         type: "email",
       });
       if (error) throw error;
-      set({ pending2FA: false, pending2FAEmail: null, showTrialPopup: true });
+      set({ pending2FA: false, pending2FAEmail: null, showTrialPopup: false });
     } finally {
       set({ isLoading: false });
     }
@@ -296,10 +296,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const {
+      let {
         data: { session },
         error,
       } = await supabase.auth.getSession();
+
+      // Proactively refresh to validate tokens (handles clock-skew / date-forward scenarios)
+      if (session) {
+        const { data: refreshed, error: refreshError } =
+          await supabase.auth.refreshSession();
+        if (!refreshError && refreshed.session) {
+          session = refreshed.session;
+        }
+        // If refresh fails, still use cached session — auto-refresh will retry
+      }
 
       // If there's an auth error (e.g., invalid refresh token), clear and start fresh
       if (error) {
@@ -322,7 +332,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user: session?.user ?? null,
           initialized: true,
           isLoading: false,
-          showTrialPopup: !!session?.user,
+          showTrialPopup: false,
         });
       }
     } catch (err) {
@@ -344,6 +354,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // When session becomes invalid or user is signed out (including token refresh failures),
         // clear all user data to ensure a clean state for the next login.
         if (event === "SIGNED_OUT" && !get().pending2FA) {
+          // Verify session is truly gone before clearing (guards against spurious SIGNED_OUT from token refresh failures)
+          const { data: retryData } = await supabase.auth.getSession();
+          if (retryData.session) {
+            set({ session: retryData.session, user: retryData.session.user });
+            return;
+          }
           await clearUserData();
         }
 

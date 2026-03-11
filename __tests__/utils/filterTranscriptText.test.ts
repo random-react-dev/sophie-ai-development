@@ -23,20 +23,29 @@ describe('filterTranscriptText', () => {
     });
   });
 
-  describe('asterisk-wrapped action text', () => {
-    it('removes *thinks* patterns', () => {
+  describe('asterisk-wrapped text (unwrap, keep content)', () => {
+    it('unwraps *thinks* patterns, keeping the text', () => {
       const input = '*thinks* Hello! *pauses* How are you?';
-      expect(filterTranscriptText(input)).toBe('Hello!  How are you?');
+      expect(filterTranscriptText(input)).toBe('thinks Hello! pauses How are you?');
     });
 
-    it('removes *laughs* and other actions', () => {
+    it('unwraps *laughs* and other actions, keeping the text', () => {
       const input = '*laughs* That was funny! *smiles*';
-      expect(filterTranscriptText(input)).toBe('That was funny!');
+      expect(filterTranscriptText(input)).toBe('laughs That was funny! smiles');
+    });
+
+    it('unwraps **bold** markdown', () => {
+      const input = '**Namaste**! How are you?';
+      expect(filterTranscriptText(input)).toBe('Namaste! How are you?');
+    });
+
+    it('unwraps non-Latin scripts in bold markdown', () => {
+      const input = '**नमस्ते**! Welcome!';
+      expect(filterTranscriptText(input)).toBe('नमस्ते! Welcome!');
     });
 
     it('does not match asterisks across newlines', () => {
       const input = '*action\ntext* Hello!';
-      // Should not be removed because the pattern doesn't match across newlines
       expect(filterTranscriptText(input)).toContain('Hello!');
     });
   });
@@ -64,20 +73,14 @@ describe('filterTranscriptText', () => {
   });
 
   describe('bold markdown headers', () => {
-    it('removes **bold headers** at start of line', () => {
-      // Note: The asterisk-action regex runs first and strips *Internal Thought*
-      // from **Internal Thought**, leaving "**". The bold-header regex then has
-      // nothing between ** to match. This is expected behavior — bold headers
-      // in real Gemini output are on their own paragraph and get filtered by
-      // the paragraph filter.
+    it('unwraps **bold headers** and filters by paragraph content', () => {
+      // Bold wrapping is stripped first, then paragraph filter runs
+      // "Response Plan" doesn't match monologue patterns so it survives
       const input = '**Response Plan**\n\nHello there!';
-      // The ** wrapping gets partially stripped, but "Hello there!" survives
       expect(filterTranscriptText(input)).toContain('Hello there!');
     });
 
     it('removes bold headers that are separate paragraphs', () => {
-      // Bold headers in real output are typically on separate paragraphs
-      // and get filtered by the monologue paragraph filter
       const input = 'My plan is to greet the user.\n\nActual response here';
       expect(filterTranscriptText(input)).toBe('Actual response here');
     });

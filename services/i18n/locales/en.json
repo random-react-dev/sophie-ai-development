@@ -1711,5 +1711,12 @@
     "upgrade_now_btn": "Upgrade Now",
     "claim_discount_btn": "Claim My Discount",
     "maybe_later_btn": "Maybe later"
+  },
+  "aiConsent": {
+    "title": "AI-Powered Features",
+    "body": "Sophie uses Google Gemini AI to power conversations and translations. When you use these features, your voice audio, text, and conversation context are sent to Google's servers for processing.",
+    "privacy": "Google handles this data according to their privacy policy.",
+    "accept": "I Understand & Agree",
+    "decline": "Not Now"
   }
 }

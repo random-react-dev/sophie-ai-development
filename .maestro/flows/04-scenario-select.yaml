@@ -16,6 +16,10 @@ appId: ai.speakwithsophie.app
     id: "scenario-list"
     childOf:
       index: 0
+# Dismiss AI consent modal if shown (one-time consent for Google Gemini)
+- tapOn:
+    text: "I Understand & Agree"
+    optional: true
 # Should navigate to talk tab — verify talk screen elements visible
 - extendedWaitUntil:
     visible:

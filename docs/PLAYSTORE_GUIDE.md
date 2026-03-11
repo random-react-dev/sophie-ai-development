@@ -6,14 +6,14 @@
 |-------|-------|
 | **App Name (Play Store)** | Speak With Sophie |
 | **Package Name** | `ai.speakwithsophie.app` |
-| **Developer Account** | Personal (Apexture / Nirav) |
+| **Developer Account** | Organization (Apexture Private Limited) |
 | **Domain** | speakwithsophie.ai |
 
 ## Current State
 
 - **Version**: 1.0.0
 - **Latest versionCode**: 1
-- **Play Store Status**: Not yet submitted
+- **Play Store Status**: AAB uploaded to Internal Testing (release is "Inactive" — no testers added yet)
 
 ## Key Files
 
@@ -164,20 +164,90 @@ In Play Console under **Policy > App content**, complete ALL of:
 
 ---
 
-## Closed Testing Requirement (New Accounts After Nov 2023)
+## Testing Tracks Explained
 
-Since the developer account was created after November 2023, Google requires **closed testing** before production access:
+| | Internal Testing | Closed Testing | Production |
+|---|---|---|---|
+| **Purpose** | Quick dev/QA iteration | Required gate for production (personal accounts) | Public release |
+| **Build availability** | Seconds (no review) | May take hours (Google reviews) | Full review |
+| **Max testers** | 100 | Large (email lists / Google Groups) | Everyone |
+| **Counts toward 14-day requirement?** | NO | YES | N/A |
 
-1. Go to **Testing > Closed testing** in Play Console
-2. Create a new track and upload the AAB
-3. Create an email list with **at least 12 Gmail addresses** of real testers
-4. Publish the release
-5. Share the opt-in link with all 12+ testers — they MUST click it and opt in
-6. **Wait 14 consecutive days** with all testers opted in
-7. After 14 days, go to **Dashboard** and click **"Apply for production access"**
-8. Google reviews this (takes up to 7 days)
+**Key distinction**: Internal testing does **NOT** count toward the 14-day requirement. Only **Closed Testing** counts.
+
+> **Your account**: Organization (Apexture) — you can skip closed testing and publish directly to production. No 14-day wait required.
+
+---
+
+## Step-by-Step: Testing & Publishing
+
+### Step 1: Add Testers to Internal Testing (for quick validation)
+
+Your AAB is already uploaded to Internal Testing. Now add testers:
+
+1. On the Internal Testing page, click **"Create email list"**
+2. Give it a name (e.g., "Sophie Testers")
+3. Add Gmail addresses — start with your own + anyone on your team
+4. Click **Save** → check the box next to the list → **Save changes**
+5. Click **"Copy link"** at the bottom (the opt-in URL)
+6. Send that link to your testers
+
+### Step 2: How Testers Install the App
+
+1. Tester receives the opt-in link you shared
+2. They open it in a browser **while signed into their Gmail account**
+3. They click **"Accept invite"** on the Google Play page
+4. A **"Download it on Google Play"** button appears → takes them to the Play Store
+5. They install the app normally from the Play Store
+6. Note: It can take a few minutes after you add testers before the link works
+
+### Step 3: Set Up Closed Testing (starts the 14-day clock)
+
+**Only needed for personal developer accounts.** If organization account, skip to production.
+
+1. Go to **Testing > Closed testing** in the left sidebar
+2. Click **"Create track"** (or use the default "Closed testing - Alpha" track)
+3. Click **"Create new release"** → Upload the same `app-release.aab`
+4. Add release notes → **Review** → **Start rollout**
+5. Go to **Testers** tab → Create email list with **12+ Gmail addresses**
+6. All 12 testers must click the opt-in link and accept
+7. The 14-day countdown starts once all 12 are opted in
+8. After 14 days → Go to **Dashboard** → click **"Apply for production access"**
+9. Google reviews this (takes up to 7 days)
 
 **The 14-day wait cannot be shortened — plan accordingly.**
+
+### Step 4: Complete "Set up your app" Tasks
+
+These must be done regardless of testing track. Go to **Dashboard > View tasks**:
+
+- **Store listing**: App name, descriptions, icon, screenshots, feature graphic (see checklist below)
+- **Content rating**: IARC questionnaire (Education/Utility, answer No to most)
+- **Data safety**: Declare email, audio, app activity collection
+- **Privacy policy**: Public URL required
+- **Target audience**: Select 18+
+- **Ads**: No ads
+
+---
+
+## Recommended Strategy
+
+1. **Right now**: Add testers to Internal Testing, validate the app works
+2. **Same day**: Set up Closed Testing with 12+ testers to start the 14-day clock in parallel
+3. **Meanwhile**: Complete all "Set up your app" tasks (store listing, content rating, etc.)
+4. **After 14 days**: Apply for production access
+
+Internal and closed testing tracks can run simultaneously — use internal for fast iteration, closed for the production gate.
+
+---
+
+## Where to Find 12 Testers
+
+- Friends/family with Android phones and Gmail accounts
+- Team members
+- Online communities (Reddit, Discord)
+- Services like BetaFamily or TestersHub
+- Testers just need to opt in — they don't necessarily need to actively use the app (though Google may verify some engagement)
 
 ---
 

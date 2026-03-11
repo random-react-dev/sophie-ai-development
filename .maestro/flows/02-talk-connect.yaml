@@ -12,6 +12,10 @@ appId: ai.speakwithsophie.app
     timeout: 20000
 # Navigate to Talk tab via tab label (not mic button — it has gesture handlers)
 - tapOn: "Talk"
+# Dismiss AI consent modal if shown (one-time consent for Google Gemini)
+- tapOn:
+    text: "I Understand & Agree"
+    optional: true
 # Verify Talk screen loaded by checking for Transcript toggle
 - extendedWaitUntil:
     visible: "Transcript"

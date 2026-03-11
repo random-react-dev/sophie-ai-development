@@ -38,9 +38,10 @@ const withAndroidReleaseSigning = (config) => {
     );
 
     // 2. Change the release buildType to use signingConfigs.release
+    //    Match specifically inside "release {" block — [^}]*? won't cross block boundaries
     config.modResults.contents = config.modResults.contents.replace(
-      /buildTypes\s*\{[\s\S]*?release\s*\{[\s\S]*?signingConfig\s+signingConfigs\.debug/,
-      (match) => match.replace("signingConfigs.debug", "signingConfigs.release")
+      /(release\s*\{[^}]*?signingConfig\s+)signingConfigs\.debug/,
+      "$1signingConfigs.release"
     );
 
     return config;
