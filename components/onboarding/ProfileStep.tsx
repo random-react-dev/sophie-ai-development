@@ -351,18 +351,20 @@ export const ProfileStep = forwardRef<ProfileStepRef, ProfileStepProps>(
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Name */}
-          <View className="mb-4">
-            <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
-              {t("onboarding.profileStep.nameLabel")}
-            </Text>
-            <AuthInput
-              placeholder={t("onboarding.profileStep.namePlaceholder")}
-              value={data.name}
-              onChangeText={(text) => updateData({ name: text })}
-              autoCapitalize="words"
-            />
-          </View>
+          {/* Name — hidden when Apple Sign-In already provided it */}
+          {!user?.user_metadata?.full_name && (
+            <View className="mb-4">
+              <Text className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">
+                {t("onboarding.profileStep.nameLabel")}
+              </Text>
+              <AuthInput
+                placeholder={t("onboarding.profileStep.namePlaceholder")}
+                value={data.name}
+                onChangeText={(text) => updateData({ name: text })}
+                autoCapitalize="words"
+              />
+            </View>
+          )}
 
           {/* Country */}
           <View className="mb-4">

@@ -1,19 +1,11 @@
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import ProfileSettingCard from "@/components/profile/ProfileSettingCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/stores/authStore";
-import {
-  disabledColorScheme,
-  getRainbowColorScheme,
-} from "@/utils/rainbowColors";
-import { useRouter } from "expo-router";
-import { Crown, Receipt, Sparkles, Wallet } from "lucide-react-native";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AccountScreen() {
-  const router = useRouter();
   const { user } = useAuthStore();
   const { t } = useTranslation();
 
@@ -26,79 +18,8 @@ export default function AccountScreen() {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* Account Items */}
-        <View className="mx-4 mt-2">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            {t("profile.account_screen.subscription")}
-          </Text>
-
-          {/* Status Card */}
-          <ProfileSettingCard
-            title={t("profile.account_screen.status")}
-            icon={
-              <Sparkles size={20} color={getRainbowColorScheme(0).iconColor} />
-            }
-            colorScheme={getRainbowColorScheme(0)}
-            showArrow={false}
-            rightElement={
-              <View className="bg-yellow-100 px-3 py-1 rounded-full">
-                <Text className="text-yellow-600 text-xs font-bold uppercase">
-                  {t("profile.account_screen.freeTrial")}
-                </Text>
-              </View>
-            }
-          />
-
-          {/* Upgrade to Pro Card */}
-          <ProfileSettingCard
-            title={t("profile.account_screen.upgradeToPro")}
-            icon={
-              <Crown size={20} color={getRainbowColorScheme(1).iconColor} />
-            }
-            colorScheme={getRainbowColorScheme(1)}
-            textColor="text-blue-500"
-            onPress={() => {
-              router.push("/profile/subscription");
-            }}
-          />
-        </View>
-
-        {/* Payment Section */}
-        <View className="mx-4 mt-6">
-          <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
-            {t("profile.account_screen.payment")}
-          </Text>
-
-          {/* Payment Methods Card */}
-          <ProfileSettingCard
-            title={t("profile.account_screen.paymentMethods")}
-            subtitle={t("profile.account_screen.comingSoon")}
-            icon={<Wallet size={20} color={disabledColorScheme.iconColor} />}
-            colorScheme={disabledColorScheme}
-            showArrow={false}
-            rightElement={
-              <Text className="text-xs text-gray-400 font-medium">
-                {t("profile.account_screen.comingSoon")}
-              </Text>
-            }
-          />
-
-          {/* Billing History Card */}
-          <ProfileSettingCard
-            title={t("profile.account_screen.billingHistory")}
-            icon={<Receipt size={20} color={disabledColorScheme.iconColor} />}
-            colorScheme={disabledColorScheme}
-            showArrow={false}
-            rightElement={
-              <Text className="text-xs text-gray-400 font-medium">
-                {t("profile.account_screen.comingSoon")}
-              </Text>
-            }
-          />
-        </View>
-
         {/* Account Info */}
-        <View className="mx-4 mt-6">
+        <View className="mx-4 mt-2">
           <Text className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">
             {t("profile.account_screen.accountInfo")}
           </Text>

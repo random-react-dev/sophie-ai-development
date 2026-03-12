@@ -135,7 +135,9 @@ export default function OnboardingScreen() {
         }
         if (profileSubStep === 3) {
           // Sub-step 3: Profile details (Name, Country, Native Language)
-          return !!data.name && !!data.country && !!data.nativeLanguage;
+          const hasAppleName = !!useAuthStore.getState().user?.user_metadata?.full_name;
+          const hasName = !!data.name || hasAppleName;
+          return hasName && !!data.country && !!data.nativeLanguage;
         }
         return true;
       case 2:
@@ -238,7 +240,8 @@ export default function OnboardingScreen() {
 
       // Sub-step 3 validation: check profile details (name, country)
       // Note: learningLanguage is validated in goToNextSubStep before reaching here
-      if (!data.name || !data.country) {
+      const hasAppleName = !!useAuthStore.getState().user?.user_metadata?.full_name;
+      if ((!data.name && !hasAppleName) || !data.country) {
         showAlert(
           t("common.incomplete"),
           t("onboarding.fillAllFields"),

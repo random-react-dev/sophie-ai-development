@@ -12,8 +12,8 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest versionCode**: 1
-- **Play Store Status**: AAB uploaded to Internal Testing (release is "Inactive" — no testers added yet)
+- **Latest versionCode**: 3
+- **Play Store Status**: Internal Testing active
 
 ## Key Files
 
@@ -48,29 +48,34 @@ plugins: [
 
 ## One-Time Setup
 
-### 1. Generate Release Upload Keystore
+### 1. Keystore Location
 
-Run from the project root (after `expo prebuild --platform android`):
+The release upload keystore lives **outside** the project so `expo prebuild --clean` won't delete it:
 
-```bash
-keytool -genkeypair -v -storetype PKCS12 \
-  -keystore android/app/sophie-upload-key.keystore \
-  -alias sophie-upload-key \
-  -keyalg RSA -keysize 2048 -validity 10000
+```
+~/.android/keystores/sophie-upload-key.keystore
 ```
 
-You'll be prompted for a keystore password and identity details:
-- **Organization**: Apexture Private Limited
-- **Country**: IN
+If you ever need to regenerate it:
 
-**CRITICAL: Save the keystore password in a password manager immediately. Back up the `.keystore` file to encrypted cloud storage. If you lose it, you'll need to request an upload key reset from Google (takes days).**
+```bash
+keytool -genkeypair -v -storetype JKS -keyalg RSA -keysize 2048 \
+  -validity 10000 -storepass <password> -keypass <password> \
+  -alias sophie-upload-key \
+  -keystore ~/.android/keystores/sophie-upload-key.keystore \
+  -dname "CN=Speak With Sophie, O=Apexture Private Limited"
+```
+
+After regenerating, you must register the new upload key in **Play Console > Setup > App signing**.
+
+**CRITICAL: Save the keystore password in a password manager immediately. If you lose it, you'll need to request an upload key reset from Google (takes days).**
 
 ### 2. Configure Signing Credentials
 
 Create or edit `~/.gradle/gradle.properties` (your HOME directory, NOT the project):
 
 ```properties
-SOPHIE_UPLOAD_STORE_FILE=sophie-upload-key.keystore
+SOPHIE_UPLOAD_STORE_FILE=/Users/niravramani/.android/keystores/sophie-upload-key.keystore
 SOPHIE_UPLOAD_KEY_ALIAS=sophie-upload-key
 SOPHIE_UPLOAD_STORE_PASSWORD=<your_password>
 SOPHIE_UPLOAD_KEY_PASSWORD=<your_password>
@@ -287,8 +292,9 @@ Once production access is granted:
 ## Troubleshooting
 
 ### Build fails with "keystore not found"
-- Ensure `android/app/sophie-upload-key.keystore` exists
-- Run `npx expo prebuild --platform android --clean` to regenerate the android folder, then copy the keystore back
+- The keystore lives at `~/.android/keystores/sophie-upload-key.keystore` (outside the project)
+- Verify `~/.gradle/gradle.properties` has `SOPHIE_UPLOAD_STORE_FILE` set to the absolute path
+- If the keystore was accidentally deleted, regenerate it (see One-Time Setup above) and re-register the upload key in Play Console
 
 ### "versionCode X has already been used"
 - Increment `android.versionCode` in `app.config.ts` — it must always increase

@@ -17,7 +17,6 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
-import { TrialCountdownModal } from "@/components/auth/TrialCountdownModal";
 import TwoFactorOTPModal from "@/components/auth/TwoFactorOTPModal";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 import { useAuthStore } from "@/stores/authStore";
@@ -182,7 +181,6 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
             </Stack>
-            <TrialCountdownModal />
             <TwoFactorOTPModal />
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
           </ThemeProvider>
