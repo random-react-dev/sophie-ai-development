@@ -511,6 +511,7 @@ ${levelGuide}`;
           `Binding session to active profile: ${activeProfile.id}`,
         );
         setSessionProfileId(activeProfile.id);
+        return; // Prevent fallthrough, let the state update trigger the next effect run
       }
 
       // Force re-init if scenario or practice phrase changes (including fresh selection of same scenario)
