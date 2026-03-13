@@ -198,6 +198,7 @@ class GeminiWebSocket {
     this.hasPlaybackStartedInTurn = false;
     this.startupSlaAnchorMs = null;
     this.fastRetryTriggeredForTurn = false;
+    this.isGreetingTurn = false;
     this.clearStartupTimers();
     this.resetTurnStreamMetrics();
   }
