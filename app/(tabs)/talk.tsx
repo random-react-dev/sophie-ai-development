@@ -523,6 +523,7 @@ ${levelGuide}`;
         await resetActiveSession({
           nextScenarioTimestamp: scenarioSelectionTimestamp,
         });
+        return; // Prevent fallthrough to initSession, let the state update trigger the next effect run
       }
 
       await initSession();
