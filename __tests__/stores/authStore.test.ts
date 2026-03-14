@@ -4,6 +4,7 @@ const mockResetConversation = jest.fn();
 const mockResetGame = jest.fn();
 const mockResetLearning = jest.fn();
 const mockResetProfile = jest.fn();
+const mockResetSessionReports = jest.fn();
 const mockResetStats = jest.fn();
 const mockResetTranslationHistory = jest.fn();
 const mockSetHasSeenIntro = jest.fn();
@@ -80,6 +81,12 @@ jest.mock("@/stores/vocabularyStore", () => ({
 jest.mock("@/stores/statsStore", () => ({
   useStatsStore: {
     getState: () => ({ reset: mockResetStats }),
+  },
+}));
+
+jest.mock("@/stores/sessionReportsStore", () => ({
+  useSessionReportsStore: {
+    getState: () => ({ reset: mockResetSessionReports }),
   },
 }));
 
@@ -225,6 +232,7 @@ describe("authStore", () => {
       folders: [],
       isLoading: false,
     });
+    expect(mockResetSessionReports).toHaveBeenCalledTimes(1);
     expect(mockResetStats).toHaveBeenCalledTimes(1);
     expect(mockResetConversation).toHaveBeenCalledTimes(1);
     expect(mockSetHasSeenIntro).toHaveBeenCalledWith(false);
@@ -286,6 +294,7 @@ describe("authStore", () => {
     expect(mockResetTranslationHistory).toHaveBeenCalledTimes(1);
     expect(mockResetProfile).toHaveBeenCalledTimes(1);
     expect(mockResetLearning).toHaveBeenCalledTimes(1);
+    expect(mockResetSessionReports).toHaveBeenCalledTimes(1);
     expect(mockResetStats).toHaveBeenCalledTimes(1);
     expect(mockResetConversation).toHaveBeenCalledTimes(1);
     expect(mockResetGame).toHaveBeenCalledTimes(1);
@@ -361,6 +370,7 @@ describe("authStore", () => {
     expect(mockResetTranslationHistory).toHaveBeenCalledTimes(1);
     expect(mockResetProfile).toHaveBeenCalledTimes(1);
     expect(mockResetLearning).toHaveBeenCalledTimes(1);
+    expect(mockResetSessionReports).toHaveBeenCalledTimes(1);
     expect(mockResetStats).toHaveBeenCalledTimes(1);
     expect(mockResetConversation).toHaveBeenCalledTimes(1);
     expect(mockResetGame).toHaveBeenCalledTimes(1);

@@ -14,6 +14,7 @@ import { useConversationStore, useIntroStore } from "./conversationStore";
 import { useGameStore } from "./gameStore";
 import { useLearningStore } from "./learningStore";
 import { useProfileStore } from "./profileStore";
+import { useSessionReportsStore } from "./sessionReportsStore";
 import { useStatsStore } from "./statsStore";
 import { useTranslationHistoryStore } from "./translationHistoryStore";
 import { useVocabularyStore } from "./vocabularyStore";
@@ -37,6 +38,7 @@ const clearUserData = async (): Promise<void> => {
   useProfileStore.getState().reset();
   useLearningStore.getState().reset();
   useVocabularyStore.setState({ items: [], folders: [], isLoading: false });
+  useSessionReportsStore.getState().reset();
   useStatsStore.getState().reset();
   useConversationStore.getState().reset();
   useIntroStore.getState().setHasSeenIntro(false);

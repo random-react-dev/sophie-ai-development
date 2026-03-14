@@ -545,9 +545,15 @@ ${levelGuide}`;
         {
           text: t("talk_screen.alerts.finish"),
           onPress: () => {
+            const sessionKey = `session-${Date.now()}-${Math.random()
+              .toString(36)
+              .slice(2, 10)}`;
             router.push({
               pathname: "/report",
-              params: { duration: durationSeconds.toString() },
+              params: {
+                duration: durationSeconds.toString(),
+                sessionKey,
+              },
             });
           },
         },
