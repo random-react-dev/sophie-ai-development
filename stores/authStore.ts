@@ -451,7 +451,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return;
       }
 
-      clearExpectedSignOut();
       set((state) => ({
         session,
         user: newUser,

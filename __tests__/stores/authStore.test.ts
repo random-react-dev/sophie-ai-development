@@ -331,4 +331,40 @@ describe("authStore", () => {
     expect(useAuthStore.getState().session).toBeNull();
     expect(useAuthStore.getState().user).toBeNull();
   });
+
+  it("keeps the expected sign-out marker through intermediate auth events", async () => {
+    jest.useFakeTimers();
+
+    const session = makeSession();
+    const refreshedSession = makeSession({
+      access_token: "refreshed-access-token",
+      expires_at: 1_900_000_100,
+    });
+
+    await initializeStore(session);
+
+    jest.clearAllMocks();
+    useAuthStore.setState({ session, user: session.user });
+    mockSignOut.mockImplementation(async () => {
+      authStateChangeCallback?.("TOKEN_REFRESHED", refreshedSession);
+      authStateChangeCallback?.("SIGNED_OUT", null);
+      return { error: null };
+    });
+
+    await useAuthStore.getState().signOut();
+    jest.runOnlyPendingTimers();
+    await flushMicrotasks();
+
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
+    expect(mockGetSession).not.toHaveBeenCalled();
+    expect(getAsyncStorageMock().multiRemove).toHaveBeenCalledTimes(1);
+    expect(mockResetTranslationHistory).toHaveBeenCalledTimes(1);
+    expect(mockResetProfile).toHaveBeenCalledTimes(1);
+    expect(mockResetLearning).toHaveBeenCalledTimes(1);
+    expect(mockResetStats).toHaveBeenCalledTimes(1);
+    expect(mockResetConversation).toHaveBeenCalledTimes(1);
+    expect(mockResetGame).toHaveBeenCalledTimes(1);
+    expect(useAuthStore.getState().session).toBeNull();
+    expect(useAuthStore.getState().user).toBeNull();
+  });
 });
