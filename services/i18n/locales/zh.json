@@ -1722,5 +1722,12 @@
     "expired_title": "试用期已结束！",
     "expired_subtitle": "您的7天免费试用已结束。请选择一个计划以继续学习并使用所有功能。",
     "choose_plan_btn": "选择计划"
+  },
+  "aiConsent": {
+    "title": "人工智能支持的功能",
+    "body": "Sophie 使用 Google Gemini AI 来支持对话和翻译。当您使用这些功能时，您的语音音频、文本和对话上下文将被发送到 Google 的服务器进行处理。",
+    "privacy": "Google 根据其隐私政策处理这些数据。",
+    "accept": "我了解并同意",
+    "decline": "暂时不要"
   }
 }
