@@ -3,7 +3,7 @@ import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useStatsStore } from "@/stores/statsStore";
+import { useSessionReportsStore } from "@/stores/sessionReportsStore";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   AlignLeft,
@@ -13,24 +13,39 @@ import {
   Sparkles,
   X,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const getStringParam = (
+  value: string | string[] | undefined,
+): string | undefined => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+};
 
 export default function ReportScreen() {
   const { messages, clearMessages } = useConversationStore();
   const { selectedScenario } = useScenarioStore();
   const { activeProfile } = useProfileStore();
-  const { recordSession } = useStatsStore();
+  const { saveReport } = useSessionReportsStore();
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const [hasRecorded, setHasRecorded] = useState(false);
+  const [hasPersisted, setHasPersisted] = useState(false);
+  const fallbackSessionKeyRef = useRef(
+    `report-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+  );
 
   // Get duration from params or default to 0
-  const durationSeconds = params.duration
-    ? parseInt(params.duration as string)
-    : 0;
+  const durationParam = getStringParam(params.duration);
+  const parsedDuration = durationParam ? parseInt(durationParam, 10) : 0;
+  const durationSeconds = Number.isFinite(parsedDuration) ? parsedDuration : 0;
+  const sessionKey =
+    getStringParam(params.sessionKey) || fallbackSessionKeyRef.current;
 
   // Format duration for display (e.g., "2m 30s")
   const formattedDuration =
@@ -38,13 +53,49 @@ export default function ReportScreen() {
       ? `${durationSeconds}s`
       : `${Math.floor(durationSeconds / 60)}m ${durationSeconds % 60 > 0 ? (durationSeconds % 60) + "s" : ""}`;
 
-  // Record stats on mount (once)
   useEffect(() => {
-    if (!hasRecorded && durationSeconds > 0) {
-      recordSession(durationSeconds);
-      setHasRecorded(true);
-    }
-  }, [durationSeconds, hasRecorded, recordSession]);
+    let isMounted = true;
+
+    const persistReport = async () => {
+      if (hasPersisted || messages.length === 0) {
+        return;
+      }
+
+      const result = await saveReport({
+        sessionKey,
+        learningProfileId: activeProfile?.id ?? null,
+        scenarioTitle: selectedScenario?.title ?? null,
+        scenarioLevel: selectedScenario?.level ?? null,
+        targetLanguage: activeProfile?.target_language ?? null,
+        nativeLanguage:
+          activeProfile?.medium_language || activeProfile?.native_language || null,
+        durationSeconds,
+        transcript: messages,
+      });
+
+      if (result.report && isMounted) {
+        setHasPersisted(true);
+      }
+    };
+
+    void persistReport();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    activeProfile?.id,
+    activeProfile?.medium_language,
+    activeProfile?.native_language,
+    activeProfile?.target_language,
+    durationSeconds,
+    hasPersisted,
+    messages,
+    saveReport,
+    selectedScenario?.level,
+    selectedScenario?.title,
+    sessionKey,
+  ]);
 
   const handleSave = async (text: string) => {
     const success = await saveToVocabulary({
@@ -194,7 +245,7 @@ export default function ReportScreen() {
             containerClassName="items-center justify-center flex-1"
           >
             <Text className="text-black font-bold text-lg">
-              Continue to Library
+              Session Finished
             </Text>
           </RainbowBorder>
         </TouchableOpacity>

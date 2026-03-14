@@ -1708,5 +1708,12 @@
     "claim_discount_btn": "Reclamar mi descuento",
     "maybe_later_btn": "Quizás más tarde",
     "choose_plan_btn": "Elegir un plan"
+  },
+  "aiConsent": {
+    "title": "Funciones con IA",
+    "body": "Sophie utiliza la IA Google Gemini para conversaciones y traducciones. Al usar estas funciones, tu audio de voz, texto y contexto de conversación se envían a los servidores de Google para su procesamiento.",
+    "privacy": "Google trata estos datos de acuerdo con su política de privacidad.",
+    "accept": "Entiendo y acepto",
+    "decline": "Ahora no"
   }
 }

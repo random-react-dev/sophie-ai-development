@@ -1722,5 +1722,12 @@
     "expired_title": "試用期已結束！",
     "expired_subtitle": "你嘅7日免費試用已經結束。請揀選一個計劃嚟繼續學習同使用所有功能。",
     "choose_plan_btn": "揀選計劃"
+  },
+  "aiConsent": {
+    "title": "AI 支援功能",
+    "body": "Sophie 使用 Google Gemini AI 嚟支援對話同埋翻譯。當你使用呢啲功能嗰陣，你嘅語音音訊、文字同埋對話內容會被傳送到 Google 嘅伺服器進行處理。",
+    "privacy": "Google 會根據佢哋嘅隱私政策嚟處理呢啲數據。",
+    "accept": "我明白並同意",
+    "decline": "遲啲先"
   }
 }
