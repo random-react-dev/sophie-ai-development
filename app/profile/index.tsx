@@ -106,6 +106,7 @@ export default function ProfileScreen() {
         {
           text: t("profile.menu.logoutConfirm.confirm"),
           style: "destructive",
+          testID: "profile-logout-confirm",
           onPress: async () => {
             await signOut();
             router.replace("/(auth)/login" as never);
@@ -284,6 +285,7 @@ export default function ProfileScreen() {
               iconBgColor="bg-red-50"
               textColor="text-red-500"
               showArrow={false}
+              testID="profile-logout-card"
               onPress={handleLogout}
             />
           </View>

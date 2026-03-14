@@ -7,6 +7,7 @@ export interface AlertButton {
   text: string;
   onPress?: () => void;
   style?: "default" | "cancel" | "destructive";
+  testID?: string;
 }
 
 interface AlertModalProps {
@@ -111,6 +112,7 @@ export function AlertModal({
                 <Pressable
                   key={index}
                   onPress={() => handleButtonPress(button)}
+                  testID={button.testID}
                   className={`flex-1 rounded-full overflow-hidden active:opacity-80 ${
                     button.style === "cancel" ? "bg-gray-200" : ""
                   }`}

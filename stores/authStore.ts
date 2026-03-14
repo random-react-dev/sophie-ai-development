@@ -43,6 +43,29 @@ const clearUserData = async (): Promise<void> => {
   useGameStore.getState().reset();
 };
 
+const EXPECTED_SIGN_OUT_TIMEOUT_MS = 5000;
+
+let expectedSignOutReason: "sign_out" | "delete_account" | null = null;
+let expectedSignOutTimer: ReturnType<typeof setTimeout> | null = null;
+
+const clearExpectedSignOut = (): void => {
+  expectedSignOutReason = null;
+  if (expectedSignOutTimer) {
+    clearTimeout(expectedSignOutTimer);
+    expectedSignOutTimer = null;
+  }
+};
+
+const markExpectedSignOut = (
+  reason: "sign_out" | "delete_account",
+): void => {
+  clearExpectedSignOut();
+  expectedSignOutReason = reason;
+  expectedSignOutTimer = setTimeout(() => {
+    clearExpectedSignOut();
+  }, EXPECTED_SIGN_OUT_TIMEOUT_MS);
+};
+
 interface AuthState {
   user: User | null;
   session: Session | null;
@@ -296,8 +319,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       await clearUserData();
+      markExpectedSignOut("sign_out");
       await supabase.auth.signOut();
     } catch (err) {
+      clearExpectedSignOut();
       console.warn("Sign out error:", err);
     } finally {
       set({
@@ -319,7 +344,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Clear all user-specific data before signing out
       await clearUserData();
+      markExpectedSignOut("delete_account");
       await supabase.auth.signOut();
+    } catch (err) {
+      clearExpectedSignOut();
+      throw err;
     } finally {
       set({
         user: null,
@@ -386,32 +415,52 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     }
 
-    supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
-        const newUser = session?.user ?? null;
+    supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      const newUser = session?.user ?? null;
 
-        // When session becomes invalid or user is signed out (including token refresh failures),
-        // clear all user data to ensure a clean state for the next login.
-        if (event === "SIGNED_OUT" && !get().pending2FA) {
-          // Verify session is truly gone before clearing (guards against spurious SIGNED_OUT from token refresh failures)
-          const { data: retryData } = await supabase.auth.getSession();
-          if (retryData.session) {
-            set({ session: retryData.session, user: retryData.session.user });
-            return;
-          }
-          await clearUserData();
+      if (event === "SIGNED_OUT") {
+        if (get().pending2FA) {
+          set({ session: null, user: null, showTrialPopup: false });
+          return;
         }
 
-        set((state) => ({
-          session,
-          user: newUser,
-          // Clear showTrialPopup on SIGNED_OUT; preserve on other events.
-          // showTrialPopup is set explicitly by signIn, verify2FA, and initialize —
-          // NOT here, to avoid showing it during the 2FA signIn flow.
-          showTrialPopup: event === "SIGNED_OUT" ? false : state.showTrialPopup,
-        }));
-      },
-    );
+        if (expectedSignOutReason) {
+          clearExpectedSignOut();
+          set({ session: null, user: null, showTrialPopup: false });
+          return;
+        }
+
+        // Run session verification after the auth callback lock is released.
+        setTimeout(() => {
+          void (async () => {
+            try {
+              const { data: retryData } = await supabase.auth.getSession();
+              if (retryData.session) {
+                set({ session: retryData.session, user: retryData.session.user });
+                return;
+              }
+
+              await clearUserData();
+            } catch (err) {
+              console.warn("Unexpected sign-out verification failed:", err);
+            }
+
+            set({ session: null, user: null, showTrialPopup: false });
+          })();
+        }, 0);
+        return;
+      }
+
+      clearExpectedSignOut();
+      set((state) => ({
+        session,
+        user: newUser,
+        // Clear showTrialPopup on SIGNED_OUT; preserve on other events.
+        // showTrialPopup is set explicitly by signIn, verify2FA, and initialize —
+        // NOT here, to avoid showing it during the 2FA signIn flow.
+        showTrialPopup: state.showTrialPopup,
+      }));
+    });
   },
 }));
 
