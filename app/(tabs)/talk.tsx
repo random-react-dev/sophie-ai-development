@@ -257,6 +257,7 @@ export default function TalkScreen() {
   const {
     hasConsented,
     showConsent,
+    isLoading: isConsentLoading,
     requestConsent,
     acceptConsent,
     declineConsent,
@@ -314,6 +315,9 @@ export default function TalkScreen() {
       // Audio playback while unfocused is harmless (useFocusEffect handles pause/resume).
 
       if (!session) return;
+
+      // Wait for consent state to finish loading from AsyncStorage
+      if (isConsentLoading) return;
 
       // Gate behind AI consent — show modal if not yet accepted
       if (!hasConsented) {
@@ -480,6 +484,7 @@ ${levelGuide}`;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Session lifecycle: re-init only on user/language/scenario changes; store actions are stable refs, profile fields are compared internally
   }, [
     session?.user?.id,
+    isConsentLoading, // Re-run once consent state finishes loading
     hasConsented, // Re-run when consent is granted
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes

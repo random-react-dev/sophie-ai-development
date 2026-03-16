@@ -100,6 +100,9 @@ export function useAIConsent() {
   const [hasConsented, setHasConsented] = useState<boolean | null>(null);
   const [showConsent, setShowConsent] = useState(false);
 
+  // true while AsyncStorage hasn't finished loading the consent value
+  const isLoading = hasConsented === null;
+
   useEffect(() => {
     AsyncStorage.getItem(AI_CONSENT_KEY).then((value) => {
       setHasConsented(value === "true");
@@ -124,6 +127,7 @@ export function useAIConsent() {
   return {
     hasConsented,
     showConsent,
+    isLoading,
     requestConsent,
     acceptConsent,
     declineConsent,
