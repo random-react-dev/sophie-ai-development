@@ -1540,7 +1540,12 @@
       "translate": "Translate",
       "hide": "Hide",
       "save": "Save",
-      "translating": "Translating..."
+      "translating": "Translating...",
+      "report": "Report",
+      "reported": "Reported",
+      "report_title": "Report Inappropriate Content",
+      "report_body": "If this AI response contains offensive, harmful, or inappropriate content, please report it. Your feedback helps us improve.",
+      "report_confirm": "Report"
     },
     "prompts": {
       "select_both_langs": "Select both languages above to start your lesson with Sophie AI.",

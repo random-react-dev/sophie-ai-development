@@ -1,8 +1,8 @@
 import { ChatAvatar } from "@/components/common/ChatAvatar";
 import { useTranslation } from "@/hooks/useTranslation";
-import { EyeOff, Languages, Plus } from "lucide-react-native";
+import { EyeOff, Flag, Languages, Plus } from "lucide-react-native";
 import React, { useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
 
 interface Message {
   id: string;
@@ -30,7 +30,23 @@ export function MessageBubble({
   const [showTranslation, setShowTranslation] = useState(false);
   const [translation, setTranslation] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [reported, setReported] = useState(false);
   const { t } = useTranslation();
+
+  const handleReport = () => {
+    Alert.alert(
+      t("talk_screen.message_actions.report_title"),
+      t("talk_screen.message_actions.report_body"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("talk_screen.message_actions.report_confirm"),
+          style: "destructive",
+          onPress: () => setReported(true),
+        },
+      ],
+    );
+  };
 
   const handleTranslatePress = async () => {
     if (showTranslation) {
@@ -140,6 +156,26 @@ export function MessageBubble({
                 {t("talk_screen.message_actions.save")}
               </Text>
             </TouchableOpacity>
+
+            {!isUser && (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                className="flex-row items-center gap-1"
+                onPress={handleReport}
+                disabled={reported}
+                accessibilityRole="button"
+                accessibilityLabel={t("talk_screen.message_actions.report")}
+              >
+                <Flag size={12} color={reported ? "#d1d5db" : "#6b7280"} />
+                <Text
+                  className={`text-xs font-bold ${reported ? "text-gray-300" : "text-gray-500"}`}
+                >
+                  {reported
+                    ? t("talk_screen.message_actions.reported")
+                    : t("talk_screen.message_actions.report")}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 

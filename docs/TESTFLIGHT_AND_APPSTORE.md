@@ -13,11 +13,11 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest Build Number**: 20
+- **Latest Build Number**: 40
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: Rejected March 10, 2026 — fixes applied (see below)
+- **App Store Status**: Rejected twice (March 10 & March 12, 2026) — all fixes applied (see below)
 
-## App Store Rejection Fix (v1.0, March 2026)
+## App Store Rejection Fix #1 (v1.0, March 10, 2026)
 
 Four issues were raised by Apple review and fixed:
 
@@ -30,6 +30,23 @@ Four issues were raised by Apple review and fixed:
 1. Yes, the app uses third-party AI for analysis of data.
 2. Provider: Google Gemini (via Google AI Studio API).
 3. Data transmitted: Voice audio (PCM format), text transcripts, conversation history, and language learning context. No PII beyond what the user speaks in conversation.
+
+## App Store Rejection Fix #2 (v1.0, March 12, 2026) — Build 40
+
+Two additional issues raised by Apple review:
+
+1. **Redundant name field (Guideline 4 — Design)** — Apple Sign-In provides the user's name, so showing an editable name input during onboarding is unnecessary data collection. **Fix**: Name input in `ProfileStep.tsx` sub-step 3 is now hidden when `user_metadata.full_name` exists. Validation in `onboarding.tsx` updated to accept Apple-provided name.
+
+2. **Subscription UI without IAP (Guideline 3.1.1)** — App showed subscription plans, trial badges, "Upgrade to Pro" buttons, and payment sections but had no In-App Purchase mechanism. **Fix**: All subscription/trial UI removed:
+   - `app/_layout.tsx`: Removed `<TrialCountdownModal />` render and import
+   - `app/profile/account.tsx`: Removed Subscription section (Free Trial badge, Upgrade to Pro card) and Payment section (Payment Methods, Billing History). Only Account Info (email, member since) remains.
+   - `app/profile/subscription.tsx`: Replaced full plan cards screen with "Subscription plans coming soon." placeholder
+
+**Files NOT deleted** (ready for IAP restoration):
+- `components/auth/TrialCountdownModal.tsx` — exists but not rendered
+- `components/profile/ProfileSettingCard.tsx` — exists but not imported in account.tsx
+- `hooks/useTrialGuard.ts` — exists, always returns true
+- `stores/authStore.ts` — `showTrialPopup: false` still set
 
 ## Key Files
 

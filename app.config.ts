@@ -29,7 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
     package: "ai.speakwithsophie.app",
-    versionCode: 3,
+    versionCode: 5,
     permissions: ["android.permission.RECORD_AUDIO"],
   },
   web: {

@@ -12,8 +12,8 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest versionCode**: 3
-- **Play Store Status**: Internal Testing active
+- **Latest versionCode**: 4
+- **Play Store Status**: Production submitted, pending review
 
 ## Key Files
 
