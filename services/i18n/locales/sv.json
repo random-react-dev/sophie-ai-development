@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "Konto",
-        "subtitle": "Prenumeration och fakturering"
+        "subtitle": "Dina kontodetaljer"
       },
       "security": {
         "title": "Säkerhet",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "Konto",
-      "subscription": "Prenumeration",
-      "status": "Status",
-      "freeTrial": "Gratis testperiod",
-      "upgradeToPro": "Uppgradera till Pro",
-      "payment": "Betalning",
-      "paymentMethods": "Betalningsmetoder",
-      "billingHistory": "Faktureringshistorik",
       "accountInfo": "Kontoinformation",
       "email": "E-post",
       "memberSince": "Medlem sedan",
-      "na": "E/T",
-      "comingSoon": "Kommer snart"
+      "na": "E/T"
     },
     "subscription_screen": {
-      "title": "Uppgradera till Pro",
-      "choosePlan": "Välj din plan",
-      "subtitle": "Lås upp Sophie AI:s fulla potential och bemästra vilket språk som helst.",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "Träffa Sophie",
-          "features": {
-            "0": "Appen på 15 språk",
-            "1": "Naturliga samtal med Sophie på över 50 språk",
-            "2": "Sophies översättning till valfritt språk",
-            "3": "Obegränsad ordlista på alla tillgängliga språk.",
-            "4": "Mer än 100 konversationsscenarier"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "Sophies Nära Vän",
-          "badge": "POPULÄR",
-          "features": {
-            "0": "Allt ingår i gratisprov.",
-            "1": "24/7 Kundsupport. Garanterat.",
-            "2": "Obegränsad användning av appen",
-            "3": "Strategisk ambassadöralternativ."
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "Sophies Bästa Vän",
-          "badge": "BÄSTA VÄRDE",
-          "features": {
-            "0": "Allt i Sophies Nära Vän",
-            "1": "Prioriterad 24/7 support",
-            "2": "Exklusivt innehåll & tidig åtkomst",
-            "3": "Anpassad inlärningsväg",
-            "4": "Dedikerad kontohanterare"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "Prenumerera Nu",
-        "getStarted": "Gå med i väntelistan",
-        "month": "månad",
-        "sixMonths": "6 månader",
-        "day7": "7 dagar",
-        "startFreeTrial": "Börja Gratis",
-        "regularPrice": "ordinarie pris",
-        "launchPrice": "lanseringspris",
-        "billedEvery": "debiteras {{total}} var {{months}}:e månad",
-        "saveVsMonthly": "$ Spara {{percent}}% jmf. med månadsvis",
-        "mo": "mån"
-      },
-      "footer": "Alla planer inkluderar dygnet runt AI-läraråtkomst och framstegsspårning. Avbryt när som helst från dina inställningar."
+      "title": "Prenumeration"
     },
     "security_screen": {
       "title": "Säkerhet",
@@ -1703,32 +1643,5 @@
       "American": "Amerikansk",
       "British": "Brittisk"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "Sista dagen!",
-    "days_left_title": "{{count}} dagar kvar",
-    "last_day_subtitle": "Din gratis provperiod slutar idag!",
-    "upgrade_subtitle": "Uppgradera till Sophie AI Pro för hela upplevelsen.",
-    "benefits_title": "Vad du får",
-    "benefit_1": "Obegränsade AI-konversationer",
-    "benefit_2": "Alla 10+ språk upplåsta",
-    "benefit_3": "Avancerade ordförrådsverktyg",
-    "benefit_4": "Prioriterad support",
-    "limited_time_offer": "Begränsat erbjudande",
-    "off_text": "{{percent}}% RABATT",
-    "claim_discount_msg": "Hämta din rabatt idag",
-    "upgrade_now_btn": "Uppgradera nu",
-    "claim_discount_btn": "Hämta min rabatt",
-    "maybe_later_btn": "Kanske senare",
-    "expired_title": "Provperioden har gått ut!",
-    "expired_subtitle": "Din 7-dagars gratis provperiod har avslutats. Välj en plan för att fortsätta lära dig och få tillgång till alla funktioner.",
-    "choose_plan_btn": "Välj en plan"
-  },
-  "aiConsent": {
-    "title": "AI-drivna funktioner",
-    "body": "Sophie använder Google Gemini AI för konversationer och översättningar. När du använder dessa funktioner skickas ditt röstljud, text och konversationssammanhang till Googles servrar för bearbetning.",
-    "privacy": "Google hanterar dessa data i enlighet med deras integritetspolicy.",
-    "accept": "Jag förstår och samtycker",
-    "decline": "Inte nu"
   }
 }

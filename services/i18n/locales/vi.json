@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "Tài Khoản",
-        "subtitle": "Đăng ký và thanh toán"
+        "subtitle": "Chi tiết tài khoản của bạn"
       },
       "security": {
         "title": "Bảo Mật",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "Tài khoản",
-      "subscription": "Đăng ký",
-      "status": "Trạng thái",
-      "freeTrial": "Dùng thử miễn phí",
-      "upgradeToPro": "Nâng cấp lên Pro",
-      "payment": "Thanh toán",
-      "paymentMethods": "Phương thức thanh toán",
-      "billingHistory": "Lịch sử thanh toán",
       "accountInfo": "Thông tin tài khoản",
       "email": "Email",
       "memberSince": "Thành viên từ",
-      "na": "N/A",
-      "comingSoon": "Sắp ra mắt"
+      "na": "N/A"
     },
     "subscription_screen": {
-      "title": "Nâng cấp lên Pro",
-      "choosePlan": "Chọn Gói của Bạn",
-      "subtitle": "Mở khóa toàn bộ tiềm năng của Sophie AI và làm chủ bất kỳ ngôn ngữ nào.",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "Gặp gỡ Sophie",
-          "features": {
-            "0": "Ứng dụng trong 15 ngôn ngữ",
-            "1": "Hội thoại tự nhiên với Sophie bằng hơn 50 ngôn ngữ",
-            "2": "Bản dịch của Sophie sang bất kỳ ngôn ngữ nào",
-            "3": "Lưu từ vựng không giới hạn trong tất cả ngôn ngữ",
-            "4": "Hơn 100 kịch bản hội thoại"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "Bạn Thân Của Sophie",
-          "badge": "PHỔ BIẾN",
-          "features": {
-            "0": "Mọi thứ được bao gồm trong bản dùng thử.",
-            "1": "Hỗ trợ khách hàng 24/7. Đảm bảo.",
-            "2": "Sử dụng ứng dụng không giới hạn",
-            "3": "Lựa chọn đại sứ chiến lược"
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "Bạn Tốt Nhất Của Sophie",
-          "badge": "GIÁ TRỊ TỐT NHẤT",
-          "features": {
-            "0": "Tất cả tính năng trong Bạn Thân",
-            "1": "Hỗ trợ ưu tiên 24/7",
-            "2": "Nội dung độc quyền & quyền truy cập sớm",
-            "3": "Lộ trình học tập tùy chỉnh",
-            "4": "Người quản lý tài khoản riêng"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "Đăng ký ngay",
-        "getStarted": "Danh sách chờ",
-        "month": "tháng",
-        "sixMonths": "6 tháng",
-        "day7": "7 ngày",
-        "startFreeTrial": "Bắt đầu Dùng thử",
-        "regularPrice": "giá thông thường",
-        "launchPrice": "giá ra mắt",
-        "billedEvery": "thanh toán {{total}} mỗi {{months}} tháng",
-        "saveVsMonthly": "$ Tiết kiệm {{percent}}% so với hàng tháng",
-        "mo": "tháng"
-      },
-      "footer": "Tất cả các gói bao gồm quyền truy cập gia sư AI 24/7 và Theo dõi Tiến độ. Hủy bất kỳ lúc nào từ cài đặt của bạn."
+      "title": "Đăng ký"
     },
     "security_screen": {
       "title": "Bảo mật",
@@ -1703,32 +1643,5 @@
       "American": "Mỹ",
       "British": "Anh"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "Ngày cuối cùng!",
-    "days_left_title": "Còn lại {{count}} ngày",
-    "last_day_subtitle": "Dùng thử miễn phí của bạn kết thúc hôm nay!",
-    "upgrade_subtitle": "Nâng cấp lên Sophie AI Pro để có trải nghiệm đầy đủ.",
-    "benefits_title": "Bạn sẽ nhận được",
-    "benefit_1": "Trò chuyện AI không giới hạn",
-    "benefit_2": "Mở khóa tất cả 10+ ngôn ngữ",
-    "benefit_3": "Công cụ từ vựng nâng cao",
-    "benefit_4": "Hỗ trợ ưu tiên",
-    "limited_time_offer": "Ưu đãi có hạn",
-    "off_text": "GIẢM {{percent}}%",
-    "claim_discount_msg": "Nhận giảm giá của bạn ngay hôm nay",
-    "upgrade_now_btn": "Nâng cấp ngay",
-    "claim_discount_btn": "Nhận giảm giá của tôi",
-    "maybe_later_btn": "Có thể để sau",
-    "expired_title": "Hết hạn dùng thử!",
-    "expired_subtitle": "Bản dùng thử miễn phí 7 ngày của bạn đã kết thúc. Vui lòng chọn một gói để tiếp tục học và truy cập tất cả các tính năng.",
-    "choose_plan_btn": "Chọn gói"
-  },
-  "aiConsent": {
-    "title": "Tính năng hỗ trợ bởi AI",
-    "body": "Sophie sử dụng Google Gemini AI để hỗ trợ các cuộc trò chuyện và dịch thuật. Khi bạn sử dụng các tính năng này, âm thanh giọng nói, văn bản và ngữ cảnh cuộc trò chuyện của bạn sẽ được gửi đến máy chủ của Google để xử lý.",
-    "privacy": "Google xử lý dữ liệu này theo chính sách bảo mật của họ.",
-    "accept": "Tôi hiểu & Đồng ý",
-    "decline": "Không phải bây giờ"
   }
 }

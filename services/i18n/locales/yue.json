@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "帳戶",
-        "subtitle": "訂閱同帳單"
+        "subtitle": "你嘅賬戶詳情"
       },
       "security": {
         "title": "安全",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "帳戶",
-      "subscription": "訂閱",
-      "status": "狀態",
-      "freeTrial": "免費試用",
-      "upgradeToPro": "升級至 Pro",
-      "payment": "付款",
-      "paymentMethods": "付款方式",
-      "billingHistory": "賬單記錄",
       "accountInfo": "帳戶資料",
       "email": "電郵",
       "memberSince": "加入日期",
-      "na": "不適用",
-      "comingSoon": "即將推出"
+      "na": "不適用"
     },
     "subscription_screen": {
-      "title": "升級至 Pro",
-      "choosePlan": "選擇你的計劃",
-      "subtitle": "釋放 Sophie AI 的全部潛力並掌握任何語言。",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "同Sophie見面",
-          "features": {
-            "0": "支援15種語言",
-            "1": "用超過50種語言同Sophie自然傾偈",
-            "2": "Sophie可以翻譯成任何語言",
-            "3": "無限生字本",
-            "4": "100+對話場景"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "Sophie密友",
-          "badge": "熱門",
-          "features": {
-            "0": "免費試用包晒所有嘢",
-            "1": "24/7客戶服務支援",
-            "2": "無限次使用App",
-            "3": "推廣大使選項"
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "Sophie死黨",
-          "badge": "最抵買",
-          "features": {
-            "0": "密友計劃所有功能",
-            "1": "優先24/7支援",
-            "2": "獨家內容同優先試用",
-            "3": "度身訂造學習路線",
-            "4": "專屬客戶經理"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "立即訂閱",
-        "getStarted": "加入候補名單",
-        "month": "個月",
-        "sixMonths": "6個月",
-        "day7": "7日",
-        "startFreeTrial": "開始免費試用",
-        "regularPrice": "正價",
-        "launchPrice": "首發價",
-        "billedEvery": "每{{months}}個月收費{{total}}",
-        "saveVsMonthly": "$ 比月費慳{{percent}}%",
-        "mo": "個月"
-      },
-      "footer": "所有計劃均包括 24/7 AI 導師服務及進度追蹤。隨時可在設定中取消。"
+      "title": "訂閱"
     },
     "security_screen": {
       "title": "保安",
@@ -1703,32 +1643,5 @@
       "American": "美國",
       "British": "英國"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "最後一日！",
-    "days_left_title": "剩餘 {{count}} 日",
-    "last_day_subtitle": "你嘅免費試用今日結束！",
-    "upgrade_subtitle": "升級至 Sophie AI Pro 以獲得完整體驗。",
-    "benefits_title": "你會獲得",
-    "benefit_1": "無限 AI 對話",
-    "benefit_2": "解鎖所有 10+ 種語言",
-    "benefit_3": "高級詞彙工具",
-    "benefit_4": "優先支援",
-    "limited_time_offer": "限時優惠",
-    "off_text": "{{percent}}% 折扣",
-    "claim_discount_msg": "立即領取折扣",
-    "upgrade_now_btn": "立即升級",
-    "claim_discount_btn": "領取我嘅折扣",
-    "maybe_later_btn": "或者遲啲",
-    "expired_title": "試用期已結束！",
-    "expired_subtitle": "你嘅7日免費試用已經結束。請揀選一個計劃嚟繼續學習同使用所有功能。",
-    "choose_plan_btn": "揀選計劃"
-  },
-  "aiConsent": {
-    "title": "AI 支援功能",
-    "body": "Sophie 使用 Google Gemini AI 嚟支援對話同埋翻譯。當你使用呢啲功能嗰陣，你嘅語音音訊、文字同埋對話內容會被傳送到 Google 嘅伺服器進行處理。",
-    "privacy": "Google 會根據佢哋嘅隱私政策嚟處理呢啲數據。",
-    "accept": "我明白並同意",
-    "decline": "遲啲先"
   }
 }

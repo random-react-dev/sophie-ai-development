@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "アカウント",
-        "subtitle": "購読と請求"
+        "subtitle": "アカウントの詳細"
       },
       "security": {
         "title": "セキュリティ",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "アカウント",
-      "subscription": "サブスクリプション",
-      "status": "ステータス",
-      "freeTrial": "無料トライアル",
-      "upgradeToPro": "プロにアップグレード",
-      "payment": "支払い",
-      "paymentMethods": "支払い方法",
-      "billingHistory": "請求履歴",
       "accountInfo": "アカウント情報",
       "email": "メール",
       "memberSince": "登録日",
-      "na": "なし",
-      "comingSoon": "近日公開"
+      "na": "なし"
     },
     "subscription_screen": {
-      "title": "プロにアップグレード",
-      "choosePlan": "プランを選択",
-      "subtitle": "Sophie AIの可能性を最大限に引き出し、あらゆる言語を習得しましょう。",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "ソフィーに会おう",
-          "features": {
-            "0": "15の言語に対応するアプリ",
-            "1": "50以上の言語でのソフィーとの自然な会話",
-            "2": "利用可能な言語へのソフィーの翻訳",
-            "3": "すべての言語で無制限の語彙セーバー",
-            "4": "100以上の会話シナリオ"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "ソフィーの親友",
-          "badge": "人気",
-          "features": {
-            "0": "無料トライアルですべてが含まれています",
-            "1": "24時間年中無休のカスタマーサポート",
-            "2": "アプリの無制限使用",
-            "3": "戦略的アンバサダーオプション"
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "ソフィーの親友",
-          "badge": "ベストバリュー",
-          "features": {
-            "0": "ソフィーの親友のすべての機能",
-            "1": "優先24/7サポート",
-            "2": "独占コンテンツと早期アクセス",
-            "3": "カスタム学習パス",
-            "4": "専任のアカウントマネージャー"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "今すぐ購読する",
-        "getStarted": "ウェイトリストに参加",
-        "month": "月",
-        "sixMonths": "6ヶ月",
-        "day7": "7日間",
-        "startFreeTrial": "無料トライアルを開始",
-        "regularPrice": "通常価格",
-        "launchPrice": "発売記念価格",
-        "billedEvery": "{{months}}ヶ月ごとに{{total}}請求",
-        "saveVsMonthly": "$ 月額より{{percent}}%お得",
-        "mo": "ヶ月"
-      },
-      "footer": "すべてのプランには、24時間365日のAI講師アクセスと進捗追跡が含まれています。設定からいつでもキャンセルできます。"
+      "title": "サブスクリプション"
     },
     "security_screen": {
       "title": "セキュリティ",
@@ -1703,32 +1643,5 @@
       "American": "アメリカ",
       "British": "イギリス"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "最終日！",
-    "days_left_title": "残り{{count}}日",
-    "last_day_subtitle": "無料トライアルは今日で終了です！",
-    "upgrade_subtitle": "Sophie AI プロにアップグレードして、すべての機能を体験しましょう。",
-    "benefits_title": "得られるもの",
-    "benefit_1": "無制限のAI会話",
-    "benefit_2": "全10以上の言語をアンロック",
-    "benefit_3": "高度な語彙ツール",
-    "benefit_4": "優先サポート",
-    "limited_time_offer": "期間限定オファー",
-    "off_text": "{{percent}}% オフ",
-    "claim_discount_msg": "今すぐ割引を受け取る",
-    "upgrade_now_btn": "今すぐアップグレード",
-    "claim_discount_btn": "割引を受け取る",
-    "maybe_later_btn": "後で",
-    "expired_title": "トライアル終了！",
-    "expired_subtitle": "7日間の無料トライアルが終了しました。学習を続けてすべての機能にアクセスするには、プランを選択してください。",
-    "choose_plan_btn": "プランを選択"
-  },
-  "aiConsent": {
-    "title": "AI搭載機能",
-    "body": "Sophieは会話と翻訳にGoogle Gemini AIを使用しています。これらの機能を使用すると、音声オーディオ、テキスト、会話のコンテキストが処理のためにGoogleのサーバーに送信されます。",
-    "privacy": "Googleは、プライバシーポリシーに従ってこのデータを処理します。",
-    "accept": "理解して同意する",
-    "decline": "今はしない"
   }
 }

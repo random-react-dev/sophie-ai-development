@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "Akun",
-        "subtitle": "Langganan dan tagihan"
+        "subtitle": "Detail akun Anda"
       },
       "security": {
         "title": "Keamanan",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "Akun",
-      "subscription": "Langganan",
-      "status": "Status",
-      "freeTrial": "Uji Coba Gratis",
-      "upgradeToPro": "Tingkatkan ke Pro",
-      "payment": "Pembayaran",
-      "paymentMethods": "Metode Pembayaran",
-      "billingHistory": "Riwayat Tagihan",
       "accountInfo": "Info Akun",
       "email": "Email",
       "memberSince": "Anggota Sejak",
-      "na": "T/A",
-      "comingSoon": "Segera Hadir"
+      "na": "T/A"
     },
     "subscription_screen": {
-      "title": "Tingkatkan ke Pro",
-      "choosePlan": "Pilih Paket Anda",
-      "subtitle": "Buka potensi penuh Sophie AI dan kuasai bahasa apa pun.",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "Berkenalan dengan Sophie",
-          "features": {
-            "0": "Aplikasi dalam 15 bahasa",
-            "1": "Percakapan alami dengan Sophie dalam 50+ bahasa",
-            "2": "Terjemahan Sophie ke bahasa apapun yang tersedia",
-            "3": "Penyimpanan kosakata tak terbatas",
-            "4": "100+ skenario percakapan"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "Teman Dekat Sophie",
-          "badge": "POPULER",
-          "features": {
-            "0": "Semuanya termasuk dalam uji coba gratis",
-            "1": "Dukungan pelanggan 24/7. Dijamin.",
-            "2": "Penggunaan aplikasi tanpa batas",
-            "3": "Opsi duta strategis"
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "Sahabat Terbaik Sophie",
-          "badge": "NILAI TERBAIK",
-          "features": {
-            "0": "Semua yang ada di Teman Dekat Sophie",
-            "1": "Dukungan prioritas 24/7",
-            "2": "Konten eksklusif & akses awal",
-            "3": "Jalur belajar kustom",
-            "4": "Manajer akun khusus"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "Berlangganan",
-        "getStarted": "Gabung Daftar Tunggu",
-        "month": "bulan",
-        "sixMonths": "6 bulan",
-        "day7": "7 hari",
-        "startFreeTrial": "Mulai Uji Coba Gratis",
-        "regularPrice": "harga reguler",
-        "launchPrice": "harga peluncuran",
-        "billedEvery": "ditagih {{total}} setiap {{months}} bulan",
-        "saveVsMonthly": "$ Hemat {{percent}}% dibanding bulanan",
-        "mo": "bln"
-      },
-      "footer": "Semua paket mencakup akses tutor AI 24/7 dan Pelacakan Kemajuan. Batalkan kapan saja dari pengaturan Anda."
+      "title": "Langganan"
     },
     "security_screen": {
       "title": "Keamanan",
@@ -1703,32 +1643,5 @@
       "American": "Amerika",
       "British": "Inggris"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "Hari Terakhir!",
-    "days_left_title": "{{count}} Hari Tersisa",
-    "last_day_subtitle": "Uji coba gratis Anda berakhir hari ini!",
-    "upgrade_subtitle": "Tingkatkan ke Sophie AI Pro untuk pengalaman penuh.",
-    "benefits_title": "Apa yang Anda dapatkan",
-    "benefit_1": "Percakapan AI tanpa batas",
-    "benefit_2": "Semua 10+ bahasa terbuka",
-    "benefit_3": "Alat kosakata lanjutan",
-    "benefit_4": "Dukungan prioritas",
-    "limited_time_offer": "Penawaran Terbatas",
-    "off_text": "DISKON {{percent}}%",
-    "claim_discount_msg": "Klaim diskon Anda hari ini",
-    "upgrade_now_btn": "Tingkatkan Sekarang",
-    "claim_discount_btn": "Klaim Diskon Saya",
-    "maybe_later_btn": "Mungkin nanti",
-    "expired_title": "Uji Coba Berakhir!",
-    "expired_subtitle": "Uji coba gratis 7 hari Anda telah berakhir. Silakan pilih paket untuk terus belajar dan mengakses semua fitur.",
-    "choose_plan_btn": "Pilih Paket"
-  },
-  "aiConsent": {
-    "title": "Fitur bertenaga AI",
-    "body": "Sophie menggunakan AI Google Gemini untuk mendukung percakapan dan terjemahan. Saat Anda menggunakan fitur ini, audio suara, teks, dan konteks percakapan Anda dikirim ke server Google untuk diproses.",
-    "privacy": "Google mengelola data ini sesuai dengan kebijakan privasi mereka.",
-    "accept": "Saya Mengerti & Setuju",
-    "decline": "Nanti saja"
   }
 }

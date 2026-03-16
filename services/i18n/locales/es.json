@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "Cuenta",
-        "subtitle": "Suscripción y facturación"
+        "subtitle": "Detalles de tu cuenta"
       },
       "security": {
         "title": "Seguridad",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "Cuenta",
-      "subscription": "Suscripción",
-      "status": "Estado",
-      "freeTrial": "Prueba Gratuita",
-      "upgradeToPro": "Mejorar a Pro",
-      "payment": "Pago",
-      "paymentMethods": "Métodos de Pago",
-      "billingHistory": "Historial de Facturación",
       "accountInfo": "Información de la Cuenta",
       "email": "Correo electrónico",
       "memberSince": "Miembro desde",
-      "na": "N/A",
-      "comingSoon": "Próximamente"
+      "na": "N/A"
     },
     "subscription_screen": {
-      "title": "Mejorar a Pro",
-      "choosePlan": "Elige tu Plan",
-      "subtitle": "Libera todo el potencial de Sophie AI y domina cualquier idioma.",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "Conoce a Sophie",
-          "features": {
-            "0": "Aplicación en 15 idiomas",
-            "1": "Conversaciones naturales con Sophie en más de 50 idiomas",
-            "2": "Traducción de Sophie hacia cualquier idioma disponible",
-            "3": "Guardado de vocabulario ilimitado en todos los idiomas",
-            "4": "Más de 100 escenarios conversacionales"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "Amigo Íntimo de Sophie",
-          "badge": "POPULAR",
-          "features": {
-            "0": "Todo incluido en la prueba gratuita.",
-            "1": "Soporte al cliente 24/7. Garantizado.",
-            "2": "Uso ilimitado de la aplicación",
-            "3": "Opción de embajador estratégico."
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "Mejor Amigo de Sophie",
-          "badge": "MEJOR VALOR",
-          "features": {
-            "0": "Todo en Amigo Íntimo de Sophie",
-            "1": "Soporte prioritario 24/7",
-            "2": "Contenido exclusivo y acceso anticipado",
-            "3": "Ruta de aprendizaje personalizada",
-            "4": "Gestor de cuenta dedicado"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "Suscribirse Ahora",
-        "getStarted": "Unirse a la lista de espera",
-        "month": "mes",
-        "sixMonths": "6 meses",
-        "day7": "7 días",
-        "startFreeTrial": "Iniciar Prueba Gratuita",
-        "regularPrice": "precio regular",
-        "launchPrice": "precio de lanzamiento",
-        "billedEvery": "facturado {{total}} cada {{months}} meses",
-        "saveVsMonthly": "$ Ahorra {{percent}}% vs mensual",
-        "mo": "meses"
-      },
-      "footer": "Todos los planes incluyen acceso al tutor IA 24/7 y seguimiento de progreso. Cancela en cualquier momento desde tu configuración."
+      "title": "Suscripción"
     },
     "security_screen": {
       "title": "Seguridad",
@@ -1689,32 +1629,5 @@
       "American": "Americano",
       "British": "Británico"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "¡Último día!",
-    "days_left_title": "{{count}} días restantes",
-    "last_day_subtitle": "¡Tu prueba gratuita termina hoy!",
-    "upgrade_subtitle": "Actualiza a Sophie AI Pro para la experiencia completa.",
-    "expired_title": "¡Prueba expirada!",
-    "expired_subtitle": "Tu prueba gratuita de 7 días ha terminado. Elige un plan para seguir aprendiendo y acceder a todas las funciones.",
-    "benefits_title": "Lo que obtendrás",
-    "benefit_1": "Conversaciones de IA ilimitadas",
-    "benefit_2": "Los 10+ idiomas desbloqueados",
-    "benefit_3": "Herramientas de vocabulario avanzadas",
-    "benefit_4": "Soporte prioritario",
-    "limited_time_offer": "Oferta por tiempo limitado",
-    "off_text": "{{percent}}% DTO",
-    "claim_discount_msg": "Reclama tu descuento hoy",
-    "upgrade_now_btn": "Actualizar ahora",
-    "claim_discount_btn": "Reclamar mi descuento",
-    "maybe_later_btn": "Quizás más tarde",
-    "choose_plan_btn": "Elegir un plan"
-  },
-  "aiConsent": {
-    "title": "Funciones con IA",
-    "body": "Sophie utiliza la IA Google Gemini para conversaciones y traducciones. Al usar estas funciones, tu audio de voz, texto y contexto de conversación se envían a los servidores de Google para su procesamiento.",
-    "privacy": "Google trata estos datos de acuerdo con su política de privacidad.",
-    "accept": "Entiendo y acepto",
-    "decline": "Ahora no"
   }
 }

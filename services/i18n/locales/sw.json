@@ -129,7 +129,7 @@
       },
       "account": {
         "title": "Akaunti",
-        "subtitle": "Usajili na malipo"
+        "subtitle": "Maelezo ya akaunti yako"
       },
       "security": {
         "title": "Usalama",
@@ -173,73 +173,13 @@
     },
     "account_screen": {
       "title": "Akaunti",
-      "subscription": "Usajili",
-      "status": "Hali",
-      "freeTrial": "Jaribio la Bure",
-      "upgradeToPro": "Boresha hadi Pro",
-      "payment": "Malipo",
-      "paymentMethods": "Njia za Malipo",
-      "billingHistory": "Historia ya Malipo",
       "accountInfo": "Taarifa za Akaunti",
       "email": "Barua pepe",
       "memberSince": "Mwanachama Tangu",
-      "na": "N/A",
-      "comingSoon": "Inakuja Hivi Karibuni"
+      "na": "N/A"
     },
     "subscription_screen": {
-      "title": "Boresha hadi Pro",
-      "choosePlan": "Chagua Mpango Wako",
-      "subtitle": "Fungua uwezo kamili wa Sophie AI na ujifunze lugha yoyote.",
-      "plans": {
-        "mg": {
-          "name": "M&G",
-          "description": "Kutana na Sophie",
-          "features": {
-            "0": "Programu katika lugha 15",
-            "1": "Mazungumzo asilia na Sophie katika lugha 50+",
-            "2": "Tafsiri ya Sophie kwa lugha yoyote inayopatikana",
-            "3": "Hifadhi msamiati bila kikomo",
-            "4": "Matukio 100+ ya mazungumzo"
-          }
-        },
-        "scf": {
-          "name": "SCF",
-          "description": "Rafiki wa Karibu wa Sophie",
-          "badge": "MAARUFU",
-          "features": {
-            "0": "Kila kitu kimejumuishwa kwenye jaribio la bure.",
-            "1": "Msaada kwa wateja 24/7.",
-            "2": "Matumizi ya programu bila kikomo",
-            "3": "Chaguo la balozi"
-          }
-        },
-        "sbb": {
-          "name": "SBB",
-          "description": "Rafiki Bora wa Sophie",
-          "badge": "THAMANI BORA",
-          "features": {
-            "0": "Kila kitu katika Rafiki wa Karibu wa Sophie",
-            "1": "Msaada wa kipaumbele 24/7",
-            "2": "Maudhui ya kipekee na ufikiaji wa mapema",
-            "3": "Njia ya kujifunza maalum",
-            "4": "Meneja wa akaunti aliyejitolea"
-          }
-        }
-      },
-      "common": {
-        "subscribe": "Jisajili Sasa",
-        "getStarted": "Jiunge Orodha",
-        "month": "mwezi",
-        "sixMonths": "miezi 6",
-        "day7": "siku 7",
-        "startFreeTrial": "Jaribio la Bure",
-        "regularPrice": "bei ya kawaida",
-        "launchPrice": "bei ya uzinduzi",
-        "billedEvery": "hutozwa {{total}} kila baada ya miezi {{months}}",
-        "saveVsMonthly": "$ Okoa asilimia {{percent}}% dhidi ya kila mwezi",
-        "mo": "mwezi"
-      },
-      "footer": "Mipango yote inajumuisha ufikiaji wa mwalimu wa AI wa 24/7 na Ufuatiliaji wa Maendeleo. Ghairi wakati wowote kutoka kwa mipangilio yako."
+      "title": "Usajili"
     },
     "security_screen": {
       "title": "Usalama",
@@ -1703,32 +1643,5 @@
       "American": "Kiamerika",
       "British": "Kibritania"
     }
-  },
-  "trial_countdown_modal": {
-    "last_day_title": "Siku ya Mwisho!",
-    "days_left_title": "Siku {{count}} Zimebaki",
-    "last_day_subtitle": "Jaribio lako la bila malipo linaisha leo!",
-    "upgrade_subtitle": "Boresha hadi Sophie AI Pro kwa matumizi kamili.",
-    "benefits_title": "Utakachopata",
-    "benefit_1": "Mazungumzo ya AI yasiyo na kikomo",
-    "benefit_2": "Lugha zote 10+ zimefunguliwa",
-    "benefit_3": "Zana za juu za msamiati",
-    "benefit_4": "Msaada wa kipaumbele",
-    "limited_time_offer": "Ofa ya Muda Mfupi",
-    "off_text": "PUNGUZO LA {{percent}}%",
-    "claim_discount_msg": "Dai punguzo lako leo",
-    "upgrade_now_btn": "Boresha Sasa",
-    "claim_discount_btn": "Dai Punguzo Langu",
-    "maybe_later_btn": "Labda baadaye",
-    "expired_title": "Jaribio Limeisha!",
-    "expired_subtitle": "Jaribio lako la bure la siku 7 limeisha. Tafadhali chagua mpango ili kuendelea kujifunza na kupata huduma zote.",
-    "choose_plan_btn": "Chagua Mpango"
-  },
-  "aiConsent": {
-    "title": "Vipengele vya AI",
-    "body": "Sophie anatumia Google Gemini AI kuwezesha mazungumzo na tafsiri. Unapotumia vipengele hivi, sauti yako, maandishi, na muktadha wa mazungumzo hutumwa kwenye seva za Google kwa ajili ya usindikaji.",
-    "privacy": "Google hushughulikia data hizi kulingana na sera yao ya faragha.",
-    "accept": "Nimeelewa na nimekubali",
-    "decline": "Sio sasa"
   }
 }
