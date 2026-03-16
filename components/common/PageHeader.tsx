@@ -60,6 +60,7 @@ export const PageHeader = ({ title = "Sophie AI" }: PageHeaderProps) => {
         <Link href="/profile" asChild>
           <TouchableOpacity
             activeOpacity={0.7}
+            testID="page-header-profile-button"
             className="size-11 rounded-full overflow-hidden border border-gray-200 shadow-sm"
           >
             {user?.user_metadata?.avatar_url ? (

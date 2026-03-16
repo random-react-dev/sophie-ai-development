@@ -1,0 +1,42 @@
+# E2E: Open profile page and verify logout returns to login
+# Expects: user is already logged in
+appId: ai.speakwithsophie.app
+---
+- launchApp
+- tapOn:
+    text: "Maybe later"
+    optional: true
+
+# Wait for the main app to load
+- extendedWaitUntil:
+    visible: "Scenarios"
+    timeout: 20000
+
+# Navigate to the language tab so the shared page header is visible
+- tapOn:
+    point: "88%,93%"
+
+- extendedWaitUntil:
+    visible:
+      id: "profile-list"
+    timeout: 10000
+
+# Open the actual profile page from the header avatar
+- tapOn:
+    id: "page-header-profile-button"
+
+- extendedWaitUntil:
+    visible:
+      id: "profile-logout-card"
+    timeout: 10000
+
+# Confirm logout and verify we land on login
+- tapOn:
+    id: "profile-logout-card"
+
+- tapOn:
+    id: "profile-logout-confirm"
+
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 15000

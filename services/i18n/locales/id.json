@@ -1722,5 +1722,12 @@
     "expired_title": "Uji Coba Berakhir!",
     "expired_subtitle": "Uji coba gratis 7 hari Anda telah berakhir. Silakan pilih paket untuk terus belajar dan mengakses semua fitur.",
     "choose_plan_btn": "Pilih Paket"
+  },
+  "aiConsent": {
+    "title": "Fitur bertenaga AI",
+    "body": "Sophie menggunakan AI Google Gemini untuk mendukung percakapan dan terjemahan. Saat Anda menggunakan fitur ini, audio suara, teks, dan konteks percakapan Anda dikirim ke server Google untuk diproses.",
+    "privacy": "Google mengelola data ini sesuai dengan kebijakan privasi mereka.",
+    "accept": "Saya Mengerti & Setuju",
+    "decline": "Nanti saja"
   }
 }

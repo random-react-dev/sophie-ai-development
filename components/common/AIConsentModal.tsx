@@ -1,4 +1,4 @@
-import { RainbowGradient } from "@/components/common/Rainbow";
+import { Button } from "@/components/common/Button";
 import { useTranslation } from "@/hooks/useTranslation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
@@ -70,17 +70,12 @@ export function AIConsentModal({
           </View>
 
           {/* Accept Button */}
-          <Pressable
+          <Button
+            title={t("aiConsent.accept") as string}
             onPress={onAccept}
-            className="h-14 items-center justify-center rounded-full overflow-hidden"
-          >
-            <View className="absolute inset-0">
-              <RainbowGradient className="flex-1" />
-            </View>
-            <Text className="text-white font-bold text-base">
-              {t("aiConsent.accept")}
-            </Text>
-          </Pressable>
+            variant="rainbow"
+            className="w-full h-14"
+          />
 
           {/* Decline Button */}
           <Pressable
@@ -104,6 +99,9 @@ export function AIConsentModal({
 export function useAIConsent() {
   const [hasConsented, setHasConsented] = useState<boolean | null>(null);
   const [showConsent, setShowConsent] = useState(false);
+
+  // true while AsyncStorage hasn't finished loading the consent value
+  const isLoading = hasConsented === null;
 
   useEffect(() => {
     AsyncStorage.getItem(AI_CONSENT_KEY).then((value) => {
@@ -129,6 +127,7 @@ export function useAIConsent() {
   return {
     hasConsented,
     showConsent,
+    isLoading,
     requestConsent,
     acceptConsent,
     declineConsent,

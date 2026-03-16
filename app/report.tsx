@@ -3,7 +3,7 @@ import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useConversationStore } from "@/stores/conversationStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { useScenarioStore } from "@/stores/scenarioStore";
-import { useStatsStore } from "@/stores/statsStore";
+import { useSessionReportsStore } from "@/stores/sessionReportsStore";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   AlignLeft,
@@ -13,24 +13,43 @@ import {
   Sparkles,
   X,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const getStringParam = (
+  value: string | string[] | undefined,
+): string | undefined => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+};
 
 export default function ReportScreen() {
   const { messages, clearMessages } = useConversationStore();
   const { selectedScenario } = useScenarioStore();
   const { activeProfile } = useProfileStore();
-  const { recordSession } = useStatsStore();
+  const { saveReport } = useSessionReportsStore();
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const [hasRecorded, setHasRecorded] = useState(false);
+  const [hasPersisted, setHasPersisted] = useState(false);
+  const [isSavingReport, setIsSavingReport] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveAttempt, setSaveAttempt] = useState(0);
+  const fallbackSessionKeyRef = useRef(
+    `report-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+  );
+  const isSavingReportRef = useRef(false);
 
   // Get duration from params or default to 0
-  const durationSeconds = params.duration
-    ? parseInt(params.duration as string)
-    : 0;
+  const durationParam = getStringParam(params.duration);
+  const parsedDuration = durationParam ? parseInt(durationParam, 10) : 0;
+  const durationSeconds = Number.isFinite(parsedDuration) ? parsedDuration : 0;
+  const sessionKey =
+    getStringParam(params.sessionKey) || fallbackSessionKeyRef.current;
 
   // Format duration for display (e.g., "2m 30s")
   const formattedDuration =
@@ -38,13 +57,92 @@ export default function ReportScreen() {
       ? `${durationSeconds}s`
       : `${Math.floor(durationSeconds / 60)}m ${durationSeconds % 60 > 0 ? (durationSeconds % 60) + "s" : ""}`;
 
-  // Record stats on mount (once)
   useEffect(() => {
-    if (!hasRecorded && durationSeconds > 0) {
-      recordSession(durationSeconds);
-      setHasRecorded(true);
+    let isMounted = true;
+
+    const persistReport = async () => {
+      if (hasPersisted || messages.length === 0 || isSavingReportRef.current) {
+        return;
+      }
+
+      isSavingReportRef.current = true;
+      if (isMounted) {
+        setIsSavingReport(true);
+        setSaveError(null);
+      }
+
+      try {
+        const result = await saveReport({
+          sessionKey,
+          learningProfileId: activeProfile?.id ?? null,
+          scenarioTitle: selectedScenario?.title ?? null,
+          scenarioLevel: selectedScenario?.level ?? null,
+          targetLanguage: activeProfile?.target_language ?? null,
+          nativeLanguage:
+            activeProfile?.medium_language || activeProfile?.native_language || null,
+          durationSeconds,
+          transcript: messages,
+        });
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (result.report) {
+          setHasPersisted(true);
+          return;
+        }
+
+        const errorMessage =
+          "Failed to save session report. Please try again.";
+        setSaveError(errorMessage);
+        Alert.alert("Save failed", errorMessage);
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        console.error("Error persisting session report:", error);
+        const errorMessage =
+          "Failed to save session report. Please try again.";
+        setSaveError(errorMessage);
+        Alert.alert("Save failed", errorMessage);
+      } finally {
+        isSavingReportRef.current = false;
+        if (isMounted) {
+          setIsSavingReport(false);
+        }
+      }
+    };
+
+    void persistReport();
+
+    return () => {
+      isMounted = false;
+      isSavingReportRef.current = false;
+    };
+  }, [
+    activeProfile?.id,
+    activeProfile?.medium_language,
+    activeProfile?.native_language,
+    activeProfile?.target_language,
+    durationSeconds,
+    hasPersisted,
+    messages,
+    saveReport,
+    saveAttempt,
+    selectedScenario?.level,
+    selectedScenario?.title,
+    sessionKey,
+  ]);
+
+  const handleRetrySave = () => {
+    if (isSavingReport) {
+      return;
     }
-  }, [durationSeconds, hasRecorded, recordSession]);
+
+    setSaveAttempt((currentAttempt) => currentAttempt + 1);
+  };
 
   const handleSave = async (text: string) => {
     const success = await saveToVocabulary({
@@ -182,6 +280,28 @@ export default function ReportScreen() {
 
       {/* Bottom Action - Sticky Footer */}
       <View className="px-4 py-8 border-t border-gray-100 bg-white">
+        {!hasPersisted && isSavingReport ? (
+          <Text className="mb-4 text-center text-sm text-gray-500">
+            Saving session report...
+          </Text>
+        ) : null}
+
+        {saveError ? (
+          <View className="mb-4 rounded-3xl border border-red-100 bg-red-50 p-4">
+            <Text className="text-sm leading-6 text-red-700">{saveError}</Text>
+            <TouchableOpacity
+              onPress={handleRetrySave}
+              disabled={isSavingReport}
+              activeOpacity={0.7}
+              className="mt-3 self-start rounded-full bg-red-600 px-4 py-2"
+            >
+              <Text className="text-sm font-semibold text-white">
+                Retry save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         <TouchableOpacity
           onPress={handleClose}
           activeOpacity={0.7}
@@ -194,7 +314,7 @@ export default function ReportScreen() {
             containerClassName="items-center justify-center flex-1"
           >
             <Text className="text-black font-bold text-lg">
-              Continue to Library
+              Session Finished
             </Text>
           </RainbowBorder>
         </TouchableOpacity>
