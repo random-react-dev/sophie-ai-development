@@ -36,9 +36,13 @@ export default function ReportScreen() {
   const params = useLocalSearchParams();
 
   const [hasPersisted, setHasPersisted] = useState(false);
+  const [isSavingReport, setIsSavingReport] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveAttempt, setSaveAttempt] = useState(0);
   const fallbackSessionKeyRef = useRef(
     `report-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
   );
+  const isSavingReportRef = useRef(false);
 
   // Get duration from params or default to 0
   const durationParam = getStringParam(params.duration);
@@ -57,24 +61,57 @@ export default function ReportScreen() {
     let isMounted = true;
 
     const persistReport = async () => {
-      if (hasPersisted || messages.length === 0) {
+      if (hasPersisted || messages.length === 0 || isSavingReportRef.current) {
         return;
       }
 
-      const result = await saveReport({
-        sessionKey,
-        learningProfileId: activeProfile?.id ?? null,
-        scenarioTitle: selectedScenario?.title ?? null,
-        scenarioLevel: selectedScenario?.level ?? null,
-        targetLanguage: activeProfile?.target_language ?? null,
-        nativeLanguage:
-          activeProfile?.medium_language || activeProfile?.native_language || null,
-        durationSeconds,
-        transcript: messages,
-      });
+      isSavingReportRef.current = true;
+      if (isMounted) {
+        setIsSavingReport(true);
+        setSaveError(null);
+      }
 
-      if (result.report && isMounted) {
-        setHasPersisted(true);
+      try {
+        const result = await saveReport({
+          sessionKey,
+          learningProfileId: activeProfile?.id ?? null,
+          scenarioTitle: selectedScenario?.title ?? null,
+          scenarioLevel: selectedScenario?.level ?? null,
+          targetLanguage: activeProfile?.target_language ?? null,
+          nativeLanguage:
+            activeProfile?.medium_language || activeProfile?.native_language || null,
+          durationSeconds,
+          transcript: messages,
+        });
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (result.report) {
+          setHasPersisted(true);
+          return;
+        }
+
+        const errorMessage =
+          "Failed to save session report. Please try again.";
+        setSaveError(errorMessage);
+        Alert.alert("Save failed", errorMessage);
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        console.error("Error persisting session report:", error);
+        const errorMessage =
+          "Failed to save session report. Please try again.";
+        setSaveError(errorMessage);
+        Alert.alert("Save failed", errorMessage);
+      } finally {
+        isSavingReportRef.current = false;
+        if (isMounted) {
+          setIsSavingReport(false);
+        }
       }
     };
 
@@ -82,6 +119,7 @@ export default function ReportScreen() {
 
     return () => {
       isMounted = false;
+      isSavingReportRef.current = false;
     };
   }, [
     activeProfile?.id,
@@ -92,10 +130,19 @@ export default function ReportScreen() {
     hasPersisted,
     messages,
     saveReport,
+    saveAttempt,
     selectedScenario?.level,
     selectedScenario?.title,
     sessionKey,
   ]);
+
+  const handleRetrySave = () => {
+    if (isSavingReport) {
+      return;
+    }
+
+    setSaveAttempt((currentAttempt) => currentAttempt + 1);
+  };
 
   const handleSave = async (text: string) => {
     const success = await saveToVocabulary({
@@ -233,6 +280,28 @@ export default function ReportScreen() {
 
       {/* Bottom Action - Sticky Footer */}
       <View className="px-4 py-8 border-t border-gray-100 bg-white">
+        {!hasPersisted && isSavingReport ? (
+          <Text className="mb-4 text-center text-sm text-gray-500">
+            Saving session report...
+          </Text>
+        ) : null}
+
+        {saveError ? (
+          <View className="mb-4 rounded-3xl border border-red-100 bg-red-50 p-4">
+            <Text className="text-sm leading-6 text-red-700">{saveError}</Text>
+            <TouchableOpacity
+              onPress={handleRetrySave}
+              disabled={isSavingReport}
+              activeOpacity={0.7}
+              className="mt-3 self-start rounded-full bg-red-600 px-4 py-2"
+            >
+              <Text className="text-sm font-semibold text-white">
+                Retry save
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         <TouchableOpacity
           onPress={handleClose}
           activeOpacity={0.7}

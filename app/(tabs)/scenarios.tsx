@@ -334,6 +334,45 @@ const IconMap: Record<string, any> = {
   users: Users,
 };
 
+// Maps each category to a representative Lucide icon component
+const CATEGORY_ICON_MAP: Record<string, any> = {
+  Beginner: SmilePlus,
+  "Food & Drink": Utensils,
+  Shopping: ShoppingBag,
+  Travel: Plane,
+  Life: Sunrise,
+  Social: Users,
+  Work: Building2,
+  Romance: Heart,
+  Entertainment: Clapperboard,
+  Education: GraduationCap,
+  Health: Stethoscope,
+  Persuade: Megaphone,
+  Debates: Scale,
+  Business: Briefcase,
+  "Customer Service": Headphones,
+};
+
+// Maps each category to its translation key
+const CATEGORY_KEY_MAP: Record<string, string> = {
+  All: "all",
+  Beginner: "beginner",
+  "Food & Drink": "food_drink",
+  Shopping: "shopping",
+  Entertainment: "entertainment",
+  Life: "life",
+  Travel: "travel",
+  Social: "social",
+  Work: "work",
+  Romance: "romance",
+  Health: "health",
+  Persuade: "persuade",
+  Debates: "debates",
+  Education: "education",
+  Business: "business",
+  "Customer Service": "customer_service",
+};
+
 // Enable LayoutAnimation for Android
 if (
   Platform.OS === "android" &&
@@ -451,24 +490,7 @@ export default function RoleplayScreen() {
         >
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
-            const catKeyMap: Record<string, string> = {
-              All: "all",
-              Beginner: "beginner",
-              "Food & Drink": "food_drink",
-              Shopping: "shopping",
-              Entertainment: "entertainment",
-              Life: "life",
-              Travel: "travel",
-              Social: "social",
-              Work: "work",
-              Romance: "romance",
-              Health: "health",
-              Persuade: "persuade",
-              Debates: "debates",
-              Education: "education",
-              Business: "business",
-              "Customer Service": "customer_service",
-            };
+            const catKeyMap = CATEGORY_KEY_MAP;
             const catLabel = catKeyMap[cat]
               ? t(`scenarios_screen.categories.${catKeyMap[cat]}`)
               : cat;
@@ -569,24 +591,7 @@ export default function RoleplayScreen() {
                   </Text>
                   <Text className="text-gray-400 text-sm font-medium">
                     {(() => {
-                      const cardCatKeyMap: Record<string, string> = {
-                        All: "all",
-                        Beginner: "beginner",
-                        "Food & Drink": "food_drink",
-                        Shopping: "shopping",
-                        Entertainment: "entertainment",
-                        Life: "life",
-                        Travel: "travel",
-                        Social: "social",
-                        Work: "work",
-                        Romance: "romance",
-                        Health: "health",
-                        Persuade: "persuade",
-                        Debates: "debates",
-                        Education: "education",
-                        Business: "business",
-                        "Customer Service": "customer_service",
-                      };
+                      const cardCatKeyMap = CATEGORY_KEY_MAP;
                       const key = cardCatKeyMap[item.category];
                       return key
                         ? t(`scenarios_screen.categories.${key}`, {
@@ -874,24 +879,10 @@ function CreateScenarioModal({
                         <View className="flex-1 flex-row items-center gap-3">
                           {category ? (
                             <View className="w-8 h-8 rounded-full bg-white border border-gray-50 items-center justify-center shadow-sm">
-                              {category === "Food & Drink" && (
-                                <Utensils size={16} color="black" />
-                              )}
-                              {category === "Business" && (
-                                <Briefcase size={16} color="black" />
-                              )}
-                              {category === "Social" && (
-                                <Users size={16} color="black" />
-                              )}
-                              {category === "Travel" && (
-                                <Plane size={16} color="black" />
-                              )}
-                              {category === "Customer Service" && (
-                                <Headphones size={16} color="black" />
-                              )}
-                              {category === "Education" && (
-                                <GraduationCap size={16} color="black" />
-                              )}
+                              {(() => {
+                                const CatIcon = CATEGORY_ICON_MAP[category] || Sparkles;
+                                return <CatIcon size={16} color="black" />;
+                              })()}
                             </View>
                           ) : (
                             <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center">
@@ -904,33 +895,10 @@ function CreateScenarioModal({
                           >
                             {category
                               ? (() => {
-                                  const catLabel =
-                                    category === "Food & Drink"
-                                      ? t(
-                                          "scenarios_screen.categories.food_drink",
-                                        )
-                                      : category === "Business"
-                                        ? t(
-                                            "scenarios_screen.categories.business",
-                                          )
-                                        : category === "Social"
-                                          ? t(
-                                              "scenarios_screen.categories.social",
-                                            )
-                                          : category === "Travel"
-                                            ? t(
-                                                "scenarios_screen.categories.travel",
-                                              )
-                                            : category === "Customer Service"
-                                              ? t(
-                                                  "scenarios_screen.categories.customer_service",
-                                                )
-                                              : category === "Education"
-                                                ? t(
-                                                    "scenarios_screen.categories.education",
-                                                  )
-                                                : category;
-                                  return catLabel;
+                                  const key = CATEGORY_KEY_MAP[category];
+                                  return key
+                                    ? t(`scenarios_screen.categories.${key}`, { defaultValue: category })
+                                    : category;
                                 })()
                               : t(
                                   "scenarios_screen.create_modal.category_placeholder",
@@ -948,24 +916,10 @@ function CreateScenarioModal({
                         <View className="flex-1 flex-row items-center gap-3">
                           {category ? (
                             <View className="size-8 rounded-full bg-gray-100 items-center justify-center">
-                              {category === "Food & Drink" && (
-                                <Utensils size={16} color="#6b7280" />
-                              )}
-                              {category === "Business" && (
-                                <Briefcase size={16} color="#6b7280" />
-                              )}
-                              {category === "Social" && (
-                                <Users size={16} color="#6b7280" />
-                              )}
-                              {category === "Travel" && (
-                                <Plane size={16} color="#6b7280" />
-                              )}
-                              {category === "Customer Service" && (
-                                <Headphones size={16} color="#6b7280" />
-                              )}
-                              {category === "Education" && (
-                                <GraduationCap size={16} color="#6b7280" />
-                              )}
+                              {(() => {
+                                const CatIcon = CATEGORY_ICON_MAP[category] || Sparkles;
+                                return <CatIcon size={16} color="#6b7280" />;
+                              })()}
                             </View>
                           ) : (
                             <View className="size-8 rounded-full bg-gray-100 items-center justify-center">
@@ -978,33 +932,10 @@ function CreateScenarioModal({
                           >
                             {category
                               ? (() => {
-                                  const catLabel =
-                                    category === "Food & Drink"
-                                      ? t(
-                                          "scenarios_screen.categories.food_drink",
-                                        )
-                                      : category === "Business"
-                                        ? t(
-                                            "scenarios_screen.categories.business",
-                                          )
-                                        : category === "Social"
-                                          ? t(
-                                              "scenarios_screen.categories.social",
-                                            )
-                                          : category === "Travel"
-                                            ? t(
-                                                "scenarios_screen.categories.travel",
-                                              )
-                                            : category === "Customer Service"
-                                              ? t(
-                                                  "scenarios_screen.categories.customer_service",
-                                                )
-                                              : category === "Education"
-                                                ? t(
-                                                    "scenarios_screen.categories.education",
-                                                  )
-                                                : category;
-                                  return catLabel;
+                                  const key = CATEGORY_KEY_MAP[category];
+                                  return key
+                                    ? t(`scenarios_screen.categories.${key}`, { defaultValue: category })
+                                    : category;
                                 })()
                               : t(
                                   "scenarios_screen.create_modal.category_placeholder",
@@ -1026,28 +957,8 @@ function CreateScenarioModal({
 
                           const getCategoryIcon = () => {
                             const iconColor = isSelected ? "black" : "#6b7280";
-                            switch (cat) {
-                              case "Food & Drink":
-                                return <Utensils size={16} color={iconColor} />;
-                              case "Business":
-                                return (
-                                  <Briefcase size={16} color={iconColor} />
-                                );
-                              case "Social":
-                                return <Users size={16} color={iconColor} />;
-                              case "Travel":
-                                return <Plane size={16} color={iconColor} />;
-                              case "Customer Service":
-                                return (
-                                  <Headphones size={16} color={iconColor} />
-                                );
-                              case "Education":
-                                return (
-                                  <GraduationCap size={16} color={iconColor} />
-                                );
-                              default:
-                                return <Sparkles size={16} color={iconColor} />;
-                            }
+                            const CatIcon = CATEGORY_ICON_MAP[cat] || Sparkles;
+                            return <CatIcon size={16} color={iconColor} />;
                           };
 
                           return (
@@ -1076,33 +987,12 @@ function CreateScenarioModal({
                                 <Text
                                   className={`flex-1 font-semibold text-sm ${isSelected ? "text-gray-900" : "text-gray-700"}`}
                                 >
-                                  {cat === "All"
-                                    ? t("scenarios_screen.categories.all")
-                                    : cat === "Food & Drink"
-                                      ? t(
-                                          "scenarios_screen.categories.food_drink",
-                                        )
-                                      : cat === "Business"
-                                        ? t(
-                                            "scenarios_screen.categories.business",
-                                          )
-                                        : cat === "Social"
-                                          ? t(
-                                              "scenarios_screen.categories.social",
-                                            )
-                                          : cat === "Travel"
-                                            ? t(
-                                                "scenarios_screen.categories.travel",
-                                              )
-                                            : cat === "Customer Service"
-                                              ? t(
-                                                  "scenarios_screen.categories.customer_service",
-                                                )
-                                              : cat === "Education"
-                                                ? t(
-                                                    "scenarios_screen.categories.education",
-                                                  )
-                                                : cat}
+                                  {(() => {
+                                    const key = CATEGORY_KEY_MAP[cat];
+                                    return key
+                                      ? t(`scenarios_screen.categories.${key}`, { defaultValue: cat })
+                                      : cat;
+                                  })()}
                                 </Text>
                               </View>
                             </TouchableOpacity>
