@@ -10,7 +10,7 @@ import {
   Language,
   SUPPORTED_LANGUAGES,
 } from "@/constants/languages";
-import { CEFR_LEVELS } from "@/constants/scenarios";
+import { CEFRLevel, CEFR_LEVELS } from "@/constants/scenarios";
 import { useTranslation } from "@/hooks/useTranslation";
 import { speakWord, stopSpeaking } from "@/services/audio/tts";
 import { Logger } from "@/services/common/Logger";
@@ -51,7 +51,7 @@ export default function LanguageScreen() {
   const router = useRouter();
   const { t, locale } = useTranslation();
   const { alertState, showAlert, hideAlert } = useAlertModal();
-  const { user } = useAuthStore();
+  const { user, updateProfile } = useAuthStore();
   const { cefrLevel, setCefrLevel } = useLearningStore();
   const {
     profiles,
@@ -167,6 +167,33 @@ export default function LanguageScreen() {
   useEffect(() => {
     setNewAccent(getDefaultAccent(newTargetLang.code));
   }, [newTargetLang.code]);
+
+  const handleLevelChange = async (nextLevel: CEFRLevel) => {
+    if (cefrLevel === nextLevel) return;
+
+    const previousLevel = cefrLevel;
+    setCefrLevel(nextLevel);
+
+    if (!user) return;
+
+    try {
+      await updateProfile({
+        onboarding_data: {
+          ...user.user_metadata?.onboarding_data,
+          cefr_level: nextLevel,
+        },
+      });
+    } catch (error) {
+      setCefrLevel(previousLevel);
+      Logger.error("LanguageScreen", "Failed to persist CEFR level", error);
+      showAlert(
+        t("common.error"),
+        t("common.errorMessage"),
+        undefined,
+        "error",
+      );
+    }
+  };
 
   const handlePlayAccent = () => {
     // Toggle: stop if already playing
@@ -536,7 +563,7 @@ export default function LanguageScreen() {
                             <TouchableOpacity
                               key={l}
                               activeOpacity={0.7}
-                              onPress={() => setCefrLevel(l)}
+                              onPress={() => void handleLevelChange(l)}
                             >
                               <RainbowBorder
                                 borderRadius={9999}
@@ -555,7 +582,7 @@ export default function LanguageScreen() {
                           <TouchableOpacity
                             key={l}
                             activeOpacity={0.7}
-                            onPress={() => setCefrLevel(l)}
+                            onPress={() => void handleLevelChange(l)}
                             className="px-4 py-2 rounded-full border border-gray-300"
                           >
                             <Text className="font-bold text-sm text-gray-600">

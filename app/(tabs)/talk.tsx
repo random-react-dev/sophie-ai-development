@@ -41,6 +41,7 @@ import { MessageBubble } from "@/components/common/MessageBubble";
 import { PageHeader } from "@/components/common/PageHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Logger } from "@/services/common/Logger";
+import { resolveEffectiveCefrLevel } from "@/utils/learningLevel";
 import { buildTalkSessionConfig } from "@/utils/talkSessionConfig";
 import { Feather } from "@expo/vector-icons";
 
@@ -391,7 +392,10 @@ export default function TalkScreen() {
           ? getAccentDescription(activeProfile.preferred_accent)
           : null;
 
-        const currentCefrLevel = useLearningStore.getState().cefrLevel;
+        const currentCefrLevel = resolveEffectiveCefrLevel(
+          useLearningStore.getState().cefrLevel,
+          user,
+        );
         const hasSeenIntro = useIntroStore.getState().hasSeenIntro;
         const sessionConfig = buildTalkSessionConfig({
           targetLanguage,
