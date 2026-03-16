@@ -13,9 +13,9 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest Build Number**: 40
+- **Latest Build Number**: 41
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: Rejected twice (March 10 & March 12, 2026) — all fixes applied (see below)
+- **App Store Status**: Rejected three times (March 10, 12, & 16, 2026) — all fixes applied (see below)
 
 ## App Store Rejection Fix #1 (v1.0, March 10, 2026)
 
@@ -47,6 +47,17 @@ Two additional issues raised by Apple review:
 - `components/profile/ProfileSettingCard.tsx` — exists but not imported in account.tsx
 - `hooks/useTrialGuard.ts` — exists, always returns true
 - `stores/authStore.ts` — `showTrialPopup: false` still set
+
+## App Store Rejection Fix #3 (v1.0, March 16, 2026) — Build 41
+
+Apple rejected again for Guideline 3.1.1. Although subscription UI components were removed in Fix #2, user-visible text still referenced subscriptions:
+
+1. **Account menu subtitle** said "Subscription and billing" in all 20 locale files → changed to "Your account details" (translated per language)
+2. **Subscription screen** showed "Upgrade to Pro" title and "Subscription plans coming soon." text → replaced with neutral "Subscription" title and empty screen body
+3. **i18n locale files** contained `freeTrial`, `upgradeToPro`, `billingHistory`, `paymentMethods`, `comingSoon` and full plan/pricing keys → removed from all 20 locales
+4. **`trial_countdown_modal`** i18n section removed from all 20 locales (dead weight, component not rendered)
+
+**Changes**: `app.config.ts` (buildNumber 40→41), `app/profile/subscription.tsx`, all 20 files in `services/i18n/locales/`
 
 ## Key Files
 
