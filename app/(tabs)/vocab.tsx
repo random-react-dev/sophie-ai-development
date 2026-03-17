@@ -904,7 +904,7 @@ export default function VocabScreen() {
 
             {/* Inline Language Picker — inside Add modal to avoid nested native modals on iOS */}
             <LanguagePickerModal
-              renderInline
+              renderInline={Platform.OS === "ios"}
               visible={showLangPicker}
               onClose={() => setShowLangPicker(false)}
               onSelect={(lang) => {
@@ -1058,7 +1058,7 @@ export default function VocabScreen() {
 
             {/* Inline Language Picker — inside Edit modal to avoid nested native modals on iOS */}
             <LanguagePickerModal
-              renderInline
+              renderInline={Platform.OS === "ios"}
               visible={showEditLangPicker}
               onClose={() => setShowEditLangPicker(false)}
               onSelect={(lang) => {

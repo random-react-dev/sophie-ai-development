@@ -700,7 +700,7 @@ export default function LanguageScreen() {
 
             {/* Inline Language Picker — rendered inside this modal to avoid nested native modals on iOS */}
             <LanguagePickerModal
-              renderInline
+              renderInline={Platform.OS === "ios"}
               visible={pickerType !== null && pickerType !== "accent"}
               onClose={() => setPickerType(null)}
               onSelect={(lang) => {
@@ -727,7 +727,7 @@ export default function LanguageScreen() {
 
             {/* Inline Accent Picker */}
             <AccentPickerModal
-              renderInline
+              renderInline={Platform.OS === "ios"}
               visible={pickerType === "accent"}
               onClose={() => setPickerType(null)}
               onSelect={(accent: AccentVariant) => {
