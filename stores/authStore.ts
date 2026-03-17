@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import * as Linking from "expo-linking";
 import { create } from "zustand";
+import { getUserMetadataCefrLevel } from "@/utils/learningLevel";
 import { useConversationStore, useIntroStore } from "./conversationStore";
 import { useGameStore } from "./gameStore";
 import { useLearningStore } from "./learningStore";
@@ -41,6 +42,16 @@ const clearUserData = async (): Promise<void> => {
   useConversationStore.getState().reset();
   useIntroStore.getState().setHasSeenIntro(false);
   useGameStore.getState().reset();
+};
+
+const syncLearningLevelFromUser = (user: User | null): void => {
+  const metadataLevel = getUserMetadataCefrLevel(user);
+  if (!metadataLevel) return;
+
+  const { cefrLevel, setCefrLevel } = useLearningStore.getState();
+  if (cefrLevel !== metadataLevel) {
+    setCefrLevel(metadataLevel);
+  }
 };
 
 interface AuthState {
@@ -250,18 +261,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Optimistically update local user state with new metadata
       // refreshSession may return stale data due to Supabase propagation delay
+      let mergedUser: User | null = null;
       set((state) => {
         if (!state.user) return state;
+        const mergedMetadata = {
+          ...state.user.user_metadata,
+          ...data,
+          ...(data.onboarding_data
+            ? {
+                onboarding_data: {
+                  ...state.user.user_metadata?.onboarding_data,
+                  ...data.onboarding_data,
+                },
+              }
+            : {}),
+        };
+        mergedUser = {
+          ...state.user,
+          user_metadata: mergedMetadata,
+        };
         return {
-          user: {
-            ...state.user,
-            user_metadata: {
-              ...state.user.user_metadata,
-              ...data, // Merge the new profile data
-            },
-          },
+          user: mergedUser,
         };
       });
+      syncLearningLevelFromUser(mergedUser);
 
       // Also refresh session in background for consistency
       supabase.auth.refreshSession().catch((err) => {
@@ -373,6 +396,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           isLoading: false,
           showTrialPopup: false,
         });
+        syncLearningLevelFromUser(session?.user ?? null);
       }
     } catch (err) {
       // Handle any unexpected errors during initialization
@@ -410,6 +434,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           // NOT here, to avoid showing it during the 2FA signIn flow.
           showTrialPopup: event === "SIGNED_OUT" ? false : state.showTrialPopup,
         }));
+
+        syncLearningLevelFromUser(newUser);
       },
     );
   },

@@ -64,6 +64,18 @@ export interface UserProfileUpdate {
     app_language?: string;
     learn_language?: string;
     avatar_url?: string;
+    onboarding_data?: {
+        main_goal?: string;
+        fluency_speed?: string;
+        learning_duration?: string;
+        speaking_level?: string;
+        confidence_level?: number;
+        cefr_level?: string;
+        barriers?: string[];
+        focus_areas?: string[];
+        discovery_source?: string;
+        completed_at?: string;
+    };
 }
 
 export const updateUserProfile = async (updates: UserProfileUpdate) => {
