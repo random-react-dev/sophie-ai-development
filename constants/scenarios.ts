@@ -12,6 +12,7 @@ export interface Scenario {
   context: string;
   icon: string;
   isCustom?: boolean;
+  shareToken?: string; // UUID from shared_scenarios table — set after first share
 }
 
 export const SCENARIOS: Scenario[] = [

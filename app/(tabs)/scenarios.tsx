@@ -114,6 +114,7 @@ import {
   Rocket,
   Scale,
   School,
+  Share2,
   Scroll,
   Shield,
   ShieldAlert,
@@ -160,6 +161,7 @@ import {
   Modal,
   Platform,
   ScrollView,
+  Share,
   Text,
   TextInput,
   TouchableOpacity,
@@ -168,6 +170,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { shareScenario } from "@/services/supabase/scenarios";
 
 const IconMap: Record<string, any> = {
   // Beginner
@@ -350,6 +353,7 @@ export default function RoleplayScreen() {
     selectedCategory,
     setSelectedCategory,
     selectScenario,
+    updateScenarioShareToken,
   } = useScenarioStore();
   useAuthStore(); // Kept for potential auth state side effects
   const { t } = useTranslation();
@@ -392,6 +396,24 @@ export default function RoleplayScreen() {
   const handleStartScenario = (scenario: Scenario) => {
     selectScenario(scenario);
     router.push("/(tabs)/talk" as any);
+  };
+
+  const handleShareScenario = async (scenario: Scenario) => {
+    try {
+      let token: string | undefined = scenario.shareToken;
+      if (!token) {
+        const fetched = await shareScenario(scenario);
+        if (!fetched) return;
+        token = fetched;
+        updateScenarioShareToken(scenario.id, fetched);
+      }
+      const webLink = `${process.env.EXPO_PUBLIC_SHARE_BASE_URL}?token=${token}`;
+      await Share.share({
+        message: `Practice this conversation scenario on Sophie AI!\n\n${webLink}`,
+      });
+    } catch (error) {
+      console.error("Error sharing scenario:", error);
+    }
   };
 
   return (
@@ -602,7 +624,18 @@ export default function RoleplayScreen() {
                     {item.description}
                   </Text>
                 </View>
-                <ChevronRight size={24} color="gray" />
+                <View className="flex-row items-center gap-1">
+                  {item.isCustom && (
+                    <TouchableOpacity
+                      onPress={() => handleShareScenario(item)}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      className="w-9 h-9 items-center justify-center rounded-full bg-blue-50"
+                    >
+                      <Share2 size={16} color="#3b82f6" />
+                    </TouchableOpacity>
+                  )}
+                  <ChevronRight size={24} color="gray" />
+                </View>
               </TouchableOpacity>
             );
           }}
@@ -647,7 +680,7 @@ function CreateScenarioModal({
   visible: boolean;
   onClose: () => void;
 }) {
-  const { addCustomScenario, selectScenario } = useScenarioStore();
+  const { addCustomScenario, selectScenario, updateScenarioShareToken } = useScenarioStore();
   const { t } = useTranslation();
   const router = useRouter();
   const [sophieRole, setSophieRole] = useState("");
@@ -657,6 +690,12 @@ function CreateScenarioModal({
   const [category, setCategory] = useState<string>("");
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [context, setContext] = useState("");
+  const [createdScenario, setCreatedScenario] = useState<Scenario | null>(null);
+
+  // Reset success state each time the modal opens
+  React.useEffect(() => {
+    if (visible) setCreatedScenario(null);
+  }, [visible]);
 
   // Alert modal for validation errors
   const { alertState, showAlert, hideAlert } = useAlertModal();
@@ -687,9 +726,34 @@ function CreateScenarioModal({
     };
 
     addCustomScenario(newScenario);
+    setCreatedScenario(newScenario);
+  };
+
+  const handleStartFromSuccess = () => {
+    if (!createdScenario) return;
     onClose();
-    selectScenario(newScenario);
+    selectScenario(createdScenario);
     router.push("/(tabs)/talk" as any);
+  };
+
+  const handleShareFromModal = async () => {
+    if (!createdScenario) return;
+    try {
+      let token: string | undefined = createdScenario.shareToken;
+      if (!token) {
+        const fetched = await shareScenario(createdScenario);
+        if (!fetched) return;
+        token = fetched;
+        updateScenarioShareToken(createdScenario.id, fetched);
+        setCreatedScenario({ ...createdScenario, shareToken: fetched });
+      }
+      const webLink = `${process.env.EXPO_PUBLIC_SHARE_BASE_URL}?token=${token}`;
+      await Share.share({
+        message: `Practice this conversation scenario on Sophie AI!\n\n${webLink}`,
+      });
+    } catch (error) {
+      console.error("Error sharing from modal:", error);
+    }
   };
 
   return (
@@ -705,6 +769,59 @@ function CreateScenarioModal({
           className="flex-1 bg-white"
         >
           <SafeAreaView className="flex-1">
+            {createdScenario ? (
+              <View className="flex-1 px-6 pt-6">
+                <View className="flex-row justify-end mb-4">
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={onClose}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                  >
+                    <Ionicons name="close" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
+                <View className="flex-1 items-center justify-center pb-12">
+                  <View className="w-20 h-20 rounded-full bg-purple-50 items-center justify-center mb-6">
+                    <Sparkles size={40} color="#8b5cf6" />
+                  </View>
+                  <Text className="text-2xl font-bold text-black text-center mb-2">
+                    Scenario Created!
+                  </Text>
+                  <Text className="text-gray-500 text-center font-medium mb-10">
+                    {createdScenario.title}
+                  </Text>
+                  <View className="w-full gap-3">
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={handleStartFromSuccess}
+                      className="h-16 rounded-full overflow-hidden shadow-lg"
+                    >
+                      <RainbowBorder
+                        borderWidth={2}
+                        borderRadius={9999}
+                        className="flex-1"
+                        containerClassName="items-center justify-center flex-1"
+                      >
+                        <Text className="text-black font-bold text-lg">
+                          {t("scenarios_screen.create_modal.start_button")}
+                        </Text>
+                      </RainbowBorder>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={handleShareFromModal}
+                      className="h-14 rounded-full border-2 border-blue-200 bg-blue-50 flex-row items-center justify-center gap-2"
+                    >
+                      <Share2 size={20} color="#3b82f6" />
+                      <Text className="text-blue-600 font-bold text-base">
+                        Share Scenario
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            ) : (
+            <>
             <View className="px-4 py-4 flex-row justify-between items-center border-b border-gray-100">
               <Text className="text-xl font-bold text-black">
                 {t("scenarios_screen.create_modal.title")}
@@ -1150,6 +1267,8 @@ function CreateScenarioModal({
                 </RainbowBorder>
               </TouchableOpacity>
             </View>
+            </>
+            )}
           </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
