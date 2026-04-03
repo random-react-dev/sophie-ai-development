@@ -3,7 +3,9 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
+import * as Linking from "expo-linking";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -30,6 +32,8 @@ SplashScreen.preventAutoHideAsync();
 export const unstable_settings = {
   anchor: "(tabs)",
 };
+
+const PENDING_DEEP_LINK_KEY = "pending-scenario-token";
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
@@ -60,6 +64,34 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  // Capture incoming deep links (sophie://scenario/{token})
+  useEffect(() => {
+    const handleDeepLink = (url: string) => {
+      const parsed = Linking.parse(url);
+      if (parsed.path?.startsWith("scenario/")) {
+        const token = parsed.path.replace("scenario/", "");
+        if (!token) return;
+        if (session) {
+          router.push(`/scenario/${token}` as never);
+        } else {
+          AsyncStorage.setItem(PENDING_DEEP_LINK_KEY, token);
+        }
+      }
+    };
+
+    // Handle URL that cold-started the app
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    // Handle URL while app is already open
+    const subscription = Linking.addEventListener("url", (event) => {
+      handleDeepLink(event.url);
+    });
+
+    return () => subscription.remove();
+  }, [session, router]);
 
   useEffect(() => {
     if (!initialized) return;
@@ -92,7 +124,14 @@ export default function RootLayout() {
         // User is signed in and finished onboarding
         // Redirect to Talk tab as the main learning page
         if (inAuthGroup || inOnboardingGroup) {
-          router.replace("/(tabs)/talk");
+          AsyncStorage.getItem(PENDING_DEEP_LINK_KEY).then((pendingToken) => {
+            if (pendingToken) {
+              AsyncStorage.removeItem(PENDING_DEEP_LINK_KEY);
+              router.replace(`/scenario/${pendingToken}` as never);
+            } else {
+              router.replace("/(tabs)/talk");
+            }
+          });
         }
         // Also redirect to Talk when app reloads on default index page (only once)
         else if (
@@ -137,6 +176,10 @@ export default function RootLayout() {
               <Stack.Screen
                 name="modal"
                 options={{ presentation: "modal", title: "Modal" }}
+              />
+              <Stack.Screen
+                name="scenario"
+                options={{ headerShown: false }}
               />
             </Stack>
             <TrialCountdownModal />

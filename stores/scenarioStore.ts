@@ -16,6 +16,7 @@ interface ScenarioState {
   setPracticePhrase: (phrase: string | null) => void;
   clearForProfileSwitch: () => void;
   addCustomScenario: (scenario: Scenario) => void;
+  updateScenarioShareToken: (scenarioId: string, shareToken: string) => void;
 }
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -58,6 +59,15 @@ export const useScenarioStore = create<ScenarioState>()(
           customScenarios: [scenario, ...state.customScenarios],
           scenarios: [scenario, ...state.scenarios],
         })),
+      updateScenarioShareToken: (scenarioId, shareToken) =>
+        set((state) => {
+          const update = (s: Scenario): Scenario =>
+            s.id === scenarioId ? { ...s, shareToken } : s;
+          return {
+            customScenarios: state.customScenarios.map(update),
+            scenarios: state.scenarios.map(update),
+          };
+        }),
     }),
     {
       name: "scenario-storage",
