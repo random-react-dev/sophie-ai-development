@@ -1723,5 +1723,12 @@
     "expired_title": "Provperioden har gått ut!",
     "expired_subtitle": "Din 7-dagars gratis provperiod har avslutats. Välj en plan för att fortsätta lära dig och få tillgång till alla funktioner.",
     "choose_plan_btn": "Välj en plan"
+  },
+  "aiConsent": {
+    "title": "AI-drivna funktioner",
+    "body": "Sophie använder Google Gemini AI för konversationer och översättningar. När du använder dessa funktioner skickas ditt röstljud, text och konversationssammanhang till Googles servrar för bearbetning.",
+    "privacy": "Google hanterar dessa data i enlighet med deras integritetspolicy.",
+    "accept": "Jag förstår och samtycker",
+    "decline": "Inte nu"
   }
 }

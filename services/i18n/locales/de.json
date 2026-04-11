@@ -1723,5 +1723,12 @@
     "claim_discount_btn": "Meinen Rabatt sichern",
     "maybe_later_btn": "Vielleicht später",
     "choose_plan_btn": "Plan auswählen"
+  },
+  "aiConsent": {
+    "title": "KI-gestützte Funktionen",
+    "body": "Sophie nutzt Google Gemini KI für Gespräche und Übersetzungen. Wenn Sie diese Funktionen nutzen, werden Ihre Sprachaufnahmen, Texte und der Gesprächskontext zur Verarbeitung an die Server von Google gesendet.",
+    "privacy": "Google behandelt diese Daten gemäß seiner Datenschutzerklärung.",
+    "accept": "Ich verstehe und stimme zu",
+    "decline": "Jetzt nicht"
   }
 }

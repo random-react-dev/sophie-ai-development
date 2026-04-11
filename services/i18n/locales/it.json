@@ -1718,5 +1718,12 @@
     "expired_title": "Prova scaduta!",
     "expired_subtitle": "La tua prova gratuita di 7 giorni è terminata. Scegli un piano per continuare a imparare e accedere a tutte le funzionalità.",
     "choose_plan_btn": "Scegli un piano"
+  },
+  "aiConsent": {
+    "title": "Funzionalità AI",
+    "body": "Sophie utilizza l'IA Google Gemini per conversazioni e traduzioni. Quando si utilizzano queste funzioni, l'audio della voce, il testo e il contesto della conversazione vengono inviati ai server di Google per l'elaborazione.",
+    "privacy": "Google gestisce questi dati in conformità con le proprie norme sulla privacy.",
+    "accept": "Capisco e accetto",
+    "decline": "Non ora"
   }
 }

@@ -1723,5 +1723,12 @@
     "expired_title": "Hết hạn dùng thử!",
     "expired_subtitle": "Bản dùng thử miễn phí 7 ngày của bạn đã kết thúc. Vui lòng chọn một gói để tiếp tục học và truy cập tất cả các tính năng.",
     "choose_plan_btn": "Chọn gói"
+  },
+  "aiConsent": {
+    "title": "Tính năng hỗ trợ bởi AI",
+    "body": "Sophie sử dụng Google Gemini AI để hỗ trợ các cuộc trò chuyện và dịch thuật. Khi bạn sử dụng các tính năng này, âm thanh giọng nói, văn bản và ngữ cảnh cuộc trò chuyện của bạn sẽ được gửi đến máy chủ của Google để xử lý.",
+    "privacy": "Google xử lý dữ liệu này theo chính sách bảo mật của họ.",
+    "accept": "Tôi hiểu & Đồng ý",
+    "decline": "Không phải bây giờ"
   }
 }

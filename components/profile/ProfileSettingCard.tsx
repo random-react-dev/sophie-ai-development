@@ -15,6 +15,7 @@ interface ProfileSettingCardProps {
   cardBgColor?: string;
   borderColor?: string;
   colorScheme?: RainbowColorScheme;
+  testID?: string;
 }
 
 export default function ProfileSettingCard({
@@ -29,6 +30,7 @@ export default function ProfileSettingCard({
   cardBgColor = "bg-surface",
   borderColor,
   colorScheme,
+  testID,
 }: ProfileSettingCardProps) {
   // Use colorScheme values if provided, otherwise fall back to individual props
   const actualIconBgColor = colorScheme?.iconBgColor || iconBgColor || "bg-gray-100";
@@ -40,6 +42,7 @@ export default function ProfileSettingCard({
       activeOpacity={0.7}
       onPress={onPress}
       disabled={!onPress}
+      testID={testID}
       className={`${actualCardBgColor} rounded-2xl p-4 mb-3 flex-row items-center justify-between shadow-sm border ${actualBorderColor}`}
     >
       <View className="flex-1 flex-row items-center gap-4">

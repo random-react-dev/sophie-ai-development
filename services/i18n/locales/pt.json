@@ -1723,5 +1723,12 @@
     "expired_title": "Teste expirado!",
     "expired_subtitle": "Seu teste gratuito de 7 dias terminou. Escolha um plano para continuar aprendendo e acessar todos os recursos.",
     "choose_plan_btn": "Escolher um plano"
+  },
+  "aiConsent": {
+    "title": "Recursos com IA",
+    "body": "A Sophie utiliza a IA Google Gemini para conversas e traduções. Ao utilizar estes recursos, as suas gravações de voz, textos e o contexto da conversa são enviados para os servidores da Google para processamento.",
+    "privacy": "A Google trata estes dados de acordo com a sua política de privacidade.",
+    "accept": "Compreendo e aceito",
+    "decline": "Agora não"
   }
 }

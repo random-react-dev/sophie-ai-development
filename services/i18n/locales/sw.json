@@ -1723,5 +1723,12 @@
     "expired_title": "Jaribio Limeisha!",
     "expired_subtitle": "Jaribio lako la bure la siku 7 limeisha. Tafadhali chagua mpango ili kuendelea kujifunza na kupata huduma zote.",
     "choose_plan_btn": "Chagua Mpango"
+  },
+  "aiConsent": {
+    "title": "Vipengele vya AI",
+    "body": "Sophie anatumia Google Gemini AI kuwezesha mazungumzo na tafsiri. Unapotumia vipengele hivi, sauti yako, maandishi, na muktadha wa mazungumzo hutumwa kwenye seva za Google kwa ajili ya usindikaji.",
+    "privacy": "Google hushughulikia data hizi kulingana na sera yao ya faragha.",
+    "accept": "Nimeelewa na nimekubali",
+    "decline": "Sio sasa"
   }
 }
