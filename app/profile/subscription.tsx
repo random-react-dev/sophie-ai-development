@@ -3,18 +3,12 @@ import { RainbowWave } from "@/components/lesson/RainbowWave";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Check } from "lucide-react-native";
-import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Feature check item
-function FeatureCheck({
-  text,
-  isScf = false,
-}: {
-  text: string;
-  isScf?: boolean;
-}) {
+function FeatureCheck({ text }: { text: string }) {
   return (
     <View className="flex-row items-start gap-3 mb-3">
       <RainbowBorder
@@ -32,68 +26,23 @@ function FeatureCheck({
   );
 }
 
+type Plan = {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  duration: string;
+  badge?: string;
+  billedText?: string;
+  discountBadge?: string;
+  features: string[];
+  isFeatured: boolean;
+};
+
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
 
-  // Track selected duration for the SBB plan
-  const [sbbDuration, setSbbDuration] = useState<
-    "6mo" | "12mo" | "18mo" | "24mo"
-  >("12mo");
-
-  // Dynamic details for SBB based on selected duration
-  const getSbbDetails = () => {
-    switch (sbbDuration) {
-      case "6mo":
-        return {
-          price: "$10",
-          billedText: t("profile.subscription_screen.common.billedEvery", {
-            total: "$60",
-            months: "6",
-          }),
-          discountBadge: t("profile.subscription_screen.common.saveVsMonthly", {
-            percent: "50",
-          }),
-        };
-      case "18mo":
-        return {
-          price: "$8",
-          billedText: t("profile.subscription_screen.common.billedEvery", {
-            total: "$144",
-            months: "18",
-          }),
-          discountBadge: t("profile.subscription_screen.common.saveVsMonthly", {
-            percent: "60",
-          }),
-        };
-      case "24mo":
-        return {
-          price: "$7",
-          billedText: t("profile.subscription_screen.common.billedEvery", {
-            total: "$168",
-            months: "24",
-          }),
-          discountBadge: t("profile.subscription_screen.common.saveVsMonthly", {
-            percent: "65",
-          }),
-        };
-      case "12mo":
-      default:
-        return {
-          price: "$9",
-          billedText: t("profile.subscription_screen.common.billedEvery", {
-            total: "$108",
-            months: "12",
-          }),
-          discountBadge: t("profile.subscription_screen.common.saveVsMonthly", {
-            percent: "55",
-          }),
-        };
-    }
-  };
-
-  const sbbDetails = getSbbDetails();
-
-  const PLANS = [
+  const PLANS: Plan[] = [
     {
       id: "free",
       name: t("profile.subscription_screen.plans.mg.name"),
@@ -114,8 +63,7 @@ export default function SubscriptionScreen() {
       name: t("profile.subscription_screen.plans.scf.name"),
       description: t("profile.subscription_screen.plans.scf.description"),
       badge: t("profile.subscription_screen.plans.scf.badge"),
-      price: "$20",
-      launchPrice: "$14",
+      price: "$8",
       duration: t("profile.subscription_screen.common.month"),
       features: [
         t("profile.subscription_screen.plans.scf.features.0"),
@@ -130,10 +78,11 @@ export default function SubscriptionScreen() {
       name: t("profile.subscription_screen.plans.sbb.name"),
       description: t("profile.subscription_screen.plans.sbb.description"),
       badge: t("profile.subscription_screen.plans.sbb.badge"),
-      price: sbbDetails.price, // Dynamically driven by state
-      duration: t("profile.subscription_screen.common.month"),
-      billedText: sbbDetails.billedText, // Dynamically driven by state
-      discountBadge: sbbDetails.discountBadge, // Dynamically driven by state
+      price: "$12",
+      duration: t("profile.subscription_screen.common.sixMonths"),
+      discountBadge: t("profile.subscription_screen.common.saveVsMonthly", {
+        percent: "75",
+      }),
       features: [
         t("profile.subscription_screen.plans.sbb.features.0"),
         t("profile.subscription_screen.plans.sbb.features.1"),
@@ -145,27 +94,11 @@ export default function SubscriptionScreen() {
     },
   ];
 
-  const renderPlanCard = (plan: (typeof PLANS)[0]) => {
-    const isScf = plan.id === "scf";
-    const isSbb = plan.id === "pro";
-
+  const renderPlanCard = (plan: Plan) => {
     const cardContent = (
       <View className="p-6 relative">
-        {/* Top Right Badges */}
-        {plan.badge && isScf && (
-          <View className="absolute top-6 right-6 z-10 bg-white rounded-full">
-            <RainbowBorder
-              borderRadius={9999}
-              borderWidth={1.5}
-              containerClassName="px-3 py-2 bg-white"
-            >
-              <Text className="text-amber-500 text-[10px] font-bold uppercase tracking-widest">
-                {plan.badge}
-              </Text>
-            </RainbowBorder>
-          </View>
-        )}
-        {plan.badge && isSbb && (
+        {/* Top Right Badge */}
+        {plan.badge && (
           <View className="absolute top-6 right-6 z-10 bg-white rounded-full">
             <RainbowBorder
               borderRadius={9999}
@@ -189,123 +122,27 @@ export default function SubscriptionScreen() {
 
         {/* Pricing */}
         <View className="mb-6">
-          {isScf ? (
-            <View>
-              <View className="flex-row items-baseline gap-1">
-                <Text className="text-[40px] leading-[48px] font-black text-gray-900">
-                  {plan.launchPrice}
-                </Text>
-                <Text className="text-gray-900 font-normal text-base">
-                  / {plan.duration}{" "}
-                  {t("profile.subscription_screen.common.launchPrice")}
-                </Text>
-              </View>
-              <Text className="text-gray-500 font-normal mt-1">
-                <Text className="line-through">{plan.price}</Text>/
-                {plan.duration}{" "}
-                {t("profile.subscription_screen.common.regularPrice")}
+          <View>
+            <View className="flex-row items-baseline gap-1">
+              <Text className="text-[40px] leading-[48px] font-black text-gray-900">
+                {plan.price}
+              </Text>
+              <Text className="text-gray-900 font-normal flex-grow text-base">
+                / {plan.duration}
               </Text>
             </View>
-          ) : (
-            <View>
-              <View className="flex-row items-baseline gap-1">
-                <Text className="text-[40px] leading-[48px] font-black text-gray-900">
-                  {plan.price}
-                </Text>
-                <Text className="text-gray-900 font-normal flex-grow text-base">
-                  / {plan.duration}
-                </Text>
-              </View>
-              {plan.billedText && (
-                <Text className="text-gray-500 font-normal mt-1">
-                  {plan.billedText}
-                </Text>
-              )}
-            </View>
-          )}
-
-          {/* SBB Discount Badge */}
-          {plan.discountBadge && (
-            <View className="flex-row mt-3">
-              <RainbowBorder
-                borderRadius={9999}
-                borderWidth={1.5}
-                containerClassName="bg-white px-3 py-2 items-center justify-center flex-row"
-              >
-                <Text
-                  className="text-gray-800 font-medium text-sm"
-                  style={{ includeFontPadding: false }}
-                >
-                  {plan.discountBadge}
-                </Text>
-              </RainbowBorder>
-            </View>
-          )}
-
-          {/* SBB Duration Toggles */}
-          {isSbb && (
-            <View className="flex-row flex-wrap items-center gap-3 mt-4">
-              {(["6mo", "12mo", "18mo", "24mo"] as const).map((duration) => {
-                const isActive = sbbDuration === duration;
-                const label = `${duration.replace("mo", "")} ${t("profile.subscription_screen.common.mo")}`;
-
-                if (isActive) {
-                  return (
-                    <TouchableOpacity
-                      key={duration}
-                      activeOpacity={0.8}
-                      onPress={() => setSbbDuration(duration)}
-                    >
-                      <RainbowBorder
-                        borderRadius={9999}
-                        borderWidth={1.5}
-                        containerClassName="bg-white"
-                        style={{ minWidth: 60 }}
-                      >
-                        <View className="px-3 py-2 items-center justify-center">
-                          <Text
-                            className="text-xs font-medium text-gray-800"
-                            style={{ includeFontPadding: false }}
-                          >
-                            {label}
-                          </Text>
-                        </View>
-                      </RainbowBorder>
-                    </TouchableOpacity>
-                  );
-                }
-
-                return (
-                  <TouchableOpacity
-                    key={duration}
-                    activeOpacity={0.8}
-                    onPress={() => setSbbDuration(duration)}
-                    className="rounded-full border border-gray-200 bg-white"
-                    style={{ minWidth: 60 }}
-                  >
-                    <View className="px-3 py-2 items-center justify-center">
-                      <Text
-                        className="text-xs font-medium text-gray-700"
-                        style={{ includeFontPadding: false }}
-                      >
-                        {label}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          )}
+            {plan.billedText && (
+              <Text className="text-gray-500 font-normal mt-1">
+                {plan.billedText}
+              </Text>
+            )}
+          </View>
         </View>
 
         {/* Features List */}
         <View className="mb-6 flex-1 mt-2">
           {plan.features.map((feature, idx) => (
-            <FeatureCheck
-              key={`feat-${plan.id}-${idx}`}
-              text={feature}
-              isScf={isScf}
-            />
+            <FeatureCheck key={`feat-${plan.id}-${idx}`} text={feature} />
           ))}
         </View>
 
