@@ -14,7 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     usesAppleSignIn: true,
     supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "41",
+    buildNumber: "43",
     infoPlist: {
       NSMicrophoneUsageDescription:
         "Sophie AI needs microphone access to hear your voice during conversations. Audio is processed in real-time and is not recorded or stored.",
@@ -29,7 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
     package: "ai.speakwithsophie.app",
-    versionCode: 5,
+    versionCode: 7,
     permissions: ["android.permission.RECORD_AUDIO"],
   },
   web: {
@@ -38,6 +38,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "./plugins/withAndroidReleaseSigning",
+    "./plugins/withPortraitCompat",
     "expo-router",
     [
       "expo-splash-screen",

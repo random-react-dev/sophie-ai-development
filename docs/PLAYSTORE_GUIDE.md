@@ -12,7 +12,7 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest versionCode**: 4
+- **Latest versionCode**: 6
 - **Play Store Status**: Production submitted, pending review
 
 ## Key Files
@@ -277,6 +277,23 @@ Once production access is granted:
 
 - `versionCode` must ALWAYS increase (never reuse)
 - Multiple uploads can share the same `version`
+
+---
+
+## Play Store Recommendations (versionCode 5)
+
+After submitting versionCode 5, the Play Console flagged two **recommendations** (not blockers):
+
+### 1. Deprecated Edge-to-Edge APIs (Android 15)
+- Framework libraries (`react-native`, `react-native-screens`, `expo-dev-launcher`, etc.) use deprecated `setStatusBarColor`/`setNavigationBarColor` APIs
+- **No action needed** — these are no-ops on Android 15+ and will be fixed by upstream library updates
+- Tracked: [react-native #48256](https://github.com/facebook/react-native/issues/48256), [react-native-screens #2632](https://github.com/software-mansion/react-native-screens/issues/2632)
+
+### 2. Orientation Restrictions on Large Screens (Android 16)
+- `android:screenOrientation="portrait"` is ignored on tablets/foldables (>= 600dp) starting Android 16
+- **Fix (versionCode 6)**: Added `plugins/withPortraitCompat.js` — Expo config plugin that injects `PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY` property into AndroidManifest.xml
+- This is Google's official temporary opt-out preserving portrait lock on large screens through API 36 (~2027)
+- When API 37 drops, we'll need responsive layouts for tablets — but that's a future concern
 
 ---
 

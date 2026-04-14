@@ -5,6 +5,7 @@ import { AlertModal } from "@/components/common/AlertModal";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
 import { Link } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -136,9 +137,23 @@ export default function LoginScreen() {
           <View className="items-center pb-6">
             <Text className="text-gray-400 text-xs text-center w-full">
               By continuing, you agree to our{" "}
-              <Text className="text-gray-600 font-bold">Terms of Service</Text>
+              <Text
+                className="text-blue-500 font-bold underline"
+                onPress={() =>
+                  openBrowserAsync("https://speakwithsophie.ai/terms")
+                }
+              >
+                Terms of Service
+              </Text>
               {"\n"}and{" "}
-              <Text className="text-gray-600 font-bold">Privacy Policy</Text>
+              <Text
+                className="text-blue-500 font-bold underline"
+                onPress={() =>
+                  openBrowserAsync("https://speakwithsophie.ai/privacy")
+                }
+              >
+                Privacy Policy
+              </Text>
             </Text>
           </View>
         </View>

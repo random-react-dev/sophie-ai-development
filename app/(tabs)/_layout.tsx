@@ -1,7 +1,6 @@
 import { RainbowBorder } from "@/components/common/Rainbow";
 import { SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useTrialGuard } from "@/hooks/useTrialGuard";
 import { Logger } from "@/services/common/Logger";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
@@ -9,7 +8,6 @@ import { useProfileStore } from "@/stores/profileStore";
 import { useVocabularyStore } from "@/stores/vocabularyStore";
 import { isVoiceModeAvailable } from "@/utils/environment";
 import { Feather } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { Tabs, usePathname, useRouter } from "expo-router";
 import { Globe, Languages, VenetianMask } from "lucide-react-native";
@@ -231,17 +229,6 @@ export default function TabLayout() {
   const { fetchVocabulary } = useVocabularyStore();
   const { user } = useAuthStore();
   const { t } = useTranslation();
-  const { requireActiveSubscription } = useTrialGuard();
-
-  // Enforce trial expiration whenever the tabs layout comes into focus or re-renders
-  useFocusEffect(
-    React.useCallback(() => {
-      // Return early if the hook determined they are blocked
-      if (!requireActiveSubscription()) {
-        return;
-      }
-    }, [requireActiveSubscription]),
-  );
 
   useEffect(() => {
     if (user) {

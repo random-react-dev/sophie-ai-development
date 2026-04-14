@@ -7,6 +7,7 @@ import { AlertModal } from "@/components/common/AlertModal";
 import { Button } from "@/components/common/Button";
 import { useAuthStore } from "@/stores/authStore";
 import { Link, useRouter } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -195,7 +196,12 @@ export default function SignupScreen() {
           </View>
           <Text className="text-gray-600 flex-1 text-sm">
             I accept the{" "}
-            <Text className="text-blue-500 font-bold">
+            <Text
+              className="text-blue-500 font-bold underline"
+              onPress={() =>
+                openBrowserAsync("https://speakwithsophie.ai/terms")
+              }
+            >
               Terms and Conditions
             </Text>
           </Text>
@@ -243,9 +249,23 @@ export default function SignupScreen() {
           <View className="items-center pb-6">
             <Text className="text-gray-400 text-xs w-full text-center">
               By continuing, you agree to our{" "}
-              <Text className="text-gray-600 font-bold">Terms to Service</Text>
+              <Text
+                className="text-blue-500 font-bold underline"
+                onPress={() =>
+                  openBrowserAsync("https://speakwithsophie.ai/terms")
+                }
+              >
+                Terms of Service
+              </Text>
               {"\n"}and{" "}
-              <Text className="text-gray-600 font-bold">Privacy Policy</Text>
+              <Text
+                className="text-blue-500 font-bold underline"
+                onPress={() =>
+                  openBrowserAsync("https://speakwithsophie.ai/privacy")
+                }
+              >
+                Privacy Policy
+              </Text>
             </Text>
           </View>
         </View>

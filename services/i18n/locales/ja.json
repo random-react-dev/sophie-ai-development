@@ -178,9 +178,6 @@
       "memberSince": "登録日",
       "na": "なし"
     },
-    "subscription_screen": {
-      "title": "サブスクリプション"
-    },
     "security_screen": {
       "title": "セキュリティ",
       "subtitle": "アカウントを保護する",

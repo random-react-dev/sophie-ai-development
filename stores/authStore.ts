@@ -14,7 +14,6 @@ import { useConversationStore, useIntroStore } from "./conversationStore";
 import { useGameStore } from "./gameStore";
 import { useLearningStore } from "./learningStore";
 import { useProfileStore } from "./profileStore";
-import { useSessionReportsStore } from "./sessionReportsStore";
 import { useStatsStore } from "./statsStore";
 import { useTranslationHistoryStore } from "./translationHistoryStore";
 import { useVocabularyStore } from "./vocabularyStore";
@@ -38,34 +37,10 @@ const clearUserData = async (): Promise<void> => {
   useProfileStore.getState().reset();
   useLearningStore.getState().reset();
   useVocabularyStore.setState({ items: [], folders: [], isLoading: false });
-  useSessionReportsStore.getState().reset();
   useStatsStore.getState().reset();
   useConversationStore.getState().reset();
   useIntroStore.getState().setHasSeenIntro(false);
   useGameStore.getState().reset();
-};
-
-const EXPECTED_SIGN_OUT_TIMEOUT_MS = 5000;
-
-let expectedSignOutReason: "sign_out" | "delete_account" | null = null;
-let expectedSignOutTimer: ReturnType<typeof setTimeout> | null = null;
-
-const clearExpectedSignOut = (): void => {
-  expectedSignOutReason = null;
-  if (expectedSignOutTimer) {
-    clearTimeout(expectedSignOutTimer);
-    expectedSignOutTimer = null;
-  }
-};
-
-const markExpectedSignOut = (
-  reason: "sign_out" | "delete_account",
-): void => {
-  clearExpectedSignOut();
-  expectedSignOutReason = reason;
-  expectedSignOutTimer = setTimeout(() => {
-    clearExpectedSignOut();
-  }, EXPECTED_SIGN_OUT_TIMEOUT_MS);
 };
 
 interface AuthState {
@@ -73,12 +48,10 @@ interface AuthState {
   session: Session | null;
   isLoading: boolean;
   initialized: boolean;
-  showTrialPopup: boolean;
   pending2FA: boolean;
   pending2FAEmail: string | null;
   setSession: (session: Session | null) => void;
   setUser: (user: User | null) => void;
-  setShowTrialPopup: (show: boolean) => void;
   setPending2FA: (pending: boolean, email?: string | null) => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
@@ -92,12 +65,6 @@ interface AuthState {
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   initialize: () => Promise<void>;
-  checkTrialStatus: () => {
-    isTrialExpired: boolean;
-    isSubscribed: boolean;
-    daysPassed: number;
-    remainingDays: number;
-  };
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -105,45 +72,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   session: null,
   isLoading: false,
   initialized: false,
-  showTrialPopup: false,
   pending2FA: false,
   pending2FAEmail: null,
   setSession: (session: Session | null) => set({ session }),
   setUser: (user: User | null) => set({ user }),
-  setShowTrialPopup: (show: boolean) => set({ showTrialPopup: show }),
-  checkTrialStatus: () => {
-    const user = get().user;
-    if (!user) {
-      return {
-        isTrialExpired: false, // Default to false if not logged in to prevent premature blocks
-        isSubscribed: false,
-        daysPassed: 0,
-        remainingDays: 0,
-      };
-    }
-
-    // Check if user has an active subscription (assuming we store this in metadata, e.g., plan: 'pro')
-    const isSubscribed = user.user_metadata?.subscription_plan === "pro";
-
-    // Calculate trial days
-    const createdDate = new Date(user.created_at);
-    const now = new Date();
-    const diffInMs = now.getTime() - createdDate.getTime();
-    const daysPassed = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-    const dayNumber = Math.min(Math.max(daysPassed + 1, 1), 7);
-    const remainingDays = 8 - dayNumber;
-
-    // Trial is exactly 7 days. If daysPassed is 7 or more, the 7 full days of trial are over
-    // (e.g. daysPassed 0-6 = trial active. daysPassed 7+ = trial expired)
-    const isTrialExpired = daysPassed >= 7 && !isSubscribed;
-
-    return {
-      isTrialExpired,
-      isSubscribed,
-      daysPassed,
-      remainingDays: Math.max(0, remainingDays),
-    };
-  },
   setPending2FA: (pending: boolean, email?: string | null) =>
     set({ pending2FA: pending, pending2FAEmail: email ?? null }),
   signIn: async (email, password) => {
@@ -169,8 +101,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           set({ pending2FA: false, pending2FAEmail: null });
           throw otpError;
         }
-      } else {
-        set({ showTrialPopup: false });
       }
     } catch (err) {
       set({ pending2FA: false, pending2FAEmail: null });
@@ -221,8 +151,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         await supabase.auth.signOut();
         const { error: otpError } = await send2FACode(data.user.email);
         if (otpError) throw otpError;
-      } else {
-        set({ showTrialPopup: false });
       }
     } catch (err) {
       set({ pending2FA: false, pending2FAEmail: null });
@@ -255,7 +183,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         type: "email",
       });
       if (error) throw error;
-      set({ pending2FA: false, pending2FAEmail: null, showTrialPopup: false });
+      set({ pending2FA: false, pending2FAEmail: null });
     } finally {
       set({ isLoading: false });
     }
@@ -321,10 +249,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       await clearUserData();
-      markExpectedSignOut("sign_out");
       await supabase.auth.signOut();
     } catch (err) {
-      clearExpectedSignOut();
       console.warn("Sign out error:", err);
     } finally {
       set({
@@ -333,7 +259,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
         pending2FA: false,
         pending2FAEmail: null,
-        showTrialPopup: false,
       });
     }
   },
@@ -346,11 +271,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Clear all user-specific data before signing out
       await clearUserData();
-      markExpectedSignOut("delete_account");
       await supabase.auth.signOut();
-    } catch (err) {
-      clearExpectedSignOut();
-      throw err;
     } finally {
       set({
         user: null,
@@ -358,7 +279,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
         pending2FA: false,
         pending2FAEmail: null,
-        showTrialPopup: false,
       });
     }
   },
@@ -394,7 +314,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user: null,
           initialized: true,
           isLoading: false,
-          showTrialPopup: false,
         });
       } else {
         set({
@@ -402,7 +321,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user: session?.user ?? null,
           initialized: true,
           isLoading: false,
-          showTrialPopup: false,
         });
       }
     } catch (err) {
@@ -413,55 +331,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         user: null,
         initialized: true,
         isLoading: false,
-        showTrialPopup: false,
       });
     }
 
-    supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-      const newUser = session?.user ?? null;
+    supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null) => {
+        const newUser = session?.user ?? null;
 
-      if (event === "SIGNED_OUT") {
-        if (get().pending2FA) {
-          set({ session: null, user: null, showTrialPopup: false });
-          return;
+        // When session becomes invalid or user is signed out (including token refresh failures),
+        // clear all user data to ensure a clean state for the next login.
+        if (event === "SIGNED_OUT" && !get().pending2FA) {
+          // Verify session is truly gone before clearing (guards against spurious SIGNED_OUT from token refresh failures)
+          const { data: retryData } = await supabase.auth.getSession();
+          if (retryData.session) {
+            set({ session: retryData.session, user: retryData.session.user });
+            return;
+          }
+          await clearUserData();
         }
 
-        if (expectedSignOutReason) {
-          clearExpectedSignOut();
-          set({ session: null, user: null, showTrialPopup: false });
-          return;
-        }
-
-        // Run session verification after the auth callback lock is released.
-        setTimeout(() => {
-          void (async () => {
-            try {
-              const { data: retryData } = await supabase.auth.getSession();
-              if (retryData.session) {
-                set({ session: retryData.session, user: retryData.session.user });
-                return;
-              }
-
-              await clearUserData();
-            } catch (err) {
-              console.warn("Unexpected sign-out verification failed:", err);
-            }
-
-            set({ session: null, user: null, showTrialPopup: false });
-          })();
-        }, 0);
-        return;
-      }
-
-      set((state) => ({
-        session,
-        user: newUser,
-        // Clear showTrialPopup on SIGNED_OUT; preserve on other events.
-        // showTrialPopup is set explicitly by signIn, verify2FA, and initialize —
-        // NOT here, to avoid showing it during the 2FA signIn flow.
-        showTrialPopup: state.showTrialPopup,
-      }));
-    });
+        set({
+          session,
+          user: newUser,
+        });
+      },
+    );
   },
 }));
 
@@ -475,8 +369,6 @@ export const useUser = (): User | null => useAuthStore((s) => s.user);
 export const useAuthIsLoading = (): boolean => useAuthStore((s) => s.isLoading);
 export const useAuthInitialized = (): boolean =>
   useAuthStore((s) => s.initialized);
-export const useShowTrialPopup = (): boolean =>
-  useAuthStore((s) => s.showTrialPopup);
 export const usePending2FA = (): boolean => useAuthStore((s) => s.pending2FA);
 export const usePending2FAEmail = (): string | null =>
   useAuthStore((s) => s.pending2FAEmail);

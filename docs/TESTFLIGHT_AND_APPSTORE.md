@@ -13,9 +13,9 @@
 ## Current State
 
 - **Version**: 1.0.0
-- **Latest Build Number**: 41
+- **Latest Build Number**: 43
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: Rejected three times (March 10, 12, & 16, 2026) — all fixes applied (see below)
+- **App Store Status**: Rejected five times (March 10, 12, 16, 20 & 23, 2026) — all fixes applied (see below)
 
 ## App Store Rejection Fix #1 (v1.0, March 10, 2026)
 
@@ -42,11 +42,11 @@ Two additional issues raised by Apple review:
    - `app/profile/account.tsx`: Removed Subscription section (Free Trial badge, Upgrade to Pro card) and Payment section (Payment Methods, Billing History). Only Account Info (email, member since) remains.
    - `app/profile/subscription.tsx`: Replaced full plan cards screen with "Subscription plans coming soon." placeholder
 
-**Files NOT deleted** (ready for IAP restoration):
-- `components/auth/TrialCountdownModal.tsx` — exists but not rendered
+**Files NOT deleted** (ready for IAP restoration) — **Note: these were deleted in Fix #5**:
+- ~~`components/auth/TrialCountdownModal.tsx`~~ — deleted in Fix #5
 - `components/profile/ProfileSettingCard.tsx` — exists but not imported in account.tsx
-- `hooks/useTrialGuard.ts` — exists, always returns true
-- `stores/authStore.ts` — `showTrialPopup: false` still set
+- ~~`hooks/useTrialGuard.ts`~~ — deleted in Fix #5
+- ~~`stores/authStore.ts` trial fields~~ — removed in Fix #5
 
 ## App Store Rejection Fix #3 (v1.0, March 16, 2026) — Build 41
 
@@ -58,6 +58,39 @@ Apple rejected again for Guideline 3.1.1. Although subscription UI components we
 4. **`trial_countdown_modal`** i18n section removed from all 20 locales (dead weight, component not rendered)
 
 **Changes**: `app.config.ts` (buildNumber 40→41), `app/profile/subscription.tsx`, all 20 files in `services/i18n/locales/`
+
+## App Store Rejection Fix #4 (v1.0, March 20, 2026) — Build 42
+
+Apple rejected for Guideline 2.1(a) — App Completeness. The login and signup screens stated users agree to Terms of Service and Privacy Policy, but the text was static with no working links to view the actual documents.
+
+1. **Login screen** (`app/(auth)/login.tsx`): Made "Terms of Service" and "Privacy Policy" text tappable using `<Text onPress>` + `openBrowserAsync()` from `expo-web-browser`. Links open `https://speakwithsophie.ai/terms` and `https://speakwithsophie.ai/privacy` in an in-app browser overlay.
+2. **Signup screen** (`app/(auth)/signup.tsx`): Same changes as login, plus fixed typo "Terms to Service" → "Terms of Service". Also made the Step 2 "Terms and Conditions" checkbox text tappable.
+3. **Styling**: Changed link text from gray (`text-gray-600`) to blue underlined (`text-blue-500 underline`) so links are visually identifiable as tappable.
+
+**Changes**: `app/(auth)/login.tsx`, `app/(auth)/signup.tsx`, `app.config.ts` (buildNumber 41→42)
+
+## App Store Rejection Fix #5 (v1.0, March 23, 2026) — Build 43
+
+Apple rejected again for Guideline 3.1.1 despite previous text cleanup (Fix #3). Root cause: Apple's automated review scans the Hermes bytecode bundle for string literals. Dead/unused subscription infrastructure still produced strings like "subscription", "trial", "upgrade", "pro", "billing" in the compiled binary. A "Subscription" screen also existed in the navigation stack.
+
+**Nuclear cleanup** — deleted ALL subscription/trial/payment code:
+
+1. **`stores/authStore.ts`**: Removed `showTrialPopup`, `setShowTrialPopup`, `checkTrialStatus`, and `useShowTrialPopup` selector. All core auth methods untouched.
+2. **`app/(tabs)/_layout.tsx`**: Removed `useTrialGuard` import and trial enforcement `useFocusEffect` block.
+3. **`hooks/useTrialGuard.ts`**: Deleted entirely (dead code, always returned true).
+4. **`components/auth/TrialCountdownModal.tsx`**: Deleted entirely (never rendered, contained upgrade/plan/discount strings).
+5. **`app/profile/subscription.tsx`**: Deleted entirely (empty "Subscription" screen).
+6. **`app/profile/_layout.tsx`**: Removed `<Stack.Screen name="subscription" />`.
+7. **All 20 locale files**: Removed `subscription_screen` section (last remaining subscription i18n key).
+
+**Files deleted** (previously kept for IAP restoration):
+- `components/auth/TrialCountdownModal.tsx`
+- `hooks/useTrialGuard.ts`
+- `app/profile/subscription.tsx`
+
+Restoration guide for future IAP: `project_subscription_ui_removal.md` (not shipped in app bundle)
+
+**Changes**: `stores/authStore.ts`, `app/(tabs)/_layout.tsx`, `app/profile/_layout.tsx`, all 20 `services/i18n/locales/*.json`, `app.config.ts` (buildNumber 42→43, versionCode 6→7). Three files deleted.
 
 ## Key Files
 

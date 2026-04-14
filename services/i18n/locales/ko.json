@@ -178,9 +178,6 @@
       "memberSince": "가입일",
       "na": "해당 없음"
     },
-    "subscription_screen": {
-      "title": "구독"
-    },
     "security_screen": {
       "title": "보안",
       "subtitle": "계정 보호",
