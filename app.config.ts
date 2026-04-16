@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "sophie",
   slug: "sophie",
-  version: "1.0.1",
+  version: "1.0.2",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "sophie",
@@ -14,7 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     usesAppleSignIn: true,
     supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "44",
+    buildNumber: "45",
     infoPlist: {
       NSMicrophoneUsageDescription:
         "Sophie AI needs microphone access to hear your voice during conversations. Audio is processed in real-time and is not recorded or stored.",
@@ -99,6 +99,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
       },
     ],
+    "react-native-iap",
   ],
 
   experiments: {

@@ -11,7 +11,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { useEffect, useRef } from "react";
-import { LogBox } from "react-native";
+import { AppState, LogBox } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -19,7 +19,9 @@ import "../global.css";
 
 import TwoFactorOTPModal from "@/components/auth/TwoFactorOTPModal";
 import { I18nProvider } from "@/components/providers/I18nProvider";
+import { initIAP, setupPurchaseListeners } from "@/services/iap/client";
 import { useAuthStore } from "@/stores/authStore";
+import { useEntitlementStore } from "@/stores/entitlementStore";
 import { useThemeStore } from "@/stores/themeStore";
 
 // Suppress expo-av deprecation warning (still works in SDK 54, will migrate in future)
@@ -63,6 +65,38 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  // Initialize Apple IAP listeners + entitlement refresh once the user is signed in.
+  useEffect(() => {
+    if (!session?.user) return;
+
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
+
+    (async () => {
+      await initIAP();
+      if (cancelled) return;
+      cleanup = setupPurchaseListeners(() => {
+        // Re-pull from `subscriptions` table (the verify-purchase function just upserted).
+        useEntitlementStore.getState().refresh();
+      });
+      // Initial refresh on sign-in.
+      useEntitlementStore.getState().refresh();
+    })();
+
+    // Refresh entitlement on app foreground.
+    const appStateSub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        useEntitlementStore.getState().refresh();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      cleanup?.();
+      appStateSub.remove();
+    };
+  }, [session?.user]);
 
   // Capture incoming deep links (sophie://scenario/{token})
   useEffect(() => {

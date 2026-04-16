@@ -2,6 +2,7 @@ type AuthStateChangeCallback = (event: string, session: unknown) => void;
 
 const mockResetConversation = jest.fn();
 const mockResetGame = jest.fn();
+const mockResetEntitlement = jest.fn();
 const mockResetLearning = jest.fn();
 const mockResetProfile = jest.fn();
 const mockResetSessionReports = jest.fn();
@@ -102,6 +103,12 @@ jest.mock("@/stores/conversationStore", () => ({
 jest.mock("@/stores/gameStore", () => ({
   useGameStore: {
     getState: () => ({ reset: mockResetGame }),
+  },
+}));
+
+jest.mock("@/stores/entitlementStore", () => ({
+  useEntitlementStore: {
+    getState: () => ({ reset: mockResetEntitlement }),
   },
 }));
 

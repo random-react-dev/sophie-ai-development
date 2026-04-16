@@ -11,6 +11,7 @@ import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import * as Linking from "expo-linking";
 import { create } from "zustand";
 import { useConversationStore, useIntroStore } from "./conversationStore";
+import { useEntitlementStore } from "./entitlementStore";
 import { useGameStore } from "./gameStore";
 import { useLearningStore } from "./learningStore";
 import { useProfileStore } from "./profileStore";
@@ -41,6 +42,7 @@ const clearUserData = async (): Promise<void> => {
   useConversationStore.getState().reset();
   useIntroStore.getState().setHasSeenIntro(false);
   useGameStore.getState().reset();
+  useEntitlementStore.getState().reset();
 };
 
 interface AuthState {

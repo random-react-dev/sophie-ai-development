@@ -176,7 +176,13 @@
       "accountInfo": "Info Account",
       "email": "Email",
       "memberSince": "Membro dal",
-      "na": "N/A"
+      "na": "N/A",
+      "subscription": {
+        "section": "Subscription",
+        "title": "Manage Subscription",
+        "manageSubtitle": "View plans and manage your subscription",
+        "activeSubtitle": "Active — renews {{date}}"
+      }
     },
     "security_screen": {
       "title": "Sicurezza",
@@ -324,6 +330,80 @@
       "error": "Errore",
       "open_error": "Impossibile aprire {platform}. Riprova più tardi.",
       "general_error": "Si è verificato un errore durante il tentativo di aprire {platform}."
+    },
+    "subscription_screen": {
+      "title": "Subscription",
+      "choosePlan": "Choose Your Plan",
+      "subtitle": "Unlock the full potential of Sophie AI and master any language.",
+      "plans": {
+        "mg": {
+          "name": "M&G",
+          "description": "Meet and Greet Sophie",
+          "features": {
+            "0": "App in 15 languages",
+            "1": "Natural conversations with Sophie in 50+ languages",
+            "2": "Sophie's translation from any to any available language",
+            "3": "Unlimited vocabulary saver in all available languages.",
+            "4": "100+ conversational scenarios"
+          }
+        },
+        "scf": {
+          "name": "SCF",
+          "description": "Sophie Close Friend",
+          "badge": "POPULAR",
+          "features": {
+            "0": "Everything in the free trial.",
+            "1": "24/7 Customer support. Guaranteed.",
+            "2": "Unrestricted app usage",
+            "3": "Strategic ambassador option."
+          }
+        },
+        "sbb": {
+          "name": "SBB",
+          "description": "Sophie Best Buddy",
+          "badge": "BEST VALUE",
+          "features": {
+            "0": "Everything in Sophie Close Friend",
+            "1": "Priority 24/7 support",
+            "2": "Exclusive content & early access",
+            "3": "Custom learning path",
+            "4": "Dedicated account manager"
+          }
+        }
+      },
+      "common": {
+        "subscribe": "Subscribe",
+        "month": "month",
+        "sixMonths": "6 months",
+        "day7": "7 days",
+        "includedFreeTrial": "Included with monthly free trial"
+      },
+      "disclosures": {
+        "freeTrial": "7-day free trial included with the monthly plan. After the trial, the monthly plan auto-renews at $7.99/month until cancelled.",
+        "monthlyRenewal": "Subscription automatically renews at $7.99/month until cancelled. Cancel anytime in iOS Settings > [your Apple ID] > Subscriptions.",
+        "semiannualRenewal": "Subscription automatically renews at $11.99 every 6 months until cancelled. Cancel anytime in iOS Settings > [your Apple ID] > Subscriptions."
+      },
+      "restore": {
+        "button": "Restore Purchases",
+        "noneTitle": "Nothing to restore",
+        "noneBody": "We didn't find an active subscription on this Apple ID.",
+        "successTitle": "Restored",
+        "successBody": "Your subscription has been restored."
+      },
+      "links": {
+        "terms": "Terms of Use",
+        "privacy": "Privacy Policy"
+      },
+      "active": {
+        "title": "Active",
+        "renewsOn": "Renews on {{date}}.",
+        "manage": "Manage in App Store"
+      },
+      "errors": {
+        "purchaseFailed": "We couldn't complete the purchase. Please try again.",
+        "restoreFailed": "We couldn't restore your purchases. Please try again."
+      },
+      "footer": "Payment will be charged to your Apple ID account at confirmation of purchase. Cancel anytime in iOS Settings > [your Apple ID] > Subscriptions."
     }
   },
   "scenarios_screen": {
