@@ -12,10 +12,10 @@
 
 ## Current State
 
-- **Version**: 1.0.0
-- **Latest Build Number**: 43
+- **Live Version**: 1.0.1 (build 44) — **APPROVED 2026-04-15** after five rejections in March 2026. Shipped with zero subscription UI.
+- **In Review / Next Version**: 1.0.2 — **build 45 REJECTED 2026-04-20** under Guideline 2.1(b) (Subscribe button silently no-op'd on the reviewer's iPad Air 11-inch). **Build 46** bundles a client-side hardening + minimal feature gating (see "Rejection Fix #8 (v1.0.2)" section below).
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: Rejected five times (March 10, 12, 16, 20 & 23, 2026) — all fixes applied (see below)
+- **App Store Status**: 1.0.1 live; 1.0.2 rejected on build 45; build 46 pending archive/upload/review
 
 ## App Store Rejection Fix #1 (v1.0, March 10, 2026)
 
@@ -91,6 +91,184 @@ Apple rejected again for Guideline 3.1.1 despite previous text cleanup (Fix #3).
 Restoration guide for future IAP: `project_subscription_ui_removal.md` (not shipped in app bundle)
 
 **Changes**: `stores/authStore.ts`, `app/(tabs)/_layout.tsx`, `app/profile/_layout.tsx`, all 20 `services/i18n/locales/*.json`, `app.config.ts` (buildNumber 42→43, versionCode 6→7). Three files deleted.
+
+## Rejection Fixes #6 & #7 — 1.0.1 train, Builds 44 resubmitted
+
+After Fix #5 (build 43), the 1.0.0 pre-release train was closed by Apple (error: *"Invalid Pre-Release Train. The train version '1.0.0' is closed for new build submissions"*). We started a fresh 1.0.1 train on 2026-04-14 with build 44. Build 44 was **approved on 2026-04-15** — first approval after five rejections. It shipped with no subscription UI, no trial logic, no paywall.
+
+## Apple IAP (v1.0.2 / Build 45, 2026-04-16)
+
+With 1.0.1 approved, v1.0.2 reintroduces subscriptions — this time with a real Apple IAP implementation that satisfies Guideline 3.1.1.
+
+### Architecture
+
+```
+App (react-native-iap v15)
+   │ Subscribe tap → requestPurchase({ ios: { sku } })
+   │ StoreKit 2 returns signed JWS
+   ▼
+Supabase Edge Function: verify-purchase (JWT-verified)
+   │ Verifies JWS signature via @apple/app-store-server-library
+   │ Upserts row into public.apple_subscriptions
+   ▼
+Client: entitlementStore.refresh() reads active row
+   │ isPro() gate available to UI (not yet used for feature gating)
+   ▼
+Asynchronously: App Store Server Notifications v2
+   │ Posted by Apple to apple-webhook (--no-verify-jwt)
+   │ Idempotent state reconciliation by original_transaction_id
+```
+
+### Products in App Store Connect (subscription group `Sophie Premium`)
+
+| Product ID | Duration | Price | Trial |
+|---|---|---|---|
+| `ai.speakwithsophie.app.premium.monthly` | 1 month | $7.99 | 7-day free trial (intro offer) |
+| `ai.speakwithsophie.app.premium.semiannual` | 6 months | $11.99 | — |
+
+### Backend (Supabase, project `upfivcrszqvbkrchevlq`)
+
+- **Migration**: `supabase/migrations/20260415000000_apple_subscriptions.sql` — creates `public.apple_subscriptions` (NOT `subscriptions`, which is a legacy Stripe table with 1 production row we preserved)
+- **Edge Functions**:
+  - `verify-purchase` (JWT verification ON) — client-initiated JWS verification
+  - `apple-webhook` (deployed with `--no-verify-jwt`) — receives App Store Server Notifications v2
+- **Webhook URL** (same for Sandbox and Production): `https://upfivcrszqvbkrchevlq.supabase.co/functions/v1/apple-webhook`
+- **Edge Function secrets**: `APPLE_BUNDLE_ID`, `APPLE_APP_ID`. Apple `.p8` key + Issuer ID + Key ID held by admin; not consumed by current functions (reserved for future App Store Server API client calls).
+
+### Client
+
+- **Library**: `react-native-iap@15.0.2` (+ required peer `react-native-nitro-modules`). v15 API differs from v14 — uses `fetchProducts`, `requestPurchase({ request: { ios: { sku } } })`, unified `purchaseToken`.
+- **Wrapper**: `services/iap/client.ts` — `initIAP`, `fetchSubscriptionProducts`, `purchase`, `restorePurchases`, `setupPurchaseListeners`.
+- **Backend call**: `services/iap/verifyWithBackend.ts` — invokes `verify-purchase` via `supabase.functions.invoke`.
+- **Entitlement state**: `stores/entitlementStore.ts` — Zustand store, reads latest row from `apple_subscriptions`, exposes `isPro()`.
+- **Listeners**: Mounted in `app/_layout.tsx` on sign-in; AppState foreground triggers `entitlementStore.refresh()`.
+- **UI**: `app/profile/subscription.tsx` — three plan cards (Free/Monthly/Semi-annual) with Guideline 3.1.1 disclosures adjacent to each Subscribe button, Restore Purchases button, Terms/Privacy links.
+
+### Expo config
+
+`app.config.ts` plugins array includes `"react-native-iap"` (bare string — v15 plugin accepts no args). No manual entitlements needed — In-App Purchase capability is implicit per bundle ID.
+
+### Deploy workflow (IAP changes)
+
+```bash
+# Backend
+supabase db push                                             # apply migrations
+supabase secrets set APPLE_BUNDLE_ID=... APPLE_APP_ID=...    # one-time
+supabase functions deploy verify-purchase                    # JWT ON
+supabase functions deploy apple-webhook --no-verify-jwt      # JWT OFF
+
+# Client
+# bump version + buildNumber in app.config.ts
+npx expo prebuild --platform ios --clean
+xed ios
+# Product > Archive > Distribute App > App Store Connect
+```
+
+### Apple-side setup (admin)
+
+Complete handover doc: **`docs/APPSTORECONNECT_IAP_SETUP.md`** (12 steps, ~2h for a first-time admin). Key collected values:
+
+| Field | Value |
+|---|---|
+| Apple App ID (numeric) | `6759192122` |
+| Apple Issuer ID | `d590525a-2957-47c0-9bf0-c137d84742df` |
+| Apple IAP Key ID | `8P9K8546LY` |
+| Sandbox tester | created by admin, shared privately |
+
+### Known risks
+
+- **`appAccountToken` not wired**: webhook can't map notifications to a user until `verify-purchase` has created a row. Low-probability race; marked TODO in code.
+
+### Paywall review screenshot
+
+Captured via simulator: `xcrun simctl io <udid> screenshot` on iPhone 16 Pro Max → native 1320×2868 → optionally resized to 1290×2796 with `sips`.
+
+## App Store Rejection Fix #8 (v1.0.2, April 20, 2026) — Build 46
+
+Apple rejected build 45 under **Guideline 2.1(b) — Performance — App Completeness** on iPad Air 11-inch (M3), iPadOS 26.4.1. The reviewer reported: *"no further action produced when we tapped on 'Subscribe'"*.
+
+### Root-cause analysis
+
+Ranked by likelihood (per research of Apple dev forums, react-native-iap issues, and Apple's rejection resources):
+
+1. **IAP products not attached to the v1.0.2 submission** (first-IAP rule). StoreKit returns an empty product list to reviewers if products aren't bound to the binary under review → `fetchProducts` returns `[]` → Subscribe button tapped but SKU isn't fetchable.
+2. **Products stuck in "Missing Metadata"** — a single missing subscription-group localization or per-product review screenshot keeps both products hidden from `StoreKit.Product.products(for:)`.
+3. **Paid Apps Agreement not in "Active" state** — IAP disabled in sandbox regardless of client code.
+4. **iPad compatibility-mode quirk** (Apple Dev Forum 814236) — iPhone-only apps tested on iPad sometimes receive empty products from StoreKit.
+5. **Secondary (our fault)**: the client silently no-op'd when products returned empty, producing the exact behavior the reviewer saw.
+
+(Note: `com.apple.developer.in-app-payments` is Apple Pay's entitlement, NOT StoreKit's — StoreKit IAP requires zero entitlements. We intentionally did *not* add this.)
+
+### Fixes in Build 46
+
+**Client hardening** — `app/profile/subscription.tsx`, `services/iap/client.ts`, `services/i18n/locales/en.json`:
+
+- `subscription.tsx` tracks fetched products in component state (`availableSkus: Set<string>`, `productsError`, `productsLoading`). Subscribe button is disabled with "Temporarily Unavailable" label if the SKU isn't in the fetched list. A red error banner with a **Retry** button is shown above the plan list when products fail to load.
+- `handlePurchase` now validates the SKU against `availableSkus` before calling `requestPurchase`. If the SKU isn't fetchable, the user sees an error alert — never a silent no-op.
+- `services/iap/client.ts` logs `[IAP] fetchProducts returned N products: [...]`, `[IAP] requestPurchase -> <sku>`, `[IAP] purchase listeners mounted`, and `[IAP] purchaseUpdated fired`. These Xcode-console logs distinguish *"products returned empty"* (Apple-side) from *"purchase request silently dropped"* (library-side) on any future rejection.
+- New i18n keys: `profile.subscription_screen.errors.unavailable`, `.errors.productNotReady`, `.unavailableBanner.*`, `.quota.*`.
+
+**Feature gating (Guideline 3.1.1 pre-emption)**:
+
+- New migration `supabase/migrations/20260420000000_daily_usage.sql` → creates `public.daily_usage(user_id, date, seconds_used)` with composite PK + RLS (owner-only SELECT; service role writes).
+- New edge function `supabase/functions/check-talk-quota/index.ts` (JWT-verified). Returns 200 `{ allowed: true, isPro }` for Pro users (active row in `apple_subscriptions` with `expires_date > now()`), 200 `{ allowed: true, used, cap }` + increments `daily_usage.seconds_used` by 300 (5 min charge-in-advance) for free users under the cap, or 402 `{ reason: 'free_quota_exhausted' }` when free users have used ≥ `FREE_DAILY_CAP_SECONDS` (15 min).
+- Client wrapper `services/iap/checkTalkQuota.ts` exposes `checkTalkQuota()` + `TalkQuotaExhaustedError`.
+- `app/(tabs)/talk.tsx` calls `checkTalkQuota()` before `getGeminiSessionToken()`. On `TalkQuotaExhaustedError`, shows the upsell `AlertModal` with "Not now" / "See Plans" buttons; "See Plans" routes to `/profile/subscription`.
+
+**Why a new `check-talk-quota` function instead of gating inside `get-gemini-session`** (a deviation from the original plan): production clients resolve `EXPO_PUBLIC_GEMINI_API_KEY` directly and bypass `get-gemini-session` entirely, so modifying that stub would not gate anything. A dedicated quota function called before token fetch is the reliable gate.
+
+### Admin checklist (pre-build-46 upload)
+
+1. **Paid Apps Agreement = Active** (Business → Agreements).
+2. Both IAP products **NOT** in "Missing Metadata" state.
+3. Subscription group `Sophie Premium` has a **localized Display Name** (English).
+4. Each product has its **review screenshot** uploaded.
+5. In the v1.0.2 submission, **attach both IAP products** under "In-App Purchases and Subscriptions".
+6. Introductory offer (7-day free trial) created on `ai.speakwithsophie.app.premium.monthly`.
+
+See `docs/APPSTORECONNECT_IAP_SETUP.md` for step-by-step screenshots.
+
+### Backend deploy (build 46)
+
+```bash
+# Already executed 2026-04-20:
+supabase db push                                 # applied 20260420000000_daily_usage
+supabase functions deploy check-talk-quota      # deployed to upfivcrszqvbkrchevlq
+```
+
+**Changes**: `app.config.ts` (buildNumber 45→46), `app/(tabs)/talk.tsx`, `app/profile/subscription.tsx`, `services/iap/client.ts`, `services/iap/checkTalkQuota.ts` (new), `services/i18n/locales/en.json`, `supabase/functions/check-talk-quota/index.ts` (new), `supabase/migrations/20260420000000_daily_usage.sql` (new).
+
+### Review notes to paste in App Store Connect (v1.0.2 → App Review → Notes)
+
+```
+This build fixes the issue from the previous review where tapping Subscribe
+produced no action. Root cause: subscription products were not attached to
+the previous submission, so StoreKit returned an empty product list to the
+reviewer's session. Both subscription products are now attached to this
+submission.
+
+Demo account:
+- Email: appreview@speakwithsophie.ai
+- Password: <set by admin in Supabase>
+
+To test In-App Purchases:
+1. Sign in with the demo account above.
+2. Navigate: Profile → Subscription.
+3. Tap "Subscribe" on either the Monthly or Semi-Annual plan.
+4. The App Store purchase sheet will present. A sandbox Apple ID prompt
+   will appear — any valid sandbox tester account will work.
+5. After purchase, the subscription unlocks unlimited daily Sophie Talk
+   conversations (free users are capped at 15 minutes per day).
+
+Product IDs:
+- ai.speakwithsophie.app.premium.monthly — $7.99/month, 7-day free trial
+- ai.speakwithsophie.app.premium.semiannual — $11.99 per 6 months
+
+Note: this app is designed for iPhone (supportsTablet: false). iPhone-only
+apps running on iPad in compatibility mode have documented StoreKit edge
+cases (Apple Developer Forums thread 814236). If this cannot be reproduced
+on iPhone hardware, please let us know.
+```
 
 ## Key Files
 

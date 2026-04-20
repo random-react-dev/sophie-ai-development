@@ -51,13 +51,19 @@ export async function initIAP(): Promise<boolean> {
 export async function getSubscriptionProducts(): Promise<ProductSubscription[]> {
   if (Platform.OS !== "ios") return [];
   try {
+    console.log("[IAP] fetchProducts skus:", PRODUCT_IDS);
     const result = await fetchProducts({
       skus: [...PRODUCT_IDS],
       type: "subs",
     });
-    // fetchProducts returns FetchProductsResult — array of products or null.
-    if (!result) return [];
-    return result as ProductSubscription[];
+    const list = (result as ProductSubscription[] | null) ?? [];
+    console.log(
+      "[IAP] fetchProducts returned",
+      list.length,
+      "products:",
+      list.map((p) => p.id),
+    );
+    return list;
   } catch (err) {
     console.warn("[IAP] fetchProducts failed:", err);
     return [];
@@ -70,15 +76,22 @@ export async function getSubscriptionProducts(): Promise<ProductSubscription[]> 
  */
 export async function purchase(sku: ProductSku | string): Promise<void> {
   if (Platform.OS !== "ios") return;
-  await requestPurchase({
-    request: {
-      apple: {
-        sku,
-        andDangerouslyFinishTransactionAutomatically: false,
+  console.log("[IAP] requestPurchase ->", sku);
+  try {
+    await requestPurchase({
+      request: {
+        apple: {
+          sku,
+          andDangerouslyFinishTransactionAutomatically: false,
+        },
       },
-    },
-    type: "subs",
-  });
+      type: "subs",
+    });
+    console.log("[IAP] requestPurchase returned (awaiting listener)", sku);
+  } catch (err) {
+    console.warn("[IAP] requestPurchase threw:", err);
+    throw err;
+  }
 }
 
 /**
@@ -127,6 +140,7 @@ export function setupPurchaseListeners(
   }
 
   const updateSub = purchaseUpdatedListener(async (p: Purchase) => {
+    console.log("[IAP] purchaseUpdated fired:", p.id, p.productId);
     try {
       const jws = p.purchaseToken;
       if (!jws) {
@@ -134,6 +148,7 @@ export function setupPurchaseListeners(
         return;
       }
       const verified = await verifyPurchaseWithBackend(jws);
+      console.log("[IAP] verifyPurchase backend ok:", verified);
       try {
         await finishTransaction({ purchase: p, isConsumable: false });
       } catch (finishErr) {
@@ -148,6 +163,7 @@ export function setupPurchaseListeners(
   const errorSub = purchaseErrorListener((err: PurchaseError) => {
     console.warn("[IAP] purchaseError:", err.code, err.message);
   });
+  console.log("[IAP] purchase listeners mounted");
 
   return () => {
     try {
