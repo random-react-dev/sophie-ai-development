@@ -13,8 +13,11 @@
 // Side effect on allowed + non-Pro: increments today's daily_usage.seconds_used
 // by FREE_SESSION_CHARGE_SECONDS (charge-in-advance / tamper-resistant).
 //
-// Deploy: `supabase functions deploy check-talk-quota`
-// (JWT-verified — default behaviour is fine.)
+// Deploy: `supabase functions deploy check-talk-quota --no-verify-jwt`
+// (`verify_jwt = false` is set in supabase/config.toml because the new 2026
+// sb_publishable_ key format breaks the platform-level JWT gateway —
+// see https://github.com/orgs/supabase/discussions/41834. Authentication is
+// still enforced internally below via `userClient.auth.getUser()`.)
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';

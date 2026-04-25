@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { supabase } from "../supabase/client";
 
 export type QuotaAllowed = {
@@ -27,22 +28,36 @@ export class TalkQuotaExhaustedError extends Error {
   }
 }
 
+async function readErrorBody(error: FunctionsHttpError): Promise<unknown> {
+  try {
+    return await error.context.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function checkTalkQuota(): Promise<QuotaAllowed> {
   const { data, error } = await supabase.functions.invoke("check-talk-quota");
 
   if (error) {
-    const ctx = (error as { context?: { status?: number; json?: () => Promise<unknown> } }).context;
-    if (ctx?.status === 402) {
-      try {
-        const body = (await ctx.json?.()) as QuotaBlocked | undefined;
+    if (error instanceof FunctionsHttpError) {
+      const status = error.context.status;
+      const body = await readErrorBody(error);
+
+      console.error("[checkTalkQuota] edge function returned non-2xx", {
+        status,
+        body,
+      });
+
+      if (status === 402) {
+        const blocked = body as Partial<QuotaBlocked> | null;
         throw new TalkQuotaExhaustedError(
-          body?.used ?? 0,
-          body?.cap ?? 15 * 60,
+          blocked?.used ?? 0,
+          blocked?.cap ?? 15 * 60,
         );
-      } catch (e) {
-        if (e instanceof TalkQuotaExhaustedError) throw e;
-        throw new TalkQuotaExhaustedError(0, 15 * 60);
       }
+    } else {
+      console.error("[checkTalkQuota] non-HTTP error", error);
     }
     throw error;
   }

@@ -1,0 +1,11 @@
+# config.toml — Supabase project config (per-function settings)
+#
+# `check-talk-quota` does its OWN authentication inside the function via
+# `userClient.auth.getUser()` (see supabase/functions/check-talk-quota/index.ts
+# lines 50-63). The platform-level JWT verification is incompatible with the
+# new 2026 sb_publishable_ key format
+# (https://github.com/orgs/supabase/discussions/41834), so we disable it here.
+# Functions absent from this file keep their existing deployed behaviour.
+
+[functions.check-talk-quota]
+verify_jwt = false
