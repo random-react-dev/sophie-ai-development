@@ -62,8 +62,21 @@ export function SocialLoginButtons() {
         ],
       });
 
-      if (!credential.identityToken) {
-        throw new Error("No identity token returned from Apple");
+      console.log("[AppleSignIn] credential received", {
+        hasIdentityToken: !!credential.identityToken,
+        identityTokenLength: credential.identityToken?.length ?? 0,
+        hasUser: !!credential.user,
+        hasEmail: !!credential.email,
+        hasFullName: !!credential.fullName,
+        hasGivenName: !!credential.fullName?.givenName,
+        hasFamilyName: !!credential.fullName?.familyName,
+      });
+
+      if (!credential.identityToken?.trim()) {
+        throw new Error("APPLE_SIGNIN_NO_TOKEN");
+      }
+      if (credential.identityToken.split(".").length !== 3) {
+        throw new Error("APPLE_SIGNIN_MALFORMED_TOKEN");
       }
 
       const {
@@ -74,7 +87,14 @@ export function SocialLoginButtons() {
         token: credential.identityToken,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("[AppleSignIn] supabase.signInWithIdToken failed", {
+          message: error.message,
+          status: error.status,
+          name: error.name,
+        });
+        throw error;
+      }
 
       // Apple only provides full name on first sign-in, save it
       if (user && credential.fullName) {
@@ -85,9 +105,16 @@ export function SocialLoginButtons() {
           nameParts.push(credential.fullName.familyName);
         const fullName = nameParts.join(" ");
         if (fullName) {
-          await supabase.auth.updateUser({
-            data: { full_name: fullName },
-          });
+          try {
+            await supabase.auth.updateUser({
+              data: { full_name: fullName },
+            });
+          } catch (updateErr) {
+            console.warn(
+              "[AppleSignIn] updateUser failed (non-fatal):",
+              updateErr,
+            );
+          }
         }
       }
     } catch (e: unknown) {

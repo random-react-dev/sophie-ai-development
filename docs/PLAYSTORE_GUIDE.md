@@ -14,6 +14,93 @@
 - **Version**: 1.0.0
 - **Latest versionCode**: 6
 - **Play Store Status**: Production submitted, pending review
+- **Android IAP**: NOT yet wired. See **In-App Purchases (Android)** section below.
+
+---
+
+## In-App Purchases (Android) — progress tracker
+
+Mirrors the iOS IAP architecture (v1.0.2 / build 46) but adapted for Play Billing. `react-native-iap@15.0.2` supports both platforms from the same client code — most UI + hooks are reusable; only the server + admin-side configuration differs.
+
+### Play subscription model (KEY DIFFERENCE from Apple)
+
+Google uses a three-tier model: **Subscription (container) → Base plans → Offers**. Unlike Apple (2 separate products for monthly + semiannual), we use ONE subscription with TWO base plans:
+
+| Level | ID | Notes |
+|---|---|---|
+| Subscription container | `ai.speakwithsophie.app.premium` | Sophie Premium — user-visible name |
+| Base plan (monthly) | `premium-monthly` | 1 month auto-renewing, USD $7.99 |
+| Base plan (semi-annual) | `premium-semiannual` | 6 months auto-renewing, USD $11.99 |
+| Offer (on monthly only) | `free-trial-7d` | 7-day free trial, new-customer eligibility |
+
+All IDs are **immutable** once created in Play Console. Lock them with the developer before the admin creates anything.
+
+### Admin setup doc (handover to non-technical admin)
+
+**`docs/PLAYCONSOLE_IAP_SETUP.md`** — detailed 13-step walkthrough of every click in Play Console + Google Cloud Console. Equivalent of `docs/APPSTORECONNECT_IAP_SETUP.md` for Android. Covers:
+
+1. Payments profile + banking + tax (Apexture Pvt Ltd, India)
+2. Link Google Cloud project to Play Console
+3. Create service account (for `androidpublisher` API) + download JSON key
+4. Find package name + confirm app exists
+5. Create subscription `Sophie Premium`
+6. Create base plan `premium-monthly` + price $7.99
+7. Create base plan `premium-semiannual` + price $11.99
+8. Add 7-day free trial offer on the monthly base plan
+9. Activate subscription + base plans + offer
+10. (deferrable) Set up Pub/Sub topic for Real-Time Developer Notifications (RTDN)
+11. Add license testers
+12. Hand off credentials to developer
+13. (at submission time) Complete App Content + submit to Production
+
+### Admin-side progress checklist
+
+- [ ] Payments profile **Active**, bank **Verified**, tax forms **Active** (Step 1)
+- [ ] Google Cloud project created + linked to Play Console (Step 2)
+- [ ] Service account created + JSON key delivered securely to developer (Step 3)
+- [ ] Subscription `ai.speakwithsophie.app.premium` created + activated (Steps 5, 9)
+- [ ] Base plans `premium-monthly` + `premium-semiannual` created + activated (Steps 6, 7, 9)
+- [ ] Offer `free-trial-7d` created + activated on monthly (Step 8, 9)
+- [ ] License tester account(s) added (Step 11)
+- [ ] (After dev deploys webhook) RTDN Pub/Sub topic + push subscription configured (Step 10)
+- [ ] App Access demo account added: `appreview@speakwithsophie.ai` (Step 13)
+- [ ] Data safety section completed (Step 13)
+
+### Dev-side progress checklist
+
+- [ ] Android wiring of `fetchProducts({ skus, type: 'subs' })` — verify Android returns `subscriptionOfferDetailsAndroid` with `offerToken`
+- [ ] Android `requestPurchase` passes `subscriptionOffers: [{ sku, offerToken }]` alongside `skus`
+- [ ] `finishTransaction(purchase, isConsumable=false)` wired to ack within 3 days (REQUIRED — unacked subs are auto-refunded)
+- [ ] New Supabase edge function `verify-play-purchase` (JWT-verified) — validates `purchaseToken` via `purchases.subscriptionsv2.get`
+- [ ] New Supabase edge function `play-webhook` (`--no-verify-jwt`) — receives RTDN messages; decodes Pub/Sub envelope; dedupes on `messageId`; verifies OIDC JWT from Pub/Sub
+- [ ] New DB table `public.google_subscriptions` (analog to `public.apple_subscriptions`) — tracked by `purchase_token` OR `product_id` + `user_id`
+- [ ] Daily Talk-minutes gate (`check-talk-quota` edge function) already in place from iOS — needs update to also consult `google_subscriptions`
+- [ ] Subscribe screen banner/hardening already done on iOS — confirm it works on Android products too (same React code)
+
+### Tech references (dev-side)
+
+- Architecture + RTDN codes + API shapes: see memory file `project_google_play_iap_architecture.md` in the `memory/` folder.
+- `react-native-iap` v15 Android API docs: <https://hyochan.github.io/react-native-iap/llms-full.txt>
+- `purchases.subscriptionsv2.get` endpoint: <https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptionsv2/get>
+- Play Billing acknowledgement rule (3-day auto-refund if missed): <https://developer.android.com/google/play/billing/integrate>
+
+### Known constraints
+
+- New Play submissions must target **API 35+** AND use **Billing Library 7.0.0+**. `react-native-iap@15.0.2` bundles Billing 7.x → satisfies.
+- Google **does not require products to be attached to a specific build** (unlike Apple). Any activated subscription is immediately queryable from any app version that has matching package name + Billing integration.
+- Google review is mostly automated — reviewers do not typically manually subscribe (unlike Apple). But they CAN, so demo account must work.
+- License testers see **accelerated renewal**: 1 month → 5 min, 1 year → 30 min, free trial → 3 min. Max 6 renewals per purchase.
+- Unacknowledged purchases are **auto-refunded after 3 minutes** for testers, **3 days** for real users. The client MUST call `finishTransaction`.
+
+### Activation order (launch day)
+
+1. Admin: finish Steps 1–9 of `PLAYCONSOLE_IAP_SETUP.md` + send credentials to dev.
+2. Dev: implement Android side, deploy `verify-play-purchase` + `play-webhook` edge functions.
+3. Dev: give admin the webhook URL.
+4. Admin: finish Step 10 (RTDN topic + push subscription).
+5. Dev: upload AAB with billing integration to Internal Testing.
+6. Admin + dev: test purchase + trial + renew + cancel flows with license testers.
+7. Admin: complete Step 13 (App Content + submit to Production).
 
 ## Key Files
 

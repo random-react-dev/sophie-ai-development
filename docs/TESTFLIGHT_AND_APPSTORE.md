@@ -10,12 +10,20 @@
 | **SKU** | sophie-ai |
 | **Domain** | speakwithsophie.ai |
 
-## Current State
+## Current State (as of 2026-04-25)
 
 - **Live Version**: 1.0.1 (build 44) — **APPROVED 2026-04-15** after five rejections in March 2026. Shipped with zero subscription UI.
-- **In Review / Next Version**: 1.0.2 — **build 45 REJECTED 2026-04-20** under Guideline 2.1(b) (Subscribe button silently no-op'd on the reviewer's iPad Air 11-inch). **Build 46** bundles a client-side hardening + minimal feature gating (see "Rejection Fix #8 (v1.0.2)" section below).
+- **1.0.2 / build 45**: REJECTED 2026-04-20 — Guideline 2.1(b) (Subscribe button silently no-op'd on iPad Air 11-inch).
+- **1.0.2 / build 46**: REJECTED 2026-04-20 (second rejection on same date) — TWO issues on iPhone 17 Pro Max / iOS 26.4.1: Guideline 2.1(a) (Apple Sign-In errored) and Guideline 2.1(b) (IAPs still not findable).
+- **1.0.2 / build 47**: Code changes complete locally + built on iPhone 17 Pro simulator. **NOT YET uploaded — BLOCKED on Apple-side bug** (see "Rejection Fix #9 (v1.0.2)" below). Apple Developer Support ticket required before upload.
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: 1.0.1 live; 1.0.2 rejected on build 45; build 46 pending archive/upload/review
+- **App Store Status**: 1.0.1 live; 1.0.2 rejected on builds 45 + 46; build 47 prepared but blocked on Developer Support response
+
+## Demo account (current — supersedes older `appreview@…` references)
+
+- Email: `armanmishra1000@gmail.com`
+- Password: `Arman@99139`
+- Contact: Mitesh Paghdal / +919898456150 / speakwithsophieai@gmail.com
 
 ## App Store Rejection Fix #1 (v1.0, March 10, 2026)
 
@@ -269,6 +277,86 @@ apps running on iPad in compatibility mode have documented StoreKit edge
 cases (Apple Developer Forums thread 814236). If this cannot be reproduced
 on iPhone hardware, please let us know.
 ```
+
+## App Store Rejection Fix #9 (v1.0.2, April 20, 2026 — same day as #8) — Build 47 in flight
+
+Apple rejected build 46 on 2026-04-20 on **iPhone 17 Pro Max / iOS 26.4.1** with TWO issues. Submission ID: `cf0226b0-bd85-4b0c-92e3-28366f11eca3`.
+
+### Issues raised
+
+1. **Guideline 2.1(a) — Performance — App Completeness**: *"an error occurred when we tried to sign up using Apple"*. New device + new OS combo on Apple's review fleet (iPhone 17 Pro Max / iOS 26.4.1).
+2. **Guideline 2.1(b) — Information Needed**: *"we cannot locate the In-App Purchases (Sophie Premium Monthly, Sophie Premium Semiannual, and Sophie Premium 6 Months) within the app at this time"*.
+
+### Root-cause analysis
+
+**For 2.1(a)**: Apple Sign-In code is **byte-identical between builds 45 (passed) and 46 (failed)**. `git diff 3bec27c 859708f -- components/auth/ services/supabase/ app.config.ts app/_layout.tsx stores/authStore.ts ios/` returned ONLY `buildNumber: "45" → "46"`. So the failure is **environment-specific** — Apple's review fleet just added iPhone 17 Pro Max + iOS 26.4.1, and our flow has an OS-specific failure on it. Most likely cause per web research: **OIDC issuer mismatch** — Apple changed ID-token issuer from `appleid.apple.com` to `account.apple.com` in 2025; some Supabase projects' server-side validation lags. Documented in supabase/supabase#43365.
+
+**For 2.1(b)**: User reproduced locally — `[IAP] fetchProducts returned 0 products: []` in dev simulator with the same SKUs. Build 46 client hardening worked as designed (red "unavailable" banner, disabled Subscribe) — only the underlying issue is unresolved. **CONFIRMED via screenshot**: the "In-App Purchases and Subscriptions" section is completely absent from the v1.0.2 version page in App Store Connect. **This is an Apple-acknowledged bug** documented in Apple Developer Forums thread **820936** — Apple Staff publicly acknowledged it and directs affected developers to Developer Support. Apple's new "Add for Review" submission wizard does NOT include IAP attachment (per Apple's official 2025 release notes: *"In-App Purchases and subscriptions aren't eligible to be included as items in a submission since they have a separate submission process."*). So the section MUST appear on the version page — and it doesn't.
+
+### Fixes in Build 47
+
+**Apple Sign-In defensive logging** — `components/auth/SocialLoginButtons.tsx` (handleAppleSignIn, lines 56-105). Build 47 is a diagnostic build — we cannot reproduce iOS 26.4.1 / iPhone 17 Pro Max locally. Four targeted changes:
+
+- Structured credential log after `signInAsync()`: `[AppleSignIn] credential received { hasIdentityToken, identityTokenLength, hasUser, hasEmail, hasFullName, hasGivenName, hasFamilyName }`
+- Replaced single `!credential.identityToken` check with two thrown errors: `APPLE_SIGNIN_NO_TOKEN` (empty/whitespace) and `APPLE_SIGNIN_MALFORMED_TOKEN` (not 3 dot-separated parts)
+- Structured Supabase error log on `signInWithIdToken` failure: `[AppleSignIn] supabase.signInWithIdToken failed { message, status, name }`
+- Wrapped `supabase.auth.updateUser({ data: { full_name } })` in try/catch — failure is now non-fatal (logged as `[AppleSignIn] updateUser failed (non-fatal)`). Apple has already authenticated the user; metadata write is secondary and shouldn't crash the sign-in.
+
+**Talk quota stale-JWT fix** — `app/(tabs)/talk.tsx` line 347. Added `await supabase.auth.refreshSession()` immediately before `await checkTalkQuota()`. Plus added `import { supabase } from "@/services/supabase/client"`.
+
+Why: `supabase.functions.invoke()` does NOT auto-refresh the JWT before sending. After idle, the cached token may be expired → 401 from `getUser()` in the function. Refreshing first guarantees a fresh JWT. Risk: zero (refreshSession is a no-op when token is fresh).
+
+### What we INTENTIONALLY did NOT do (these are wrong / risky)
+
+- **Did NOT add `com.apple.developer.in-app-purchase` to entitlements**. StoreKit requires zero entitlements; build 44 was approved without it. Adding it could trigger a provisioning profile mismatch.
+- **Did NOT refactor `services/iap/client.ts`** — already correct per react-native-iap v15 docs.
+- **Did NOT refactor `app/profile/subscription.tsx`** — build 46 hardening (error banner + disabled Subscribe) is the desired UX.
+- **Did NOT add a `.storekit` configuration file** — sandbox tester is the standard path for our flow.
+- **Did NOT introduce Sentry/Crashlytics** — `console.log` is sufficient diagnostic for build 47.
+- **Did NOT modify the `check-talk-quota` Supabase function** — surgical client-side fix avoids regression risk.
+
+### THE BLOCKER — Apple-side IAP attachment bug
+
+**Problem**: The "In-App Purchases and Subscriptions" section is missing from the v1.0.2 version page. Without it, products cannot be attached, and Apple Review cannot find them. The new "Add for Review" wizard does NOT include IAPs.
+
+**Fix path**: Contact Apple Developer Support. URL: https://developer.apple.com/contact/topic/select → "App Store Connect" → "App Submission". Subject: `In-App Purchases and Subscriptions section missing on version 1.0.2 build 46 — bug 820936`. Body template is in the recovery memory file at `~/.claude/projects/-Users-niravramani-Desktop-Projects-sophie/memory/project_build_47_recovery.md`.
+
+Wait for response (24-72h). Once Apple force-attaches the products OR the section reappears, archive + upload build 47.
+
+### App Store Connect verification checklist (do this when browser access is available)
+
+1. **Business → Agreements**: Paid Apps row = **Active**. Tax forms Active. Bank account Active.
+2. **Apps → Speak With Sophie → Monetization → Subscriptions → Sophie Premium group** (ID 22034127):
+   - English (U.S.) localization with display name `Sophie Premium`
+   - **Investigate the apparent duplicate "Sophie Premium Monthly" at Level 1** — click into both rows; confirm whether they're separate products or a UI rendering artifact
+3. **Each subscription product**: Status = **Ready to Submit** (not "Missing Metadata"). English localization + description present. Review screenshot uploaded. Price tier set.
+4. **v1.0.2 version page**: Re-confirm no "In-App Purchases and Subscriptions" section anywhere (scroll fully). Take a screenshot for the Developer Support ticket.
+5. **App Information → General Information**: Apple App ID = `6759192122`.
+
+### Build 47 ship checklist
+
+1. [ ] Apple Developer Support ticket filed (Forum 820936 reference)
+2. [ ] Apple force-attaches products OR section reappears
+3. [ ] App Store Connect verification (5 items above) all green
+4. [ ] Pro entitlement granted to `armanmishra1000@gmail.com` in production DB:
+   ```sql
+   INSERT INTO public.apple_subscriptions (
+     user_id, original_transaction_id, product_id, state, expires_date, environment
+   ) VALUES (
+     (SELECT id FROM auth.users WHERE email = 'armanmishra1000@gmail.com'),
+     'manual_grant_appreview',
+     'ai.speakwithsophie.app.premium.semiannual',
+     'active',
+     '2027-04-20T00:00:00Z',
+     'Sandbox'
+   );
+   ```
+5. [ ] `app.config.ts` buildNumber 47 (already done)
+6. [ ] `npx expo prebuild --platform ios --clean` (already done)
+7. [ ] Xcode → Archive → Distribute → App Store Connect
+8. [ ] Re-attach both IAP products to build 47 submission (per Apple Support resolution)
+9. [ ] Reply in App Store Connect rejection thread acknowledging both 2.1(a) and 2.1(b)
+10. [ ] Submit for Review
 
 ## Key Files
 

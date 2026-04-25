@@ -17,6 +17,7 @@ import {
 } from "@/services/iap/checkTalkQuota";
 import { translateText } from "@/services/gemini/translate";
 import { geminiWebSocket } from "@/services/gemini/websocket";
+import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -343,6 +344,7 @@ export default function TalkScreen() {
 
       try {
         Logger.info(TAG, "Checking Talk quota...");
+        await supabase.auth.refreshSession();
         try {
           await checkTalkQuota();
         } catch (quotaErr) {
