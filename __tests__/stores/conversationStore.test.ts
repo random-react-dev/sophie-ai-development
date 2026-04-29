@@ -125,6 +125,33 @@ describe('conversationStore', () => {
     });
   });
 
+  describe('resetSessionState', () => {
+    it('clears session context without resetting unrelated store state', () => {
+      const store = useConversationStore.getState();
+      store.addMessage('user', 'Hello');
+      store.setHasGreeted(true);
+      useConversationStore.setState({
+        conversationSummary: 'Previous session summary',
+        cachedPrefix: ['Old prompt prefix'],
+        cachedSummaryHash: 'Previous session summary|true',
+        cachedBaseSystemPrompt: 'Old tutor prompt',
+        sessionProfileId: 'profile-123',
+      });
+
+      store.resetSessionState();
+
+      const state = useConversationStore.getState();
+      expect(state.messages).toEqual([]);
+      expect(state.contextWindowStart).toBe(0);
+      expect(state.hasGreeted).toBe(false);
+      expect(state.conversationSummary).toBe('');
+      expect(state.cachedPrefix).toEqual([]);
+      expect(state.cachedSummaryHash).toBe('');
+      expect(state.cachedBaseSystemPrompt).toBe('');
+      expect(state.sessionProfileId).toBe('profile-123');
+    });
+  });
+
   describe('handleInterruption', () => {
     it('sets isSpeaking to false', () => {
       const store = useConversationStore.getState();
@@ -184,6 +211,24 @@ describe('conversationStore', () => {
     it('setBufferProgress', () => {
       useConversationStore.getState().setBufferProgress(50);
       expect(useConversationStore.getState().bufferProgress).toBe(50);
+    });
+  });
+
+  describe('buildGeminiPrompt', () => {
+    it('rebuilds the cached prefix when the base prompt changes', () => {
+      const store = useConversationStore.getState();
+
+      const firstPrompt = store.buildGeminiPrompt('Tutor prompt');
+      const secondPrompt =
+        useConversationStore.getState().buildGeminiPrompt('Scenario prompt');
+
+      expect(firstPrompt).toContain('Tutor prompt');
+      expect(firstPrompt).not.toContain('Scenario prompt');
+      expect(secondPrompt).toContain('Scenario prompt');
+      expect(secondPrompt).not.toContain('Tutor prompt');
+      expect(useConversationStore.getState().cachedBaseSystemPrompt).toBe(
+        'Scenario prompt',
+      );
     });
   });
 

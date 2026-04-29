@@ -1,5 +1,9 @@
 import { ConfigContext, ExpoConfig } from "expo/config";
 
+const googleIosUrlScheme =
+  process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME ||
+  "com.googleusercontent.apps.654268750156-82stj45o6ub40mba0abmms263c70db4t";
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "sophie",
@@ -96,7 +100,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "@react-native-google-signin/google-signin",
       {
-        iosUrlScheme: process.env.EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME,
+        iosUrlScheme: googleIosUrlScheme,
       },
     ],
     "react-native-iap",
@@ -105,5 +109,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
+  },
+  extra: {
+    ...(config.extra ?? {}),
+    eas: {
+      ...(config.extra?.eas ?? {}),
+      projectId: "fffd65ee-214f-4bda-bf43-c36a66e8aa43",
+    },
   },
 });
