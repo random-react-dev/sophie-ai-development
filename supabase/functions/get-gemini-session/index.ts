@@ -1,5 +1,9 @@
+// Deploy: `supabase functions deploy get-gemini-session --no-verify-jwt`
+// (`verify_jwt = false` is set in supabase/config.toml because the new 2026
+// sb_publishable_ key format breaks the platform-level JWT gateway —
+// see https://github.com/orgs/supabase/discussions/41834. Authentication is
+// still enforced internally below via `supabaseClient.auth.getUser()`.)
 
-// Mock Deno setup for local dev, or standard Deno imports for Supabase Edge Functions
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 

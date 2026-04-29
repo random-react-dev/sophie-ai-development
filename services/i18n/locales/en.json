@@ -403,7 +403,20 @@
       },
       "errors": {
         "purchaseFailed": "We couldn't complete the purchase. Please try again.",
-        "restoreFailed": "We couldn't restore your purchases. Please try again."
+        "restoreFailed": "We couldn't restore your purchases. Please try again.",
+        "unavailable": "Subscriptions are temporarily unavailable. Please check your internet connection and try again.",
+        "productNotReady": "This plan isn't available right now. Please try again in a moment."
+      },
+      "unavailableBanner": {
+        "title": "Subscriptions temporarily unavailable",
+        "body": "We couldn't load subscription plans from the App Store. Please check your internet connection.",
+        "retry": "Retry"
+      },
+      "quota": {
+        "title": "Daily free limit reached",
+        "body": "You've reached your 15 minutes of free Sophie conversations for today. Upgrade to Pro for unlimited access.",
+        "cta": "See Plans",
+        "dismiss": "Not now"
       },
       "footer": "Payment will be charged to your Apple ID account at confirmation of purchase. Cancel anytime in iOS Settings > [your Apple ID] > Subscriptions."
     }

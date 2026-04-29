@@ -18,7 +18,11 @@
 //   SUPABASE_ANON_KEY          - injected by the Supabase runtime (used for auth.getUser)
 //   SUPABASE_SERVICE_ROLE_KEY  - service-role key for upsert
 //
-// Deploy: `supabase functions deploy verify-purchase` (JWT verification ON).
+// Deploy: `supabase functions deploy verify-purchase --no-verify-jwt`
+// (`verify_jwt = false` is set in supabase/config.toml because the new 2026
+// sb_publishable_ key format breaks the platform-level JWT gateway —
+// see https://github.com/orgs/supabase/discussions/41834. Authentication is
+// still enforced internally below via `supabaseAuth.auth.getUser()`.)
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';

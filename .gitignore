@@ -52,3 +52,4 @@ app-example
 .claude
 log-server.js
 add_3_scenarios.js
+.playwright-mcp

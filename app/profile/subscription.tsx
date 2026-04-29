@@ -1,8 +1,9 @@
 import { Check } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -18,6 +19,7 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   type ProductSku,
+  getAvailableSubscriptionPlanIds,
   getSubscriptionProducts,
   purchase as iapPurchase,
   restorePurchases,
@@ -31,6 +33,8 @@ import {
 
 const MONTHLY_SKU: ProductSku = "ai.speakwithsophie.app.premium.monthly";
 const SEMIANNUAL_SKU: ProductSku = "ai.speakwithsophie.app.premium.semiannual";
+const ANDROID_PACKAGE_NAME = "ai.speakwithsophie.app";
+const ANDROID_SUBSCRIPTION_ID = "ai.speakwithsophie.app.premium";
 
 function FeatureCheck({ text }: { text: string }) {
   return (
@@ -77,16 +81,41 @@ export default function SubscriptionScreen() {
 
   const [purchasingSku, setPurchasingSku] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [availableSkus, setAvailableSkus] = useState<Set<string>>(new Set());
+  const [productsError, setProductsError] = useState<"empty" | "fetch_failed" | null>(null);
 
-  // Pre-fetch product metadata so the App Store sheet has lower latency.
-  useEffect(() => {
-    getSubscriptionProducts().catch(() => {
-      /* non-fatal */
-    });
+  const loadProducts = useCallback(async () => {
+    setProductsLoading(true);
+    setProductsError(null);
+    try {
+      const list = await getSubscriptionProducts();
+      const ids = getAvailableSubscriptionPlanIds(list);
+      setAvailableSkus(ids);
+      setProductsError(list.length === 0 ? "empty" : null);
+    } catch {
+      setAvailableSkus(new Set());
+      setProductsError("fetch_failed");
+    } finally {
+      setProductsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   const handlePurchase = async (sku: ProductSku) => {
     if (purchasingSku) return;
+    if (!availableSkus.has(sku)) {
+      showAlert(
+        t("common.error"),
+        t("profile.subscription_screen.errors.unavailable"),
+        undefined,
+        "error",
+      );
+      return;
+    }
     setPurchasingSku(sku);
     try {
       await iapPurchase(sku);
@@ -200,6 +229,10 @@ export default function SubscriptionScreen() {
           expiresAt.getMonth() + 1,
         ).padStart(2, "0")}/${expiresAt.getFullYear()}`
       : "—";
+    const manageUrl =
+      Platform.OS === "android"
+        ? `https://play.google.com/store/account/subscriptions?package=${ANDROID_PACKAGE_NAME}&sku=${ANDROID_SUBSCRIPTION_ID}`
+        : "https://apps.apple.com/account/subscriptions";
     return (
       <View className="mx-4 mb-6">
         <RainbowBorder
@@ -222,9 +255,7 @@ export default function SubscriptionScreen() {
             </Text>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() =>
-                Linking.openURL("https://apps.apple.com/account/subscriptions")
-              }
+              onPress={() => Linking.openURL(manageUrl)}
               className="w-full h-12 rounded-full bg-gray-100 items-center justify-center"
             >
               <Text className="text-black font-semibold">
@@ -239,6 +270,15 @@ export default function SubscriptionScreen() {
 
   const renderPlanCard = (plan: Plan) => {
     const isPurchasing = purchasingSku === plan.sku;
+    const skuUnavailable =
+      !!plan.sku && !productsLoading && !availableSkus.has(plan.sku);
+    const isButtonDisabled =
+      isPurchasing || !!purchasingSku || productsLoading || skuUnavailable;
+    const buttonLabel = productsLoading
+      ? undefined
+      : skuUnavailable
+        ? t("profile.subscription_screen.errors.productNotReady")
+        : plan.cta;
     const cardContent = (
       <View className="p-6 relative">
         {plan.badge && (
@@ -283,17 +323,23 @@ export default function SubscriptionScreen() {
           {plan.sku ? (
             <TouchableOpacity
               activeOpacity={0.8}
-              disabled={isPurchasing || !!purchasingSku}
+              disabled={isButtonDisabled}
               onPress={() => handlePurchase(plan.sku!)}
               className={`w-full h-14 rounded-full items-center justify-center ${
-                isPurchasing ? "bg-gray-200" : "bg-black"
+                isPurchasing || productsLoading || skuUnavailable
+                  ? "bg-gray-200"
+                  : "bg-black"
               }`}
             >
-              {isPurchasing ? (
+              {isPurchasing || productsLoading ? (
                 <ActivityIndicator color="#111827" />
               ) : (
-                <Text className="text-white font-bold text-base">
-                  {plan.cta}
+                <Text
+                  className={`font-bold text-base ${
+                    skuUnavailable ? "text-gray-500" : "text-white"
+                  }`}
+                >
+                  {buttonLabel}
                 </Text>
               )}
             </TouchableOpacity>
@@ -368,6 +414,26 @@ export default function SubscriptionScreen() {
         </View>
 
         {isPro ? renderActiveCard() : null}
+
+        {!isPro && productsError && !productsLoading ? (
+          <View className="mx-4 mb-4 p-4 rounded-2xl bg-red-50 border border-red-100">
+            <Text className="text-sm font-semibold text-red-700 mb-1">
+              {t("profile.subscription_screen.unavailableBanner.title")}
+            </Text>
+            <Text className="text-sm text-red-700 mb-3">
+              {t("profile.subscription_screen.unavailableBanner.body")}
+            </Text>
+            <TouchableOpacity
+              onPress={loadProducts}
+              activeOpacity={0.8}
+              className="self-start px-4 py-2 rounded-full bg-red-600"
+            >
+              <Text className="text-white font-semibold text-sm">
+                {t("profile.subscription_screen.unavailableBanner.retry")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
 
         <View className="px-4">
           {PLANS.map((plan) => renderPlanCard(plan))}

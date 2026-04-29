@@ -11,8 +11,13 @@ import { Language, SUPPORTED_LANGUAGES } from "@/constants/languages";
 import { audioRecorder } from "@/services/audio/recorder";
 import { audioStreamer } from "@/services/audio/streamer";
 import { getGeminiSessionToken } from "@/services/gemini/token";
+import {
+  TalkQuotaExhaustedError,
+  checkTalkQuota,
+} from "@/services/iap/checkTalkQuota";
 import { translateText } from "@/services/gemini/translate";
 import { geminiWebSocket } from "@/services/gemini/websocket";
+import { supabase } from "@/services/supabase/client";
 import { saveToVocabulary } from "@/services/supabase/vocabulary";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -338,6 +343,35 @@ export default function TalkScreen() {
       isInitialized.current = true;
 
       try {
+        Logger.info(TAG, "Checking Talk quota...");
+        await supabase.auth.refreshSession();
+        try {
+          await checkTalkQuota();
+        } catch (quotaErr) {
+          if (quotaErr instanceof TalkQuotaExhaustedError) {
+            Logger.info(TAG, "Free quota exhausted, showing upsell");
+            if (!isMounted) return;
+            isInitialized.current = false;
+            showAlert(
+              t("profile.subscription_screen.quota.title"),
+              t("profile.subscription_screen.quota.body"),
+              [
+                {
+                  text: t("profile.subscription_screen.quota.dismiss"),
+                  style: "cancel",
+                },
+                {
+                  text: t("profile.subscription_screen.quota.cta"),
+                  onPress: () => router.push("/profile/subscription"),
+                },
+              ],
+              "info",
+            );
+            return;
+          }
+          throw quotaErr;
+        }
+
         Logger.info(TAG, "Initializing Gemini session...");
         const token = await getGeminiSessionToken();
 
