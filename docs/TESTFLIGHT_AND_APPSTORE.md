@@ -221,7 +221,7 @@ Ranked by likelihood (per research of Apple dev forums, react-native-iap issues,
 **Feature gating (Guideline 3.1.1 pre-emption)**:
 
 - New migration `supabase/migrations/20260420000000_daily_usage.sql` → creates `public.daily_usage(user_id, date, seconds_used)` with composite PK + RLS (owner-only SELECT; service role writes).
-- New edge function `supabase/functions/check-talk-quota/index.ts` (JWT-verified). Returns 200 `{ allowed: true, isPro }` for Pro users (active row in `apple_subscriptions` with `expires_date > now()`), 200 `{ allowed: true, used, cap }` + increments `daily_usage.seconds_used` by 300 (5 min charge-in-advance) for free users under the cap, or 402 `{ reason: 'free_quota_exhausted' }` when free users have used ≥ `FREE_DAILY_CAP_SECONDS` (15 min).
+- New edge function `supabase/functions/check-talk-quota/index.ts` (JWT-verified). Returns 200 `{ allowed: true, isPro }` for Pro users (active row in `apple_subscriptions` with `expires_date > now()`), 200 `{ allowed: true, used, cap }` + increments `daily_usage.seconds_used` by 300 (5 min charge-in-advance) for free users under the cap, or 402 `{ reason: 'free_quota_exhausted' }` when free users have used ≥ `FREE_DAILY_CAP_SECONDS` (20 min).
 - Client wrapper `services/iap/checkTalkQuota.ts` exposes `checkTalkQuota()` + `TalkQuotaExhaustedError`.
 - `app/(tabs)/talk.tsx` calls `checkTalkQuota()` before `getGeminiSessionToken()`. On `TalkQuotaExhaustedError`, shows the upsell `AlertModal` with "Not now" / "See Plans" buttons; "See Plans" routes to `/profile/subscription`.
 
@@ -268,7 +268,7 @@ To test In-App Purchases:
 4. The App Store purchase sheet will present. A sandbox Apple ID prompt
    will appear — any valid sandbox tester account will work.
 5. After purchase, the subscription unlocks unlimited daily Sophie Talk
-   conversations (free users are capped at 15 minutes per day).
+   conversations (free users are capped at 20 minutes per day).
 
 Product IDs:
 - ai.speakwithsophie.app.premium.monthly — $7.99/month, 7-day free trial
