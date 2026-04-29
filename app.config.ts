@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "sophie",
   slug: "sophie",
-  version: "1.0.2",
+  version: "1.0.4",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "sophie",
@@ -14,7 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     usesAppleSignIn: true,
     supportsTablet: false,
     bundleIdentifier: "ai.speakwithsophie.app",
-    buildNumber: "47",
+    buildNumber: "49",
     infoPlist: {
       NSMicrophoneUsageDescription:
         "Sophie AI needs microphone access to hear your voice during conversations. Audio is processed in real-time and is not recorded or stored.",
@@ -29,7 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
     package: "ai.speakwithsophie.app",
-    versionCode: 8,
+    versionCode: 9,
     permissions: ["android.permission.RECORD_AUDIO"],
   },
   web: {

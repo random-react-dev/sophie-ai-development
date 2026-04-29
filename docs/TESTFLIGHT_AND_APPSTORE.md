@@ -10,14 +10,16 @@
 | **SKU** | sophie-ai |
 | **Domain** | speakwithsophie.ai |
 
-## Current State (as of 2026-04-25)
+## Current State (as of 2026-04-28 ~10:22 IST)
 
 - **Live Version**: 1.0.1 (build 44) — **APPROVED 2026-04-15** after five rejections in March 2026. Shipped with zero subscription UI.
 - **1.0.2 / build 45**: REJECTED 2026-04-20 — Guideline 2.1(b) (Subscribe button silently no-op'd on iPad Air 11-inch).
-- **1.0.2 / build 46**: REJECTED 2026-04-20 (second rejection on same date) — TWO issues on iPhone 17 Pro Max / iOS 26.4.1: Guideline 2.1(a) (Apple Sign-In errored) and Guideline 2.1(b) (IAPs still not findable).
-- **1.0.2 / build 47**: Code changes complete locally + built on iPhone 17 Pro simulator. **NOT YET uploaded — BLOCKED on Apple-side bug** (see "Rejection Fix #9 (v1.0.2)" below). Apple Developer Support ticket required before upload.
+- **1.0.2 / build 46**: REJECTED 2026-04-20 (second rejection on same date) — TWO issues on iPhone 17 Pro Max / iOS 26.4.1: Guideline 2.1(a) (Apple Sign-In errored) and Guideline 2.1(b) (IAPs still not findable). Submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3` still open with status "Unresolved Issues".
+- **1.0.2 / build 47**: Superseded — never uploaded. Code (Apple Sign-In defensive logging + Talk-quota `refreshSession` fix) rolled into build 48.
+- **1.0.2 / build 48**: ✅ **SUBMITTED 2026-04-28 10:22 IST** — App Store Connect status **Waiting for Review**. Adds IAP diagnostic logging in `services/iap/client.ts` on top of build 47's content. Apple-side agreements/tax/banking are Active; Monthly + Semiannual products and the subscription group localization are all **Waiting for Review**. App Store description now includes Terms of Use (EULA) and Privacy Policy links. App Review notes say the demo account requires no authentication code and include the subscription test path/product IDs.
+- **The earlier "Apple Forum 820936 platform bug" hypothesis was WRONG** — see Fix #10 below. Real root cause was the prerequisite chain, not a platform bug.
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: 1.0.1 live; 1.0.2 rejected on builds 45 + 46; build 47 prepared but blocked on Developer Support response
+- **App Store Status**: 1.0.1 live; 1.0.2 build 48 **Waiting for Review** under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`
 
 ## Demo account (current — supersedes older `appreview@…` references)
 
@@ -315,13 +317,13 @@ Why: `supabase.functions.invoke()` does NOT auto-refresh the JWT before sending.
 - **Did NOT introduce Sentry/Crashlytics** — `console.log` is sufficient diagnostic for build 47.
 - **Did NOT modify the `check-talk-quota` Supabase function** — surgical client-side fix avoids regression risk.
 
-### THE BLOCKER — Apple-side IAP attachment bug
+### SUPERSEDED — Apple-side IAP attachment bug hypothesis
 
-**Problem**: The "In-App Purchases and Subscriptions" section is missing from the v1.0.2 version page. Without it, products cannot be attached, and Apple Review cannot find them. The new "Add for Review" wizard does NOT include IAPs.
+This section is preserved as historical context from Fix #9. It was superseded by Fix #10 and the April 28 resubmission. Do **not** file the Forum 820936 ticket based on this section.
 
-**Fix path**: Contact Apple Developer Support. URL: https://developer.apple.com/contact/topic/select → "App Store Connect" → "App Submission". Subject: `In-App Purchases and Subscriptions section missing on version 1.0.2 build 46 — bug 820936`. Body template is in the recovery memory file at `~/.claude/projects/-Users-niravramani-Desktop-Projects-sophie/memory/project_build_47_recovery.md`.
+**Old hypothesis**: The "In-App Purchases and Subscriptions" section was missing from the v1.0.2 version page because of an Apple-side attachment bug.
 
-Wait for response (24-72h). Once Apple force-attaches the products OR the section reappears, archive + upload build 47.
+**Actual result**: Live checks on 2026-04-25 and 2026-04-28 showed the fix was to clear Apple-side prerequisites and resubmit the products/group localization. Build 48 is now submitted and **Waiting for Review**.
 
 ### App Store Connect verification checklist (do this when browser access is available)
 
@@ -333,11 +335,15 @@ Wait for response (24-72h). Once Apple force-attaches the products OR the sectio
 4. **v1.0.2 version page**: Re-confirm no "In-App Purchases and Subscriptions" section anywhere (scroll fully). Take a screenshot for the Developer Support ticket.
 5. **App Information → General Information**: Apple App ID = `6759192122`.
 
-### Build 47 ship checklist
+### Build 47 ship checklist — superseded
 
-1. [ ] Apple Developer Support ticket filed (Forum 820936 reference)
-2. [ ] Apple force-attaches products OR section reappears
-3. [ ] App Store Connect verification (5 items above) all green
+Build 47 was never uploaded. Build 48 superseded it and was submitted on 2026-04-28.
+
+Old checklist, kept only for audit trail:
+
+1. [ ] Apple Developer Support ticket filed (Forum 820936 reference) — **do not do; superseded**
+2. [ ] Apple force-attaches products OR section reappears — **superseded**
+3. [x] App Store Connect verification completed in the later Build 48 flow
 4. [ ] Pro entitlement granted to `armanmishra1000@gmail.com` in production DB:
    ```sql
    INSERT INTO public.apple_subscriptions (
@@ -354,9 +360,105 @@ Wait for response (24-72h). Once Apple force-attaches the products OR the sectio
 5. [ ] `app.config.ts` buildNumber 47 (already done)
 6. [ ] `npx expo prebuild --platform ios --clean` (already done)
 7. [ ] Xcode → Archive → Distribute → App Store Connect
-8. [ ] Re-attach both IAP products to build 47 submission (per Apple Support resolution)
-9. [ ] Reply in App Store Connect rejection thread acknowledging both 2.1(a) and 2.1(b)
-10. [ ] Submit for Review
+8. [ ] Re-attach both IAP products to build 47 submission (per Apple Support resolution) — **superseded**
+9. [ ] Reply in App Store Connect rejection thread acknowledging both 2.1(a) and 2.1(b) — **superseded by updated App Review notes**
+10. [x] Submit for Review — completed with build 48 on 2026-04-28
+
+### Troubleshooting `[IAP] fetchProducts returned 0 products`
+
+If the Subscription screen shows the red "Subscriptions temporarily unavailable" banner and Metro logs `[IAP] fetchProducts returned 0 products: []`, the cause is one of:
+
+1. **Local simulator, no sandbox tester signed in** (most common in dev). Open the Simulator's **Settings → App Store → Sandbox Account** and sign in with the sandbox tester from `docs/APPSTORECONNECT_IAP_SETUP.md` Step 9. Reload the app and tap **Retry** on the banner.
+2. **Local config drift** — run `npx tsx scripts/audit-iap-config.ts` to verify bundle ID, plugin wiring, SKU constants, and admin doc all agree. The script exits 0 when everything matches.
+3. **Apple-side configuration incomplete** — walk all 12 steps of `docs/APPSTORECONNECT_IAP_SETUP.md`. Pay extra attention to: Paid Apps Agreement = **Active**, Bank Account = **Active** (not Pending), per-product localization + review screenshot uploaded, products in **Ready to Submit**.
+4. **Product not resubmitted after rejection** — if App Store Connect shows a product as `Developer Action Needed` or a localization as `Rejected`, open that product/localization, make a small real metadata edit, save, and click **Submit for Review** where available. On 2026-04-28 this cleared both products and the group localization to **Waiting for Review**.
+
+The diagnostic logging in `services/iap/client.ts` (added 2026-04-25) will print `[IAP] fetchProducts returned EMPTY — diagnostic: { connectionInitialized, ... }` whenever the result is empty, so the next 0-products event has actionable data attached.
+
+## App Store Rejection Fix #10 (v1.0.2, April 25, 2026) — Build 48 (REAL root cause + admin completion)
+
+This is the recovery from the Build 46 rejection (2.1(a) + 2.1(b)) that supersedes the misdiagnosis in Fix #9. Build 47 was prepared but never uploaded; build 48 carries forward all of build 47's content plus a small set of additional IAP diagnostics. After the admin completed all 5 prerequisites, build 48 was archived, uploaded, and resubmitted on 2026-04-28.
+
+### What Fix #9 got wrong
+
+Fix #9 hypothesised that the missing "In-App Purchases and Subscriptions" section on the v1.0.2 version page was the Apple platform bug from Forum thread 820936, and recommended filing an Apple Developer Support ticket. Live App Store Connect inspection on 2026-04-25 (via Chrome DevTools / accessibility tree) showed the real cause was a 5-link prerequisite chain on Apexture's side — none of which had ever been fully completed:
+
+1. **W-8BEN tax form** ("U.S. Certificate of Foreign Status of Beneficial Owner") — status was "Missing Tax Info"
+2. **Bank account holder name mismatch** — registered as `OLGUIN FAST EVOLVING & EFFICIENT TECHNOLOGIES FZCO` (UAE), but Apple legal entity is `Apexture Private Limited` (India). Apple requires exact match.
+3. **Paid Apps Agreement** — status "Pending User Info" (cannot become Active without #1 + #2)
+4. **Subscription Group localization** "Sophie Premium" English (U.S.) — status "Rejected" (collateral from build 46 rejection)
+5. **Both subscription products** — status "Developer Action Needed" (collateral from build 46 rejection)
+
+The "missing IAP section on the version page" was a side effect of products being in "Developer Action Needed", combined with Apple's 2025 release-note change that IAPs are no longer manually attached on the version page — they bundle automatically with the next submission when in "Waiting for Review" status. **There is no Apple platform bug.** Do NOT file the Forum 820936 ticket.
+
+The full diagnosis + step-by-step admin recovery is in `docs/APPLE_SIDE_BLOCKERS_AND_RECOVERY.md`. The status block at the top of that doc shows everything as RESOLVED.
+
+### Admin completion (2026-04-25)
+
+Admin walked through `docs/APPLE_SIDE_BLOCKERS_AND_RECOVERY.md` and chose **Path A** for Step 2 (open a new Apexture-named bank account). Result, verified live ~12:25 IST:
+
+- W-8BEN tax form: ✅ Active (submitted 2026-04-25)
+- Bank account: ✅ ICICI Bank Limited (1227), India, INR→USD, Active
+- Paid Apps Agreement: ✅ Active (Apr 15, 2026 – Feb 14, 2027)
+- Subscription Group localization: ✅ Waiting for Review
+- Both products: ✅ Waiting for Review
+
+### Build 48 code changes (additive on top of build 47)
+
+- `app.config.ts` — `buildNumber: "47" → "48"`
+- `services/iap/client.ts` — diagnostic logging in `getSubscriptionProducts()`. When the fetch returns an empty array, an extra `console.warn("[IAP] fetchProducts returned EMPTY — diagnostic", { connectionInitialized, skusRequested, rawResultType, rawResultIsArray })` fires. The throw branch now narrows `unknown` to `Error` and logs `{ name, message }` in a structured form. Strict TypeScript, no `any`.
+- New: `scripts/audit-iap-config.ts` — read-only local config audit. `npx tsx scripts/audit-iap-config.ts` confirms all 6 local checks pass (bundle ID matches, plugin wired, SKUs match docs, package version 15.x, etc.) and prints the Apple-side checklist.
+- New: `docs/APPLE_SIDE_BLOCKERS_AND_RECOVERY.md` — the 5-blocker diagnosis + step-by-step recovery (now marked RESOLVED at the top).
+
+Carried over from build 47 (still not yet pushed to remote main):
+- `app/(tabs)/talk.tsx` — `await supabase.auth.refreshSession()` immediately before `await checkTalkQuota()`
+- `components/auth/SocialLoginButtons.tsx` — Apple Sign-In defensive logging (structured credential log, malformed-token guards, structured `signInWithIdToken` error log, non-fatal `updateUser` try/catch)
+
+### IAP confirmed working in local Simulator
+
+After admin completion, opening the Subscription screen in the dev simulator no longer shows the red "Subscriptions temporarily unavailable" banner. Both Subscribe buttons are tappable. Console log on tap → cancel:
+
+```
+WARN  [IAP] purchaseError: user-cancelled User cancelled the purchase flow
+```
+
+This proves: `fetchProducts` returned products, the requested SKU is valid in StoreKit, and Apple's purchase sheet now presents. The empty-products error is gone.
+
+### Build 48 ship checklist
+
+1. [x] Apple-side admin work — all 5 blockers cleared
+2. [x] `app.config.ts` buildNumber 48
+3. [x] `npx expo prebuild --platform ios --clean` completed
+4. [x] `xed ios` opened the workspace
+5. [x] Xcode archive/distribute completed; build 48 processed in App Store Connect
+6. [x] v1.0.2 version page uses build 48
+7. [x] Subscription product localizations updated from `Rejected` to `Prepare for Submission`
+8. [x] Monthly + Semiannual products submitted; both now **Waiting for Review**
+9. [x] Subscription group localization submitted; now **Waiting for Review**
+10. [x] App Store description updated with Terms of Use (EULA) and Privacy Policy links
+11. [x] App Review notes updated with no-auth-code demo account note, subscription test path, and product IDs
+12. [x] Clicked **Update Review**, then **Resubmit to App Review**
+13. [x] App Store Connect shows iOS Submission **Waiting for Review**, submitted Apr 28, 2026 10:22 AM
+14. [ ] Monitor App Review result
+15. [ ] Commit + push uncommitted local changes
+
+Apple Review turnaround typically 24–48h after submit.
+
+## App Store Resubmission Update (April 28, 2026) — Build 48
+
+Live App Store Connect work completed via Playwright MCP:
+
+- Verified **Business → Agreements**: Free Apps Agreement Active, Paid Apps Agreement Active, ICICI Bank Limited (1227) Active, W-8BEN and W-8BEN-E Active.
+- Found the docs were stale: the subscription group localization was still `Rejected`, and both products were still `Developer Action Needed`.
+- Opened the group localization and saved it, moving it to `Prepare for Submission`.
+- Updated both product English descriptions from `Unlimited Sophie conversations` to `Unlimited AI language conversations`, moving both product localizations to `Prepare for Submission`.
+- Clicked **Submit for Review** on Monthly and Semiannual; both products moved to `Waiting for Review`.
+- Submitted the group localization; it moved to `Waiting for Review`.
+- Added App Store metadata required by Guideline 3.1.2(c):
+  - `Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/`
+  - `Privacy Policy: https://www.speakwithsophie.ai/privacy`
+- Updated App Review notes to state that the demo account has email 2FA disabled and no authentication code is required.
+- Resubmitted iOS App 1.0.2 build 48. App Store Connect now shows **Waiting for Review** for submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`.
 
 ## Key Files
 

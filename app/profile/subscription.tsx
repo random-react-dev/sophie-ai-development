@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -18,6 +19,7 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   type ProductSku,
+  getAvailableSubscriptionPlanIds,
   getSubscriptionProducts,
   purchase as iapPurchase,
   restorePurchases,
@@ -31,6 +33,8 @@ import {
 
 const MONTHLY_SKU: ProductSku = "ai.speakwithsophie.app.premium.monthly";
 const SEMIANNUAL_SKU: ProductSku = "ai.speakwithsophie.app.premium.semiannual";
+const ANDROID_PACKAGE_NAME = "ai.speakwithsophie.app";
+const ANDROID_SUBSCRIPTION_ID = "ai.speakwithsophie.app.premium";
 
 function FeatureCheck({ text }: { text: string }) {
   return (
@@ -86,7 +90,7 @@ export default function SubscriptionScreen() {
     setProductsError(null);
     try {
       const list = await getSubscriptionProducts();
-      const ids = new Set(list.map((p) => p.id));
+      const ids = getAvailableSubscriptionPlanIds(list);
       setAvailableSkus(ids);
       setProductsError(list.length === 0 ? "empty" : null);
     } catch {
@@ -225,6 +229,10 @@ export default function SubscriptionScreen() {
           expiresAt.getMonth() + 1,
         ).padStart(2, "0")}/${expiresAt.getFullYear()}`
       : "—";
+    const manageUrl =
+      Platform.OS === "android"
+        ? `https://play.google.com/store/account/subscriptions?package=${ANDROID_PACKAGE_NAME}&sku=${ANDROID_SUBSCRIPTION_ID}`
+        : "https://apps.apple.com/account/subscriptions";
     return (
       <View className="mx-4 mb-6">
         <RainbowBorder
@@ -247,9 +255,7 @@ export default function SubscriptionScreen() {
             </Text>
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() =>
-                Linking.openURL("https://apps.apple.com/account/subscriptions")
-              }
+              onPress={() => Linking.openURL(manageUrl)}
               className="w-full h-12 rounded-full bg-gray-100 items-center justify-center"
             >
               <Text className="text-black font-semibold">

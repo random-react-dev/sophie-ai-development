@@ -312,27 +312,35 @@ Send the developer a confirmation: "Both URLs saved, Version 2."
 
 ---
 
-## Step 12 — (at submission time) Attach subscriptions to the build
+## Step 12 — (at submission time) Submit subscriptions with the build
 
-When the developer asks you to submit a new build to review, the subscriptions have to be **attached to that build** or App Review will not see them (and will reject the app for "incomplete metadata").
+When the developer asks you to submit a new build to review, the first subscription must be submitted with the app version. Apple's docs still describe an **In-App Purchases and Subscriptions** selector on the app version page, but the live 2026 App Store Connect UI may not show that selector. If it is absent, submit the subscription products and group localization from the **Monetization → Subscriptions** pages, then resubmit the app version.
 
 **Where to go:** App Store Connect → **Apps** → **Speak With Sophie** → in the left sidebar, under **iOS App**, click the **version you're submitting** (e.g., `1.0.1 Prepare for Submission`).
 
-- [ ] Scroll to the section **In-App Purchases and Subscriptions**.
-- [ ] Click the **+** or **Select In-App Purchases**.
+- [ ] Scroll to the section **In-App Purchases and Subscriptions**, if it exists.
+- [ ] If present, click the **+** or **Select In-App Purchases**.
 - [ ] Tick the boxes for:
   - [ ] `ai.speakwithsophie.app.premium.monthly`
   - [ ] `ai.speakwithsophie.app.premium.semiannual`
 - [ ] Click **Done** / **Save**.
-- [ ] Make sure each subscription shows a status of **Ready to Submit** (green dot) — not "Missing Metadata". If any shows Missing Metadata, open it and fix the flagged field (usually a missing localization description or screenshot).
+- [ ] If the section is absent, go to **Monetization → Subscriptions → Sophie Premium** and verify:
+  - [ ] Monthly product is **Ready to Submit** or **Waiting for Review**
+  - [ ] Semiannual product is **Ready to Submit** or **Waiting for Review**
+  - [ ] English (U.S.) group localization is **Ready to Submit** or **Waiting for Review**
+- [ ] If a product shows **Developer Action Needed** or a localization shows **Rejected**, open the affected localization, make a small real metadata edit, save, then click **Submit for Review** on that product or group page.
 
 **Before you hit Submit for Review:**
 
-- [ ] All subscriptions show **Ready to Submit**.
+- [ ] All subscriptions show **Ready to Submit** or **Waiting for Review**.
 - [ ] The build you are submitting has been uploaded and processed (will show in the build picker).
-- [ ] App Review notes contain the demo account login (developer provides — usually `appreview@speakwithsophie.ai`).
+- [ ] App Review notes contain the demo account login. Current Apple demo account: `armanmishra1000@gmail.com`.
+- [ ] App Review notes say whether an authentication code is required. For the current demo account, email 2FA is disabled and no authentication code is required.
+- [ ] The App Store description includes a functional Terms of Use (EULA) link and Privacy Policy link.
 
 Now click **Submit for Review**. Subscriptions are reviewed alongside the app. If the app is approved, they go live with the app; if rejected, you fix the issue and resubmit the same product.
+
+**2026-04-28 live result for Speak With Sophie:** the version page did not show the selector, but Monthly, Semiannual, and the group localization were submitted from the Subscriptions pages and moved to **Waiting for Review**. Build 48 was then resubmitted and the iOS submission moved to **Waiting for Review**.
 
 ---
 

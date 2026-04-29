@@ -19,6 +19,12 @@ interface EntitlementStoreState {
   reset: () => void;
 }
 
+type SubscriptionRow = {
+  product_id: string | null;
+  state: string | null;
+  expires_date: string | null;
+};
+
 const initial = {
   productId: null as string | null,
   state: "none" as EntitlementState,
@@ -42,29 +48,43 @@ export const useEntitlementStore = create<EntitlementStoreState>((set, get) => (
         return;
       }
 
-      const { data, error } = await supabase
+      const { data: appleData, error: appleError } = await supabase
         .from("apple_subscriptions")
         .select("product_id, state, expires_date")
         .eq("user_id", user.id)
         .order("expires_date", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
-      if (error) {
-        console.warn("[entitlement] refresh error:", error.message);
+      const { data: googleData, error: googleError } = await supabase
+        .from("google_subscriptions")
+        .select("product_id, state, expires_date")
+        .eq("user_id", user.id)
+        .order("expires_date", { ascending: false })
+        .limit(1);
+
+      if (appleError || googleError) {
+        console.warn(
+          "[entitlement] refresh error:",
+          appleError?.message ?? googleError?.message,
+        );
         set({ isInitialized: true });
         return;
       }
 
-      if (!data) {
+      const latest = pickLatestSubscription([
+        ...((appleData ?? []) as SubscriptionRow[]),
+        ...((googleData ?? []) as SubscriptionRow[]),
+      ]);
+
+      if (!latest) {
         set({ ...initial, isInitialized: true });
         return;
       }
 
       set({
-        productId: data.product_id ?? null,
-        state: (data.state as EntitlementState) ?? "none",
-        expiresAt: data.expires_date ? new Date(data.expires_date) : null,
+        productId: latest.product_id ?? null,
+        state: toEntitlementState(latest.state),
+        expiresAt: latest.expires_date ? new Date(latest.expires_date) : null,
         isInitialized: true,
       });
     } catch (err) {
@@ -74,6 +94,30 @@ export const useEntitlementStore = create<EntitlementStoreState>((set, get) => (
   },
   reset: () => set({ ...initial }),
 }));
+
+function pickLatestSubscription(rows: SubscriptionRow[]): SubscriptionRow | null {
+  return (
+    rows
+      .filter((row) => row.expires_date)
+      .sort(
+        (a, b) =>
+          new Date(b.expires_date ?? 0).getTime() -
+          new Date(a.expires_date ?? 0).getTime(),
+      )[0] ?? null
+  );
+}
+
+function toEntitlementState(state: string | null): EntitlementState {
+  switch (state) {
+    case "active":
+    case "expired":
+    case "billing_retry":
+    case "revoked":
+      return state;
+    default:
+      return "none";
+  }
+}
 
 // Atomic selectors
 export const useIsPro = (): boolean =>

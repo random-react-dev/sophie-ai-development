@@ -8,7 +8,7 @@
 #    expect a user JWT must therefore disable platform-level verification
 #    and authenticate internally via `userClient.auth.getUser()`.
 #
-# 2. Two functions are intentionally public (webhook + share page) and never
+# 2. Public webhook/share functions never
 #    used a user JWT to begin with — listed here for explicitness so they
 #    are not silently flipped by a future `deploy --all`.
 #
@@ -24,6 +24,10 @@ verify_jwt = false
 # Internal auth: supabaseAuth.auth.getUser() at index.ts:62.
 verify_jwt = false
 
+[functions.verify-play-purchase]
+# Internal auth: userClient.auth.getUser().
+verify_jwt = false
+
 [functions.get-gemini-session]
 # Internal auth: supabaseClient.auth.getUser() at index.ts:23-32.
 verify_jwt = false
@@ -36,6 +40,10 @@ verify_jwt = false
 
 [functions.apple-webhook]
 # App Store Server Notifications V2 — JWS-verified inside the function.
+verify_jwt = false
+
+[functions.play-webhook]
+# Google Play RTDN — delivered by Pub/Sub push, no Supabase user JWT.
 verify_jwt = false
 
 [functions.share-scenario]

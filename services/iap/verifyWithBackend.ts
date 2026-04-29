@@ -23,3 +23,16 @@ export async function verifyPurchaseWithBackend(
   }
   return data as VerifyPurchaseResult;
 }
+
+export async function verifyPlayPurchaseWithBackend(
+  purchaseToken: string,
+): Promise<VerifyPurchaseResult> {
+  const { data, error } = await supabase.functions.invoke("verify-play-purchase", {
+    body: { purchaseToken },
+  });
+
+  if (error) {
+    throw error;
+  }
+  return data as VerifyPurchaseResult;
+}

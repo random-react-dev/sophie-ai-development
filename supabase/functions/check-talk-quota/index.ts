@@ -2,7 +2,7 @@
 //
 // Called by the Talk screen before opening a Gemini session. Enforces the
 // free-tier daily cap (15 minutes / 900 seconds) and grants unlimited access
-// to users with an active Apple subscription.
+// to users with an active Apple or Google Play subscription.
 //
 // Input:  no body required; auth JWT in Authorization header.
 // Output (200): { allowed: true, isPro: boolean, used: number, cap: number }
@@ -75,16 +75,26 @@ serve(async (req: Request) => {
 
   // 1. Active subscription check.
   const nowIso = new Date().toISOString();
-  const { data: sub, error: subErr } = await admin
+  const { data: appleSubs, error: appleSubErr } = await admin
     .from('apple_subscriptions')
     .select('state, expires_date')
     .eq('user_id', user.id)
     .eq('state', 'active')
     .gt('expires_date', nowIso)
-    .maybeSingle();
+    .limit(1);
+  const { data: googleSubs, error: googleSubErr } = await admin
+    .from('google_subscriptions')
+    .select('state, expires_date')
+    .eq('user_id', user.id)
+    .eq('state', 'active')
+    .gt('expires_date', nowIso)
+    .limit(1);
 
-  if (subErr) {
-    console.error('check-talk-quota: subscription lookup failed', subErr);
+  if (appleSubErr || googleSubErr) {
+    console.error(
+      'check-talk-quota: subscription lookup failed',
+      appleSubErr ?? googleSubErr,
+    );
     // Fail open — don't lock Pro users out of Talk because of a DB blip. The
     // worst case here is a Pro user gets free usage on a retry, which is fine.
     return json(200, {
@@ -96,7 +106,7 @@ serve(async (req: Request) => {
     });
   }
 
-  if (sub) {
+  if ((appleSubs?.length ?? 0) > 0 || (googleSubs?.length ?? 0) > 0) {
     return json(200, {
       allowed: true,
       isPro: true,
