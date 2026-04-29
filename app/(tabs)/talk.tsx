@@ -46,6 +46,8 @@ import { MessageBubble } from "@/components/common/MessageBubble";
 import { PageHeader } from "@/components/common/PageHeader";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Logger } from "@/services/common/Logger";
+import { resolveEffectiveCefrLevel } from "@/utils/learningLevel";
+import { buildTalkSessionConfig } from "@/utils/talkSessionConfig";
 import { Feather } from "@expo/vector-icons";
 
 const TAG = "TalkTab";
@@ -56,6 +58,7 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
+/*
 // Hello words for initial greeting
 const HELLO_WORDS: Record<string, string> = {
   en: "Hello",
@@ -191,6 +194,7 @@ ${accentBlock}
 - **IMMEDIATE Immersion**: Your very first word should be IN CHARACTER. Jump straight into the scene.
 - **Language**: Speak primarily in ${targetLang.name}. Use ${nativeLang.name} ONLY in brief parenthetical asides when the user is truly stuck.`;
 };
+*/
 
 export default function TalkScreen() {
   const connectionState = useConversationStore((s) => s.connectionState);
@@ -203,8 +207,7 @@ export default function TalkScreen() {
   const messages = useConversationStore((s) => s.messages);
   const showTranscript = useConversationStore((s) => s.showTranscript);
   const setShowTranscript = useConversationStore((s) => s.setShowTranscript);
-  const clearMessages = useConversationStore((s) => s.clearMessages);
-  const setHasGreeted = useConversationStore((s) => s.setHasGreeted);
+  const resetSessionState = useConversationStore((s) => s.resetSessionState);
   const stopConversation = useConversationStore((s) => s.stopConversation);
   const sessionProfileId = useConversationStore((s) => s.sessionProfileId);
   const setSessionProfileId = useConversationStore(
@@ -218,9 +221,7 @@ export default function TalkScreen() {
   );
   const {
     selectedScenario,
-    selectScenario,
     practicePhrase,
-    setPracticePhrase,
     clearForProfileSwitch,
     scenarioSelectionTimestamp,
   } = useScenarioStore();
@@ -271,6 +272,42 @@ export default function TalkScreen() {
   // Check if both languages are selected (profile exists)
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
+
+  const resetActiveSession = useCallback(
+    async ({
+      clearScenarioIntent = false,
+      nextProfileId,
+      nextScenarioTimestamp,
+    }: {
+      clearScenarioIntent?: boolean;
+      nextProfileId?: string | null;
+      nextScenarioTimestamp?: number;
+    } = {}) => {
+      await stopConversation();
+      resetSessionState();
+      if (clearScenarioIntent) {
+        clearForProfileSwitch();
+      }
+      geminiWebSocket.disconnect();
+      isInitialized.current = false;
+      setSessionStartTime(null);
+
+      if (typeof nextProfileId !== "undefined") {
+        setSessionProfileId(nextProfileId);
+      }
+
+      if (typeof nextScenarioTimestamp === "number") {
+        setActiveScenarioTimestamp(nextScenarioTimestamp);
+      }
+    },
+    [
+      clearForProfileSwitch,
+      resetSessionState,
+      setActiveScenarioTimestamp,
+      setSessionProfileId,
+      stopConversation,
+    ],
+  );
 
   // Fetch profiles on mount to ensure activeProfile is loaded
   useEffect(() => {
@@ -385,18 +422,32 @@ export default function TalkScreen() {
           ? getAccentDescription(activeProfile.preferred_accent)
           : null;
 
-        // Build instruction based on context
-        let instruction: string;
-        let initialPrompt: string | undefined;
+        const currentCefrLevel = resolveEffectiveCefrLevel(
+          useLearningStore.getState().cefrLevel,
+          user,
+        );
+        const hasSeenIntro = useIntroStore.getState().hasSeenIntro;
+        const sessionConfig = buildTalkSessionConfig({
+          targetLanguage,
+          nativeLanguage,
+          accentDesc,
+          currentCefrLevel,
+          hasSeenIntro,
+          practicePhrase,
+          selectedScenario,
+        });
+        let instruction = sessionConfig.instruction;
+        let initialPrompt = sessionConfig.initialPrompt;
 
-        if (practicePhrase) {
+        /*
+        if (false) {
           instruction = `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}
 
 ## Special Focus
 The user wants to practice the phrase: "${practicePhrase}".
 Help them use this phrase naturally in conversation.`;
           initialPrompt = `I want to practice saying "${practicePhrase}". Help me use it in a sentence.`;
-        } else if (selectedScenario) {
+        } else if (false) {
           Logger.info(
             TAG,
             `Initializing for Scenario: ${selectedScenario.title}`,
@@ -426,7 +477,7 @@ ${levelGuide}
 - Build toward a satisfying conclusion — the conversation should feel like it had a beginning, middle, and end
 - Remember what the user said earlier in the conversation and reference it naturally`;
           initialPrompt = `Set the scene and speak your opening line as ${selectedScenario.sophieRole}. Start with a small atmospheric detail or action, then greet the user naturally. Make it feel like the user just walked into this moment.`;
-        } else {
+        } else if (false) {
           Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
           const currentCefrLevel = useLearningStore.getState().cefrLevel;
           const levelGuide =
@@ -442,6 +493,16 @@ ${levelGuide}`;
             initialPrompt = undefined; // No auto-greeting for returning users
           }
         }
+
+        if (selectedScenario) {
+          Logger.info(
+            TAG,
+            `Initializing for Scenario: ${selectedScenario.title}`,
+          );
+        } else if (!practicePhrase) {
+          Logger.info(TAG, "Initializing with Default Prompt (No Scenario)");
+        }
+        */
 
         Logger.info(TAG, `Generated Instruction Length: ${instruction.length}`);
         Logger.info(TAG, `Initial Prompt: ${initialPrompt}`);
@@ -465,41 +526,45 @@ ${levelGuide}`;
       }
     };
 
-    // If language changes after initialization, force a re-init
-    // Check for Profile ID mismatch (Robust Fix for Background Switching)
-    if (activeProfile?.id && sessionProfileId !== activeProfile.id) {
-      Logger.info(
-        TAG,
-        `Profile Switch Detected (Old: ${sessionProfileId}, New: ${activeProfile.id}). Resetting...`,
-      );
-      stopConversation();
-      clearMessages();
-      setHasGreeted(false);
-      clearForProfileSwitch();
-      geminiWebSocket.disconnect();
-      isInitialized.current = false;
-      setSessionStartTime(null);
-      setSessionProfileId(activeProfile.id);
-      // The effect will re-run with isInitialized=false and start fresh
-    }
+    const syncSession = async () => {
+      if (activeProfile?.id && sessionProfileId && sessionProfileId !== activeProfile.id) {
+        Logger.info(
+          TAG,
+          `Profile Switch Detected (Old: ${sessionProfileId}, New: ${activeProfile.id}). Resetting...`,
+        );
+        await resetActiveSession({
+          clearScenarioIntent: true,
+          nextProfileId: activeProfile.id,
+        });
+        return;
+      }
 
-    // Force re-init if scenario or practice phrase changes (including fresh selection of same scenario)
-    // Checks against store's active timestamp to handle unmounts/remounts correctly
-    if (scenarioSelectionTimestamp > activeScenarioTimestamp) {
-      Logger.info(
-        TAG,
-        `New Scenario Selection Detected (Ts: ${scenarioSelectionTimestamp}). Resetting conversation...`,
-      );
-      stopConversation();
-      clearMessages();
-      setHasGreeted(false);
-      geminiWebSocket.disconnect();
-      isInitialized.current = false;
-      setSessionStartTime(null);
-      setActiveScenarioTimestamp(scenarioSelectionTimestamp);
-    }
+      if (activeProfile?.id && !sessionProfileId) {
+        Logger.info(
+          TAG,
+          `Binding session to active profile: ${activeProfile.id}`,
+        );
+        setSessionProfileId(activeProfile.id);
+        return; // Prevent fallthrough, let the state update trigger the next effect run
+      }
 
-    initSession();
+      // Force re-init if scenario or practice phrase changes (including fresh selection of same scenario)
+      // Checks against store's active timestamp to handle unmounts/remounts correctly
+      if (scenarioSelectionTimestamp > activeScenarioTimestamp) {
+        Logger.info(
+          TAG,
+          `New Scenario Selection Detected (Ts: ${scenarioSelectionTimestamp}). Resetting conversation...`,
+        );
+        await resetActiveSession({
+          nextScenarioTimestamp: scenarioSelectionTimestamp,
+        });
+        return; // Prevent fallthrough to initSession, let the state update trigger the next effect run
+      }
+
+      await initSession();
+    };
+
+    void syncSession();
 
     // Cleanup only on unmount (not on blur)
     return () => {
@@ -519,12 +584,16 @@ ${levelGuide}`;
   }, [
     session?.user?.id,
     isConsentLoading, // Re-run once consent state finishes loading
+    activeProfile?.id,
     hasConsented, // Re-run when consent is granted
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes
     selectedScenario, // Re-run when scenario changes
     practicePhrase, // Re-run when practice phrase changes
     scenarioSelectionTimestamp, // Re-run when scenario is re-selected (even if same object)
+    sessionProfileId,
+    activeScenarioTimestamp,
+    resetActiveSession,
   ]);
 
   const getStatusText = (): string => {
@@ -611,16 +680,8 @@ ${levelGuide}`;
           text: t("talk_screen.alerts.reset"),
           style: "destructive",
           onPress: async () => {
-            await stopConversation();
-            clearMessages();
-            setHasGreeted(false);
-            selectScenario(null);
-            setPracticePhrase(null);
-            // Force reconnect
-            geminiWebSocket.disconnect();
-            isInitialized.current = false;
-            // Reset session timer
-            setSessionStartTime(null);
+            await resetActiveSession();
+            clearForProfileSwitch();
           },
         },
       ],
@@ -750,7 +811,7 @@ ${levelGuide}`;
             >
               {/* Finish Button */}
               {messages.length > 0 && (
-                <TouchableOpacity onPress={handleFinish} activeOpacity={0.7}>
+                <TouchableOpacity onPress={handleFinish} activeOpacity={0.8}>
                   <RainbowBorder
                     borderRadius={9999}
                     borderWidth={1.5}
