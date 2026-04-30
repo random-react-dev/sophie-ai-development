@@ -20,6 +20,8 @@
         "buildType": "apk"
       }
     },
-    "production": {}
+    "production": {
+      "environment": "production"
+    }
   }
 }

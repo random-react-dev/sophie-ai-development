@@ -1,7 +1,7 @@
 // check-talk-quota Edge Function
 //
 // Called by the Talk screen before opening a Gemini session. Enforces the
-// free-tier daily cap (15 minutes / 900 seconds) and grants unlimited access
+// free-tier daily cap (20 minutes / 1200 seconds) and grants unlimited access
 // to users with an active Apple or Google Play subscription.
 //
 // Input:  no body required; auth JWT in Authorization header.
@@ -22,7 +22,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const FREE_DAILY_CAP_SECONDS = 15 * 60;            // 15 minutes per calendar day
+const FREE_DAILY_CAP_SECONDS = 20 * 60;            // 20 minutes per calendar day
 const FREE_SESSION_CHARGE_SECONDS = 5 * 60;        // charge 5 min per session start
 
 const corsHeaders = {

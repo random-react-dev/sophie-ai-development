@@ -53,7 +53,7 @@ export async function checkTalkQuota(): Promise<QuotaAllowed> {
         const blocked = body as Partial<QuotaBlocked> | null;
         throw new TalkQuotaExhaustedError(
           blocked?.used ?? 0,
-          blocked?.cap ?? 15 * 60,
+          blocked?.cap ?? 20 * 60,
         );
       }
     } else {
@@ -65,7 +65,7 @@ export async function checkTalkQuota(): Promise<QuotaAllowed> {
   if (!data || data.allowed !== true) {
     throw new TalkQuotaExhaustedError(
       (data as QuotaBlocked | undefined)?.used ?? 0,
-      (data as QuotaBlocked | undefined)?.cap ?? 15 * 60,
+      (data as QuotaBlocked | undefined)?.cap ?? 20 * 60,
     );
   }
 
