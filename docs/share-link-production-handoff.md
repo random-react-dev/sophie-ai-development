@@ -1,101 +1,100 @@
-# Share Link Production EAS Handoff
+# Share Link Production Handoff
 
-## What Was Fixed
+## Current Status
 
-The production app was sharing scenario links like this:
+Status as of 2026-05-01: fixed in app code for local Expo native builds.
+
+The app is built locally:
+
+- Android: Gradle
+- iOS: Xcode
+- EAS Cloud is not part of this release path
+
+## Root Cause
+
+The production app shared scenario links like this:
 
 ```txt
 undefined?token=<scenario-token>
 ```
 
-This happened because the production EAS build did not have the public share-link base URL configured.
+The share link code depended directly on:
 
-The Cloudflare Worker setup is already complete and working. No Cloudflare change is needed.
+```txt
+EXPO_PUBLIC_SHARE_BASE_URL
+```
 
-## Production EAS Variable
+Local development had enough environment setup to work, but the local release bundle used by Gradle/Xcode did not have this value available. Expo replaces `process.env.EXPO_PUBLIC_*` values when the JavaScript bundle is built, so a missing value can become `undefined` inside the release app.
 
-Set this variable in the EAS **production** environment before creating the production build:
+## Fix
+
+The app now builds share links through `getShareScenarioUrl`.
+
+Before:
+
+```txt
+process.env.EXPO_PUBLIC_SHARE_BASE_URL + "?token=" + token
+```
+
+After:
+
+```txt
+getShareScenarioUrl(token)
+```
+
+The helper still uses `EXPO_PUBLIC_SHARE_BASE_URL` when it is set correctly, but falls back to the production Worker URL when it is missing or invalid:
+
+```txt
+https://share-scenario.vivekmallik1111.workers.dev
+```
+
+This keeps the prototype simple and prevents a broken `undefined?token=...` link from reaching users.
+
+## Local Build Requirement
+
+Keep this value in the local `.env` used before creating Gradle/Xcode release builds:
 
 ```txt
 EXPO_PUBLIC_SHARE_BASE_URL=https://share-scenario.vivekmallik1111.workers.dev
 ```
 
-This is the only production EAS variable added for the share-link fix.
+This is a public URL, not a secret.
 
-## How To Check It On Mac Mini
+## Expected Result
 
-From the project folder, run:
-
-```bash
-npx eas-cli whoami
-```
-
-This confirms the Mac Mini is logged in to the correct Expo/EAS account.
-
-Then run:
-
-```bash
-npx eas-cli env:list --environment production
-```
-
-Expected result:
-
-```txt
-Environment: production
-EXPO_PUBLIC_SHARE_BASE_URL=https://share-scenario.vivekmallik1111.workers.dev
-```
-
-## If The Variable Is Missing
-
-If `EXPO_PUBLIC_SHARE_BASE_URL` is not shown in the production environment, add it with this command:
-
-```bash
-npx eas-cli env:create --environment production --name EXPO_PUBLIC_SHARE_BASE_URL --value https://share-scenario.vivekmallik1111.workers.dev --visibility plaintext
-```
-
-Then verify again:
-
-```bash
-npx eas-cli env:list --environment production
-```
-
-Expected result:
-
-```txt
-Environment: production
-EXPO_PUBLIC_SHARE_BASE_URL=https://share-scenario.vivekmallik1111.workers.dev
-```
-
-## Repo Config
-
-The production build profile in `eas.json` now points to the EAS production environment:
-
-```json
-"production": {
-  "environment": "production"
-}
-```
-
-This makes production builds load `EXPO_PUBLIC_SHARE_BASE_URL`.
-
-## Build On Mac Mini
-
-The project manager should build from the Mac Mini where the correct Play Store upload key is already configured.
-
-Use the production profile:
-
-```bash
-npx eas-cli build --platform android --profile production
-```
-
-After uploading/installing the new build, the shared link should look like:
+When sharing a scenario, the message must include:
 
 ```txt
 https://share-scenario.vivekmallik1111.workers.dev?token=<scenario-token>
 ```
 
-It must not show:
+It must never include:
 
 ```txt
 undefined?token=<scenario-token>
 ```
+
+## Verification
+
+Completed on 2026-05-01:
+
+- `npm test -- --runInBand __tests__/utils/shareScenarioLink.test.ts` passed.
+- `npm run typecheck` passed.
+- `./node_modules/.bin/eslint .` completed with warnings only.
+- `npm run lint` is still blocked locally by the `expo lint`/`unrs-resolver` optional native binding issue, even after reinstalling dependencies and adding the missing platform binding. This is a local lint runner issue; the changed TypeScript files lint cleanly through direct ESLint.
+
+Run before release:
+
+```bash
+npm test -- --runInBand __tests__/utils/shareScenarioLink.test.ts
+npm run typecheck
+npm run lint
+```
+
+Manual release check:
+
+1. Install the new Android/iOS release build.
+2. Open or create a scenario.
+3. Tap share.
+4. Confirm the shared message contains the Worker URL and token.
+5. Open the link in a browser and confirm the share page loads.

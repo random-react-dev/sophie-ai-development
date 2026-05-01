@@ -152,6 +152,7 @@ import {
   UtensilsCrossed,
   Wallet,
   Wine,
+  type LucideIcon,
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
@@ -171,8 +172,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { shareScenario } from "@/services/supabase/scenarios";
+import { getShareScenarioUrl } from "@/utils/shareScenarioLink";
 
-const IconMap: Record<string, any> = {
+const IconMap: Record<string, LucideIcon> = {
   // Beginner
   "hand-metal": HandMetal,
   "smile-plus": SmilePlus,
@@ -446,7 +448,7 @@ export default function RoleplayScreen() {
         token = fetched;
         updateScenarioShareToken(scenario.id, fetched);
       }
-      const webLink = `${process.env.EXPO_PUBLIC_SHARE_BASE_URL}?token=${token}`;
+      const webLink = getShareScenarioUrl(token);
       await Share.share({
         message: `Practice this conversation scenario on Sophie AI!\n\n${webLink}`,
       });
@@ -752,7 +754,7 @@ function CreateScenarioModal({
         updateScenarioShareToken(createdScenario.id, fetched);
         setCreatedScenario({ ...createdScenario, shareToken: fetched });
       }
-      const webLink = `${process.env.EXPO_PUBLIC_SHARE_BASE_URL}?token=${token}`;
+      const webLink = getShareScenarioUrl(token);
       await Share.share({
         message: `Practice this conversation scenario on Sophie AI!\n\n${webLink}`,
       });
