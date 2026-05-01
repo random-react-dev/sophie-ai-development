@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 
 import { AlertModal, useAlertModal } from "@/components/common/AlertModal";
 import { RainbowBorder } from "@/components/common/Rainbow";
@@ -35,6 +34,9 @@ const MONTHLY_SKU: ProductSku = "ai.speakwithsophie.app.premium.monthly";
 const SEMIANNUAL_SKU: ProductSku = "ai.speakwithsophie.app.premium.semiannual";
 const ANDROID_PACKAGE_NAME = "ai.speakwithsophie.app";
 const ANDROID_SUBSCRIPTION_ID = "ai.speakwithsophie.app.premium";
+const APPLE_STANDARD_EULA_URL =
+  "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
+const PRIVACY_POLICY_URL = "https://www.speakwithsophie.ai/privacy";
 
 function FeatureCheck({ text }: { text: string }) {
   return (
@@ -71,7 +73,6 @@ type Plan = {
 
 export default function SubscriptionScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
   const isPro = useIsPro();
   const expiresAt = useEntitlementExpiresAt();
   const productId = useEntitlementProductId();
@@ -457,13 +458,15 @@ export default function SubscriptionScreen() {
         </View>
 
         <View className="px-6 mt-2 flex-row items-center justify-center gap-4">
-          <TouchableOpacity onPress={() => router.push("/profile/terms")}>
+          <TouchableOpacity
+            onPress={() => Linking.openURL(APPLE_STANDARD_EULA_URL)}
+          >
             <Text className="text-xs text-gray-500 underline">
               {t("profile.subscription_screen.links.terms")}
             </Text>
           </TouchableOpacity>
           <Text className="text-xs text-gray-300">|</Text>
-          <TouchableOpacity onPress={() => router.push("/profile/privacy")}>
+          <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
             <Text className="text-xs text-gray-500 underline">
               {t("profile.subscription_screen.links.privacy")}
             </Text>

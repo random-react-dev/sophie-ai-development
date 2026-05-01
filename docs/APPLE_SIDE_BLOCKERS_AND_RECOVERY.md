@@ -1,6 +1,6 @@
 # Apple-Side Blockers & Recovery Plan — Speak With Sophie
 
-## ✅ STATUS — SUBMITTED 2026-04-28 (verified live ~10:22 IST)
+## ✅ STATUS — BUILD 50 LOCAL PREP 2026-04-30 (latest code)
 
 | # | Blocker | State | Verified value |
 |---|---|---|---|
@@ -12,7 +12,8 @@
 | 5b | Sophie Premium Semiannual | ✅ **Waiting for Review** | Was "Developer Action Needed" |
 | 6 | App Store metadata for subscriptions | ✅ **Fixed** | App description now includes Terms of Use (EULA) and Privacy Policy links |
 | 7 | App Review notes | ✅ **Updated** | Notes say no auth code is required for demo account; include product IDs and test path |
-| 8 | iOS 1.0.2 build 48 submission | ✅ **Waiting for Review** | Submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`, submitted Apr 28, 2026 10:22 AM IST |
+| 8 | iOS 1.0.2 build 48 submission | ✅ **Submitted previously** | Submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`, submitted Apr 28, 2026 10:22 AM IST |
+| 9 | iOS build 50 fallback binary | 🟡 **Local prep** | Build number bumped from 49 to 50; subscription screen Terms link opens Apple's Standard EULA URL directly |
 
 **IAP confirmed working in local Simulator** — `WARN [IAP] purchaseError: user-cancelled` proves `fetchProducts` returns products, Subscribe button is tappable, and Apple's purchase sheet now presents. The empty-products error is gone.
 
@@ -22,8 +23,9 @@
 - Monthly subscription: **Waiting for Review**
 - Semiannual subscription: **Waiting for Review**
 - Subscription group localization: **Waiting for Review**
+- Local fallback build: **1.0.4 (50)**, prepared only if metadata-only resubmission is blocked.
 
-**Next step:** monitor App Review. If Apple rejects again, read the new rejection text before changing code or Apple-side configuration.
+**Next step:** attempt metadata-only recovery first. Upload build 50 only if App Store Connect requires a new binary.
 
 The rest of this document is preserved for historical context — it documents the 5-blocker diagnosis and the steps that the admin successfully followed to clear them.
 
@@ -298,6 +300,8 @@ After all steps are complete, every one of these should be true:
 - [x] App Store description includes Terms of Use (EULA) and Privacy Policy links
 - [x] Local Simulator purchase sheet presents; cancel logs `WARN [IAP] purchaseError: user-cancelled`
 - [x] Build 48 submitted for review — iOS submission status **Waiting for Review**
+- [x] Build 50 source prep: `app.config.ts` build number bumped and subscription footer links hardened
+- [ ] Build 50 native prep: `npx expo prebuild --platform ios --clean`, native clean/build, `xed ios`
 
 ---
 
