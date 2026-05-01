@@ -10,16 +10,17 @@
 | **SKU** | sophie-ai |
 | **Domain** | speakwithsophie.ai |
 
-## Current State (as of 2026-04-28 ~10:22 IST)
+## Current State (as of 2026-04-30 ~13:50 IST)
 
 - **Live Version**: 1.0.1 (build 44) — **APPROVED 2026-04-15** after five rejections in March 2026. Shipped with zero subscription UI.
 - **1.0.2 / build 45**: REJECTED 2026-04-20 — Guideline 2.1(b) (Subscribe button silently no-op'd on iPad Air 11-inch).
 - **1.0.2 / build 46**: REJECTED 2026-04-20 (second rejection on same date) — TWO issues on iPhone 17 Pro Max / iOS 26.4.1: Guideline 2.1(a) (Apple Sign-In errored) and Guideline 2.1(b) (IAPs still not findable). Submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3` still open with status "Unresolved Issues".
 - **1.0.2 / build 47**: Superseded — never uploaded. Code (Apple Sign-In defensive logging + Talk-quota `refreshSession` fix) rolled into build 48.
 - **1.0.2 / build 48**: ✅ **SUBMITTED 2026-04-28 10:22 IST** — App Store Connect status **Waiting for Review**. Adds IAP diagnostic logging in `services/iap/client.ts` on top of build 47's content. Apple-side agreements/tax/banking are Active; Monthly + Semiannual products and the subscription group localization are all **Waiting for Review**. App Store description now includes Terms of Use (EULA) and Privacy Policy links. App Review notes say the demo account requires no authentication code and include the subscription test path/product IDs.
+- **1.0.4 / build 50**: 🟡 **LOCAL PREP 2026-04-30** — build-number bump after pulling latest `origin/main`; subscription footer Terms link now opens Apple's Standard EULA directly and Privacy opens the full `https://www.speakwithsophie.ai/privacy` URL. Use this build only if App Store Connect requires a new binary for the 3.1.2(c) recovery.
 - **The earlier "Apple Forum 820936 platform bug" hypothesis was WRONG** — see Fix #10 below. Real root cause was the prerequisite chain, not a platform bug.
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: 1.0.1 live; 1.0.2 build 48 **Waiting for Review** under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`
+- **App Store Status**: 1.0.1 live; 1.0.2 build 48 was the last recorded submitted build under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`; build 50 is local/native-prep until uploaded.
 
 ## Demo account (current — supersedes older `appreview@…` references)
 
@@ -453,6 +454,27 @@ Live App Store Connect work completed via Playwright MCP:
 - Opened the group localization and saved it, moving it to `Prepare for Submission`.
 - Updated both product English descriptions from `Unlimited Sophie conversations` to `Unlimited AI language conversations`, moving both product localizations to `Prepare for Submission`.
 - Clicked **Submit for Review** on Monthly and Semiannual; both products moved to `Waiting for Review`.
+
+## App Store Rejection Fix #11 (v1.0.4, April 30, 2026) — Build 50 local prep
+
+Purpose: prepare a new binary only if App Store Connect blocks metadata-only recovery for the 3.1.2(c) subscription/EULA rejection.
+
+Code changes:
+
+- `app.config.ts` — `ios.buildNumber: "49" → "50"`.
+- `app/profile/subscription.tsx` — footer Terms link now opens Apple's Standard License Agreement directly: `https://www.apple.com/legal/internet-services/itunes/dev/stdeula/`.
+- `app/profile/subscription.tsx` — footer Privacy link now opens the full policy URL directly: `https://www.speakwithsophie.ai/privacy`.
+- Purchase, restore, entitlement, backend, quota, and product IDs are unchanged.
+
+Local verification/progress:
+
+- [x] Pulled latest `origin/main` before making code changes.
+- [x] `git diff --check` passed before native regeneration.
+- [x] `npm run typecheck` passed before native regeneration.
+- [ ] `npm run lint` blocked by local `unrs-resolver` optional native binding issue after one `npm i` retry.
+- [ ] `npx expo prebuild --platform ios --clean`
+- [ ] `xcodebuild` clean/build
+- [ ] `xed ios`
 - Submitted the group localization; it moved to `Waiting for Review`.
 - Added App Store metadata required by Guideline 3.1.2(c):
   - `Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/`
