@@ -8,6 +8,7 @@ import {
 } from "./liveConfig";
 import { getGeminiSessionToken } from "./token";
 import { GeminiClientContent, GeminiServerResponse } from "./types";
+import { buildGeminiLiveWebSocketUrl } from "./websocketUrl";
 
 const TAG = "PhrasePlayback";
 const WS_CONNECTING = 0;
@@ -28,8 +29,6 @@ export type PhrasePlaybackResult = "started" | "cancelled" | "failed";
 class GeminiPhrasePlaybackService {
   private readonly streamer = createAudioStreamer();
   private ws: WebSocket | null = null;
-  private url =
-    "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
   private requestId = 0;
   private activeTraceId: string | null = null;
   private pendingStartResolver:
@@ -148,7 +147,7 @@ class GeminiPhrasePlaybackService {
     language: string,
     traceId: string,
   ): void {
-    const ws = new WebSocket(`${this.url}?key=${token}`);
+    const ws = new WebSocket(buildGeminiLiveWebSocketUrl(token));
     this.ws = ws;
 
     ws.onopen = () => {

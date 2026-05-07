@@ -4,7 +4,7 @@ This document describes the working architecture for real-time voice conversatio
 
 ## Overview
 
-Sophie AI uses Gemini Live API for real-time voice conversations. The user speaks, Gemini processes the audio, and Sophie AI responds with voice.
+Sophie AI uses Gemini Live API for real-time voice conversations. The app first asks Supabase for a short-lived Gemini Live token, then the user speaks directly to Gemini over WebSocket. Audio is not proxied through Supabase.
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
@@ -24,10 +24,11 @@ Sophie AI uses Gemini Live API for real-time voice conversations. The user speak
 ### User Flow
 
 1. **User visits Talk page** → Selects target and native languages
-2. **WebSocket connects** → Sophie AI **automatically greets** with hello word introduction
-3. **User holds mic button (200ms+)** → Recording starts, audio streams to Gemini
-4. **User releases mic** → Recording stops, Gemini processes and Sophie AI responds
-5. **Flow continues** → User can hold again to speak
+2. **App requests token** → `get-gemini-session` returns a short-lived Gemini Live token
+3. **WebSocket connects** → Sophie AI **automatically greets** with hello word introduction
+4. **User holds mic button (200ms+)** → Recording starts, audio streams to Gemini
+5. **User releases mic** → Recording stops, Gemini processes and Sophie AI responds
+6. **Flow continues** → User can hold again to speak
 
 ### Key Implementation Details
 
@@ -158,7 +159,11 @@ services/
 │   ├── streamer.ts        # Audio playback with buffer queue
 │   └── recorder.ts        # Microphone recording (expo-stream-audio)
 ├── gemini/
+│   ├── token.ts           # Gets short-lived Gemini Live tokens from Supabase
+│   ├── websocketUrl.ts    # Builds direct-key or ephemeral-token WebSocket URLs
 │   ├── websocket.ts       # WebSocket connection to Gemini
+│   ├── phrasePlayback.ts  # Isolated Gemini playback for phrases
+│   ├── translate.ts       # Translation wrapper via Supabase
 │   └── types.ts           # TypeScript types for Gemini API
 └── common/
     └── Logger.ts          # Logging utility

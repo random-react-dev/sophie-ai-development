@@ -15,6 +15,7 @@ import {
   GeminiRealtimeInput,
   GeminiServerResponse,
 } from "./types";
+import { buildGeminiLiveWebSocketUrl } from "./websocketUrl";
 
 // Lazy getter to break circular dependency with conversationStore
 const getConversationStore = () =>
@@ -47,8 +48,6 @@ type TurnIssueReason =
 
 class GeminiWebSocket {
   private ws: WebSocket | null = null;
-  private url =
-    "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent";
   private connectionState: ConnectionState = "idle";
   private isSetupComplete = false;
   private reconnectAttempts = 0;
@@ -580,7 +579,7 @@ class GeminiWebSocket {
     );
 
     try {
-      const wsUrl = `${this.url}?key=${apiKey}`;
+      const wsUrl = buildGeminiLiveWebSocketUrl(apiKey);
       const ws = new WebSocket(wsUrl);
       this.ws = ws;
 

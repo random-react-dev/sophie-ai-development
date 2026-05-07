@@ -55,13 +55,24 @@ Follow these steps to set up the project locally.
     cp .env.example .env
     ```
 
-    Fill in your API keys:
+    Fill in your app config:
 
     ```env
     EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
     EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
-    EXPO_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+    EXPO_PUBLIC_SHARE_BASE_URL=your_cloudflare_workers_url
     ```
+
+    Gemini is configured on the Supabase Edge Function side, not in the app
+    bundle:
+
+    ```bash
+    supabase secrets set GEMINI_API_KEY="your_gemini_api_key" --project-ref upfivcrszqvbkrchevlq
+    supabase functions deploy get-gemini-session --no-verify-jwt --project-ref upfivcrszqvbkrchevlq
+    supabase functions deploy translate-text --no-verify-jwt --project-ref upfivcrszqvbkrchevlq
+    ```
+
+    Future Gemini key rotations only need the `supabase secrets set` command.
 
 4.  **Run the app:**
 

@@ -226,7 +226,7 @@ Ranked by likelihood (per research of Apple dev forums, react-native-iap issues,
 - Client wrapper `services/iap/checkTalkQuota.ts` exposes `checkTalkQuota()` + `TalkQuotaExhaustedError`.
 - `app/(tabs)/talk.tsx` calls `checkTalkQuota()` before `getGeminiSessionToken()`. On `TalkQuotaExhaustedError`, shows the upsell `AlertModal` with "Not now" / "See Plans" buttons; "See Plans" routes to `/profile/subscription`.
 
-**Why a new `check-talk-quota` function instead of gating inside `get-gemini-session`** (a deviation from the original plan): production clients resolve `EXPO_PUBLIC_GEMINI_API_KEY` directly and bypass `get-gemini-session` entirely, so modifying that stub would not gate anything. A dedicated quota function called before token fetch is the reliable gate.
+**Gemini key handling**: production clients now call `get-gemini-session` for a short-lived Gemini Live token instead of bundling `EXPO_PUBLIC_GEMINI_API_KEY`. The long-lived Gemini key lives in the Supabase `GEMINI_API_KEY` secret, so future key rotation is a Supabase secret update, not a new app binary. `check-talk-quota` still runs before token fetch so quota behavior stays separate and unchanged.
 
 ### Admin checklist (pre-build-46 upload)
 
