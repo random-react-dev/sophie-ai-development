@@ -316,9 +316,11 @@ Send the developer a confirmation: "Both URLs saved, Version 2."
 
 When the developer asks you to submit a new build to review, the first subscription must be submitted with the app version. Do not submit the first subscription by itself. The final App Review submission must contain the app version and both subscription products together.
 
-**Current recovery target:** iOS app version `1.0.5`, build `51`.
+**Current recovery target:** iOS app version `1.0.6`, build `52`.
 
-**Where to go:** App Store Connect → **Apps** → **Speak With Sophie** → in the left sidebar, under **iOS App**, click the **version you're submitting** (for this recovery, `1.0.5 Prepare for Submission`).
+Build `51` was prepared before the Gemini remote-key change. Do not submit build `51` if this release must include server-side Gemini key rotation.
+
+**Where to go:** App Store Connect → **Apps** → **Speak With Sophie** → in the left sidebar, under **iOS App**, click the **version you're submitting** (for this recovery, `1.0.6 Prepare for Submission`).
 
 - [ ] Scroll to the section **In-App Purchases and Subscriptions**, if it exists.
 - [ ] If present, click the **+** or **Select In-App Purchases**.
@@ -327,7 +329,7 @@ When the developer asks you to submit a new build to review, the first subscript
   - [ ] `ai.speakwithsophie.app.premium.semiannual`
 - [ ] Click **Done** / **Save**.
 - [ ] If the section is absent, click **Add for Review** on the app version and check the Draft Submission/App Review page. The submission must show all 3 items before you click **Submit for Review**:
-  - [ ] iOS App `1.0.5`
+  - [ ] iOS App `1.0.6`
   - [ ] Monthly subscription
   - [ ] Semiannual subscription
 - [ ] If a product shows **Developer Action Needed** or a localization shows **Rejected**, open the affected localization, make a real metadata edit, save, then return to the app version submission. Only submit after the app and subscriptions are in the same review submission.
@@ -338,11 +340,14 @@ When the developer asks you to submit a new build to review, the first subscript
 - [ ] The build you are submitting has been uploaded and processed (will show in the build picker).
 - [ ] App Review notes contain the demo account login. Current Apple demo account: `armanmishra1000@gmail.com`.
 - [ ] App Review notes say whether an authentication code is required. For the current demo account, email 2FA is disabled and no authentication code is required.
+- [ ] App Review notes mention that Gemini now uses short-lived access through Supabase, while voice audio still goes directly from the app to Google Gemini after user consent.
 - [ ] The App Store description includes a functional Terms of Use (EULA) link and Privacy Policy link.
 
 Now click **Submit for Review**. Subscriptions are reviewed alongside the app. If the app is approved, they go live with the app; if rejected, you fix the issue and resubmit the same product.
 
-**2026-05-02 live result for Speak With Sophie:** Apple approved the app binary but returned the subscriptions because the required binary was not submitted with the subscription products. The metadata was corrected and a new app version `1.0.5` was created. Upload/select build `51`, then submit the app and both subscriptions together.
+**2026-05-02 live result for Speak With Sophie:** Apple approved the app binary but returned the subscriptions because the required binary was not submitted with the subscription products. The metadata was corrected and a new app version was created.
+
+**2026-05-07 update:** The Gemini remote-key change requires a newer binary. Use iOS app version `1.0.6`, upload/select build `52`, then submit the app and both subscriptions together.
 
 ---
 

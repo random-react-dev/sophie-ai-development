@@ -466,12 +466,13 @@ Complete each card (every card must be green before submission):
 
 ### 13b. Submit for review
 
-- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current Android recovery upload: `Speak-With-Sophie-1.0.5-vc12.aab`.
-- [ ] Release name: `1.0.5 (12)`.
+- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current Gemini remote-key upload target: `Speak-With-Sophie-1.0.6-vc13.aab`.
+- [ ] Release name: `1.0.6 (13)`.
 - [ ] Release notes:
   ```text
-  Improves Android subscription recovery. The app now verifies existing Play purchases on startup and when returning to the foreground, restores valid completed purchases, and skips pending purchases until Google marks them completed.
+  Improves Android subscription recovery and Gemini reliability. The app now restores valid completed Play purchases on startup and foreground, and gets short-lived Gemini access through our Supabase backend so future Gemini API key rotations can be handled server-side without another app update.
   ```
+- [ ] Confirm the developer did not upload the stale vc12 AAB. The next AAB must use Android `versionCode` 13 or newer.
 - [ ] **Review release** → confirm subscriptions appear in the "In-app products" preview (they should — Active subscriptions are auto-included).
 - [ ] **Start rollout to Production**.
 
@@ -501,6 +502,11 @@ Because Apexture is an **organization account**, Google does NOT require 14-day 
 - Confirm `verify-play-purchase` was deployed after the acknowledgement fix. The backend must acknowledge pending purchases before returning success to the app.
 - Confirm the installed Android build is version `1.0.5` with `versionCode` 12 or newer. This build also recovers missed completed purchases on app startup and foreground.
 - Make a fresh license-tester purchase. Old test purchases that were already auto-refunded will not recover.
+
+**"Gemini stopped working after the app is installed."**
+- Confirm the installed Android build is version `1.0.5` with `versionCode` 13 or newer for server-side Gemini key handling.
+- Confirm Supabase has a working `GEMINI_API_KEY` secret: `supabase secrets list --project-ref upfivcrszqvbkrchevlq | grep GEMINI_API_KEY`.
+- To rotate the Gemini key after this release is live, run `supabase secrets set GEMINI_API_KEY="NEW_KEY" --project-ref upfivcrszqvbkrchevlq`. No new Play review is needed for key rotation alone.
 
 **"Bank account has been pending for over 3 days."**
 - Confirm the test deposit amount was entered correctly in **Payments profile → Bank accounts → Confirm deposit**. If you entered wrong amounts 3× the account is locked — contact Play Console support.

@@ -12,9 +12,11 @@
 ## Current State
 
 - **Live version**: 1.0.5 (`versionCode` 11)
-- **Next Play upload**: 1.0.5 (`versionCode` 12)
-- **Play Store Status**: 1.0.5 (11) is live. A new Production draft named `1.0.5 (12)` has release notes saved and is waiting for the vc12 AAB upload.
+- **Prepared but stale draft**: 1.0.5 (`versionCode` 12) purchase-recovery draft exists in Play Console, but its AAB was prepared before the Gemini remote-key change. Do not upload the old vc12 AAB for the next release.
+- **Next Play upload**: 1.0.6 (`versionCode` 13) after bumping Android `versionCode`, rebuilding the AAB, and replacing/updating the Play Console draft.
+- **Play Store Status**: 1.0.5 (11) is live. Next submission should include Android purchase recovery plus Gemini remote-key support.
 - **Android IAP**: Wired. Product catalog is active; backend acknowledgement and client-side startup/foreground recovery are ready for license-tester verification.
+- **Gemini key handling**: App no longer bundles `EXPO_PUBLIC_GEMINI_API_KEY`. `get-gemini-session` and `translate-text` are deployed as Supabase Function version 4 and read `GEMINI_API_KEY` from Supabase secrets. Future Gemini key rotations use `supabase secrets set` and do not need a Play review once this app update is live.
 
 ---
 
@@ -120,6 +122,8 @@ Progress:
 
 ### 2026-05-07 Android 1.0.5 purchase-recovery release prep
 
+Superseded for store upload by the Gemini remote-key release prep below. Keep this record for traceability, but do not upload the old vc12 AAB if the next release must include the Gemini code.
+
 - [x] `app.config.ts` Android `versionCode` increased to `12`.
 - [x] Android native project regenerated with `npx expo prebuild --platform android --clean`.
 - [x] Signed release AAB built with `./gradlew app:bundleRelease`.
@@ -129,13 +133,32 @@ Progress:
 - [x] Release name: `1.0.5 (12)`.
 - [x] Release notes added for `en-US`.
 - [x] Release saved as draft.
-- [ ] Upload `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.5-vc12.aab`.
-- [ ] Review Play Console warnings, set rollout to 100%, then send the change for review.
+- [ ] Superseded: do not upload `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.5-vc12.aab` for the next store release.
 
 Release notes for Play Console:
 
 ```text
 Improves Android subscription recovery. The app now verifies existing Play purchases on startup and when returning to the foreground, restores valid completed purchases, and skips pending purchases until Google marks them completed.
+```
+
+### 2026-05-07 Android 1.0.5 Gemini remote-key release prep
+
+- [x] Supabase `get-gemini-session` deployed as version 4; returns short-lived Gemini Live tokens.
+- [x] Supabase `translate-text` deployed as version 4; translations use server-side `GEMINI_API_KEY`.
+- [x] Supabase `GEMINI_API_KEY` secret added for testing.
+- [x] `npm run typecheck` passed.
+- [x] `npm run lint` passed with 0 errors. Existing warnings remain in `app/profile/progress.tsx`.
+- [ ] `app.config.ts` Android `versionCode` must be increased to `13` before the next Play upload.
+- [ ] Run `npx expo prebuild --platform android --clean`.
+- [ ] Build the signed release AAB with `cd android && ./gradlew app:bundleRelease`.
+- [ ] Copy the new AAB to Desktop as `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.6-vc13.aab`.
+- [ ] In Play Console, replace/update the stale vc12 draft with release name `1.0.6 (13)`.
+- [ ] Upload the vc13 AAB, review warnings, set rollout to 100%, then send for review.
+
+Release notes for Play Console:
+
+```text
+Improves Android subscription recovery and Gemini reliability. The app now restores valid completed Play purchases on startup and foreground, and gets short-lived Gemini access through our Supabase backend so future Gemini API key rotations can be handled server-side without another app update.
 ```
 
 ### Tech references (dev-side)
