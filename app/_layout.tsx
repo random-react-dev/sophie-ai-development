@@ -11,7 +11,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { useEffect, useRef } from "react";
-import { AppState, LogBox } from "react-native";
+import { AppState, LogBox, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -19,7 +19,11 @@ import "../global.css";
 
 import TwoFactorOTPModal from "@/components/auth/TwoFactorOTPModal";
 import { I18nProvider } from "@/components/providers/I18nProvider";
-import { initIAP, setupPurchaseListeners } from "@/services/iap/client";
+import {
+  initIAP,
+  restorePurchases,
+  setupPurchaseListeners,
+} from "@/services/iap/client";
 import { useAuthStore } from "@/stores/authStore";
 import { useEntitlementStore } from "@/stores/entitlementStore";
 import { useThemeStore } from "@/stores/themeStore";
@@ -66,28 +70,47 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  // Initialize Apple IAP listeners + entitlement refresh once the user is signed in.
+  // Initialize IAP listeners + entitlement refresh once the user is signed in.
   useEffect(() => {
     if (!session?.user) return;
 
     let cleanup: (() => void) | undefined;
     let cancelled = false;
+    let iapReady = false;
+
+    const refreshEntitlement = () => {
+      void useEntitlementStore.getState().refresh();
+    };
+
+    const recoverAndroidPurchases = async (reason: "startup" | "foreground") => {
+      if (Platform.OS !== "android" || !iapReady || cancelled) return;
+      try {
+        await restorePurchases();
+        if (!cancelled) {
+          await useEntitlementStore.getState().refresh();
+        }
+      } catch (err: unknown) {
+        console.warn(`[IAP] silent Android restore (${reason}) failed:`, err);
+      }
+    };
 
     (async () => {
-      await initIAP();
+      iapReady = await initIAP();
       if (cancelled) return;
       cleanup = setupPurchaseListeners(() => {
         // Re-pull from `subscriptions` table (the verify-purchase function just upserted).
-        useEntitlementStore.getState().refresh();
+        refreshEntitlement();
       });
       // Initial refresh on sign-in.
-      useEntitlementStore.getState().refresh();
+      refreshEntitlement();
+      void recoverAndroidPurchases("startup");
     })();
 
     // Refresh entitlement on app foreground.
     const appStateSub = AppState.addEventListener("change", (state) => {
       if (state === "active") {
-        useEntitlementStore.getState().refresh();
+        refreshEntitlement();
+        void recoverAndroidPurchases("foreground");
       }
     });
 

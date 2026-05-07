@@ -10,6 +10,7 @@ import {
   type ProductSubscriptionAndroid,
   type ProductSubscription,
   type Purchase,
+  type PurchaseAndroid,
   type PurchaseError,
 } from "react-native-iap";
 
@@ -34,7 +35,10 @@ export const PRODUCT_IDS = APPLE_PRODUCT_IDS;
 export type ProductSku = (typeof APPLE_PRODUCT_IDS)[number];
 
 let connectionInitialized = false;
+let restorePurchasesInFlight: Promise<VerifyPurchaseResult[]> | null = null;
 const androidOfferTokensByPlan = new Map<ProductSku, string>();
+
+type PurchaseProcessingSource = "purchaseUpdated" | "restore";
 
 /**
  * Initialize the IAP connection. Safe to call multiple times.
@@ -160,24 +164,26 @@ export async function purchase(sku: ProductSku | string): Promise<void> {
  */
 export async function restorePurchases(): Promise<VerifyPurchaseResult[]> {
   if (Platform.OS !== "ios" && Platform.OS !== "android") return [];
+  if (restorePurchasesInFlight) {
+    console.log("[IAP] restore already in flight; joining existing request");
+    return restorePurchasesInFlight;
+  }
+
+  const restorePromise = restorePurchasesInternal().finally(() => {
+    restorePurchasesInFlight = null;
+  });
+  restorePurchasesInFlight = restorePromise;
+  return restorePromise;
+}
+
+async function restorePurchasesInternal(): Promise<VerifyPurchaseResult[]> {
   const results: VerifyPurchaseResult[] = [];
   const purchases = await getAvailablePurchases();
   for (const p of purchases) {
-    const purchaseToken = (p as Purchase).purchaseToken;
-    if (!purchaseToken) {
-      console.warn("[IAP] restore: missing purchaseToken on purchase", p.id);
-      continue;
-    }
     try {
-      const verified =
-        Platform.OS === "android"
-          ? await verifyPlayPurchaseWithBackend(purchaseToken)
-          : await verifyPurchaseWithBackend(purchaseToken);
-      results.push(verified);
-      try {
-        await finishTransaction({ purchase: p, isConsumable: false });
-      } catch (finishErr) {
-        console.warn("[IAP] finishTransaction (restore) failed:", finishErr);
+      const verified = await processPurchase(p, "restore");
+      if (verified) {
+        results.push(verified);
       }
     } catch (err) {
       console.warn("[IAP] verify (restore) failed:", err);
@@ -205,22 +211,10 @@ export function setupPurchaseListeners(
   const updateSub = purchaseUpdatedListener(async (p: Purchase) => {
     console.log("[IAP] purchaseUpdated fired:", p.id, p.productId);
     try {
-      const purchaseToken = p.purchaseToken;
-      if (!purchaseToken) {
-        console.warn("[IAP] purchaseUpdated: missing purchaseToken", p.id);
-        return;
+      const verified = await processPurchase(p, "purchaseUpdated");
+      if (verified) {
+        onVerified(verified);
       }
-      const verified =
-        Platform.OS === "android"
-          ? await verifyPlayPurchaseWithBackend(purchaseToken)
-          : await verifyPurchaseWithBackend(purchaseToken);
-      console.log("[IAP] verifyPurchase backend ok:", verified);
-      try {
-        await finishTransaction({ purchase: p, isConsumable: false });
-      } catch (finishErr) {
-        console.warn("[IAP] finishTransaction failed:", finishErr);
-      }
-      onVerified(verified);
     } catch (err) {
       console.warn("[IAP] purchaseUpdated handler error:", err);
     }
@@ -243,6 +237,44 @@ export function setupPurchaseListeners(
       /* ignore */
     }
   };
+}
+
+async function processPurchase(
+  purchase: Purchase,
+  source: PurchaseProcessingSource,
+): Promise<VerifyPurchaseResult | null> {
+  if (Platform.OS === "android" && purchase.purchaseState !== "purchased") {
+    console.log(
+      `[IAP] ${source}: skipping Android ${purchase.purchaseState} purchase`,
+      purchase.id,
+    );
+    return null;
+  }
+
+  const purchaseToken = purchase.purchaseToken;
+  if (!purchaseToken) {
+    console.warn(`[IAP] ${source}: missing purchaseToken`, purchase.id);
+    return null;
+  }
+
+  const verified =
+    Platform.OS === "android"
+      ? await verifyPlayPurchaseWithBackend(purchaseToken)
+      : await verifyPurchaseWithBackend(purchaseToken);
+  console.log(`[IAP] ${source}: verifyPurchase backend ok:`, verified);
+
+  if (isAcknowledgedAndroidPurchase(purchase)) {
+    console.log(`[IAP] ${source}: Android purchase already acknowledged`, purchase.id);
+    return verified;
+  }
+
+  try {
+    await finishTransaction({ purchase, isConsumable: false });
+  } catch (finishErr: unknown) {
+    console.warn(`[IAP] finishTransaction (${source}) failed:`, finishErr);
+  }
+
+  return verified;
 }
 
 function cacheAndroidOfferTokens(products: ProductSubscription[]): void {
@@ -282,4 +314,12 @@ function isAndroidSubscription(
 
 function toProductSku(sku: string): ProductSku | null {
   return APPLE_PRODUCT_IDS.includes(sku as ProductSku) ? (sku as ProductSku) : null;
+}
+
+function isAcknowledgedAndroidPurchase(purchase: Purchase): boolean {
+  return isAndroidPurchase(purchase) && purchase.isAcknowledgedAndroid === true;
+}
+
+function isAndroidPurchase(purchase: Purchase): purchase is PurchaseAndroid {
+  return Platform.OS === "android" || purchase.platform === "android";
 }

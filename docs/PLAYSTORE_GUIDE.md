@@ -11,10 +11,10 @@
 
 ## Current State
 
-- **Version**: 1.0.0
-- **Latest versionCode**: 6
-- **Play Store Status**: Production submitted, pending review
-- **Android IAP**: NOT yet wired. See **In-App Purchases (Android)** section below.
+- **Live version**: 1.0.5 (`versionCode` 11)
+- **Next Play upload**: 1.0.5 (`versionCode` 12)
+- **Play Store Status**: 1.0.5 (11) is live. A new Production draft named `1.0.5 (12)` has release notes saved and is waiting for the vc12 AAB upload.
+- **Android IAP**: Wired. Product catalog is active; backend acknowledgement and client-side startup/foreground recovery are ready for license-tester verification.
 
 ---
 
@@ -55,27 +55,88 @@ All IDs are **immutable** once created in Play Console. Lock them with the devel
 
 ### Admin-side progress checklist
 
-- [ ] Payments profile **Active**, bank **Verified**, tax forms **Active** (Step 1)
-- [ ] Google Cloud project created + linked to Play Console (Step 2)
-- [ ] Service account created + JSON key delivered securely to developer (Step 3)
-- [ ] Subscription `ai.speakwithsophie.app.premium` created + activated (Steps 5, 9)
-- [ ] Base plans `premium-monthly` + `premium-semiannual` created + activated (Steps 6, 7, 9)
-- [ ] Offer `free-trial-7d` created + activated on monthly (Step 8, 9)
-- [ ] License tester account(s) added (Step 11)
-- [ ] (After dev deploys webhook) RTDN Pub/Sub topic + push subscription configured (Step 10)
-- [ ] App Access demo account added: `appreview@speakwithsophie.ai` (Step 13)
-- [ ] Data safety section completed (Step 13)
+- [x] Payments profile **Active**, bank **Verified**, tax forms **Active** (Step 1)
+- [x] Google Cloud project created + linked to Play Console (Step 2)
+- [x] Service account created + JSON key stored in Supabase secrets (Step 3)
+- [x] Service account has app-scoped purchase verification + subscription acknowledgement permissions for Speak With Sophie (Step 3)
+- [x] Subscription `ai.speakwithsophie.app.premium` created + activated (Steps 5, 9)
+- [x] Base plans `premium-monthly` + `premium-semiannual` created + activated (Steps 6, 7, 9)
+- [x] Offer `free-trial-7d` created + activated on monthly (Step 8, 9)
+- [x] License tester account(s) added (Step 11)
+- [x] App Access demo account added: `appreview@speakwithsophie.ai` (Step 13)
+- [x] Data safety section completed (Step 13)
+- [ ] RTDN Pub/Sub topic + push subscription confirmed end-to-end in Play Console (Step 10)
 
 ### Dev-side progress checklist
 
-- [ ] Android wiring of `fetchProducts({ skus, type: 'subs' })` — verify Android returns `subscriptionOfferDetailsAndroid` with `offerToken`
-- [ ] Android `requestPurchase` passes `subscriptionOffers: [{ sku, offerToken }]` alongside `skus`
-- [ ] `finishTransaction(purchase, isConsumable=false)` wired to ack within 3 days (REQUIRED — unacked subs are auto-refunded)
-- [ ] New Supabase edge function `verify-play-purchase` (JWT-verified) — validates `purchaseToken` via `purchases.subscriptionsv2.get`
-- [ ] New Supabase edge function `play-webhook` (`--no-verify-jwt`) — receives RTDN messages; decodes Pub/Sub envelope; dedupes on `messageId`; verifies OIDC JWT from Pub/Sub
-- [ ] New DB table `public.google_subscriptions` (analog to `public.apple_subscriptions`) — tracked by `purchase_token` OR `product_id` + `user_id`
-- [ ] Daily Talk-minutes gate (`check-talk-quota` edge function) already in place from iOS — needs update to also consult `google_subscriptions`
-- [ ] Subscribe screen banner/hardening already done on iOS — confirm it works on Android products too (same React code)
+- [x] Android wiring of `fetchProducts({ skus, type: 'subs' })` reads Google `subscriptionOfferDetailsAndroid` and caches offer tokens
+- [x] Android `requestPurchase` passes `subscriptionOffers: [{ sku, offerToken }]` alongside `skus`
+- [x] Client verifies with backend before calling `finishTransaction({ purchase, isConsumable: false })`
+- [x] Client skips Android `pending` purchases until Google reports `purchased`
+- [x] Android app startup and foreground resume silently recover existing completed Play purchases
+- [x] Supabase edge function `verify-play-purchase` validates `purchaseToken` via `purchases.subscriptionsv2.get`
+- [x] `verify-play-purchase` acknowledges pending Google Play purchases before entitlement persistence
+- [x] Supabase edge function `play-webhook` receives RTDN messages and updates known subscriptions
+- [x] DB table `public.google_subscriptions` stores Google subscription state by `purchase_token`
+- [x] Daily Talk-minutes gate (`check-talk-quota`) checks both `apple_subscriptions` and `google_subscriptions`
+- [x] Entitlement store reads latest Apple or Google subscription row
+- [ ] Fresh Android license-tester purchase confirms no acknowledgement warning and no test auto-refund
+
+### 2026-05-04 Android acknowledgement fix
+
+**Before:** The Android purchase token was verified, then `google_subscriptions` was upserted, then the backend tried to acknowledge the purchase. If the service account could verify but could not acknowledge, Google showed "Developer hasn't acknowledged your purchase", the client never reached `finishTransaction`, and test purchases were auto-refunded.
+
+**After:** The Play Console service account is app-scoped to Speak With Sophie and has the permission needed to acknowledge subscriptions. `verify-play-purchase` now acknowledges a pending Google purchase first, re-reads Google Play state, then writes the entitlement row. The app still finishes the transaction only after backend verification succeeds.
+
+Implementation plan used:
+
+1. Verify Play Console product catalog and production release state.
+2. Fix Play Console service account permissions for purchase acknowledgement.
+3. Keep Android client logic simple: fetch products, request the selected offer token, verify backend, finish transaction.
+4. Harden only the risky path: ignore pending Android purchases and acknowledge before DB entitlement write.
+5. Deploy `verify-play-purchase`.
+6. Quality checks: run `npm run lint`, `npm run typecheck`, confirm Supabase function deployment, then make a fresh license-tester purchase.
+
+Progress:
+
+- [x] Play Console service account permission updated; app permission count is 4 for Speak With Sophie.
+- [x] `verify-play-purchase` deployed to Supabase project `upfivcrszqvbkrchevlq` as version 2 at `2026-05-04 05:38:42 UTC`.
+- [x] `npm run lint` passed with 0 errors. Existing warnings remain in `app/profile/progress.tsx`.
+- [x] `npm run typecheck` passed.
+- [ ] Fresh Android license-tester purchase still needs device verification.
+
+### 2026-05-04 Android 1.0.5 release prep
+
+- [x] `app.config.ts` Android `versionCode` increased to `11`.
+- [x] Android native project regenerated with `npx expo prebuild --platform android --clean`.
+- [x] Signed release AAB built with `./gradlew app:bundleRelease`.
+- [x] AAB copied to `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.5-vc11.aab`.
+- [x] SHA-256: `1d165b4e4359571519e3bbc95daeb9c0f059ca031e681b6c8133e9ef9ef39e30`.
+- [x] Play Console production release draft created with app bundle `11 (1.0.5)`.
+- [x] Release name: `1.0.5 (11)`.
+- [x] Release notes added for `en-US`.
+- [x] Release saved to Publishing overview at 100% rollout.
+- [ ] Play Console quick checks must finish, then use **Send 1 change for review** from Publishing overview.
+
+### 2026-05-07 Android 1.0.5 purchase-recovery release prep
+
+- [x] `app.config.ts` Android `versionCode` increased to `12`.
+- [x] Android native project regenerated with `npx expo prebuild --platform android --clean`.
+- [x] Signed release AAB built with `./gradlew app:bundleRelease`.
+- [x] AAB copied to `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.5-vc12.aab`.
+- [x] SHA-256: `440230f90ed8643f80022eba8644f4811061f32ee71c8a92433f5bee9ba0f0b4`.
+- [x] Play Console production release draft created for the vc12 upload.
+- [x] Release name: `1.0.5 (12)`.
+- [x] Release notes added for `en-US`.
+- [x] Release saved as draft.
+- [ ] Upload `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.5-vc12.aab`.
+- [ ] Review Play Console warnings, set rollout to 100%, then send the change for review.
+
+Release notes for Play Console:
+
+```text
+Improves Android subscription recovery. The app now verifies existing Play purchases on startup and when returning to the foreground, restores valid completed purchases, and skips pending purchases until Google marks them completed.
+```
 
 ### Tech references (dev-side)
 
@@ -90,7 +151,7 @@ All IDs are **immutable** once created in Play Console. Lock them with the devel
 - Google **does not require products to be attached to a specific build** (unlike Apple). Any activated subscription is immediately queryable from any app version that has matching package name + Billing integration.
 - Google review is mostly automated — reviewers do not typically manually subscribe (unlike Apple). But they CAN, so demo account must work.
 - License testers see **accelerated renewal**: 1 month → 5 min, 1 year → 30 min, free trial → 3 min. Max 6 renewals per purchase.
-- Unacknowledged purchases are **auto-refunded after 3 minutes** for testers, **3 days** for real users. The client MUST call `finishTransaction`.
+- Unacknowledged purchases are **auto-refunded after 3 minutes** for testers, **3 days** for real users. The backend MUST acknowledge Google Play purchases, and the client MUST still call `finishTransaction` after backend verification succeeds.
 
 ### Activation order (launch day)
 

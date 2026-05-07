@@ -86,6 +86,17 @@ serve(async (req: Request) => {
     return json(400, { error: 'Invalid Google Play purchase token' });
   }
 
+  if (isAcknowledgementPending(purchase)) {
+    try {
+      await acknowledgeGoogleSubscription(patch.product_id, purchaseToken);
+      purchase = await verifyGoogleSubscription(purchaseToken);
+      patch = buildGoogleSubscriptionPatch(purchase);
+    } catch (error) {
+      console.error('verify-play-purchase: acknowledge failed', error);
+      return json(500, { error: 'Google Play acknowledge failed' });
+    }
+  }
+
   const admin = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -104,15 +115,6 @@ serve(async (req: Request) => {
   if (upsertError) {
     console.error('verify-play-purchase: DB upsert failed', upsertError);
     return json(500, { error: 'Database error' });
-  }
-
-  if (isAcknowledgementPending(purchase)) {
-    try {
-      await acknowledgeGoogleSubscription(patch.product_id, purchaseToken);
-    } catch (error) {
-      console.error('verify-play-purchase: acknowledge failed', error);
-      return json(500, { error: 'Google Play acknowledge failed' });
-    }
   }
 
   return json(200, {

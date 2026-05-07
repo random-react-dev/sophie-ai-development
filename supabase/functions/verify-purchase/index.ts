@@ -46,6 +46,15 @@ function deriveState(expiresMs: number | undefined | null): string {
   return expiresMs > Date.now() ? 'active' : 'expired';
 }
 
+type AppleTransactionPayload = {
+  originalTransactionId?: string | number;
+  transactionId?: string | number;
+  productId?: string;
+  purchaseDate?: number;
+  expiresDate?: number;
+  environment?: string;
+};
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -84,7 +93,7 @@ serve(async (req: Request) => {
   // 3. Verify JWS using Apple's library.
   // We try Sandbox first (TestFlight + dev) and fall back to Production
   // because the JWS itself does not announce its environment to the verifier.
-  let decoded: any;
+  let decoded: AppleTransactionPayload;
   let environmentLabel: 'Sandbox' | 'Production' = 'Sandbox';
   try {
     const verifier = await getVerifier(Environment.SANDBOX);

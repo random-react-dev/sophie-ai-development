@@ -314,9 +314,11 @@ Send the developer a confirmation: "Both URLs saved, Version 2."
 
 ## Step 12 — (at submission time) Submit subscriptions with the build
 
-When the developer asks you to submit a new build to review, the first subscription must be submitted with the app version. Apple's docs still describe an **In-App Purchases and Subscriptions** selector on the app version page, but the live 2026 App Store Connect UI may not show that selector. If it is absent, submit the subscription products and group localization from the **Monetization → Subscriptions** pages, then resubmit the app version.
+When the developer asks you to submit a new build to review, the first subscription must be submitted with the app version. Do not submit the first subscription by itself. The final App Review submission must contain the app version and both subscription products together.
 
-**Where to go:** App Store Connect → **Apps** → **Speak With Sophie** → in the left sidebar, under **iOS App**, click the **version you're submitting** (e.g., `1.0.1 Prepare for Submission`).
+**Current recovery target:** iOS app version `1.0.5`, build `51`.
+
+**Where to go:** App Store Connect → **Apps** → **Speak With Sophie** → in the left sidebar, under **iOS App**, click the **version you're submitting** (for this recovery, `1.0.5 Prepare for Submission`).
 
 - [ ] Scroll to the section **In-App Purchases and Subscriptions**, if it exists.
 - [ ] If present, click the **+** or **Select In-App Purchases**.
@@ -324,15 +326,15 @@ When the developer asks you to submit a new build to review, the first subscript
   - [ ] `ai.speakwithsophie.app.premium.monthly`
   - [ ] `ai.speakwithsophie.app.premium.semiannual`
 - [ ] Click **Done** / **Save**.
-- [ ] If the section is absent, go to **Monetization → Subscriptions → Sophie Premium** and verify:
-  - [ ] Monthly product is **Ready to Submit** or **Waiting for Review**
-  - [ ] Semiannual product is **Ready to Submit** or **Waiting for Review**
-  - [ ] English (U.S.) group localization is **Ready to Submit** or **Waiting for Review**
-- [ ] If a product shows **Developer Action Needed** or a localization shows **Rejected**, open the affected localization, make a small real metadata edit, save, then click **Submit for Review** on that product or group page.
+- [ ] If the section is absent, click **Add for Review** on the app version and check the Draft Submission/App Review page. The submission must show all 3 items before you click **Submit for Review**:
+  - [ ] iOS App `1.0.5`
+  - [ ] Monthly subscription
+  - [ ] Semiannual subscription
+- [ ] If a product shows **Developer Action Needed** or a localization shows **Rejected**, open the affected localization, make a real metadata edit, save, then return to the app version submission. Only submit after the app and subscriptions are in the same review submission.
 
 **Before you hit Submit for Review:**
 
-- [ ] All subscriptions show **Ready to Submit** or **Waiting for Review**.
+- [ ] The review submission contains 3 items: app version + monthly subscription + semiannual subscription.
 - [ ] The build you are submitting has been uploaded and processed (will show in the build picker).
 - [ ] App Review notes contain the demo account login. Current Apple demo account: `armanmishra1000@gmail.com`.
 - [ ] App Review notes say whether an authentication code is required. For the current demo account, email 2FA is disabled and no authentication code is required.
@@ -340,7 +342,7 @@ When the developer asks you to submit a new build to review, the first subscript
 
 Now click **Submit for Review**. Subscriptions are reviewed alongside the app. If the app is approved, they go live with the app; if rejected, you fix the issue and resubmit the same product.
 
-**2026-04-28 live result for Speak With Sophie:** the version page did not show the selector, but Monthly, Semiannual, and the group localization were submitted from the Subscriptions pages and moved to **Waiting for Review**. Build 48 was then resubmitted and the iOS submission moved to **Waiting for Review**.
+**2026-05-02 live result for Speak With Sophie:** Apple approved the app binary but returned the subscriptions because the required binary was not submitted with the subscription products. The metadata was corrected and a new app version `1.0.5` was created. Upload/select build `51`, then submit the app and both subscriptions together.
 
 ---
 
