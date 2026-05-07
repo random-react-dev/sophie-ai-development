@@ -8,7 +8,7 @@
 // Usage:  npx tsx scripts/audit-iap-config.ts
 //
 // Read-only — no file writes, no network calls. Exits 0 if every local check
-// passes, 1 if any local check fails.
+// passes, 1 if a local check fails.
 
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -37,23 +37,56 @@ const EXPECTED_SKUS: readonly string[] = [
   "ai.speakwithsophie.app.premium.semiannual",
 ];
 
-function auditAppConfig(): CheckResult[] {
+type AppVersionInfo = {
+  version: string;
+  iosBuildNumber: string;
+  androidVersionCode: string;
+};
+
+function readAppVersionInfo(src: string): AppVersionInfo {
+  const version = src.match(/version:\s*["']([^"']+)["']/)?.[1] ?? "unknown";
+  const iosBuildNumber =
+    src.match(/buildNumber:\s*["']([^"']+)["']/)?.[1] ?? "unknown";
+  const androidVersionCode =
+    src.match(/versionCode:\s*(\d+)/)?.[1] ?? "unknown";
+
+  return { version, iosBuildNumber, androidVersionCode };
+}
+
+function auditAppConfig(): { results: CheckResult[]; versionInfo: AppVersionInfo } {
   const src = read("app.config.ts");
   const bundleMatch = src.match(/bundleIdentifier:\s*["']([^"']+)["']/);
   const bundleOk = bundleMatch?.[1] === EXPECTED_BUNDLE_ID;
   const pluginOk = /["']react-native-iap["']/.test(src);
-  return [
-    check(
-      `app.config.ts -> ios.bundleIdentifier = ${EXPECTED_BUNDLE_ID}`,
-      bundleOk,
-      bundleMatch ? `found "${bundleMatch[1]}"` : "bundleIdentifier not found",
-    ),
-    check(
-      `app.config.ts -> plugins includes "react-native-iap"`,
-      pluginOk,
-      pluginOk ? "found" : "plugin string not found",
-    ),
-  ];
+  const versionInfo = readAppVersionInfo(src);
+  const versionOk =
+    versionInfo.version !== "unknown" && versionInfo.iosBuildNumber !== "unknown";
+
+  return {
+    versionInfo,
+    results: [
+      check(
+        `app.config.ts -> ios.bundleIdentifier = ${EXPECTED_BUNDLE_ID}`,
+        bundleOk,
+        bundleMatch ? `found "${bundleMatch[1]}"` : "bundleIdentifier not found",
+      ),
+      check(
+        `app.config.ts -> ios version/build ready for App Review`,
+        versionOk,
+        `found version "${versionInfo.version}", build "${versionInfo.iosBuildNumber}"`,
+      ),
+      check(
+        `app.config.ts -> android versionCode ready for Play upload`,
+        versionInfo.androidVersionCode !== "unknown",
+        `found versionCode "${versionInfo.androidVersionCode}"`,
+      ),
+      check(
+        `app.config.ts -> plugins includes "react-native-iap"`,
+        pluginOk,
+        pluginOk ? "found" : "plugin string not found",
+      ),
+    ],
+  };
 }
 
 function auditClient(): CheckResult[] {
@@ -107,15 +140,20 @@ function auditAdminDoc(): CheckResult[] {
   ];
 }
 
-const APPLE_CHECKLIST: readonly string[] = [
-  "Paid Apps Agreement = Active (Business -> Agreements)",
-  "Tax forms = Active",
-  "Bank Account = Active (NOT Pending)",
-  `Subscription Group "Sophie Premium" has English (U.S.) localization`,
-  `Both products = "Ready to Submit" (NOT "Missing Metadata")`,
-  "Both products attached to v1.0.2 submission",
-  "Sandbox tester signed in on simulator (Settings -> App Store)",
-];
+function appleChecklist(versionInfo: AppVersionInfo): readonly string[] {
+  const versionLabel = `${versionInfo.version} (${versionInfo.iosBuildNumber})`;
+
+  return [
+    "Paid Apps Agreement = Active (Business -> Agreements)",
+    "Tax forms = Active",
+    "Bank Account = Active (NOT Pending)",
+    `Subscription Group reference "Sophie Premium" has English (U.S.) display name "Sophie AI Premium"`,
+    `Monthly and semiannual product localizations are not Rejected or Missing Metadata`,
+    `A new iOS build ${versionLabel} is uploaded and selected on the ${versionInfo.version} version page`,
+    `Review submission contains 3 items: iOS App ${versionInfo.version}, monthly subscription, semiannual subscription`,
+    "Sandbox tester signed in on simulator (Settings -> App Store)",
+  ];
+}
 
 function format(results: readonly CheckResult[]): string {
   return results
@@ -127,8 +165,9 @@ function format(results: readonly CheckResult[]): string {
 }
 
 function main(): void {
+  const appConfig = auditAppConfig();
   const local = [
-    ...auditAppConfig(),
+    ...appConfig.results,
     ...auditClient(),
     ...auditPackage(),
     ...auditAdminDoc(),
@@ -138,7 +177,7 @@ function main(): void {
   console.log(format(local));
   console.log();
   console.log("Apple-side checklist (verify manually in App Store Connect):");
-  for (const item of APPLE_CHECKLIST) {
+  for (const item of appleChecklist(appConfig.versionInfo)) {
     console.log(`[ ]  ${item}`);
   }
   const failed = local.filter((r) => !r.ok);

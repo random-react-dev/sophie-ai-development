@@ -10,7 +10,7 @@
 | **SKU** | sophie-ai |
 | **Domain** | speakwithsophie.ai |
 
-## Current State (as of 2026-04-30 ~13:50 IST)
+## Current State (as of 2026-05-07)
 
 - **Live Version**: 1.0.1 (build 44) — **APPROVED 2026-04-15** after five rejections in March 2026. Shipped with zero subscription UI.
 - **1.0.2 / build 45**: REJECTED 2026-04-20 — Guideline 2.1(b) (Subscribe button silently no-op'd on iPad Air 11-inch).
@@ -18,9 +18,11 @@
 - **1.0.2 / build 47**: Superseded — never uploaded. Code (Apple Sign-In defensive logging + Talk-quota `refreshSession` fix) rolled into build 48.
 - **1.0.2 / build 48**: ✅ **SUBMITTED 2026-04-28 10:22 IST** — App Store Connect status **Waiting for Review**. Adds IAP diagnostic logging in `services/iap/client.ts` on top of build 47's content. Apple-side agreements/tax/banking are Active; Monthly + Semiannual products and the subscription group localization are all **Waiting for Review**. App Store description now includes Terms of Use (EULA) and Privacy Policy links. App Review notes say the demo account requires no authentication code and include the subscription test path/product IDs.
 - **1.0.4 / build 50**: 🟡 **LOCAL PREP 2026-04-30** — build-number bump after pulling latest `origin/main`; subscription footer Terms link now opens Apple's Standard EULA directly and Privacy opens the full `https://www.speakwithsophie.ai/privacy` URL. Use this build only if App Store Connect requires a new binary for the 3.1.2(c) recovery.
+- **1.0.5 / build 51**: Prepared before the Gemini remote-key change. Do not submit build 51 if this release must include server-side Gemini key rotation.
+- **Next iOS upload**: 1.0.6 / build 52 after regenerating iOS, archiving, and uploading through Xcode.
 - **The earlier "Apple Forum 820936 platform bug" hypothesis was WRONG** — see Fix #10 below. Real root cause was the prerequisite chain, not a platform bug.
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: 1.0.1 live; 1.0.2 build 48 was the last recorded submitted build under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`; build 50 is local/native-prep until uploaded.
+- **App Store Status**: 1.0.1 live; 1.0.2 build 48 was the last recorded submitted build under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`; next upload should be build 52 for Gemini remote-key support.
 
 ## Demo account (current — supersedes older `appreview@…` references)
 
@@ -226,7 +228,7 @@ Ranked by likelihood (per research of Apple dev forums, react-native-iap issues,
 - Client wrapper `services/iap/checkTalkQuota.ts` exposes `checkTalkQuota()` + `TalkQuotaExhaustedError`.
 - `app/(tabs)/talk.tsx` calls `checkTalkQuota()` before `getGeminiSessionToken()`. On `TalkQuotaExhaustedError`, shows the upsell `AlertModal` with "Not now" / "See Plans" buttons; "See Plans" routes to `/profile/subscription`.
 
-**Why a new `check-talk-quota` function instead of gating inside `get-gemini-session`** (a deviation from the original plan): production clients resolve `EXPO_PUBLIC_GEMINI_API_KEY` directly and bypass `get-gemini-session` entirely, so modifying that stub would not gate anything. A dedicated quota function called before token fetch is the reliable gate.
+**Gemini key handling**: production clients now call `get-gemini-session` for a short-lived Gemini Live token instead of bundling `EXPO_PUBLIC_GEMINI_API_KEY`. The long-lived Gemini key lives in the Supabase `GEMINI_API_KEY` secret, so future key rotation is a Supabase secret update, not a new app binary. `check-talk-quota` still runs before token fetch so quota behavior stays separate and unchanged.
 
 ### Admin checklist (pre-build-46 upload)
 
@@ -481,6 +483,33 @@ Local verification/progress:
   - `Privacy Policy: https://www.speakwithsophie.ai/privacy`
 - Updated App Review notes to state that the demo account has email 2FA disabled and no authentication code is required.
 - Resubmitted iOS App 1.0.2 build 48. App Store Connect now shows **Waiting for Review** for submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`.
+
+## App Store Update #12 (v1.0.6, May 7, 2026) — Gemini remote-key release prep
+
+Purpose: ship the same Gemini key-rotation architecture as Android. This is a required binary update because older iOS builds still contain the old direct Gemini-key path.
+
+**Before:** The iOS app could only pick up a new Gemini key after a new App Store-reviewed binary.
+
+**After:** The app asks Supabase for short-lived Gemini Live tokens and sends translations through `translate-text`. Future Gemini key rotations use the Supabase `GEMINI_API_KEY` secret and do not require App Store review once build 52 or newer is live.
+
+**Current prep checklist**:
+
+- [x] `get-gemini-session` deployed as Supabase Function version 4.
+- [x] `translate-text` deployed as Supabase Function version 4.
+- [x] Supabase `GEMINI_API_KEY` secret added for testing.
+- [x] `npm run typecheck` passed.
+- [x] `npm run lint` passed with 0 errors. Existing warnings remain in `app/profile/progress.tsx`.
+- [x] `app.config.ts` version increased to `1.0.6` and iOS `buildNumber` increased to `52`.
+- [ ] Run `npx expo prebuild --platform ios --clean`.
+- [ ] Archive in Xcode and upload to App Store Connect.
+- [ ] Select build 52 for iOS app version `1.0.6`.
+- [ ] Submit the app and subscription products together if App Store Connect still requires them in the same review.
+
+**App Review notes snippet**:
+
+```text
+This build improves Gemini reliability and key management. The app now requests short-lived Gemini access through our Supabase backend instead of bundling a long-lived Gemini API key in the app. Voice audio still goes directly from the app to Google Gemini over WebSocket after user consent; it is not proxied through Supabase.
+```
 
 ## Key Files
 

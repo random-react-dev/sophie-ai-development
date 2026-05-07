@@ -2,23 +2,29 @@ import { supabase } from "../supabase/client";
 
 let pendingTokenRequest: Promise<string> | null = null;
 
-export async function getGeminiSessionToken(): Promise<string> {
-  const directToken = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-  if (directToken) {
-    return directToken;
-  }
+interface GeminiSessionResponse {
+  token?: unknown;
+}
 
+export async function getGeminiSessionToken(): Promise<string> {
   if (!pendingTokenRequest) {
     pendingTokenRequest = (async () => {
-      const { data, error } = await supabase.functions.invoke(
-        "get-gemini-session",
-      );
+      await supabase.auth.refreshSession();
 
-      if (error || !data?.token) {
+      const { data, error } =
+        await supabase.functions.invoke<GeminiSessionResponse>(
+          "get-gemini-session",
+        );
+
+      if (error) {
         throw new Error(error?.message || "No token returned");
       }
 
-      return data.token as string;
+      if (typeof data?.token !== "string" || data.token.length === 0) {
+        throw new Error("No Gemini token returned");
+      }
+
+      return data.token;
     })().finally(() => {
       pendingTokenRequest = null;
     });

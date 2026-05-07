@@ -101,17 +101,27 @@ export async function acknowledgeGoogleSubscription(
     productId,
   )}/tokens/${encodeURIComponent(purchaseToken)}:acknowledge`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: '{}',
-  });
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    });
 
-  if (!response.ok && response.status !== 409) {
+    if (response.ok) {
+      return;
+    }
+
     const body = await response.text();
+    if (response.status === 409 && attempt < maxAttempts) {
+      await delay(500 * attempt);
+      continue;
+    }
+
     throw new Error(`Google Play acknowledge failed: ${response.status} ${body}`);
   }
 }
@@ -184,6 +194,12 @@ export function isAcknowledgementPending(
   purchase: PlaySubscriptionPurchase,
 ): boolean {
   return purchase.acknowledgementState === 'ACKNOWLEDGEMENT_STATE_PENDING';
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 async function getAccessToken(): Promise<string> {

@@ -39,6 +39,26 @@ type StateUpdate = {
   auto_renew_status?: boolean;
 };
 
+type AppleNotificationPayload = {
+  notificationType?: string;
+  subtype?: string;
+  data?: {
+    signedTransactionInfo?: string;
+    signedRenewalInfo?: string;
+    environment?: string;
+  };
+};
+
+type AppleTransactionPayload = {
+  originalTransactionId?: string | number;
+  expiresDate?: string | number;
+};
+
+type AppleRenewalPayload = {
+  originalTransactionId?: string | number;
+  autoRenewStatus?: number;
+};
+
 function mapNotification(notificationType: string, subtype?: string): StateUpdate | null {
   switch (notificationType) {
     case 'SUBSCRIBED':
@@ -79,7 +99,7 @@ serve(async (req: Request) => {
   // Verify and decode the notification. Try Production first (most webhook
   // traffic in real use), fall back to Sandbox (test notifications, sandbox
   // testers).
-  let decodedNotification: any;
+  let decodedNotification: AppleNotificationPayload;
   try {
     const verifier = await getVerifier(Environment.PRODUCTION);
     decodedNotification = await verifier.verifyAndDecodeNotification(signedPayload);
@@ -105,8 +125,8 @@ serve(async (req: Request) => {
   const signedTx: string | undefined = data?.signedTransactionInfo;
   const signedRenewal: string | undefined = data?.signedRenewalInfo;
 
-  let txInfo: any = null;
-  let renewalInfo: any = null;
+  let txInfo: AppleTransactionPayload | null = null;
+  let renewalInfo: AppleRenewalPayload | null = null;
   try {
     const env: Environment =
       data?.environment === 'Sandbox' ? Environment.SANDBOX : Environment.PRODUCTION;
@@ -122,8 +142,10 @@ serve(async (req: Request) => {
     // Continue — we may still be able to act on a notification that has no tx.
   }
 
-  const originalTransactionId: string | undefined =
+  const originalTransactionIdRaw =
     txInfo?.originalTransactionId ?? renewalInfo?.originalTransactionId;
+  const originalTransactionId =
+    originalTransactionIdRaw === undefined ? undefined : String(originalTransactionIdRaw);
 
   if (!originalTransactionId) {
     console.warn('apple-webhook: notification has no originalTransactionId; ignoring', {

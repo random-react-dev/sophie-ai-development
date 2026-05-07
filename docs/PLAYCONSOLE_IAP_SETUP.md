@@ -172,14 +172,15 @@ The developer's backend needs credentials to call Google's **Android Publisher A
 
 - [ ] Go back to Play Console → **Setup → API access**. The new service account now appears in the list with status "Not yet invited" or "No permissions".
 - [ ] Click **Grant access** or **Manage permissions** next to the service account.
-- [ ] On the **Account permissions** tab, check ONLY:
-  - [ ] **View financial data, orders, and cancellation survey responses** (this implicitly grants access to the Purchases API — the only permission our backend needs to verify a subscription)
-- [ ] **Do NOT** check "Manage orders and subscriptions" — we don't need that. Principle of least privilege.
-- [ ] On the **App permissions** tab (recommended):
+- [ ] On the **Account permissions** tab, do not grant broad account-wide access unless Play Console forces it.
+- [ ] On the **App permissions** tab:
   - [ ] Click **Add app** → select **Speak With Sophie** only. This scopes the service account to our app only — if Apexture adds other apps to Play Console later, this account cannot see their finances.
+  - [ ] Check **View app information** if it is not already selected.
+  - [ ] Check **View financial data, orders, and cancellation survey responses**. This is required for purchase verification through the Android Publisher API.
+  - [ ] Check **Manage orders and subscriptions**. This is required for our backend to acknowledge subscription purchases with Google Play. Keep it app-scoped to **Speak With Sophie**.
 - [ ] Click **Invite user** → **Send invitation**.
 
-**Propagation gotcha:** Permissions take up to **24 hours** to propagate to the Android Publisher API. If the developer's first verification call returns "401 Unauthorized" or "permission denied" within the first day, this is why — it's not a bug, just wait.
+**Propagation gotcha:** Permissions take up to **24 hours** to propagate to the Android Publisher API. If the developer's first verification or acknowledgement call returns "401 Unauthorized", "403 permission denied", or "Google Play acknowledge failed" within the first day, this is why — wait and retest before changing code.
 
 ---
 
@@ -465,8 +466,13 @@ Complete each card (every card must be green before submission):
 
 ### 13b. Submit for review
 
-- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer.
-- [ ] Release notes: brief changelog.
+- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current Gemini remote-key upload target: `Speak-With-Sophie-1.0.6-vc13.aab`.
+- [ ] Release name: `1.0.6 (13)`.
+- [ ] Release notes:
+  ```text
+  Improves Android subscription recovery and Gemini reliability. The app now restores valid completed Play purchases on startup and foreground, and gets short-lived Gemini access through our Supabase backend so future Gemini API key rotations can be handled server-side without another app update.
+  ```
+- [ ] Confirm the developer did not upload the stale vc12 AAB. The next AAB must use Android `versionCode` 13 or newer.
 - [ ] **Review release** → confirm subscriptions appear in the "In-app products" preview (they should — Active subscriptions are auto-included).
 - [ ] **Start rollout to Production**.
 
@@ -489,7 +495,18 @@ Because Apexture is an **organization account**, Google does NOT require 14-day 
 
 **"Developer says the first `subscriptionsv2.get` API call returned 401."**
 - Service account permissions need up to 24 hours to propagate. Wait.
-- Verify Step 3c: the service account has **View financial data, orders, and cancellation survey responses** AND app access includes Sophie.
+- Verify Step 3c: the service account has app-scoped **View financial data, orders, and cancellation survey responses** AND **Manage orders and subscriptions** for Speak With Sophie.
+
+**"Google Play shows 'Developer hasn't acknowledged your purchase'."**
+- Verify the service account has app-scoped **Manage orders and subscriptions** for Speak With Sophie. Without it, the backend can verify the token but fail the acknowledgement POST.
+- Confirm `verify-play-purchase` was deployed after the acknowledgement fix. The backend must acknowledge pending purchases before returning success to the app.
+- Confirm the installed Android build is version `1.0.5` with `versionCode` 12 or newer. This build also recovers missed completed purchases on app startup and foreground.
+- Make a fresh license-tester purchase. Old test purchases that were already auto-refunded will not recover.
+
+**"Gemini stopped working after the app is installed."**
+- Confirm the installed Android build is version `1.0.5` with `versionCode` 13 or newer for server-side Gemini key handling.
+- Confirm Supabase has a working `GEMINI_API_KEY` secret: `supabase secrets list --project-ref upfivcrszqvbkrchevlq | grep GEMINI_API_KEY`.
+- To rotate the Gemini key after this release is live, run `supabase secrets set GEMINI_API_KEY="NEW_KEY" --project-ref upfivcrszqvbkrchevlq`. No new Play review is needed for key rotation alone.
 
 **"Bank account has been pending for over 3 days."**
 - Confirm the test deposit amount was entered correctly in **Payments profile → Bank accounts → Confirm deposit**. If you entered wrong amounts 3× the account is locked — contact Play Console support.

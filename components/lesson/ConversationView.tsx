@@ -1,8 +1,8 @@
 import { Button } from "@/components/common/Button";
 import { audioPlayer } from "@/services/audio/player";
 import { audioRecorder } from "@/services/audio/recorder";
+import { getGeminiSessionToken } from "@/services/gemini/token";
 import { geminiWebSocket } from "@/services/gemini/websocket";
-import { supabase } from "@/services/supabase/client";
 import { useAuthStore } from "@/stores/authStore";
 import { useConversationStore } from "@/stores/conversationStore";
 import * as Haptics from "expo-haptics";
@@ -30,10 +30,7 @@ export function ConversationView() {
 
       try {
         setStatus("Getting secure token...");
-        const { data, error } =
-          await supabase.functions.invoke("get-gemini-session");
-        if (error || !data?.token)
-          throw new Error(error?.message || "No token returned");
+        const token = await getGeminiSessionToken();
 
         setStatus("Connecting to Gemini...");
 
@@ -41,7 +38,7 @@ export function ConversationView() {
         const instruction =
           "You are a helpful Spanish tutor. Use simple vocabulary. Correct my mistakes gently.";
 
-        geminiWebSocket.connect(data.token, instruction);
+        geminiWebSocket.connect(token, instruction);
         setStatus("Connected");
       } catch (err) {
         setStatus("Connection Failed");
