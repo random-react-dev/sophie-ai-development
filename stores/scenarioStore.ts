@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import { Scenario, SCENARIOS } from "../constants/scenarios";
 
+export type TalkMode = "guided" | "free_speaking";
+
 interface ScenarioState {
   scenarios: Scenario[];
   selectedScenario: Scenario | null;
   practicePhrase: string | null;
+  talkMode: TalkMode;
   customScenarios: Scenario[];
   searchQuery: string;
   selectedCategory: string;
@@ -14,6 +17,7 @@ interface ScenarioState {
   setSelectedCategory: (category: string) => void;
   selectScenario: (scenario: Scenario | null) => void;
   setPracticePhrase: (phrase: string | null) => void;
+  setTalkMode: (mode: TalkMode) => void;
   clearForProfileSwitch: () => void;
   addCustomScenario: (scenario: Scenario) => void;
   updateScenarioShareToken: (scenarioId: string, shareToken: string) => void;
@@ -28,6 +32,7 @@ export const useScenarioStore = create<ScenarioState>()(
       scenarios: SCENARIOS,
       selectedScenario: null,
       practicePhrase: null,
+      talkMode: "guided",
       customScenarios: [],
       searchQuery: "",
       selectedCategory: "All",
@@ -40,18 +45,28 @@ export const useScenarioStore = create<ScenarioState>()(
         set({
           selectedScenario,
           practicePhrase: null, // Clear practice phrase when selecting a scenario
+          talkMode: "guided",
           scenarioSelectionTimestamp: Date.now(),
         }),
       setPracticePhrase: (practicePhrase) =>
         set({
           practicePhrase,
           selectedScenario: null, // Clear scenario when practicing a phrase
+          talkMode: "guided",
+          scenarioSelectionTimestamp: Date.now(),
+        }),
+      setTalkMode: (talkMode) =>
+        set({
+          talkMode,
+          selectedScenario: null,
+          practicePhrase: null,
           scenarioSelectionTimestamp: Date.now(),
         }),
       clearForProfileSwitch: () =>
         set({
           selectedScenario: null,
           practicePhrase: null,
+          talkMode: "guided",
           // No timestamp bump — avoids re-triggering the useEffect in talk.tsx
         }),
       addCustomScenario: (scenario) =>
@@ -92,6 +107,7 @@ export const useSelectedScenario = (): Scenario | null =>
   useScenarioStore((s) => s.selectedScenario);
 export const usePracticePhrase = (): string | null =>
   useScenarioStore((s) => s.practicePhrase);
+export const useTalkMode = (): TalkMode => useScenarioStore((s) => s.talkMode);
 export const useScenarios = (): Scenario[] =>
   useScenarioStore((s) => s.scenarios);
 export const useSearchQuery = (): string =>

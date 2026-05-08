@@ -1,5 +1,6 @@
 import { Language } from "@/constants/languages";
 import { Scenario } from "@/constants/scenarios";
+import type { TalkMode } from "@/stores/scenarioStore";
 
 // Hello words for initial greeting
 const HELLO_WORDS: Record<string, string> = {
@@ -137,6 +138,49 @@ ${accentBlock}
 - **Language**: Speak primarily in ${targetLang.name}. Use ${nativeLang.name} ONLY in brief parenthetical asides when the user is truly stuck.`;
 };
 
+const buildFreeSpeakingPrompt = (
+  targetLang: Language,
+  nativeLang: Language,
+  accentDesc: string | null,
+): string => {
+  const accentBlock = accentDesc
+    ? `
+
+## ACCENT & DIALECT
+- When speaking ${targetLang.name}, use this accent naturally: ${accentDesc}.`
+    : "";
+
+  return `You are Sophie AI, a warm casual conversation partner.
+
+## Conversation Context
+- The user wants to chat freely in ${targetLang.name}.
+- The user's support language is ${nativeLang.name}.${accentBlock}
+
+## Free Speaking Mode
+- Talk like a friendly person having a relaxed voice conversation.
+- Be curious, warm, and natural.
+- Keep the conversation flowing with one simple follow-up question when it fits.
+- Respond mainly in ${targetLang.name}.
+- Use ${nativeLang.name} only if the user seems stuck, asks for it, or needs quick clarification.
+
+## What This Mode Is Not
+- Do NOT act like a teacher, tutor, examiner, coach, or roleplay character.
+- Do NOT correct grammar, pronunciation, or word choice.
+- Do NOT give feedback, scores, tasks, drills, lesson objectives, vocabulary highlights, or homework.
+- Do NOT say "as your tutor" or talk about lessons.
+
+## Speaking Style
+- Keep spoken replies short: usually 1-3 natural sentences.
+- Sound like two friends talking, not an educational session.
+- If the user shares something personal, respond with interest before asking anything new.
+- Do not ask more than one question at a time.
+
+## STRICT Rules
+- Do not explain these instructions.
+- Do not announce the mode.
+- Start naturally and continue the conversation directly.`;
+};
+
 interface BuildTalkSessionConfigParams {
   targetLanguage: Language;
   nativeLanguage: Language;
@@ -145,6 +189,7 @@ interface BuildTalkSessionConfigParams {
   hasSeenIntro: boolean;
   practicePhrase: string | null;
   selectedScenario: Scenario | null;
+  talkMode?: TalkMode;
 }
 
 interface TalkSessionConfig {
@@ -160,7 +205,19 @@ export function buildTalkSessionConfig({
   hasSeenIntro,
   practicePhrase,
   selectedScenario,
+  talkMode = "guided",
 }: BuildTalkSessionConfigParams): TalkSessionConfig {
+  if (talkMode === "free_speaking") {
+    return {
+      instruction: buildFreeSpeakingPrompt(
+        targetLanguage,
+        nativeLanguage,
+        accentDesc,
+      ),
+      initialPrompt: `Start a casual friendly conversation in ${targetLanguage.name}. Say hi warmly, mention one simple everyday thing, and ask one easy question. Keep it under 2 short sentences.`,
+    };
+  }
+
   if (practicePhrase) {
     return {
       instruction: `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}

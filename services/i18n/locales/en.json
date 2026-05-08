@@ -1563,8 +1563,14 @@
     },
     "actions": {
       "finish_report": "Finish & Get Report",
+      "end_chat": "End Chat",
       "transcript": "Transcript",
       "transcript_hidden": "Transcript Hidden"
+    },
+    "modes": {
+      "tutor": "Tutor",
+      "scenario": "Scenario",
+      "free_speaking": "Free Speaking"
     },
     "message_actions": {
       "translate": "Translate",
@@ -1579,11 +1585,14 @@
     },
     "prompts": {
       "select_both_langs": "Select both languages above to start your lesson with Sophie AI.",
-      "hold_mic_start": "Hold the mic below to start speaking with Sophie AI."
+      "hold_mic_start": "Hold the mic below to start speaking with Sophie AI.",
+      "hold_mic_start_free": "Hold the mic below and talk about anything with Sophie AI."
     },
     "alerts": {
       "end_session_title": "End Session",
       "end_session_msg": "Go back to scenario library?",
+      "end_free_title": "End Chat",
+      "end_free_msg": "End this free speaking chat?",
       "finish_title": "Finish Conversation",
       "finish_msg": "Are you done with this practice session?",
       "reset_title": "Reset Chat",
@@ -1595,6 +1604,7 @@
       "cancel": "Cancel",
       "yes": "Yes",
       "finish": "Finish",
+      "end_free": "End Chat",
       "reset": "Reset"
     }
   },

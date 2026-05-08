@@ -466,13 +466,18 @@ Complete each card (every card must be green before submission):
 
 ### 13b. Submit for review
 
-- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current Gemini remote-key upload target: `Speak-With-Sophie-1.0.6-vc13.aab`.
-- [ ] Release name: `1.0.6 (13)`.
+- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current May 8 upload target: `Speak-With-Sophie-1.0.6-vc12.aab`.
+- [ ] Release name: `1.0.6 (12)`.
 - [ ] Release notes:
   ```text
-  Improves Android subscription recovery and Gemini reliability. The app now restores valid completed Play purchases on startup and foreground, and gets short-lived Gemini access through our Supabase backend so future Gemini API key rotations can be handled server-side without another app update.
+  Adds Free Speaking mode for open-ended Sophie conversations and improves push-to-talk reliability. The Talk tab now lets you switch between Tutor, Scenario, and Free Speaking sessions, while recorder fixes make voice capture more stable.
   ```
-- [ ] Confirm the developer did not upload the stale vc12 AAB. The next AAB must use Android `versionCode` 13 or newer.
+- [ ] Confirm the developer did not upload the stale vc12 AAB from the earlier purchase-recovery-only prep. The May 8 AAB must be freshly rebuilt from the current source.
+- [ ] Developer build command, run from repo root:
+  ```bash
+  npx expo prebuild --platform android --clean && cd android && ./gradlew app:bundleRelease && cp app/build/outputs/bundle/release/app-release.aab /Users/niravramani/Desktop/Speak-With-Sophie-1.0.6-vc12.aab
+  ```
+- [ ] If Play Console rejects `versionCode` 12 as already used, ask the developer to bump Android to `versionCode` 13 and rebuild before upload.
 - [ ] **Review release** → confirm subscriptions appear in the "In-app products" preview (they should — Active subscriptions are auto-included).
 - [ ] **Start rollout to Production**.
 

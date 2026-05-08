@@ -275,7 +275,7 @@ export const useConversationStore = create<ConversationState>()(
         if (state.hasGreeted) {
           prefixParts.push(`
           IMPORTANT SYSTEM UPDATE:
-          The conversation is continuing. You have ALREADY greeted the user and introduced the lesson.
+          The conversation is continuing. You have ALREADY greeted the user and started this conversation.
           Do NOT repeat the introduction or the greeting.
           Just reply naturally to the user's latest input as if the conversation never stopped.`);
         }

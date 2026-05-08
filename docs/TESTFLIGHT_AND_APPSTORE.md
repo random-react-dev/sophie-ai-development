@@ -511,6 +511,34 @@ Purpose: ship the same Gemini key-rotation architecture as Android. This is a re
 This build improves Gemini reliability and key management. The app now requests short-lived Gemini access through our Supabase backend instead of bundling a long-lived Gemini API key in the app. Voice audio still goes directly from the app to Google Gemini over WebSocket after user consent; it is not proxied through Supabase.
 ```
 
+## App Store Update #13 (v1.0.6, May 8, 2026) — Free Speaking + PTT stability release prep
+
+Purpose: ship the Talk tab Free Speaking mode and the iOS push-to-talk recorder stability fixes in a new TestFlight/App Store build.
+
+**Before:** Talk only exposed guided tutor/scenario sessions, and short or duplicate PTT starts could leave the recorder in a fragile state on iOS.
+
+**After:** The Talk tab has Tutor, Scenario, and Free Speaking modes on the same Gemini Live token/quota path. Free Speaking hides lesson-specific learning actions, and the iOS recorder path now guards duplicate starts and validates the native mic format before installing the tap.
+
+**Current prep checklist**:
+
+- [x] `app.config.ts` iOS `buildNumber` increased to `53`.
+- [ ] Run `npx expo prebuild --platform ios --clean`.
+- [ ] Open the regenerated workspace with `xed ios`.
+- [ ] Archive in Xcode and upload to App Store Connect.
+- [ ] Select build 53 for iOS app version `1.0.6`.
+
+**What's New / release notes**:
+
+```text
+Adds Free Speaking mode for open-ended Sophie conversations and improves push-to-talk reliability. The Talk tab now lets you switch between Tutor, Scenario, and Free Speaking sessions, while recorder fixes make iOS voice capture more stable.
+```
+
+**App Review notes snippet**:
+
+```text
+This build adds a Free Speaking conversation mode that uses the same authenticated Gemini Live token flow, consent gate, and daily quota/subscription entitlement checks as the existing Talk experience. It also includes iOS push-to-talk recorder stability fixes for microphone startup.
+```
+
 ## Key Files
 
 - **`app.config.ts`** — Contains `bundleIdentifier`, `buildNumber`, `version`, and `ITSAppUsesNonExemptEncryption`

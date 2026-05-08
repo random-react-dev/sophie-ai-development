@@ -70,4 +70,26 @@ describe("buildTalkSessionConfig", () => {
     );
     expect(result.initialPrompt).toContain('Introduce yourself briefly: "Hi, I am Sophie!"');
   });
+
+  it("builds free speaking configuration without tutor or scenario flow", () => {
+    const result = buildTalkSessionConfig({
+      targetLanguage,
+      nativeLanguage,
+      accentDesc: null,
+      currentCefrLevel: "S1",
+      hasSeenIntro: false,
+      practicePhrase: "Hola mundo",
+      selectedScenario: scenario,
+      talkMode: "free_speaking",
+    });
+
+    expect(result.instruction).toContain(
+      "You are Sophie AI, a warm casual conversation partner.",
+    );
+    expect(result.instruction).toContain("Do NOT correct grammar");
+    expect(result.instruction).toContain("Do NOT give feedback, scores");
+    expect(result.instruction).not.toContain("Scenario: Ordering Coffee");
+    expect(result.instruction).not.toContain("The user wants to practice the phrase");
+    expect(result.initialPrompt).toContain("Start a casual friendly conversation");
+  });
 });

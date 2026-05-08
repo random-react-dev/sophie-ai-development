@@ -129,6 +129,46 @@ describe('AudioRecorder', () => {
         // Should not start again
         expect(streamStart).not.toHaveBeenCalled();
       });
+
+      it('skips duplicate start while permission request is pending', async () => {
+        let resolvePermission: (value: { status: string }) => void = () => undefined;
+        (requestRecordingPermissionsAsync as jest.Mock).mockImplementationOnce(
+          () =>
+            new Promise<{ status: string }>((resolve) => {
+              resolvePermission = resolve;
+            }),
+        );
+
+        const firstStart = audioRecorder.start(mockOptions);
+        await Promise.resolve();
+
+        const secondStart = audioRecorder.start(mockOptions);
+        await secondStart;
+
+        expect(requestRecordingPermissionsAsync).toHaveBeenCalledTimes(1);
+        expect(streamStart).not.toHaveBeenCalled();
+
+        resolvePermission({ status: 'granted' });
+        await firstStart;
+
+        expect(streamStart).toHaveBeenCalledTimes(1);
+      });
+
+      it('allows start again after native start fails', async () => {
+        (streamStart as jest.Mock).mockRejectedValueOnce(
+          new Error('native start failed'),
+        );
+
+        await expect(audioRecorder.start(mockOptions)).rejects.toThrow(
+          'native start failed',
+        );
+
+        jest.clearAllMocks();
+
+        await audioRecorder.start(mockOptions);
+
+        expect(streamStart).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
