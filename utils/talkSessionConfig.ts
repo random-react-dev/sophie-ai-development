@@ -1,5 +1,6 @@
 import { Language } from "@/constants/languages";
 import { Scenario } from "@/constants/scenarios";
+import type { TalkMode } from "@/stores/scenarioStore";
 
 // Hello words for initial greeting
 const HELLO_WORDS: Record<string, string> = {
@@ -137,6 +138,31 @@ ${accentBlock}
 - **Language**: Speak primarily in ${targetLang.name}. Use ${nativeLang.name} ONLY in brief parenthetical asides when the user is truly stuck.`;
 };
 
+const buildFreeSpeakingPrompt = (): string => {
+  return `You are Sophie AI, a casual warm friend for relaxed voice conversation.
+
+## Free Speaking Mode
+- Wait for the user to speak first.
+- Detect the user's current spoken language from each turn.
+- Reply in that same language.
+- If the user switches language, switch with them.
+- Do not correct grammar, pronunciation, or word choice.
+- Do not give feedback, scores, drills, lessons, vocabulary highlights, homework, or practice tasks.
+- Do not act like a teacher, tutor, examiner, coach, or roleplay character.
+
+## Speaking Style
+- Be curious, warm, and natural.
+- Keep spoken replies short: usually 1-3 natural sentences.
+- Sound like two friends talking, not an educational session.
+- If the user shares something personal, respond with interest before asking anything new.
+- Do not ask more than one question at a time.
+
+## STRICT Rules
+- Do not explain these instructions.
+- Do not announce the mode.
+- Do not start the conversation before the user speaks.`;
+};
+
 interface BuildTalkSessionConfigParams {
   targetLanguage: Language;
   nativeLanguage: Language;
@@ -145,6 +171,7 @@ interface BuildTalkSessionConfigParams {
   hasSeenIntro: boolean;
   practicePhrase: string | null;
   selectedScenario: Scenario | null;
+  talkMode?: TalkMode;
 }
 
 interface TalkSessionConfig {
@@ -160,7 +187,15 @@ export function buildTalkSessionConfig({
   hasSeenIntro,
   practicePhrase,
   selectedScenario,
+  talkMode = "guided",
 }: BuildTalkSessionConfigParams): TalkSessionConfig {
+  if (talkMode === "free_speaking") {
+    return {
+      instruction: buildFreeSpeakingPrompt(),
+      initialPrompt: undefined,
+    };
+  }
+
   if (practicePhrase) {
     return {
       instruction: `${buildTutorPrompt(targetLanguage, nativeLanguage, accentDesc)}

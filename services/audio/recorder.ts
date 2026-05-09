@@ -25,6 +25,7 @@ export interface RecorderOptions {
 
 class AudioRecorder {
     private isRecording = false;
+    private isStarting = false;
     private options: RecorderOptions | null = null;
     private frameSubscription: Subscription | null = null;
     private errorSubscription: Subscription | null = null;
@@ -45,10 +46,11 @@ class AudioRecorder {
     }
 
     async start(options: RecorderOptions): Promise<void> {
-        if (this.isRecording) {
-            Logger.warn(TAG, 'Already recording, skipping start');
+        if (this.isRecording || this.isStarting) {
+            Logger.warn(TAG, 'Already recording or starting, skipping start');
             return;
         }
+        this.isStarting = true;
         this.options = options;
         this.chunkCount = 0;
         this.consecutiveErrors = 0;
@@ -139,6 +141,8 @@ class AudioRecorder {
             Logger.error(TAG, 'Failed to start recording', error);
             this.cleanup();
             throw error;
+        } finally {
+            this.isStarting = false;
         }
     }
 
@@ -251,6 +255,7 @@ class AudioRecorder {
         this.frameSubscription = null;
         this.errorSubscription = null;
         this.isRecording = false;
+        this.isStarting = false;
         this.consecutiveErrors = 0;
         this.isRestarting = false;
         this.isStopping = false;

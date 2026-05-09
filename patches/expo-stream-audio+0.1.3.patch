@@ -1,12 +1,123 @@
 diff --git a/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift b/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift
+index 50753e4..3072bb2 100644
 --- a/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift
 +++ b/node_modules/expo-stream-audio/ios/ExpoStreamAudioModule.swift
-@@ -267,7 +267,7 @@
-
+@@ -147,4 +147,5 @@ public class ExpoStreamAudioModule: Module {
+   private let audioEngine = AVAudioEngine()
+   private var isRecording = false
++  private var isStarting = false
+   private var frameDurationMs: Double = DEFAULT_FRAME_DURATION_MS
+   private var enableLevelMeter = false
+@@ -184,7 +185,11 @@ public class ExpoStreamAudioModule: Module {
+-
++
+     AsyncFunction("start") { (options: [String: Any]) async throws in
+-      if self.isRecording {
++      if self.isRecording || self.isStarting {
+         return
+       }
++      self.isStarting = true
++      defer {
++        self.isStarting = false
++      }
+-
++
+       // Ensure permission
+@@ -268,5 +273,5 @@ public class ExpoStreamAudioModule: Module {
    private func startRecordingInternal(options: [String: Any]) async throws {
      do {
 -      try audioSession.setCategory(.record, mode: .voiceChat, options: [])
 +      try audioSession.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth])
-
+-
++
        if let requestedSampleRate = options["sampleRate"] as? Double {
-         try? audioSession.setPreferredSampleRate(requestedSampleRate)
+@@ -277,15 +282,26 @@ public class ExpoStreamAudioModule: Module {
+     } catch {
+       let message = "Failed to configure audio session: \(error.localizedDescription)"
+-      sendError(message)
+-      throw NSError(
+-        domain: "ExpoStreamAudio",
+-        code: 2,
+-        userInfo: [NSLocalizedDescriptionKey: message]
+-      )
++      throw makeStartError(message: message, code: 2)
++    }
++
++    guard audioSession.isInputAvailable else {
++      throw makeStartError(message: "No microphone input is available.", code: 4)
+     }
+-
++
+     let inputNode = audioEngine.inputNode
+-    let inputFormat = inputNode.inputFormat(forBus: 0)
+-    sampleRate = inputFormat.sampleRate
++    inputNode.removeTap(onBus: 0)
++    audioEngine.stop()
++    audioEngine.reset()
++
++    let inputFormat = inputNode.outputFormat(forBus: 0)
++    let inputSampleRate = inputFormat.sampleRate
++    let inputChannelCount = inputFormat.channelCount
++
++    guard inputSampleRate > 0, inputChannelCount > 0 else {
++      let message = "Invalid microphone format: sampleRate=\(inputSampleRate), channels=\(inputChannelCount)"
++      throw makeStartError(message: message, code: 4, inputNode: inputNode)
++    }
++
++    sampleRate = inputSampleRate
+-
++
+     let framesPerBuffer = max(
+@@ -295,6 +311,4 @@ public class ExpoStreamAudioModule: Module {
+     let bufferSize = AVAudioFrameCount(framesPerBuffer)
+-
++
+-    inputNode.removeTap(onBus: 0)
+-
+     inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: inputFormat) { buffer, _ in
+       self.handleBuffer(buffer: buffer)
+@@ -302,16 +316,10 @@ public class ExpoStreamAudioModule: Module {
+-
++
+     do {
++      audioEngine.prepare()
+       try audioEngine.start()
+       isRecording = true
+     } catch {
+       let message = "Failed to start audio engine: \(error.localizedDescription)"
+-      sendError(message)
+-      inputNode.removeTap(onBus: 0)
+-      isRecording = false
+-      throw NSError(
+-        domain: "ExpoStreamAudio",
+-        code: 3,
+-        userInfo: [NSLocalizedDescriptionKey: message]
+-      )
++      throw makeStartError(message: message, code: 3, inputNode: inputNode)
+     }
+   }
+@@ -322,3 +330,4 @@ public class ExpoStreamAudioModule: Module {
+     audioEngine.inputNode.removeTap(onBus: 0)
+     audioEngine.stop()
++    audioEngine.reset()
+     try? audioSession.setActive(false)
+@@ -329,4 +338,18 @@ public class ExpoStreamAudioModule: Module {
+   }
+-
++
++  private func makeStartError(message: String, code: Int, inputNode: AVAudioInputNode? = nil) -> NSError {
++    sendError(message)
++    inputNode?.removeTap(onBus: 0)
++    audioEngine.stop()
++    audioEngine.reset()
++    isRecording = false
++    try? audioSession.setActive(false)
++    return NSError(
++      domain: "ExpoStreamAudio",
++      code: code,
++      userInfo: [NSLocalizedDescriptionKey: message]
++    )
++  }
++
+   private func handleBuffer(buffer: AVAudioPCMBuffer) {
+     let frameLength = Int(buffer.frameLength)

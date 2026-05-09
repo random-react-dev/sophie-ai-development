@@ -466,13 +466,17 @@ Complete each card (every card must be green before submission):
 
 ### 13b. Submit for review
 
-- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current Gemini remote-key upload target: `Speak-With-Sophie-1.0.6-vc13.aab`.
-- [ ] Release name: `1.0.6 (13)`.
+- [ ] **Test and release → Production → Create new release** → upload the AAB from the developer. Current May 9 upload target: `Speak-With-Sophie-1.0.8-vc13.aab`.
+- [ ] Release name: `1.0.8 (13)`.
 - [ ] Release notes:
   ```text
-  Improves Android subscription recovery and Gemini reliability. The app now restores valid completed Play purchases on startup and foreground, and gets short-lived Gemini access through our Supabase backend so future Gemini API key rotations can be handled server-side without another app update.
+  Free Speaking now waits for your first spoken turn and replies in the same language you use. You can switch languages naturally during the conversation, while Tutor and Scenario practice stay guided.
   ```
-- [ ] Confirm the developer did not upload the stale vc12 AAB. The next AAB must use Android `versionCode` 13 or newer.
+- [ ] Confirm the developer did not upload any stale vc12 AAB from earlier release prep. The May 9 AAB must be freshly rebuilt from the current source and use versionCode 13.
+- [ ] Developer build command, run from repo root:
+  ```bash
+  npx expo prebuild --platform android --clean && cd android && ./gradlew app:bundleRelease && cp app/build/outputs/bundle/release/app-release.aab /Users/niravramani/Desktop/Speak-With-Sophie-1.0.8-vc13.aab
+  ```
 - [ ] **Review release** → confirm subscriptions appear in the "In-app products" preview (they should — Active subscriptions are auto-included).
 - [ ] **Start rollout to Production**.
 
@@ -500,11 +504,11 @@ Because Apexture is an **organization account**, Google does NOT require 14-day 
 **"Google Play shows 'Developer hasn't acknowledged your purchase'."**
 - Verify the service account has app-scoped **Manage orders and subscriptions** for Speak With Sophie. Without it, the backend can verify the token but fail the acknowledgement POST.
 - Confirm `verify-play-purchase` was deployed after the acknowledgement fix. The backend must acknowledge pending purchases before returning success to the app.
-- Confirm the installed Android build is version `1.0.5` with `versionCode` 12 or newer. This build also recovers missed completed purchases on app startup and foreground.
+- Confirm the installed Android build is version `1.0.8` with `versionCode` 13 or newer. This build also recovers missed completed purchases on app startup and foreground.
 - Make a fresh license-tester purchase. Old test purchases that were already auto-refunded will not recover.
 
 **"Gemini stopped working after the app is installed."**
-- Confirm the installed Android build is version `1.0.5` with `versionCode` 13 or newer for server-side Gemini key handling.
+- Confirm the installed Android build is version `1.0.8` with `versionCode` 13 or newer for server-side Gemini key handling.
 - Confirm Supabase has a working `GEMINI_API_KEY` secret: `supabase secrets list --project-ref upfivcrszqvbkrchevlq | grep GEMINI_API_KEY`.
 - To rotate the Gemini key after this release is live, run `supabase secrets set GEMINI_API_KEY="NEW_KEY" --project-ref upfivcrszqvbkrchevlq`. No new Play review is needed for key rotation alone.
 

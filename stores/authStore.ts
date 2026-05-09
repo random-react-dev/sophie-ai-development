@@ -16,9 +16,12 @@ import { useEntitlementStore } from "./entitlementStore";
 import { useGameStore } from "./gameStore";
 import { useLearningStore } from "./learningStore";
 import { useProfileStore } from "./profileStore";
+import { useSessionReportsStore } from "./sessionReportsStore";
 import { useStatsStore } from "./statsStore";
 import { useTranslationHistoryStore } from "./translationHistoryStore";
 import { useVocabularyStore } from "./vocabularyStore";
+
+let expectedSignOutInProgress = false;
 
 /**
  * Clear all user-specific data from stores and AsyncStorage on logout.
@@ -39,6 +42,7 @@ const clearUserData = async (): Promise<void> => {
   useProfileStore.getState().reset();
   useLearningStore.getState().reset();
   useVocabularyStore.setState({ items: [], folders: [], isLoading: false });
+  useSessionReportsStore.getState().reset();
   useStatsStore.getState().reset();
   useConversationStore.getState().reset();
   useIntroStore.getState().setHasSeenIntro(false);
@@ -274,10 +278,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       await clearUserData();
+      expectedSignOutInProgress = true;
       await supabase.auth.signOut();
     } catch (err) {
       console.warn("Sign out error:", err);
     } finally {
+      expectedSignOutInProgress = false;
       set({
         user: null,
         session: null,
@@ -296,8 +302,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // Clear all user-specific data before signing out
       await clearUserData();
+      expectedSignOutInProgress = true;
       await supabase.auth.signOut();
     } finally {
+      expectedSignOutInProgress = false;
       set({
         user: null,
         session: null,
@@ -366,14 +374,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         // When session becomes invalid or user is signed out (including token refresh failures),
         // clear all user data to ensure a clean state for the next login.
-        if (event === "SIGNED_OUT" && !get().pending2FA) {
+        if (event === "SIGNED_OUT" && get().pending2FA) {
+          set({ session: null, user: null });
+          syncLearningLevelFromUser(null);
+          return;
+        }
+
+        if (event === "SIGNED_OUT" && expectedSignOutInProgress) {
+          set({ session: null, user: null });
+          syncLearningLevelFromUser(null);
+          return;
+        }
+
+        if (expectedSignOutInProgress) {
+          return;
+        }
+
+        if (event === "SIGNED_OUT") {
+          await new Promise((resolve) => setTimeout(resolve, 0));
           // Verify session is truly gone before clearing (guards against spurious SIGNED_OUT from token refresh failures)
           const { data: retryData } = await supabase.auth.getSession();
           if (retryData.session) {
             set({ session: retryData.session, user: retryData.session.user });
+            syncLearningLevelFromUser(retryData.session.user);
             return;
           }
+          set({ session: null, user: null });
           await clearUserData();
+          syncLearningLevelFromUser(null);
+          return;
         }
 
         set({

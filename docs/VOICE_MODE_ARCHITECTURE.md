@@ -19,74 +19,103 @@ Sophie AI uses Gemini Live API for real-time voice conversations. The app first 
 └─────────────┘     └──────────────┘     └─────────────────┘
 ```
 
+## Talk Tab Conversation Modes
+
+The Talk tab supports multiple conversation intents on top of the same Gemini Live audio path:
+
+- **Tutor**: the default guided language tutor session.
+- **Scenario**: immersive roleplay selected from the Scenarios tab.
+- **Free Speaking**: casual open-ended conversation with Sophie as a friendly conversation partner.
+
+Free Speaking Mode changes only the session prompt. It does not add a new backend, schema, token flow, quota path, audio recorder, or WebSocket implementation. It still uses:
+
+1. AI consent gate.
+2. `checkTalkQuota()` before token fetch.
+3. `get-gemini-session` for a short-lived Gemini token.
+4. `geminiWebSocket.connect(...)`.
+5. The same push-to-talk mic button.
+
+Free Speaking sends no initial prompt. Sophie waits for the user's first PTT turn, lets Gemini Live infer the spoken language from the user's audio, and mirrors that language in the reply. If the user switches languages on a later turn, Sophie switches with them.
+
+Free Speaking must not show lesson report or vocabulary-save actions. The safety report action on Sophie messages remains available. It is for casual conversation only: no scores, corrections, tasks, vocabulary highlights, or lesson objectives.
+
 ## Push-to-Talk (PTT) Mode
 
 ### User Flow
 
-1. **User visits Talk page** → Selects target and native languages
-2. **App requests token** → `get-gemini-session` returns a short-lived Gemini Live token
-3. **WebSocket connects** → Sophie AI **automatically greets** with hello word introduction
-4. **User holds mic button (200ms+)** → Recording starts, audio streams to Gemini
-5. **User releases mic** → Recording stops, Gemini processes and Sophie AI responds
-6. **Flow continues** → User can hold again to speak
+1. **User visits Talk page** -> selects target and support languages from the active profile.
+2. **User chooses mode** -> Tutor, Scenario, or Free Speaking.
+3. **App requests token** -> `get-gemini-session` returns a short-lived Gemini Live token.
+4. **WebSocket connects** -> Sophie can auto-greet when the mode provides an initial prompt.
+5. **User holds mic** -> recording starts, audio streams to Gemini.
+6. **User releases mic** -> app sends activity end, recording stops, Gemini processes and Sophie responds.
+7. **Flow continues** -> user can hold again to speak.
 
 ### Key Implementation Details
 
-**Auto-Greeting on Setup Complete** (`services/gemini/websocket.ts:314-324`)
+**Auto-Greeting on Setup Complete** (`services/gemini/websocket.ts`)
 
 ```typescript
 if (isSetupCompleteReceived) {
   this.isSetupComplete = true;
   this.setConnectionState("connected");
 
-  // Auto-greet on first connection
-  if (!store.hasGreeted) {
-    this.sendGreeting();
-    store.setHasGreeted(true);
+  if (!store.hasGreeted && this.lastInitialPrompt) {
+    this.initializeAndGreet(store);
   }
 }
 ```
 
-**Timer-Based Hold Detection** (`app/(tabs)/_layout.tsx`)
+**PTT Hold Handling** (`app/(tabs)/_layout.tsx`, `stores/conversationStore.ts`)
 
-- Uses 200ms threshold to distinguish tap from hold
-- `onPressIn` starts a timer, recording only begins after threshold
-- Quick taps show tooltip: "Hold to Speak"
-- `onPressOut` clears timer and stops recording if active
+- The tab mic routes to the Talk tab first when tapped from another tab.
+- When the Talk tab is active and connected, the long-press gesture starts PTT.
+- `startPTTRecording()` sends `activityStart` and starts audio recording.
+- `stopPTTRecording()` sends `activityEnd`, stops recording, and marks processing.
+- Recordings shorter than `MIN_PTT_DURATION_MS` or with no captured frames are discarded.
 
 ```typescript
-const HOLD_THRESHOLD = 200; // milliseconds
-const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
-const isHoldingRef = useRef(false);
+geminiWebSocket.sendActivityStart();
+await audioRecorder.start({ onAudioData });
 
-// onPressIn: Start timer, only record if held 200ms+
-// onPressOut: Clear timer, stop recording if was holding
-// onPress: Show tooltip if tap (not hold)
+geminiWebSocket.sendActivityEnd();
+await audioRecorder.stop();
 ```
 
 **DO NOT:**
 
-- Trigger greeting on button press (it's auto on setup)
-- Start recording immediately on `onPressIn` (use timer)
-- Remove the hold threshold (prevents accidental recordings)
+- Trigger greeting on button press (modes with an initial prompt greet on setup)
+- Start recording when the WebSocket is not connected
+- Remove the minimum recording validation
 
 ## Critical Design Decisions
 
-### 1. Continuous Audio Streaming (DO NOT PAUSE)
+### 1. Manual PTT Turn Boundaries
 
-**The microphone MUST stream continuously** - even while Sophie AI is speaking.
+**PTT mode uses manual activity control.**
 
 **Why:**
 
-- Gemini's automatic VAD (Voice Activity Detection) handles turn detection
-- Pausing audio breaks VAD's ability to detect user speech
-- Sending `activityStart`/`activityEnd` signals is INCOMPATIBLE with automatic VAD
-- Error if you try: `Code: 1007, Reason: Explicit activity control is not supported when automatic activity detection is enabled`
+- The user explicitly controls when they are speaking by holding the mic.
+- `activityStart` and `activityEnd` give Gemini clear turn boundaries.
+- Short accidental presses can be discarded before they become model turns.
 
-**What happens if you pause:**
+**Setup requirement:**
 
-- User speech after Sophie AI finishes will NOT be detected
-- WebSocket may disconnect with error 1007
+```typescript
+realtimeInputConfig: {
+  automaticActivityDetection: {
+    disabled: true,
+  },
+  activityHandling: "NO_INTERRUPTION",
+}
+```
+
+**DO NOT:**
+
+- Enable automatic VAD while also sending `activityStart` or `activityEnd`.
+- Send audio before setup is complete.
+- Treat Free Speaking as a separate audio mode.
 
 ### 2. Hardware Echo Cancellation (AEC)
 
@@ -106,29 +135,29 @@ AudioManager.setAudioSessionOptions({
 - Without this, the microphone picks up Sophie AI's voice from the speaker
 - This would confuse Gemini's VAD into thinking the user is speaking
 
-### 3. Automatic VAD Configuration
+### 3. Manual Activity Configuration
 
-The setup message configures Gemini's automatic VAD:
+The setup message disables automatic VAD because PTT sends explicit activity signals:
 
 ```typescript
 realtimeInputConfig: {
-    automaticActivityDetection: {
-        endOfSpeechSensitivity: 'END_SENSITIVITY_LOW',
-        silenceDurationMs: 300
-    }
+  automaticActivityDetection: {
+    disabled: true,
+  },
+  activityHandling: "NO_INTERRUPTION",
 }
 ```
 
 **Settings:**
 
-- `END_SENSITIVITY_LOW`: Less aggressive end-of-speech detection (user can pause briefly)
-- `silenceDurationMs: 300`: Wait 300ms of silence before considering speech ended
+- `disabled: true`: Gemini waits for manual activity boundaries.
+- `NO_INTERRUPTION`: Current model output is protected while the user is not actively holding PTT.
 
 **DO NOT:**
 
-- Set `disabled: true` (requires manual activity signals)
-- Send `activityStart` or `activityEnd` messages
-- Try to manually control turn-taking
+- Mix automatic VAD with manual activity signals.
+- Remove `sendActivityStart()` / `sendActivityEnd()` from PTT.
+- Add a second turn-taking system for Free Speaking.
 
 ### 4. Audio Buffer Queue for Gapless Playback
 
@@ -176,7 +205,11 @@ services/
 1. `expo-stream-audio` captures microphone at 16kHz, mono, PCM
 2. Every 20ms frame (~50 frames/second) sent to `onAudioData` callback
 3. `geminiWebSocket.sendAudioChunk()` sends base64 PCM to Gemini
-4. Audio is ALWAYS sent - no pausing during Sophie AI's speech
+4. Audio is sent only during the active PTT turn
+
+### iOS Recorder Patch
+
+The iOS recorder uses a patched `expo-stream-audio` native module. The patch keeps the same Talk/Gemini/WebSocket behavior and frame payloads, but defensively starts `AVAudioEngine` with the input node output format and validates the audio session before installing the mic tap. Because this is Swift code, changes require rebuilding the local Expo iOS app, not only reloading JavaScript.
 
 ### Playback (Gemini → User)
 
@@ -207,12 +240,19 @@ services/
     "outputAudioTranscription": {},
     "realtimeInputConfig": {
       "automaticActivityDetection": {
-        "endOfSpeechSensitivity": "END_SENSITIVITY_LOW",
-        "silenceDurationMs": 300
-      }
+        "disabled": true
+      },
+      "activityHandling": "NO_INTERRUPTION"
     }
   }
 }
+```
+
+### Activity Messages
+
+```json
+{ "realtimeInput": { "activityStart": {} } }
+{ "realtimeInput": { "activityEnd": {} } }
 ```
 
 ### Audio Input Message
@@ -260,17 +300,17 @@ services/
 
 ## Common Issues and Solutions
 
-### Issue: User speech not detected after Sophie AI speaks
+### Issue: PTT audio is ignored
 
-**Cause:** Audio was being paused during Sophie AI's speech, breaking VAD.
+**Cause:** WebSocket setup is not complete, the recording was too short, or no audio frames were captured.
 
-**Solution:** Keep audio streaming continuously. Hardware AEC handles echo.
+**Solution:** Wait for `connectionState === "connected"`, hold long enough to capture frames, and keep `MIN_PTT_DURATION_MS` validation in place.
 
 ### Issue: WebSocket closes with code 1007
 
-**Cause:** Sending `activityStart`/`activityEnd` with automatic VAD enabled.
+**Cause:** Mixing manual `activityStart`/`activityEnd` with automatic VAD.
 
-**Solution:** Remove all activity signals. Let automatic VAD handle everything.
+**Solution:** Keep automatic activity detection disabled for PTT.
 
 ### Issue: Echo/feedback during playback
 
@@ -287,19 +327,20 @@ services/
 ## Testing Checklist
 
 - [ ] WebSocket stays connected (no 1007 errors)
-- [ ] Sophie AI auto-greets when WebSocket setup completes (no button press needed)
-- [ ] Quick tap on mic shows "Hold to Speak" tooltip
-- [ ] Holding mic (200ms+) starts recording
+- [ ] Sophie AI auto-greets on setup only when the mode provides an initial prompt
+- [ ] Holding mic starts PTT recording
+- [ ] Very short or empty recordings are discarded
 - [ ] Sophie AI's voice is clear (no choppy audio)
-- [ ] User can speak after Sophie AI finishes
 - [ ] User's speech is transcribed (`input_transcription` in logs)
 - [ ] Sophie AI responds to user's speech
 - [ ] User can interrupt Sophie AI mid-speech
 - [ ] No echo or feedback during playback
+- [ ] Free Speaking waits for the user's first PTT turn to mirror their language
+- [ ] Free Speaking does not show report generation, corrections, scores, or vocabulary-save actions
 
 ## Log Messages to Watch
 
-### Healthy Flow
+### Healthy Flow (Mode With Initial Prompt)
 
 ```
 [GeminiWS] WebSocket Connected successfully
@@ -322,9 +363,9 @@ services/
 ### Problem Indicators
 
 ```
-[GeminiWS] WebSocket Closed. Code: 1007  ← Activity signals with auto VAD
-[GeminiWS] Audio sending paused          ← Audio pausing (bad)
-[GeminiWS] Sending activityStart         ← Manual activity (bad with auto VAD)
+[GeminiWS] WebSocket Closed. Code: 1007  <- Activity signals mixed with auto VAD
+[ConversationStore] Cannot start PTT: WebSocket not ready
+[ConversationStore] Recording too short
 ```
 
 ## Dependencies
@@ -334,6 +375,13 @@ services/
 - Native WebSocket: Connection to Gemini Live API
 
 ## Version History
+
+- **v1.2** (2026-05-08): Free Speaking Mode
+  - Added casual conversation mode inside the Talk tab.
+  - Reuses the same Gemini Live token, WebSocket, quota, transcript, and PTT flow.
+  - Free Speaking waits for the user's first PTT turn to mirror their language.
+  - Hides lesson report and vocabulary actions for Free Speaking sessions.
+  - Files changed: `talk.tsx`, `talkSessionConfig.ts`, `scenarioStore.ts`, `MessageBubble.tsx`
 
 - **v1.1** (2025-01-10): Push-to-Talk (PTT) Mode
   - Auto-greeting on WebSocket setup complete (no button press needed)

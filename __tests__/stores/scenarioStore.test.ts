@@ -29,6 +29,10 @@ describe('scenarioStore', () => {
       expect(useScenarioStore.getState().practicePhrase).toBeNull();
     });
 
+    it('starts in guided talk mode', () => {
+      expect(useScenarioStore.getState().talkMode).toBe('guided');
+    });
+
     it('has scenarios loaded', () => {
       expect(useScenarioStore.getState().scenarios.length).toBeGreaterThan(0);
     });
@@ -56,6 +60,13 @@ describe('scenarioStore', () => {
       // Now select a scenario — practice phrase should be cleared
       useScenarioStore.getState().selectScenario(mockScenario);
       expect(useScenarioStore.getState().practicePhrase).toBeNull();
+    });
+
+    it('returns to guided mode when selecting a scenario', () => {
+      useScenarioStore.getState().setTalkMode('free_speaking');
+      useScenarioStore.getState().selectScenario(mockScenario);
+
+      expect(useScenarioStore.getState().talkMode).toBe('guided');
     });
 
     it('bumps scenarioSelectionTimestamp', () => {
@@ -103,6 +114,13 @@ describe('scenarioStore', () => {
       expect(useScenarioStore.getState().selectedScenario).toBeNull();
     });
 
+    it('returns to guided mode when setting a practice phrase', () => {
+      useScenarioStore.getState().setTalkMode('free_speaking');
+      useScenarioStore.getState().setPracticePhrase('Bonjour');
+
+      expect(useScenarioStore.getState().talkMode).toBe('guided');
+    });
+
     it('bumps scenarioSelectionTimestamp', () => {
       const before = useScenarioStore.getState().scenarioSelectionTimestamp;
       useScenarioStore.getState().setPracticePhrase('Hola');
@@ -118,6 +136,44 @@ describe('scenarioStore', () => {
     });
   });
 
+  describe('setTalkMode', () => {
+    it('sets free speaking mode and clears guided intent', () => {
+      useScenarioStore.getState().selectScenario(mockScenario);
+      useScenarioStore.getState().setPracticePhrase('Hola');
+
+      useScenarioStore.getState().setTalkMode('free_speaking');
+
+      const state = useScenarioStore.getState();
+      expect(state.talkMode).toBe('free_speaking');
+      expect(state.selectedScenario).toBeNull();
+      expect(state.practicePhrase).toBeNull();
+    });
+
+    it('sets guided mode and clears active guided intent', () => {
+      useScenarioStore.getState().selectScenario(mockScenario);
+
+      useScenarioStore.getState().setTalkMode('guided');
+
+      const state = useScenarioStore.getState();
+      expect(state.talkMode).toBe('guided');
+      expect(state.selectedScenario).toBeNull();
+      expect(state.practicePhrase).toBeNull();
+    });
+
+    it('bumps scenarioSelectionTimestamp', () => {
+      const before = useScenarioStore.getState().scenarioSelectionTimestamp;
+      const originalNow = Date.now;
+      Date.now = jest.fn(() => originalNow() + 100);
+
+      useScenarioStore.getState().setTalkMode('free_speaking');
+      const after = useScenarioStore.getState().scenarioSelectionTimestamp;
+
+      expect(after).toBeGreaterThan(before);
+
+      Date.now = originalNow;
+    });
+  });
+
   describe('clearForProfileSwitch', () => {
     it('clears selectedScenario', () => {
       useScenarioStore.getState().selectScenario(mockScenario);
@@ -129,6 +185,12 @@ describe('scenarioStore', () => {
       useScenarioStore.getState().setPracticePhrase('Hola');
       useScenarioStore.getState().clearForProfileSwitch();
       expect(useScenarioStore.getState().practicePhrase).toBeNull();
+    });
+
+    it('resets talk mode to guided', () => {
+      useScenarioStore.getState().setTalkMode('free_speaking');
+      useScenarioStore.getState().clearForProfileSwitch();
+      expect(useScenarioStore.getState().talkMode).toBe('guided');
     });
 
     it('does NOT bump scenarioSelectionTimestamp', () => {

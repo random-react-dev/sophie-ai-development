@@ -2,7 +2,13 @@ import { ChatAvatar } from "@/components/common/ChatAvatar";
 import { useTranslation } from "@/hooks/useTranslation";
 import { EyeOff, Flag, Languages, Plus } from "lucide-react-native";
 import React, { useState } from "react";
-import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface Message {
   id: string;
@@ -15,6 +21,7 @@ interface MessageBubbleProps {
   message: Message;
   onTranslate: (text: string) => Promise<string | null>;
   onSave: (text: string) => void;
+  showLearningActions?: boolean;
   userAvatarUri?: string | null;
   userName?: string;
 }
@@ -23,6 +30,7 @@ export function MessageBubble({
   message,
   onTranslate,
   onSave,
+  showLearningActions = true,
   userAvatarUri,
   userName,
 }: MessageBubbleProps) {
@@ -113,49 +121,53 @@ export function MessageBubble({
           <View
             className={`flex-row mt-1 gap-4 ${isUser ? "justify-end mr-1" : "ml-1"}`}
           >
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row items-center gap-1"
-              onPress={handleTranslatePress}
-              disabled={isLoading}
-              accessibilityRole="button"
-              accessibilityLabel={
-                showTranslation
-                  ? t("talk_screen.message_actions.hide")
-                  : t("talk_screen.message_actions.translate")
-              }
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="#6b7280" />
-              ) : (
-                <>
-                  {showTranslation ? (
-                    <EyeOff size={12} color="#6b7280" />
-                  ) : (
-                    <Languages size={12} color="#6b7280" />
-                  )}
-                  <Text className="text-xs font-bold text-gray-500">
-                    {showTranslation
+            {showLearningActions && (
+              <>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  className="flex-row items-center gap-1"
+                  onPress={handleTranslatePress}
+                  disabled={isLoading}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    showTranslation
                       ? t("talk_screen.message_actions.hide")
-                      : t("talk_screen.message_actions.translate")}
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
+                      : t("talk_screen.message_actions.translate")
+                  }
+                >
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#6b7280" />
+                  ) : (
+                    <>
+                      {showTranslation ? (
+                        <EyeOff size={12} color="#6b7280" />
+                      ) : (
+                        <Languages size={12} color="#6b7280" />
+                      )}
+                      <Text className="text-xs font-bold text-gray-500">
+                        {showTranslation
+                          ? t("talk_screen.message_actions.hide")
+                          : t("talk_screen.message_actions.translate")}
+                      </Text>
+                    </>
+                  )}
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row items-center gap-1"
-              onPress={() => onSave(message.text)}
-              accessibilityRole="button"
-              accessibilityLabel={t("talk_screen.message_actions.save")}
-              accessibilityHint="Saves this message to your vocabulary list"
-            >
-              <Plus size={12} color="#6b7280" />
-              <Text className="text-xs font-bold text-gray-500">
-                {t("talk_screen.message_actions.save")}
-              </Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  className="flex-row items-center gap-1"
+                  onPress={() => onSave(message.text)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("talk_screen.message_actions.save")}
+                  accessibilityHint="Saves this message to your vocabulary list"
+                >
+                  <Plus size={12} color="#6b7280" />
+                  <Text className="text-xs font-bold text-gray-500">
+                    {t("talk_screen.message_actions.save")}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
 
             {!isUser && (
               <TouchableOpacity

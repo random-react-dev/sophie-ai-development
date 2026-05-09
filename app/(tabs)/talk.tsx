@@ -30,7 +30,11 @@ import { useScenarioStore } from "@/stores/scenarioStore";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
-import { RotateCcw } from "lucide-react-native";
+import {
+  BookOpen,
+  RotateCcw,
+  VenetianMask,
+} from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -222,6 +226,8 @@ export default function TalkScreen() {
   const {
     selectedScenario,
     practicePhrase,
+    talkMode,
+    setTalkMode,
     clearForProfileSwitch,
     scenarioSelectionTimestamp,
   } = useScenarioStore();
@@ -272,6 +278,12 @@ export default function TalkScreen() {
   // Check if both languages are selected (profile exists)
   const canStartConversation =
     targetLanguage !== null && nativeLanguage !== null;
+  const isFreeSpeakingMode = talkMode === "free_speaking";
+  const activeMode = isFreeSpeakingMode
+    ? "free_speaking"
+    : selectedScenario
+      ? "scenario"
+      : "tutor";
 
   const resetActiveSession = useCallback(
     async ({
@@ -435,6 +447,7 @@ export default function TalkScreen() {
           hasSeenIntro,
           practicePhrase,
           selectedScenario,
+          talkMode,
         });
         let instruction = sessionConfig.instruction;
         let initialPrompt = sessionConfig.initialPrompt;
@@ -509,7 +522,9 @@ ${levelGuide}`;
 
         Logger.info(
           TAG,
-          `Connecting WebSocket for ${targetLanguage.name} lesson (explaining in ${nativeLanguage.name})`,
+          `Connecting WebSocket for ${targetLanguage.name} ${
+            isFreeSpeakingMode ? "free speaking" : "lesson"
+          } (support language: ${nativeLanguage.name})`,
         );
         geminiWebSocket.connect(token, instruction, initialPrompt);
 
@@ -588,6 +603,7 @@ ${levelGuide}`;
     hasConsented, // Re-run when consent is granted
     targetLanguage, // Re-run when target language changes
     nativeLanguage, // Re-run when native language changes
+    talkMode, // Re-run when switching between guided and free speaking
     selectedScenario, // Re-run when scenario changes
     practicePhrase, // Re-run when practice phrase changes
     scenarioSelectionTimestamp, // Re-run when scenario is re-selected (even if same object)
@@ -722,6 +738,73 @@ ${levelGuide}`;
     }
   };
 
+  const handleSelectTutorMode = () => {
+    if (activeMode !== "tutor" || practicePhrase) {
+      setTalkMode("guided");
+    }
+  };
+
+  const handleSelectScenarioMode = () => {
+    router.push("/(tabs)/scenarios");
+  };
+
+  const handleToggleFreeSpeakingMode = (enabled: boolean) => {
+    setTalkMode(enabled ? "free_speaking" : "guided");
+  };
+
+  const handleEndFreeChat = () => {
+    showAlert(
+      t("talk_screen.alerts.end_free_title"),
+      t("talk_screen.alerts.end_free_msg"),
+      [
+        { text: t("talk_screen.alerts.cancel"), style: "cancel" },
+        {
+          text: t("talk_screen.alerts.end_free"),
+          style: "destructive",
+          onPress: async () => {
+            await resetActiveSession();
+          },
+        },
+      ],
+      "info",
+    );
+  };
+
+  const renderModePill = ({
+    label,
+    selected,
+    icon,
+    onPress,
+    testID,
+  }: {
+    label: string;
+    selected: boolean;
+    icon: React.ReactNode;
+    onPress: () => void;
+    testID: string;
+  }) => (
+    <TouchableOpacity
+      testID={testID}
+      activeOpacity={0.75}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      className={`h-9 px-3 rounded-full flex-row items-center gap-1.5 border ${
+        selected ? "bg-blue-50 border-blue-100" : "bg-white border-gray-100"
+      }`}
+    >
+      {icon}
+      <Text
+        numberOfLines={1}
+        className={`font-bold text-sm ${
+          selected ? "text-blue-700" : "text-gray-500"
+        }`}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+
   // Message type for FlatList
   interface Message {
     id: string;
@@ -735,6 +818,7 @@ ${levelGuide}`;
       message={msg}
       onTranslate={handleTranslate}
       onSave={handleSaveVocabulary}
+      showLearningActions={!isFreeSpeakingMode}
       userAvatarUri={user?.user_metadata?.avatar_url}
       userName={user?.user_metadata?.full_name || user?.email}
     />
@@ -803,24 +887,85 @@ ${levelGuide}`;
               contentContainerStyle={{
                 paddingHorizontal: 16,
                 paddingVertical: 12,
-                gap: 12,
+                gap: 8,
                 alignItems: "center",
                 minWidth: "100%",
-                justifyContent: "flex-end",
+                justifyContent: "flex-start",
               }}
             >
+              {renderModePill({
+                label: t("talk_screen.modes.tutor"),
+                selected: activeMode === "tutor",
+                icon: (
+                  <BookOpen
+                    size={14}
+                    color={activeMode === "tutor" ? "#2563eb" : "#64748b"}
+                  />
+                ),
+                onPress: handleSelectTutorMode,
+                testID: "talk-mode-tutor",
+              })}
+
+              {renderModePill({
+                label: t("talk_screen.modes.scenario"),
+                selected: activeMode === "scenario",
+                icon: (
+                  <VenetianMask
+                    size={14}
+                    color={activeMode === "scenario" ? "#2563eb" : "#64748b"}
+                  />
+                ),
+                onPress: handleSelectScenarioMode,
+                testID: "talk-mode-scenario",
+              })}
+
+              <View
+                className={`h-9 px-3 rounded-full flex-row items-center gap-2 border ${
+                  isFreeSpeakingMode
+                    ? "bg-blue-50 border-blue-100"
+                    : "bg-white border-gray-100"
+                }`}
+              >
+                <Text
+                  numberOfLines={1}
+                  className={`font-bold text-sm ${
+                    isFreeSpeakingMode ? "text-blue-700" : "text-gray-500"
+                  }`}
+                >
+                  {t("talk_screen.modes.free_speaking")}
+                </Text>
+                <CustomToggle
+                  testID="talk-mode-free-speaking"
+                  value={isFreeSpeakingMode}
+                  onValueChange={handleToggleFreeSpeakingMode}
+                  trackActiveColor="#2563eb"
+                  accessibilityLabel={t("talk_screen.modes.free_speaking")}
+                />
+              </View>
+
               {/* Finish Button */}
-              {messages.length > 0 && (
-                <TouchableOpacity onPress={handleFinish} activeOpacity={0.8}>
+              {(isFreeSpeakingMode || messages.length > 0) && (
+                <TouchableOpacity
+                  onPress={
+                    isFreeSpeakingMode ? handleEndFreeChat : handleFinish
+                  }
+                  activeOpacity={0.8}
+                >
                   <RainbowBorder
                     borderRadius={9999}
                     borderWidth={1.5}
                     className="flex-1"
                     containerClassName="px-3 py-2 flex-row items-center gap-1.5"
                   >
-                    <Feather name="check-circle" size={12} color="black" />
+                    <Feather
+                      name={isFreeSpeakingMode ? "x-circle" : "check-circle"}
+                      size={12}
+                      color="black"
+                    />
                     <Text className="text-black font-bold text-xs">
-                      {t("talk_screen.actions.finish_report")}
+                      {isFreeSpeakingMode
+                        ? t("talk_screen.actions.end_chat")
+                        : t("talk_screen.actions.finish_report")}
                     </Text>
                   </RainbowBorder>
                 </TouchableOpacity>
@@ -897,7 +1042,9 @@ ${levelGuide}`;
                 </Text>
               ) : (
                 <Text className="text-black/60 font-medium text-center px-10 leading-6">
-                  {t("talk_screen.prompts.hold_mic_start")}
+                  {isFreeSpeakingMode
+                    ? t("talk_screen.prompts.hold_mic_start_free")
+                    : t("talk_screen.prompts.hold_mic_start")}
                 </Text>
               )}
             </View>
