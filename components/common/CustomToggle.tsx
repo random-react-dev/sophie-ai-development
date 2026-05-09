@@ -15,6 +15,9 @@ interface CustomToggleProps {
   trackActiveColor?: string;
   trackInactiveColor?: string;
   thumbColor?: string;
+  testID?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 const TRACK_WIDTH = 44;
@@ -28,6 +31,9 @@ export function CustomToggle({
   trackActiveColor = "#3B82F6",
   trackInactiveColor = "#E2E8F0",
   thumbColor = "#FFFFFF",
+  testID,
+  accessibilityLabel,
+  accessibilityHint,
 }: CustomToggleProps) {
   const progress = useSharedValue(value ? 1 : 0);
 
@@ -63,7 +69,15 @@ export function CustomToggle({
   };
 
   return (
-    <Pressable onPress={handlePress}>
+    <Pressable
+      testID={testID}
+      onPress={handlePress}
+      hitSlop={10}
+      accessibilityRole="switch"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ checked: value }}
+    >
       <Animated.View
         style={[
           trackStyle,

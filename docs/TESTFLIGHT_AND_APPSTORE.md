@@ -10,7 +10,7 @@
 | **SKU** | sophie-ai |
 | **Domain** | speakwithsophie.ai |
 
-## Current State (as of 2026-05-07)
+## Current State (as of 2026-05-09)
 
 - **Live Version**: 1.0.1 (build 44) — **APPROVED 2026-04-15** after five rejections in March 2026. Shipped with zero subscription UI.
 - **1.0.2 / build 45**: REJECTED 2026-04-20 — Guideline 2.1(b) (Subscribe button silently no-op'd on iPad Air 11-inch).
@@ -19,10 +19,10 @@
 - **1.0.2 / build 48**: ✅ **SUBMITTED 2026-04-28 10:22 IST** — App Store Connect status **Waiting for Review**. Adds IAP diagnostic logging in `services/iap/client.ts` on top of build 47's content. Apple-side agreements/tax/banking are Active; Monthly + Semiannual products and the subscription group localization are all **Waiting for Review**. App Store description now includes Terms of Use (EULA) and Privacy Policy links. App Review notes say the demo account requires no authentication code and include the subscription test path/product IDs.
 - **1.0.4 / build 50**: 🟡 **LOCAL PREP 2026-04-30** — build-number bump after pulling latest `origin/main`; subscription footer Terms link now opens Apple's Standard EULA directly and Privacy opens the full `https://www.speakwithsophie.ai/privacy` URL. Use this build only if App Store Connect requires a new binary for the 3.1.2(c) recovery.
 - **1.0.5 / build 51**: Prepared before the Gemini remote-key change. Do not submit build 51 if this release must include server-side Gemini key rotation.
-- **Next iOS upload**: 1.0.6 / build 52 after regenerating iOS, archiving, and uploading through Xcode.
+- **Next iOS upload**: 1.0.8 / build 54 after regenerating iOS, archiving, and uploading through Xcode. The 1.0.7 version is already approved/live, so this release uses a fresh 1.0.8 app version.
 - **The earlier "Apple Forum 820936 platform bug" hypothesis was WRONG** — see Fix #10 below. Real root cause was the prerequisite chain, not a platform bug.
 - **TestFlight Status**: Active, internal testing enabled
-- **App Store Status**: 1.0.1 live; 1.0.2 build 48 was the last recorded submitted build under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`; next upload should be build 52 for Gemini remote-key support.
+- **App Store Status**: 1.0.1 live; 1.0.2 build 48 was the last recorded submitted build under submission `cf0226b0-bd85-4b0c-92e3-28366f11eca3`; next upload should be 1.0.8 build 54 for Gemini remote-key support, Free Speaking language mirroring, and PTT stability.
 
 ## Demo account (current — supersedes older `appreview@…` references)
 
@@ -537,6 +537,34 @@ Adds Free Speaking mode for open-ended Sophie conversations and improves push-to
 
 ```text
 This build adds a Free Speaking conversation mode that uses the same authenticated Gemini Live token flow, consent gate, and daily quota/subscription entitlement checks as the existing Talk experience. It also includes iOS push-to-talk recorder stability fixes for microphone startup.
+```
+
+## App Store Update #14 (v1.0.8, May 9, 2026) — Free Speaking language-mirror release build
+
+Purpose: ship the Free Speaking toggle update on a fresh App Store version because 1.0.7 is already approved/live and cannot accept another App Store submission.
+
+**Before:** Free Speaking still prompted Gemini with the selected target/native language and auto-started with a greeting.
+
+**After:** Free Speaking is a compact Talk-screen toggle. It sends no initial prompt, waits for the user's first PTT turn, lets Gemini infer the spoken language from audio, and replies in that same language. Guided tutor and scenario flows are unchanged.
+
+**Current prep checklist**:
+
+- [x] `app.config.ts` version increased to `1.0.8`.
+- [x] `app.config.ts` iOS `buildNumber` increased to `54`.
+- [ ] Run `npx expo prebuild --platform ios --clean`.
+- [ ] Archive in Xcode and upload to App Store Connect.
+- [ ] Select build 54 for iOS app version `1.0.8`.
+
+**What's New / release notes**:
+
+```text
+Free Speaking now waits for your first spoken turn and replies in the same language you use. You can switch languages naturally during the conversation, while Tutor and Scenario practice stay guided.
+```
+
+**App Review notes snippet**:
+
+```text
+This build updates Free Speaking mode to use the same Gemini Live token, consent, quota, transcript, push-to-talk, recorder, and audio playback flow as existing Talk sessions. Free Speaking now sends no initial prompt, waits for the user's first push-to-talk turn, and mirrors the spoken language detected from that audio. Tutor and Scenario prompts are unchanged.
 ```
 
 ## Key Files

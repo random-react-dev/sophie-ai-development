@@ -30,6 +30,18 @@ const scenario = {
 } as const;
 
 describe("buildTalkSessionConfig", () => {
+  const buildFreeSpeakingConfig = () =>
+    buildTalkSessionConfig({
+      targetLanguage,
+      nativeLanguage,
+      accentDesc: "Andalusian Spanish from Seville",
+      currentCefrLevel: "S1",
+      hasSeenIntro: false,
+      practicePhrase: "Hola mundo",
+      selectedScenario: scenario,
+      talkMode: "free_speaking",
+    });
+
   it("builds scenario-first configuration when a scenario is selected", () => {
     const result = buildTalkSessionConfig({
       targetLanguage,
@@ -72,24 +84,55 @@ describe("buildTalkSessionConfig", () => {
   });
 
   it("builds free speaking configuration without tutor or scenario flow", () => {
-    const result = buildTalkSessionConfig({
-      targetLanguage,
-      nativeLanguage,
-      accentDesc: null,
-      currentCefrLevel: "S1",
-      hasSeenIntro: false,
-      practicePhrase: "Hola mundo",
-      selectedScenario: scenario,
-      talkMode: "free_speaking",
-    });
+    const result = buildFreeSpeakingConfig();
 
     expect(result.instruction).toContain(
-      "You are Sophie AI, a warm casual conversation partner.",
+      "You are Sophie AI, a casual warm friend",
     );
-    expect(result.instruction).toContain("Do NOT correct grammar");
-    expect(result.instruction).toContain("Do NOT give feedback, scores");
     expect(result.instruction).not.toContain("Scenario: Ordering Coffee");
     expect(result.instruction).not.toContain("The user wants to practice the phrase");
-    expect(result.initialPrompt).toContain("Start a casual friendly conversation");
+  });
+
+  it("does not put selected target, native, or accent language instructions into free speaking", () => {
+    const result = buildFreeSpeakingConfig();
+
+    expect(result.instruction).not.toContain("Spanish");
+    expect(result.instruction).not.toContain("English");
+    expect(result.instruction).not.toContain("Andalusian");
+    expect(result.instruction).not.toContain("Seville");
+    expect(result.instruction).not.toContain("support language");
+    expect(result.instruction).not.toContain("target language");
+  });
+
+  it("adds same-language and language-switching rules for free speaking", () => {
+    const result = buildFreeSpeakingConfig();
+
+    expect(result.instruction).toContain(
+      "Detect the user's current spoken language from each turn.",
+    );
+    expect(result.instruction).toContain("Reply in that same language.");
+    expect(result.instruction).toContain(
+      "If the user switches language, switch with them.",
+    );
+  });
+
+  it("adds no-correction and no-tutor rules for free speaking", () => {
+    const result = buildFreeSpeakingConfig();
+
+    expect(result.instruction).toContain(
+      "Do not correct grammar, pronunciation, or word choice.",
+    );
+    expect(result.instruction).toContain(
+      "Do not give feedback, scores, drills, lessons, vocabulary highlights, homework",
+    );
+    expect(result.instruction).toContain(
+      "Do not act like a teacher, tutor, examiner, coach, or roleplay character.",
+    );
+  });
+
+  it("does not auto-greet in free speaking", () => {
+    const result = buildFreeSpeakingConfig();
+
+    expect(result.initialPrompt).toBeUndefined();
   });
 });

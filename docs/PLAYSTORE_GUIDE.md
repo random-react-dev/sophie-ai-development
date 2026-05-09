@@ -13,9 +13,9 @@
 
 - **Live version**: 1.0.5 (`versionCode` 11)
 - **Prepared but stale artifact**: 1.0.5 (`versionCode` 12) purchase-recovery AAB was prepared before the Gemini remote-key and Free Speaking changes. Do not upload the old vc12 AAB.
-- **Next Play upload for this pass**: 1.0.6 (`versionCode` 12) using a freshly rebuilt AAB, because Android `versionCode` is already bumped locally and is intentionally not changed in the May 8 release-prep pass.
-- **Play Store Status**: 1.0.5 (11) is live. Next submission should include Android purchase recovery, Gemini remote-key support, Free Speaking mode, and push-to-talk stability fixes.
-- **VersionCode caution**: If Play Console rejects `versionCode` 12 as already used, bump Android to `versionCode` 13, regenerate Android, rebuild the AAB, and update this guide before upload.
+- **Next Play upload for this pass**: 1.0.8 (`versionCode` 13) using a freshly rebuilt AAB.
+- **Play Store Status**: 1.0.5 (11) is live. Next submission should include Android purchase recovery, Gemini remote-key support, Free Speaking language mirroring, and push-to-talk stability fixes.
+- **VersionCode caution**: Do not upload any stale vc12 AAB. The next Play artifact must use `versionCode` 13.
 - **Android IAP**: Wired. Product catalog is active; backend acknowledgement and client-side startup/foreground recovery are ready for license-tester verification.
 - **Gemini key handling**: App no longer bundles `EXPO_PUBLIC_GEMINI_API_KEY`. `get-gemini-session` and `translate-text` are deployed as Supabase Function version 4 and read `GEMINI_API_KEY` from Supabase secrets. Future Gemini key rotations use `supabase secrets set` and do not need a Play review once this app update is live.
 
@@ -183,6 +183,29 @@ Release notes for Play Console:
 
 ```text
 Adds Free Speaking mode for open-ended Sophie conversations and improves push-to-talk reliability. The Talk tab now lets you switch between Tutor, Scenario, and Free Speaking sessions, while recorder fixes make voice capture more stable.
+```
+
+### 2026-05-09 Android 1.0.8 Free Speaking language-mirror release build
+
+This pass supersedes the May 8 vc12 plan. Build a fresh AAB from current source with Android `versionCode` 13.
+
+- [x] `app.config.ts` version increased to `1.0.8`.
+- [x] `app.config.ts` Android `versionCode` increased to `13`.
+- [ ] Run `npx expo prebuild --platform android --clean`.
+- [ ] Build the signed release AAB with `cd android && ./gradlew app:bundleRelease`.
+- [ ] Copy the new AAB to Desktop as `/Users/niravramani/Desktop/Speak-With-Sophie-1.0.8-vc13.aab`.
+- [ ] In Play Console, use release name `1.0.8 (13)`.
+
+Build and copy command from the repo root:
+
+```bash
+npx expo prebuild --platform android --clean && cd android && ./gradlew app:bundleRelease && cp app/build/outputs/bundle/release/app-release.aab /Users/niravramani/Desktop/Speak-With-Sophie-1.0.8-vc13.aab
+```
+
+Release notes for Play Console:
+
+```text
+Free Speaking now waits for your first spoken turn and replies in the same language you use. You can switch languages naturally during the conversation, while Tutor and Scenario practice stay guided.
 ```
 
 ### Tech references (dev-side)

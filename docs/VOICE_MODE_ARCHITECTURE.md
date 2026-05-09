@@ -35,6 +35,8 @@ Free Speaking Mode changes only the session prompt. It does not add a new backen
 4. `geminiWebSocket.connect(...)`.
 5. The same push-to-talk mic button.
 
+Free Speaking sends no initial prompt. Sophie waits for the user's first PTT turn, lets Gemini Live infer the spoken language from the user's audio, and mirrors that language in the reply. If the user switches languages on a later turn, Sophie switches with them.
+
 Free Speaking must not show lesson report or vocabulary-save actions. The safety report action on Sophie messages remains available. It is for casual conversation only: no scores, corrections, tasks, vocabulary highlights, or lesson objectives.
 
 ## Push-to-Talk (PTT) Mode
@@ -82,7 +84,7 @@ await audioRecorder.stop();
 
 **DO NOT:**
 
-- Trigger greeting on button press (it's auto on setup)
+- Trigger greeting on button press (modes with an initial prompt greet on setup)
 - Start recording when the WebSocket is not connected
 - Remove the minimum recording validation
 
@@ -325,7 +327,7 @@ The iOS recorder uses a patched `expo-stream-audio` native module. The patch kee
 ## Testing Checklist
 
 - [ ] WebSocket stays connected (no 1007 errors)
-- [ ] Sophie AI auto-greets when WebSocket setup completes (no button press needed)
+- [ ] Sophie AI auto-greets on setup only when the mode provides an initial prompt
 - [ ] Holding mic starts PTT recording
 - [ ] Very short or empty recordings are discarded
 - [ ] Sophie AI's voice is clear (no choppy audio)
@@ -333,12 +335,12 @@ The iOS recorder uses a patched `expo-stream-audio` native module. The patch kee
 - [ ] Sophie AI responds to user's speech
 - [ ] User can interrupt Sophie AI mid-speech
 - [ ] No echo or feedback during playback
-- [ ] Free Speaking starts with a casual greeting
+- [ ] Free Speaking waits for the user's first PTT turn to mirror their language
 - [ ] Free Speaking does not show report generation, corrections, scores, or vocabulary-save actions
 
 ## Log Messages to Watch
 
-### Healthy Flow
+### Healthy Flow (Mode With Initial Prompt)
 
 ```
 [GeminiWS] WebSocket Connected successfully
@@ -377,6 +379,7 @@ The iOS recorder uses a patched `expo-stream-audio` native module. The patch kee
 - **v1.2** (2026-05-08): Free Speaking Mode
   - Added casual conversation mode inside the Talk tab.
   - Reuses the same Gemini Live token, WebSocket, quota, transcript, and PTT flow.
+  - Free Speaking waits for the user's first PTT turn to mirror their language.
   - Hides lesson report and vocabulary actions for Free Speaking sessions.
   - Files changed: `talk.tsx`, `talkSessionConfig.ts`, `scenarioStore.ts`, `MessageBubble.tsx`
 

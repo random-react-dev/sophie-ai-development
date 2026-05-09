@@ -32,7 +32,6 @@ import { useRouter } from "expo-router";
 
 import {
   BookOpen,
-  MessageCircle,
   RotateCcw,
   VenetianMask,
 } from "lucide-react-native";
@@ -749,8 +748,8 @@ ${levelGuide}`;
     router.push("/(tabs)/scenarios");
   };
 
-  const handleSelectFreeSpeakingMode = () => {
-    setTalkMode("free_speaking");
+  const handleToggleFreeSpeakingMode = (enabled: boolean) => {
+    setTalkMode(enabled ? "free_speaking" : "guided");
   };
 
   const handleEndFreeChat = () => {
@@ -920,20 +919,29 @@ ${levelGuide}`;
                 testID: "talk-mode-scenario",
               })}
 
-              {renderModePill({
-                label: t("talk_screen.modes.free_speaking"),
-                selected: activeMode === "free_speaking",
-                icon: (
-                  <MessageCircle
-                    size={14}
-                    color={
-                      activeMode === "free_speaking" ? "#2563eb" : "#64748b"
-                    }
-                  />
-                ),
-                onPress: handleSelectFreeSpeakingMode,
-                testID: "talk-mode-free-speaking",
-              })}
+              <View
+                className={`h-9 px-3 rounded-full flex-row items-center gap-2 border ${
+                  isFreeSpeakingMode
+                    ? "bg-blue-50 border-blue-100"
+                    : "bg-white border-gray-100"
+                }`}
+              >
+                <Text
+                  numberOfLines={1}
+                  className={`font-bold text-sm ${
+                    isFreeSpeakingMode ? "text-blue-700" : "text-gray-500"
+                  }`}
+                >
+                  {t("talk_screen.modes.free_speaking")}
+                </Text>
+                <CustomToggle
+                  testID="talk-mode-free-speaking"
+                  value={isFreeSpeakingMode}
+                  onValueChange={handleToggleFreeSpeakingMode}
+                  trackActiveColor="#2563eb"
+                  accessibilityLabel={t("talk_screen.modes.free_speaking")}
+                />
+              </View>
 
               {/* Finish Button */}
               {(isFreeSpeakingMode || messages.length > 0) && (
