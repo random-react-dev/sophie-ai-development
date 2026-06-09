@@ -89,7 +89,6 @@ export class AudioStreamer {
   private totalQueuedSamples = 0;
   private totalReceivedSamples = 0;
 
-  private watchdogTimerId: ReturnType<typeof setTimeout> | null = null;
   private delayedStartTimerId: ReturnType<typeof setTimeout> | null = null;
   private queueHeartbeatTimerId: ReturnType<typeof setInterval> | null = null;
   private isPaused = false;
@@ -231,8 +230,6 @@ export class AudioStreamer {
       `[DIAG] prepareForNewResponse entry ctx.state=${entryState} ctx.time=${entryTime.toFixed(3)}`,
     );
 
-    this.clearWatchdog();
-
     // Cancel any pending gain automations from previous response
     if (this.gainNode) {
       this.gainNode.gain.cancelScheduledValues(0);
@@ -358,7 +355,6 @@ export class AudioStreamer {
   }
 
   private stopCurrentPlayback(): void {
-    this.clearWatchdog();
     this.clearQueueHeartbeat();
 
     // Cancel gain automations to prevent stale ramps affecting next response
@@ -933,33 +929,6 @@ export class AudioStreamer {
       `[DIAG] stage=playback_start trace=${this.turnTraceId} resp=${this.responseId} profile=${this.startupProfile} rate=${playbackRate.toFixed(2)} buffered=${(this.totalQueuedSamples / SAMPLE_RATE).toFixed(2)}s`,
     );
     this.emitSpeakingState(true, this.turnTraceId);
-
-    const watchdogResponseId = this.responseId;
-    const startCurrentTime = this.audioContext?.currentTime ?? 0;
-
-    this.clearWatchdog();
-    this.watchdogTimerId = setTimeout(() => {
-      if (this.responseId !== watchdogResponseId || !this.isPlaying) return;
-      const nowCurrentTime = this.audioContext?.currentTime ?? 0;
-      const delta = nowCurrentTime - startCurrentTime;
-      Logger.debug(
-        TAG,
-        `[DIAG] WATCHDOG check start=${startCurrentTime.toFixed(3)} now=${nowCurrentTime.toFixed(3)} delta=${delta.toFixed(3)}`,
-      );
-      if (delta < 0.1) {
-        Logger.warn(
-          TAG,
-          `WATCHDOG: Stalled delta=${delta.toFixed(3)} - full reset`,
-        );
-        this.performFullReset();
-        this.createFreshQueueSource();
-        this.isPlaying = false;
-        this.hasStartedPlayback = false;
-        this.emitSpeakingState(false, this.turnTraceId);
-      } else {
-        Logger.debug(TAG, `WATCHDOG: OK delta=${delta.toFixed(3)}`);
-      }
-    }, 500);
   }
 
   onGenerationComplete(): void {
@@ -1027,7 +996,6 @@ export class AudioStreamer {
 
   private finishSpeaking(): void {
     if (!this.isPlaying) return;
-    this.clearWatchdog();
     this.clearQueueHeartbeat();
 
     const totalSeconds = (this.totalQueuedSamples / SAMPLE_RATE).toFixed(2);
@@ -1115,13 +1083,6 @@ export class AudioStreamer {
     this.totalQueuedSamples = 0;
   }
 
-  private clearWatchdog(): void {
-    if (this.watchdogTimerId !== null) {
-      clearTimeout(this.watchdogTimerId);
-      this.watchdogTimerId = null;
-    }
-  }
-
   private clearDelayedStartTimer(): void {
     if (this.delayedStartTimerId !== null) {
       clearTimeout(this.delayedStartTimerId);
@@ -1131,7 +1092,6 @@ export class AudioStreamer {
 
   handleInterruption(): void {
     Logger.info(TAG, "Interrupted");
-    this.clearWatchdog();
     this.clearDelayedStartTimer();
     this.clearQueueHeartbeat();
     this.isInterrupted = true;
@@ -1190,7 +1150,6 @@ export class AudioStreamer {
 
   dispose(): void {
     Logger.info(TAG, "Disposed");
-    this.clearWatchdog();
     this.clearDelayedStartTimer();
     this.stopCurrentPlayback();
 

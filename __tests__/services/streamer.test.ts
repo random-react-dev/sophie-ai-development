@@ -403,56 +403,31 @@ describe('AudioStreamer', () => {
     });
   });
 
-  describe('watchdog', () => {
+  describe('active playback timers', () => {
     beforeEach(async () => {
       setPlatform('ios');
       await audioStreamer.initialize();
     });
 
-    it('prepareForNewResponse clears watchdog — no false stall detection', () => {
-      audioStreamer.prepareForNewResponse();
+    it('does not recreate AudioContext while active playback currentTime is slow', () => {
+      audioStreamer.prepareForNewResponse('slow-clock-check', undefined, true);
 
-      const ctx = getLatestCtx();
-      const queueSource = getLatestQueueSource(ctx);
+      const speakingStates: boolean[] = [];
+      audioStreamer.setSpeakingStateCallback((s) => speakingStates.push(s));
 
-      // Queue enough to start playback (triggers watchdog)
       const chunk = createPcmChunk(960);
       for (let i = 0; i < 8; i++) {
         audioStreamer.queueAudio(chunk);
       }
-      // Playback started, watchdog is now running
 
-      // Move to next response — should clear watchdog
-      audioStreamer.prepareForNewResponse();
+      const contextsAfterPlaybackStart = (AudioContext as jest.Mock).mock.calls.length;
 
-      // Advance past watchdog interval (500ms)
       jest.advanceTimersByTime(600);
 
-      // Watchdog should NOT have triggered an extra full reset beyond the
-      // expected ones. With RESET_AFTER_RESPONSES=1, each prepareForNewResponse
-      // triggers a reset. Count before the timer fires:
-      const totalContexts = (AudioContext as jest.Mock).mock.calls.length;
-      const afterTimerContexts = (AudioContext as jest.Mock).mock.calls.length;
-      // No additional context created by the watchdog
-      expect(afterTimerContexts).toBe(totalContexts);
-    });
-
-    it('watchdog does not call suspend/resume on stall (unified logic)', () => {
-      audioStreamer.prepareForNewResponse();
-
-      const ctx = getLatestCtx();
-
-      // Queue enough to start playback
-      const chunk = createPcmChunk(960);
-      for (let i = 0; i < 8; i++) {
-        audioStreamer.queueAudio(chunk);
-      }
-
-      // currentTime stays at 0 (stalled) — advance timer to trigger watchdog
-      jest.advanceTimersByTime(500);
-
-      // Watchdog should go directly to full reset, NOT try suspend→resume
-      expect(ctx.suspend).not.toHaveBeenCalled();
+      expect((AudioContext as jest.Mock).mock.calls.length).toBe(
+        contextsAfterPlaybackStart,
+      );
+      expect(speakingStates).toEqual([true]);
     });
   });
 

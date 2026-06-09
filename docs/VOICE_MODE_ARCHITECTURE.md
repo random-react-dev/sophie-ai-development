@@ -178,6 +178,7 @@ this.queueSource.onEnded = (event) => {
 - Queues audio chunks for gapless playback
 - `onEnded` callback with `isLast: true` detects when all audio has played
 - No need for setTimeout-based timing
+- Active playback must not recreate `AudioContext` from a timer or `currentTime` watchdog; doing so can drop the already-queued start of Sophie's response.
 
 ## File Structure
 
@@ -324,6 +325,12 @@ The iOS recorder uses a patched `expo-stream-audio` native module. The patch kee
 
 **Solution:** Use `AudioBufferQueueSourceNode` with `onEnded` callback.
 
+### Issue: Sophie only speaks the last few words
+
+**Cause:** Resetting `AudioContext` while a response is already playing can clear the beginning of the active queue.
+
+**Solution:** Do not use timer/currentTime watchdog resets during active response playback. Let the queue play and finish through `onEnded`.
+
 ## Testing Checklist
 
 - [ ] WebSocket stays connected (no 1007 errors)
@@ -375,6 +382,12 @@ The iOS recorder uses a patched `expo-stream-audio` native module. The patch kee
 - Native WebSocket: Connection to Gemini Live API
 
 ## Version History
+
+- **v1.3** (2026-05-09): Active playback watchdog removal
+  - Removed timer/currentTime-based AudioContext reset during active Sophie playback.
+  - Keeps queue playback completion driven by `AudioBufferQueueSourceNode.onEnded`.
+  - Prevents first words from being dropped while Gemini audio chunks are otherwise healthy.
+  - Files changed: `streamer.ts`, `streamer.test.ts`, `VOICE_MODE_ARCHITECTURE.md`
 
 - **v1.2** (2026-05-08): Free Speaking Mode
   - Added casual conversation mode inside the Talk tab.
